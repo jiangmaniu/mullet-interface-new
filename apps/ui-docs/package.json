@@ -1,0 +1,36 @@
+{
+  "name": "@mullet/ui-docs",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build --docs",
+    "preview-storybook": "serve storybook-static",
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint ./stories/*.stories.tsx --max-warnings 0"
+  },
+  "dependencies": {
+    "@mullet/ui": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@mullet/eslint-config": "workspace:*",
+    "@mullet/typescript-config": "workspace:*",
+    "@storybook/addon-actions": "^8.2.6",
+    "@storybook/addon-essentials": "^8.2.6",
+    "@storybook/addon-links": "^8.2.6",
+    "@storybook/react": "^8.2.6",
+    "@storybook/react-vite": "^8.2.6",
+    "@types/node": "^24.7.2",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^9.33.0",
+    "serve": "^14.2.1",
+    "storybook": "^8.2.6",
+    "typescript": "5.5.4",
+    "vite": "^5.1.4"
+  }
+}

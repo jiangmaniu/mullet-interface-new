@@ -1,0 +1,80 @@
+{
+  "name": "@mullet/ui",
+  "version": "0.0.0",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./button": {
+      "types": "./dist/button.d.ts",
+      "import": "./dist/button.mjs",
+      "require": "./dist/button.js"
+    },
+    "./card": {
+      "types": "./dist/card.d.ts",
+      "import": "./dist/card.mjs",
+      "require": "./dist/card.js"
+    },
+    "./gradient": {
+      "types": "./dist/gradient.d.ts",
+      "import": "./dist/gradient.mjs",
+      "require": "./dist/gradient.js"
+    },
+    "./turborepo-logo": {
+      "types": "./dist/turborepo-logo.d.ts",
+      "import": "./dist/turborepo-logo.mjs",
+      "require": "./dist/turborepo-logo.js"
+    },
+    "./styles.css": "./dist/index.css",
+    "./*": "./dist/*.js"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "build:components": "tsup",
+    "check-types": "tsup --noEmit",
+    "dev:styles": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev:components": "tsup --watch",
+    "lint": "eslint src --max-warnings 0",
+    "clean": "rm -rf .turbo node_modules dist"
+  },
+  "peerDependencies": {
+    "react": "^19"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "next-themes": "^0.4.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwind-merge": "^3.3.1",
+    "tw-animate-css": "^1.3.6",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@mullet/eslint-config": "workspace:*",
+    "@mullet/tailwind-config": "workspace:*",
+    "@mullet/typescript-config": "workspace:*",
+    "@tailwindcss/cli": "^4.1.5",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@turbo/gen": "^2.5.5",
+    "@types/node": "^20.19.9",
+    "@types/react": "^19.2.2",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.33.0",
+    "tailwindcss": "^4.1.5",
+    "tsup": "^8.0.2",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "overrides": {
+    "react-is": "^19.0.0-rc-69d4b800-20241021"
+  }
+}

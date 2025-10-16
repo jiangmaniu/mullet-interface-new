@@ -1,0 +1,27 @@
+{
+  "name": "@mullet",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --filter='!@mullet/ui-docs' --filter='!@mullet/docs'",
+    "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "turbo run build --filter=docs^... && changeset publish",
+    "preview-storybook": "turbo run preview-storybook"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@innei/prettier": "^1.0.0",
+    "prettier": "^3.6.0",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "turbo": "^2.5.8"
+  },
+  "packageManager": "pnpm@10.18.3+sha512.bbd16e6d7286fd7e01f6b3c0b3c932cda2965c06a908328f74663f10a9aea51f1129eea615134bf992831b009eabe167ecb7008b597f40ff9bc75946aadfb08d",
+  "engines": {
+    "node": ">=18"
+  }
+}
