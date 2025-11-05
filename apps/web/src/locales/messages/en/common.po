@@ -1,0 +1,932 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-06-16 23:51+0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#: src/components/wallet/AccountDetails/index.tsx
+msgid "Disconnect"
+msgstr "Disconnect"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Type"
+msgstr "Type"
+
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/volume.tsx
+msgid "Volume"
+msgstr "Volume"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Waiting For Confirmation"
+msgstr "Waiting For Confirmation"
+
+#: src/app/[locale]/(main)/swap/_comps/content.tsx
+msgid "To"
+msgstr "To"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "Create Pool & Supply"
+msgstr "Create Pool & Supply"
+
+#: src/components/uni/SearchModal/CoinList/index.tsx
+msgid "Tokens from inactive lists. Import specific tokens below or click Manage to activate more lists."
+msgstr "Tokens from inactive lists. Import specific tokens below or click Manage to activate more lists."
+
+#. placeholder {0}: plural ? 2 : 1
+#: src/constants/uni/tokenSafety.tsx
+msgid "{0, plural, =1 {This token isn't verified} other {These tokens aren't verified}}"
+msgstr "{0, plural, =1 {This token isn't verified} other {These tokens aren't verified}}"
+
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "By adding this list you are implicitly trusting that the data is correct. Anyone can create a list, including creating fake versions of existing lists and lists that claim to represent projects that do not have one."
+msgstr "By adding this list you are implicitly trusting that the data is correct. Anyone can create a list, including creating fake versions of existing lists and lists that claim to represent projects that do not have one."
+
+#. placeholder {0}: list.coins.length
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "{0} tokens"
+msgstr "{0} tokens"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Dismiss"
+msgstr "Dismiss"
+
+#. placeholder {0}: list.name
+#: src/components/uni/SearchModal/ImportRow.tsx
+msgid "via {0} "
+msgstr "via {0} "
+
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+msgid "volume(24 h)"
+msgstr "volume(24 h)"
+
+#. placeholder {0}: parsedAmount?.toSD(4).toString()
+#: src/components/uni/earn/StakingModal.tsx
+msgid "{0} UNI-V2"
+msgstr "{0} UNI-V2"
+
+#: src/components/uni/NavigationTabs/index.tsx
+msgid "Remove Liquidity"
+msgstr "Remove Liquidity"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "Rates"
+msgstr "Rates"
+
+#. placeholder {0}: hypotheticalRewardRate .mul((60 * 60 * 24 * 7).toString()) .toSD(4) .toString()
+#. placeholder {0}: stakingInfo.totalRewardRate?.multiply(BIG_INT_SECONDS_IN_WEEK)?.toFixed(0, { groupSeparator: ',' })
+#. placeholder {0}: stakingInfo.rewardRate ?.multiply(BIG_INT_SECONDS_IN_WEEK) ?.toSignificant(4, { groupSeparator: ',' })
+#: src/components/uni/earn/StakingModal.tsx
+#: src/components/uni/earn/PoolCard.tsx
+#: src/components/uni/earn/PoolCard.tsx
+msgid "{0} UNI / week"
+msgstr "{0} UNI / week"
+
+#: src/components/uni/CoinInputPanel/index.tsx
+msgid "MAX"
+msgstr "MAX"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "Expected Output"
+msgstr "Expected Output"
+
+#. placeholder {0}: (allowedSlippage / 100).toFixed(2)
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "Output is estimated. If the price changes by more than {0}% your transaction will revert."
+msgstr "Output is estimated. If the price changes by more than {0}% your transaction will revert."
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Queue proposal {proposalKey}."
+msgstr "Queue proposal {proposalKey}."
+
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "I understand"
+msgstr "I understand"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/index.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/index.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/dashboard-tab.tsx
+msgid "Overview"
+msgstr "Overview"
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Your liquidity"
+msgstr "Your liquidity"
+
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "LP Fee(24h)"
+msgstr "LP Fee(24h)"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "Share of Pool:"
+msgstr "Share of Pool:"
+
+#: src/components/wallet/AccountDetails/Copy.tsx
+msgid "Copied"
+msgstr "Copied"
+
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "Name"
+msgstr "Name"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/overview.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/index.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/index.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/_comps/header/index.tsx
+msgid "Liquidity"
+msgstr "Liquidity"
+
+#. placeholder {0}: poolLpPercentage.mul(100).toFixed(2) === '0.00' ? '<0.01' : poolLpPercentage.mul(100).toFixed(2)
+#. placeholder {0}: poolLpPercentage.mul(100).toFixed(2) === '0.00' ? '<0.01' : poolLpPercentage.mul(100).toFixed(2)
+#: src/components/uni/PositionCard/index.tsx
+#: src/components/uni/PositionCard/index.tsx
+msgid "{0} %"
+msgstr "{0} %"
+
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "Top-ranked trading pairs"
+msgstr "Top-ranked trading pairs"
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "Confirm"
+msgstr "Confirm"
+
+#. placeholder {0}: coins[Field.COIN_B]?.symbol
+#. placeholder {0}: coins[Field.COIN_A]?.symbol
+#. placeholder {1}: coins[Field.COIN_A]?.symbol
+#. placeholder {1}: coins[Field.COIN_B]?.symbol
+#: src/app/[locale]/(main)/liquidity/add/_comps/PoolPriceBar.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/PoolPriceBar.tsx
+msgid "{0} per {1}"
+msgstr "{0} per {1}"
+
+#: src/app/[locale]/(main)/_comps/header/index.tsx
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "Confirm Supply"
+msgstr "Confirm Supply"
+
+#: src/components/uni/earn/PoolCard.tsx
+msgid "Total deposited"
+msgstr "Total deposited"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "<0>Tip:</0> When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time."
+msgstr "<0>Tip:</0> When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time."
+
+#: src/components/uni/SearchModal/CoinList/index.tsx
+msgid "Expanded results from inactive Token Lists"
+msgstr "Expanded results from inactive Token Lists"
+
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "Volume(7d)"
+msgstr "Volume(7d)"
+
+#: src/app/[locale]/(main)/_comps/header/_index.tsx
+msgid "Charts"
+msgstr "Charts"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "after slippage"
+msgstr "after slippage"
+
+#: src/components/uni/SearchModal/ManageLists.tsx
+msgid "Please confirm you would like to remove this list by typing REMOVE"
+msgstr "Please confirm you would like to remove this list by typing REMOVE"
+
+#: src/components/wallet/AccountDetails/index.tsx
+msgid "Account"
+msgstr "Account"
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "You will receive"
+msgstr "You will receive"
+
+#. placeholder {0}: stakingInfo?.stakedAmount?.toSignificant(4)
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Withdrawing {0} UNI-V2"
+msgstr "Withdrawing {0} UNI-V2"
+
+#: src/app/[locale]/(main)/_comps/header/_index.tsx
+msgid "Faucet"
+msgstr "Faucet"
+
+#: src/components/uni/SearchModal/ManageLists.tsx
+msgid "Remove list"
+msgstr "Remove list"
+
+#. placeholder {0}: coins[Field.COIN_A]?.symbol
+#. placeholder {0}: coins[Field.COIN_B]?.symbol
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "{0} Deposited"
+msgstr "{0} Deposited"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/overview.tsx
+msgid "Info"
+msgstr "Info"
+
+#. placeholder {0}: 1
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+msgid "{0} D"
+msgstr "{0} D"
+
+#: src/state/swap/hooks.tsx
+#: src/state/mint/hooks.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+#: src/app/[locale]/(main)/swap/_comps/content.tsx
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+#: src/app/[locale]/(main)/_comps/header/index.tsx
+msgid "Connect Wallet"
+msgstr "Connect Wallet"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "The impact your trade has on the market price of this pool."
+msgstr "The impact your trade has on the market price of this pool."
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "Initial prices and pool share"
+msgstr "Initial prices and pool share"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "Closed"
+msgstr "Closed"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Your transaction will revert if it is pending for more than this period of time."
+msgstr "Your transaction will revert if it is pending for more than this period of time."
+
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "Import List"
+msgstr "Import List"
+
+#: src/components/uni/PositionCard/index.tsx
+msgid "Your total pool tokens:"
+msgstr "Your total pool tokens:"
+
+#: src/components/uni/SearchModal/ImportRow.tsx
+msgid "Active"
+msgstr "Active"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/PoolPriceBar.tsx
+msgid "Share of Pool"
+msgstr "Share of Pool"
+
+#. placeholder {0}: userAddedTokens?.length
+#: src/components/uni/SearchModal/ManageTokens.tsx
+msgid "{0} Custom Tokens"
+msgstr "{0} Custom Tokens"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Deposited liquidity:"
+msgstr "Deposited liquidity:"
+
+#. placeholder {0}: parsedAmount?.toSD(4).toString()
+#: src/components/uni/earn/StakingModal.tsx
+msgid "Deposited {0} UNI-V2"
+msgstr "Deposited {0} UNI-V2"
+
+#: src/components/uni/CoinInputPanel/index.tsx
+msgid "The market price is outside your specified price range. Single-asset deposit only."
+msgstr "The market price is outside your specified price range. Single-asset deposit only."
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Slippage tolerance"
+msgstr "Slippage tolerance"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Connect a wallet"
+msgstr "Connect a wallet"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/overview.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "Volume(24h)"
+msgstr "Volume(24h)"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "Minimum received"
+msgstr "Minimum received"
+
+#. placeholder {0}: coinX?.symbol
+#. placeholder {0}: coinY?.symbol
+#: src/components/uni/PositionCard/index.tsx
+#: src/components/uni/PositionCard/index.tsx
+msgid "Pooled {0}:"
+msgstr "Pooled {0}:"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "The price of this pool is outside of your selected range. Your position is not currently earning fees."
+msgstr "The price of this pool is outside of your selected range. Your position is not currently earning fees."
+
+#: src/app/[locale]/not-found.tsx
+msgid "Sorry, the page you are trying to access does not exist"
+msgstr "Sorry, the page you are trying to access does not exist"
+
+#: src/components/uni/earn/StakingModal.tsx
+msgid "Depositing Liquidity"
+msgstr "Depositing Liquidity"
+
+#: src/app/[locale]/(main)/swap/_comps/SwapDetailsDropdown.tsx
+msgid "Fetching best price..."
+msgstr "Fetching best price..."
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Withdrew UNI-V2!"
+msgstr "Withdrew UNI-V2!"
+
+#: src/components/uni/CoinInputPanel/FiatValue.tsx
+msgid "The estimated difference between the USD values of input and output amounts."
+msgstr "The estimated difference between the USD values of input and output amounts."
+
+#: src/app/[locale]/(main)/swap/_comps/Settings/index.tsx
+#: src/app/[locale]/(main)/swap/_comps/Settings/index.tsx
+msgid "Transaction Settings"
+msgstr "Transaction Settings"
+
+#: src/components/uni/earn/PoolCard.tsx
+#: src/components/uni/earn/PoolCard.tsx
+msgid "0 UNI / week"
+msgstr "0 UNI / week"
+
+#: src/components/uni/SearchModal/ManageLists.tsx
+msgid "{activeTokensOnThisChain} tokens"
+msgstr "{activeTokensOnThisChain} tokens"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Time"
+msgstr "Time"
+
+#: src/app/[locale]/not-found.tsx
+msgid "Return Home"
+msgstr "Return Home"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "Your position has 0 liquidity, and is not earning fees."
+msgstr "Your position has 0 liquidity, and is not earning fees."
+
+#: src/components/uni/earn/StakingModal.tsx
+msgid "Weekly Rewards"
+msgstr "Weekly Rewards"
+
+#: src/components/uni/TokenSafety/index.tsx
+msgid "Learn More"
+msgstr "Learn More"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Your transaction may fail"
+msgstr "Your transaction may fail"
+
+#: src/components/uni/NavigationTabs/index.tsx
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Add Liquidity"
+msgstr "Add Liquidity"
+
+#: src/constants/uni/tokenSafety.tsx
+msgid "Please do your own research before trading."
+msgstr "Please do your own research before trading."
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Withdraw"
+msgstr "Withdraw"
+
+#: src/components/wallet/AccountDetails/index.tsx
+msgid "Disconnecting..."
+msgstr "Disconnecting..."
+
+#: src/components/uni/TokenSafety/index.tsx
+msgid "I Understand"
+msgstr "I Understand"
+
+#: src/components/uni/SearchModal/TokenImportCard.tsx
+msgid "Unknown Source"
+msgstr "Unknown Source"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+msgid "Claimed UNI!"
+msgstr "Claimed UNI!"
+
+#: src/app/[locale]/(main)/dashboard/_comps/dashboard-tab.tsx
+msgid "Pairs"
+msgstr "Pairs"
+
+#: src/state/mint/hooks.tsx
+msgid "Invalid pair"
+msgstr "Invalid pair"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+#: src/components/uni/earn/StakingModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Transaction Submitted"
+msgstr "Transaction Submitted"
+
+#: src/components/wallet/AccountDetails/index.tsx
+msgid "Connected with"
+msgstr "Connected with"
+
+#: src/components/wallet/AccountDetails/index.tsx
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "View on Explorer"
+msgstr "View on Explorer"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Error"
+msgstr "Error"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "Price Impact"
+msgstr "Price Impact"
+
+#. placeholder {0}: plural ? 2 : 1
+#: src/constants/uni/tokenSafety.tsx
+msgid "{0, plural, =1 {You can't trade this token using the Uniswap App.} other {You can't trade these tokens using the Uniswap App.}}"
+msgstr "{0, plural, =1 {You can't trade this token using the Uniswap App.} other {You can't trade these tokens using the Uniswap App.}}"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Transaction deadline"
+msgstr "Transaction deadline"
+
+#: src/app/[locale]/(main)/dashboard/_comps/dashboard-tab.tsx
+msgid "Token"
+msgstr "Token"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Enter a valid slippage percentage"
+msgstr "Enter a valid slippage percentage"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "The ratio of tokens you add will set the price of this pool."
+msgstr "The ratio of tokens you add will set the price of this pool."
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "Once you are happy with the rate click supply to review."
+msgstr "Once you are happy with the rate click supply to review."
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Seconds"
+msgstr "Seconds"
+
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "LP Fee(APY)"
+msgstr "LP Fee(APY)"
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Add <0/> and <1/> to Uniswap V2"
+msgstr "Add <0/> and <1/> to Uniswap V2"
+
+#: src/components/uni/SearchModal/BlockedToken.tsx
+msgid "This token is not supported in the Uniswap Labs app"
+msgstr "This token is not supported in the Uniswap Labs app"
+
+#: src/components/uni/PositionCard/index.tsx
+msgid "Your position"
+msgstr "Your position"
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "<0>Tip:</0> Removing pool tokens converts your position back into underlying tokens at the current rate, proportional to your share of the pool. Accrued fees are included in the amounts you receive."
+msgstr "<0>Tip:</0> Removing pool tokens converts your position back into underlying tokens at the current rate, proportional to your share of the pool. Accrued fees are included in the amounts you receive."
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Liquidity provider rewards"
+msgstr "Liquidity provider rewards"
+
+#. placeholder {0}: selectedCoinAmount.pretty(4)
+#: src/components/uni/CoinInputPanel/index.tsx
+msgid "Balance: {0}"
+msgstr "Balance: {0}"
+
+#: src/constants/uni/tokenSafety.tsx
+msgid "Caution"
+msgstr "Caution"
+
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "Import at your own risk"
+msgstr "Import at your own risk"
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Execute proposal {proposalKey}."
+msgstr "Execute proposal {proposalKey}."
+
+#: src/components/uni/earn/StakingModal.tsx
+msgid "Approve"
+msgstr "Approve"
+
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/overview.tsx
+msgid "Estimated annualized (APR)"
+msgstr "Estimated annualized (APR)"
+
+#: src/components/uni/earn/PoolCard.tsx
+msgid "Your rate"
+msgstr "Your rate"
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Deposit liquidity"
+msgstr "Deposit liquidity"
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/index.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+msgid "Price"
+msgstr "Price"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "The price of this pool is within your selected range. Your position is currently earning fees."
+msgstr "The price of this pool is within your selected range. Your position is currently earning fees."
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "You are creating a pool"
+msgstr "You are creating a pool"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Transaction List"
+msgstr "Transaction List"
+
+#: src/components/uni/SearchModal/ImportToken.tsx
+msgid "This token doesn't appear on the active token list(s). Make sure this is the token that you want to trade."
+msgstr "This token doesn't appear on the active token list(s). Make sure this is the token that you want to trade."
+
+#: src/components/uni/earn/ClaimRewardModal.tsx
+msgid "When you claim without withdrawing your liquidity remains in the mining pool."
+msgstr "When you claim without withdrawing your liquidity remains in the mining pool."
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "0.5%"
+msgstr "0.5%"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "Maximum sent"
+msgstr "Maximum sent"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "Supply"
+msgstr "Supply"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "1.0%"
+msgstr "1.0%"
+
+#: src/components/uni/SearchModal/ManageTokens.tsx
+msgid "Enter valid token address"
+msgstr "Enter valid token address"
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Withdraw deposited liquidity"
+msgstr "Withdraw deposited liquidity"
+
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+msgid "Top-ranked tokens"
+msgstr "Top-ranked tokens"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "Withdraw & Claim"
+msgstr "Withdraw & Claim"
+
+#: src/app/[locale]/(main)/swap/_comps/content.tsx
+msgid "From"
+msgstr "From"
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "The minimum amount you are guaranteed to receive. If the price slips any further, your transaction will revert."
+msgstr "The minimum amount you are guaranteed to receive. If the price slips any further, your transaction will revert."
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "No liquidity found."
+msgstr "No liquidity found."
+
+#. placeholder {0}: table.getState().pagination.pageIndex + 1
+#. placeholder {1}: table.getPageCount()
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/pairs-list.tsx
+msgid "Page {0} of {1}"
+msgstr "Page {0} of {1}"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Your transaction will revert if the price changes unfavorably by more than this percentage."
+msgstr "Your transaction will revert if the price changes unfavorably by more than this percentage."
+
+#: src/state/swap/hooks.tsx
+msgid "High Price Impact"
+msgstr "High Price Impact"
+
+#: src/components/uni/SearchModal/ImportList.tsx
+msgid "If you purchase a token from this list, you may not be able to sell it back."
+msgstr "If you purchase a token from this list, you may not be able to sell it back."
+
+#: src/app/[locale]/(main)/swap/_comps/AdvancedSwapDetails.tsx
+msgid "The amount you expect to receive at the current market price. You may receive less or more if the market price changes while your transaction is pending."
+msgstr "The amount you expect to receive at the current market price. You may receive less or more if the market price changes while your transaction is pending."
+
+#: src/components/uni/earn/UnstakingModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+msgid "Unclaimed UNI"
+msgstr "Unclaimed UNI"
+
+#: src/components/uni/earn/UnstakingModal.tsx
+msgid "When you withdraw, your UNI is claimed and your liquidity is removed from the mining pool."
+msgstr "When you withdraw, your UNI is claimed and your liquidity is removed from the mining pool."
+
+#: src/app/[locale]/not-found.tsx
+msgid "The page you are trying to view is temporarily unavailable. Please try again later"
+msgstr "The page you are trying to view is temporarily unavailable. Please try again later"
+
+#. placeholder {0}: priceImpact.mul(-1).toSD(3).toString()
+#. placeholder {0}: noLiquidity ? '100' : poolCoinPercentage?.toSD(4).toString()
+#: src/components/uni/CoinInputPanel/FiatValue.tsx
+#: src/app/[locale]/(main)/liquidity/add/_comps/ConfirmAddModalBottom.tsx
+msgid "{0}%"
+msgstr "{0}%"
+
+#: src/components/uni/earn/ClaimRewardModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+msgid "Claim"
+msgstr "Claim"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "Out of range"
+msgstr "Out of range"
+
+#: src/state/swap/hooks.tsx
+#: src/state/mint/hooks.tsx
+#: src/state/mint/hooks.tsx
+#: src/state/mint/hooks.tsx
+#: src/components/uni/earn/UnstakingModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "Enter an amount"
+msgstr "Enter an amount"
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Connect to a wallet to view your liquidity."
+msgstr "Connect to a wallet to view your liquidity."
+
+#: src/state/swap/hooks.tsx
+#: src/components/uni/SearchModal/CoinSearch.tsx
+#: src/components/uni/CoinInputPanel/index.tsx
+msgid "Select a coin"
+msgstr "Select a coin"
+
+#: src/components/uni/earn/StakingModal.tsx
+#: src/components/uni/earn/StakingModal.tsx
+#: src/components/uni/earn/PoolCard.tsx
+msgid "Deposit"
+msgstr "Deposit"
+
+#: src/components/uni/SearchModal/ImportToken.tsx
+#: src/components/uni/SearchModal/ImportRow.tsx
+#: src/components/uni/SearchModal/ImportList.tsx
+#: src/components/uni/SearchModal/BlockedToken.tsx
+msgid "Import"
+msgstr "Import"
+
+#: src/app/[locale]/layout.tsx
+msgid "Onedex"
+msgstr "Onedex"
+
+#: src/components/uni/SearchModal/ManageTokens.tsx
+msgid "Tip: Custom tokens are stored locally in your browser"
+msgstr "Tip: Custom tokens are stored locally in your browser"
+
+#: src/components/uni/SearchModal/BlockedToken.tsx
+msgid "Token not supported"
+msgstr "Token not supported"
+
+#: src/components/uni/PositionCard/index.tsx
+msgid "Add"
+msgstr "Add"
+
+#. placeholder {0}: inputCoin?.symbol
+#. placeholder {0}: coins[Field.COIN_A]?.symbol
+#. placeholder {0}: coins[Field.COIN_B]?.symbol
+#: src/state/swap/hooks.tsx
+#: src/state/mint/hooks.tsx
+#: src/state/mint/hooks.tsx
+msgid "Insufficient {0} balance"
+msgstr "Insufficient {0} balance"
+
+#. placeholder {0}: tokenInfo0?.symbol + '/' + tokenInfo1?.symbol + ' ' + feeAmount / 10000
+#: src/app/[locale]/(main)/swap/_comps/RoutingDiagram.tsx
+msgid "{0}% pool"
+msgstr "{0}% pool"
+
+#: src/components/uni/NavigationTabs/index.tsx
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Create a pair"
+msgstr "Create a pair"
+
+#: src/components/uni/CoinInputPanel/FiatValue.tsx
+msgid "$<0/>"
+msgstr "$<0/>"
+
+#: src/components/uni/SearchModal/ManageLists.tsx
+msgid "Update list"
+msgstr "Update list"
+
+#. placeholder {0}: 1
+#: src/app/[locale]/(main)/dashboard/_comps/token-list.tsx
+msgid "{0} H"
+msgstr "{0} H"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Confirm this transaction in your wallet"
+msgstr "Confirm this transaction in your wallet"
+
+#: src/app/[locale]/(main)/swap/_comps/SwapRoute.tsx
+msgid "The Router optimizes your trade path to gain the best price."
+msgstr "The Router optimizes your trade path to gain the best price."
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "Remove Amount"
+msgstr "Remove Amount"
+
+#: src/app/[locale]/(main)/_comps/header/_index.tsx
+msgid "Pool"
+msgstr "Pool"
+
+#: src/components/uni/SearchModal/CoinSearch.tsx
+msgid "Search name or paste address"
+msgstr "Search name or paste address"
+
+#. placeholder {0}: stakingInfo?.earnedAmount?.toSignificant(4)
+#. placeholder {0}: stakingInfo?.earnedAmount?.toSignificant(6)
+#: src/components/uni/earn/UnstakingModal.tsx
+#: src/components/uni/earn/ClaimRewardModal.tsx
+msgid "Claiming {0} UNI"
+msgstr "Claiming {0} UNI"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "Your transaction may be frontrun"
+msgstr "Your transaction may be frontrun"
+
+#: src/components/uni/TransactionSettings/index.tsx
+msgid "2.0%"
+msgstr "2.0%"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Buy"
+msgstr "Buy"
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Liquidity providers earn a 0.25% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
+msgstr "Liquidity providers earn a 0.25% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
+
+#: src/constants/uni/tokenSafety.tsx
+msgid "Warning"
+msgstr "Warning"
+
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "Price:"
+msgstr "Price:"
+
+#: src/components/uni/NavigationTabs/index.tsx
+msgid "Import V2 Pool"
+msgstr "Import V2 Pool"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Wallet"
+msgstr "Wallet"
+
+#: src/components/uni/PositionCard/index.tsx
+#: src/app/[locale]/(main)/liquidity/remove/_comps/content.tsx
+msgid "Remove"
+msgstr "Remove"
+
+#: src/app/[locale]/(main)/swap/_comps/content.tsx
+msgid "Insufficient liquidity for this trade."
+msgstr "Insufficient liquidity for this trade."
+
+#: src/app/[locale]/(main)/swap/_comps/SwapModalFooter.tsx
+#: src/app/[locale]/(main)/swap/_comps/ConfirmSwapModal.tsx
+msgid "Confirm Swap"
+msgstr "Confirm Swap"
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "You are the first liquidity provider."
+msgstr "You are the first liquidity provider."
+
+#. placeholder {0}: list.name
+#: src/components/uni/SearchModal/TokenImportCard.tsx
+msgid "via {0} token list"
+msgstr "via {0} token list"
+
+#: src/app/[locale]/(main)/swap/_comps/content.tsx
+#: src/app/[locale]/(main)/swap/_comps/SwapHeader.tsx
+#: src/app/[locale]/(main)/_comps/header/index.tsx
+#: src/app/[locale]/(main)/_comps/header/_index.tsx
+msgid "Swap"
+msgstr "Swap"
+
+#: src/components/uni/Badge/RangeBadge.tsx
+msgid "In range"
+msgstr "In range"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+msgid "Return"
+msgstr "Return"
+
+#: src/components/uni/PositionCard/index.tsx
+msgid "By adding liquidity you'll earn 0.25% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
+msgstr "By adding liquidity you'll earn 0.25% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity."
+
+#: src/app/[locale]/(main)/liquidity/add/_comps/content.tsx
+msgid "Prices and pool share"
+msgstr "Prices and pool share"
+
+#. placeholder {0}: tokens.length
+#: src/components/uni/SearchModal/ImportToken.tsx
+msgid "{0, plural, =1 {Import token} other {Import tokens}}"
+msgstr "{0, plural, =1 {Import token} other {Import tokens}}"
+
+#: src/constants/uni/tokenSafety.tsx
+msgid "Not Available"
+msgstr "Not Available"
+
+#: src/components/uni/earn/PoolCard.tsx
+msgid "Pool rate"
+msgstr "Pool rate"
+
+#: src/components/wallet/AccountDetails/TransactionSummary.tsx
+msgid "Submit new proposal"
+msgstr "Submit new proposal"
+
+#: src/components/uni/PositionCard/index.tsx
+#: src/components/uni/PositionCard/index.tsx
+msgid "Your pool share:"
+msgstr "Your pool share:"
+
+#: src/components/uni/earn/PoolCard.tsx
+#: src/components/uni/SearchModal/Manage.tsx
+msgid "Manage"
+msgstr "Manage"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/price.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/price.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/dashboard/token/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/volume.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/liquidity.tsx
+#: src/app/[locale]/(main)/dashboard/_comps/analysis/liquidity.tsx
+msgid "1000"
+msgstr "1000"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/trading-list.tsx
+#: src/app/[locale]/(main)/dashboard/pairs/_comps/chain-operation-list.tsx
+msgid "Sell"
+msgstr "Sell"
+
+#: src/app/[locale]/(main)/liquidity/page.tsx
+msgid "Loading"
+msgstr "Loading"
+
+#: src/app/[locale]/(main)/dashboard/token/_comps/overview.tsx
+msgid "Volume(7D)"
+msgstr "Volume(7D)"
+
+#: src/components/uni/TransactionConfirmationModal/index.tsx
+#: src/components/uni/TokenSafety/index.tsx
+msgid "Close"
+msgstr "Close"
+
+#: src/components/wallet/AccountDetails/index.tsx
+msgid "Copy Address"
+msgstr "Copy Address"
+
+#: src/components/uni/TokenSafety/TokenSafetyMessage.tsx
+msgid "Learn more"
+msgstr "Learn more"
+
+#: src/components/uni/SearchModal/CoinSearch.tsx
+msgid "Manage Coin Lists"
+msgstr "Manage Coin Lists"

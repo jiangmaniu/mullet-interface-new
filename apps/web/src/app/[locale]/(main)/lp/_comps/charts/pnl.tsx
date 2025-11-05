@@ -1,0 +1,58 @@
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useRef } from 'react'
+
+import { ECharts, EChartsOption } from '@mullet/ui/echarts'
+
+export const VaultPNLCharts = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ['vault-pnl-charts'],
+    queryFn: () => {
+      return new Promise<EChartsOption>((resolve) => {
+        setTimeout(() => {
+          resolve({
+            backgroundColor: 'transparent',
+            tooltip: {
+              trigger: 'axis',
+            },
+            grid: {
+              left: '3%',
+              right: '4%',
+              bottom: '3%',
+              top: '3%',
+              containLabel: true,
+            },
+            xAxis: {
+              type: 'category',
+              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            },
+            yAxis: {
+              type: 'value',
+            },
+            series: [
+              {
+                name: 'Step Start',
+                type: 'line',
+                step: 'start',
+                data: [120, 132, 101, 134, 90, 230, 210],
+              },
+            ],
+          })
+        }, 5000)
+      })
+    },
+  })
+
+  return (
+    <ECharts
+      showLoading={isLoading}
+      loadingOption={{
+        text: '加载中...',
+        color: '#EED94C', // 动画圆圈颜色
+        textColor: '##EED94C', // 文本颜色
+        maskColor: 'transparent', // 透明背景
+      }}
+      option={data}
+      className="h-full min-h-[210px] w-full"
+    />
+  )
+}

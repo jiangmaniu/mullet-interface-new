@@ -1,0 +1,123 @@
+export const COOKIE_LOCALE_KEY = 'NEXT_LOCALE'
+
+export enum Locale {
+  en = 'en',
+  zh_CN = 'zh-CN',
+  en_US = 'en-US',
+  af_ZA = 'af-ZA',
+  ar_SA = 'ar-SA',
+  ca_ES = 'ca-ES',
+  cs_CZ = 'cs-CZ',
+  da_DK = 'da-DK',
+  de_DE = 'de-DE',
+  el_GR = 'el-GR',
+  es_ES = 'es-ES',
+  fi_FI = 'fi-FI',
+  fr_FR = 'fr-FR',
+  he_IL = 'he-IL',
+  hu_HU = 'hu-HU',
+  id_ID = 'id-ID',
+  it_IT = 'it-IT',
+  ja_JP = 'ja-JP',
+  ko_KR = 'ko-KR',
+  nl_NL = 'nl-NL',
+  no_NO = 'no-NO',
+  pl_PL = 'pl-PL',
+  pt_BR = 'pt-BR',
+  pt_PT = 'pt-PT',
+  ro_RO = 'ro-RO',
+  ru_RU = 'ru-RU',
+  sr_SP = 'sr-SP',
+  sv_SE = 'sv-SE',
+  sw_TZ = 'sw-TZ',
+  tr_TR = 'tr-TR',
+  uk_UA = 'uk-UA',
+  vi_VN = 'vi-VN',
+  zh_TW = 'zh-TW',
+}
+
+export const LOCALE_MESSAGE_MODULE_NAMES = ['common']
+
+export const DEFAULT_LOCALE = Locale.en
+
+export type SupportedLocale = Locale | 'pseudo'
+
+export const LOCALE_LABEL_MAP: Record<SupportedLocale, string> = {
+  [Locale.en]: 'English',
+  [Locale.zh_CN]: '简体中文',
+  [Locale.en_US]: 'English',
+  [Locale.af_ZA]: 'Afrikaans',
+  [Locale.ar_SA]: 'العربية',
+  [Locale.ca_ES]: 'Català',
+  [Locale.cs_CZ]: 'čeština',
+  [Locale.da_DK]: 'dansk',
+  [Locale.de_DE]: 'Deutsch',
+  [Locale.el_GR]: 'ελληνικά',
+  [Locale.es_ES]: 'Español',
+  [Locale.fi_FI]: 'suomi',
+  [Locale.fr_FR]: 'français',
+  [Locale.he_IL]: 'עִברִית',
+  [Locale.hu_HU]: 'Magyar',
+  [Locale.id_ID]: 'bahasa Indonesia',
+  [Locale.it_IT]: 'Italiano',
+  [Locale.ja_JP]: '日本語',
+  [Locale.ko_KR]: '한국어',
+  [Locale.nl_NL]: 'Nederlands',
+  [Locale.no_NO]: 'norsk',
+  [Locale.pl_PL]: 'Polskie',
+  [Locale.pt_BR]: 'português',
+  [Locale.pt_PT]: 'português',
+  [Locale.ro_RO]: 'Română',
+  [Locale.ru_RU]: 'русский',
+  [Locale.sr_SP]: 'Српски',
+  [Locale.sv_SE]: 'svenska',
+  [Locale.sw_TZ]: 'Kiswahili',
+  [Locale.tr_TR]: 'Türkçe',
+  [Locale.uk_UA]: 'Український',
+  [Locale.vi_VN]: 'Tiếng Việt',
+  [Locale.zh_TW]: '繁体中文',
+  pseudo: 'ƥƨèúδô',
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export type LocaleKey = {}
+
+export const LOCALE_KEY_MAP: Record<Locale, LocaleKey> = {
+  [Locale.en]: {},
+  [Locale.zh_CN]: {},
+  [Locale.en_US]: {},
+  [Locale.af_ZA]: {},
+  [Locale.ar_SA]: {},
+  [Locale.ca_ES]: {},
+  [Locale.cs_CZ]: {},
+  [Locale.da_DK]: {},
+  [Locale.de_DE]: {},
+  [Locale.el_GR]: {},
+  [Locale.es_ES]: {},
+  [Locale.fi_FI]: {},
+  [Locale.fr_FR]: {},
+  [Locale.he_IL]: {},
+  [Locale.hu_HU]: {},
+  [Locale.id_ID]: {},
+  [Locale.it_IT]: {},
+  [Locale.ja_JP]: {},
+  [Locale.ko_KR]: {},
+  [Locale.nl_NL]: {},
+  [Locale.no_NO]: {},
+  [Locale.pl_PL]: {},
+  [Locale.pt_BR]: {},
+  [Locale.pt_PT]: {},
+  [Locale.ro_RO]: {},
+  [Locale.ru_RU]: {},
+  [Locale.sr_SP]: {},
+  [Locale.sv_SE]: {},
+  [Locale.sw_TZ]: {},
+  [Locale.tr_TR]: {},
+  [Locale.uk_UA]: {},
+  [Locale.vi_VN]: {},
+  [Locale.zh_TW]: {},
+}
+
+export const LOCALES = Object.keys(LOCALE_LABEL_MAP) as Locale[]
+
+export const SUPPORTED_LOCALES = [Locale.en, Locale.zh_CN]

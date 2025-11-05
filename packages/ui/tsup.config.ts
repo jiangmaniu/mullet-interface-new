@@ -1,18 +1,38 @@
-import { defineConfig } from "tsup";
+import { defineConfig } from 'tsup'
 
 export default defineConfig({
   entry: {
-    button: "src/components/button.tsx",
-    card: "src/card.tsx",
-    gradient: "src/gradient.tsx",
-    "turborepo-logo": "src/turborepo-logo.tsx",
+    button: 'src/components/button.tsx',
+    tabs: 'src/components/tabs.tsx',
+    echarts: 'src/components/echarts.tsx',
+    tooltip: 'src/components/tooltip.tsx',
+    utils: 'src/lib/utils.ts',
+    icons: 'src/components/icons/index.tsx',
+    spinner: 'src/components/spinner.tsx',
+    table: 'src/components/table.tsx',
+    pagination: 'src/components/pagination.tsx',
+    form: 'src/components/form.tsx',
+    label: 'src/components/label.tsx',
+    numberInput: 'src/components/number-input.tsx',
+    toast: 'src/components/toast.tsx',
+    dialog: 'src/components/dialog.tsx',
+    drawer: 'src/components/drawer.tsx',
+    modal: 'src/components/modal.tsx',
+    borderBeam: 'src/components/border-beam.tsx',
+    'dropdown-menu': 'src/components/dropdown-menu.tsx',
+    popover: 'src/components/popover.tsx',
+    textarea: 'src/components/textarea.tsx',
+    input: 'src/components/input.tsx',
+    slider: 'src/components/slider.tsx',
+    'slider-tooltip': 'src/components/slider-tooltip.tsx',
+    alert: 'src/components/alert.tsx',
+    'number-input': 'src/components/number-input.tsx',
   },
-  format: ["cjs", "esm"],
+  format: ['cjs', 'esm'],
   dts: true,
   sourcemap: true,
   clean: false, // 不清空 dist，避免删除样式文件
-  external: ["react", "react-dom"],
+  external: ['react', 'react-dom', 'react-icons'],
   treeshake: true,
   splitting: false,
-});
-
+})

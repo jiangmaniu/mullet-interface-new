@@ -1,0 +1,22 @@
+{
+  "name": "@mullet/utils",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./web3": "./src/web3.ts",
+    "./format": "./src/format/index.ts",
+    "./query": "./src/query/index.ts",
+    "./number": "./src/number/index.ts"
+  },
+  "devDependencies": {
+    "@mullet/eslint-config": "workspace:*",
+    "@mullet/typescript-config": "workspace:*",
+    "@types/lodash-es": "^4.17.12"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.3.1",
+    "lodash-es": "^4.17.21",
+    "numbro": "^2.5.0"
+  }
+}
