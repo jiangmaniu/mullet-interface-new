@@ -1,0 +1,21 @@
+{
+  "name": "@mullet/helpers",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./calculation": "./src/calculation/index.ts"
+  },
+  "devDependencies": {
+    "@mullet/eslint-config": "workspace:*",
+    "@mullet/typescript-config": "workspace:*",
+    "@types/lodash-es": "^4.17.12",
+    "@mullet/utils": "workspace:*"
+  },
+  "dependencies": {
+    "bignumber.js": "^9.3.1",
+    "dayjs": "^1.11.19",
+    "lodash-es": "^4.17.21",
+    "numbro": "^2.5.0"
+  }
+}

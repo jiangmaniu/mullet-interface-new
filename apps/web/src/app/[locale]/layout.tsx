@@ -39,7 +39,7 @@ export default async function RootLayout({ children, params }: { children: React
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={geist.className}>
+      <body className={geist.className} suppressHydrationWarning>
         <GlobalProviders initialLocale={locale} initialMessages={allMessages[locale]!}>
           {children}
         </GlobalProviders>

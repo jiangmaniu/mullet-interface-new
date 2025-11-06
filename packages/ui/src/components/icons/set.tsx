@@ -9,6 +9,7 @@ import {
   LuLogOut,
   LuMinus,
   LuPlus,
+  LuSearch,
   LuSettings,
   LuWallet,
   LuX,
@@ -39,3 +40,5 @@ export const IconSetting = LuSettings
 export const IconMinus = LuMinus
 
 export const IconPlus = LuPlus
+
+export const IconSearch = LuSearch

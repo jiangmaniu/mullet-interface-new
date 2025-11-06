@@ -1,10 +1,13 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import { useCallback } from 'react'
-import { getTradeCoreApiInstance } from '../../instance'
-import { AccountManage1, FollowShares, PoolManage } from '../../instance/gen'
-import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
 
-export type FollowSharesWrapper = Prettify<DeepOverride<Omit<AccountManage1, 'id' | 'details'>, object> & Required<Pick<PoolManage, 'id'>> & {}>
+import { getTradeCoreApiInstance } from '../../instance'
+import { AccountManage1, FollowShares, PoolManage } from '../../instance/_gen'
+import { tradeCoreApiQueriesKey } from '../../queries-cache-key'
+
+export type FollowSharesWrapper = Prettify<
+  DeepOverride<Omit<AccountManage1, 'id' | 'details'>, object> & Required<Pick<PoolManage, 'id'>> & {}
+>
 
 export type GetPoolAccountDetailRequestQuery = FollowShares.GetFollowsharesSharesdetail.RequestQuery
 
@@ -19,12 +22,12 @@ export const useGetPoolAccountDetailApiOptions = (query: GetPoolAccountDetailReq
 
       if (rs.data.data) {
         return {
-          ...rs.data.data
+          ...rs.data.data,
         } as FollowSharesWrapper
       }
 
       return null
-    }, [query])
+    }, [query]),
   })
 
   return { getPoolAccountDetailApiOptions }

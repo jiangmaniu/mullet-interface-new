@@ -9,6 +9,7 @@ import { Toaster } from '@mullet/ui/toast'
 
 import { JotaiStoreProvider } from './jotai-provider'
 import { LinguiClientProvider } from './lingui-client-provider'
+import { MulletWeb3Provider } from './mulllet-web3-provider'
 import { ThemeProvider } from './next-themes-provider'
 import { NiceModalProvider } from './nice-modal-provider'
 import { PrivyProvider } from './privy-provider'
@@ -28,17 +29,19 @@ export function GlobalProviders({ children, ...props }: ProvidersProps) {
           <LinguiClientProvider {...props}>
             <JotaiStoreProvider>
               <PrivyProvider>
-                {/* <WalletProvider> */}
-                {/* <EvmWalletWagmiProvider {...props}> */}
-                {/* <ReduxProvider> */}
+                <MulletWeb3Provider>
+                  {/* <WalletProvider> */}
+                  {/* <EvmWalletWagmiProvider {...props}> */}
+                  {/* <ReduxProvider> */}
 
-                {/* <EvmWalletRainbowKitProvider {...props}> */}
-                <NiceModalProvider>
-                  <TooltipProvider>
-                    {children}
-                    <Toaster />
-                  </TooltipProvider>
-                </NiceModalProvider>
+                  {/* <EvmWalletRainbowKitProvider {...props}> */}
+                  <NiceModalProvider>
+                    <TooltipProvider>
+                      {children}
+                      <Toaster />
+                    </TooltipProvider>
+                  </NiceModalProvider>
+                </MulletWeb3Provider>
               </PrivyProvider>
               {/* </EvmWalletRainbowKitProvider> */}
             </JotaiStoreProvider>

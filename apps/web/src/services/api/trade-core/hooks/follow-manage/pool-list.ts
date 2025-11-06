@@ -2,8 +2,8 @@ import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 import { getTradeCoreApiInstance } from '../../instance'
-import { FollowManage, PoolManage } from '../../instance/gen'
-import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
+import { FollowManage, PoolManage } from '../../instance/_gen'
+import { tradeCoreApiQueriesKey } from '../../queries-cache-key'
 import { PageDataResponse } from '../../type'
 
 export type PoolManageWrapper = Prettify<

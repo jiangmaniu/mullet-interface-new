@@ -31,6 +31,23 @@ const nextConfig: NextConfig = {
   experimental: {
     swcPlugins: [['@lingui/swc-plugin', {}]],
   },
+
+  // API 代理配置
+  async rewrites() {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
+    if (!apiBaseUrl) {
+      console.warn('NEXT_PUBLIC_API_BASE_URL is not set, API rewrites will be disabled')
+      return []
+    }
+
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${apiBaseUrl}/:path*`,
+      },
+    ]
+  },
 }
 
 export default nextConfig

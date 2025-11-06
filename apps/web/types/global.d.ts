@@ -32,6 +32,7 @@ declare global {
       NODE_ENV: 'development' | 'production' | 'test'
       NEXT_PUBLIC_PRIVY_APP_ID: string
       NEXT_PUBLIC_PRIVY_CLIENT_ID: string
+      NEXT_PUBLIC_API_BASE_URL: string
     }
   }
 }

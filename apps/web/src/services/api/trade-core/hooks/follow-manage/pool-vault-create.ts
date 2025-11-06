@@ -1,9 +1,9 @@
+import { getQueryClient } from '@/components/providers/global/react-query-provider/get-query-client'
 import { useMutation } from '@tanstack/react-query'
 
-import { FollowManage } from '../../instance/gen'
 import { getTradeCoreApiInstance } from '../../instance'
-import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
-import { getQueryClient } from '@/components/providers/react-query-provider/get-query-client'
+import { FollowManage } from '../../instance/_gen'
+import { tradeCoreApiQueriesKey } from '../../queries-cache-key'
 
 export type PoolVaultCreateApiMutationParams = FollowManage.PostFollowManageCreatePool.RequestBody
 
@@ -19,7 +19,7 @@ export const usePoolCreateVaultApiMutation = () => {
     onSuccess: (data, variables, context) => {
       const queryClient = getQueryClient()
       queryClient.invalidateQueries({ queryKey: tradeCoreApiQueriesKey.followManage.poolList.toKey() })
-    }
+    },
   })
 
   return createVaultApiMutation

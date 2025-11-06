@@ -106,6 +106,8 @@ const EChartOption: echarts.EChartsCoreOption = {
   },
 }
 
+export { echarts }
+
 export function ECharts({ option, className, ...props }: EChartsProps) {
   const mergedOption = useMemo(() => merge(cloneDeep(EChartOption), option), [option])
 

@@ -1,19 +1,25 @@
+'use client'
+
 import { create } from '@ebay/nice-modal-react'
 import { useEffect } from 'react'
-import { Form, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { omit } from 'lodash-es'
 import z from 'zod'
 
 import { useNiceModal } from '@/components/providers/global/nice-modal-provider/hooks'
-import { useMainAccount } from '@/hooks/user/use-main-account'
+// import { useMainAccount } from '@/hooks/user/use-main-account'
 import { usePoolCreateVaultApiMutation } from '@/services/api/trade-core/hooks/follow-manage/pool-vault-create'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@mullet/ui/button'
-import { FormControl, FormField, FormItem, FormMessage } from '@mullet/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@mullet/ui/form'
+import { Input } from '@mullet/ui/input'
+import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@mullet/ui/modal'
 import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
+import { Textarea } from '@mullet/ui/textarea'
 import { toast } from '@mullet/ui/toast'
 import { BNumber } from '@mullet/utils/number'
-import { useModel } from '@umijs/max'
+
+// import { useModel } from '@umijs/max'
 
 const MIN_DEPOSIT_AMOUNT = 100
 const PROFIT_SHARING_RATIO = 0.1
@@ -21,7 +27,8 @@ const CREATE_FEE = 100
 const MIN_LIQUIDITY_RATIO = 0.05
 
 export const CreateVaultModal = create((props: React.ComponentProps<typeof Modal>) => {
-  const mainAccount = useMainAccount()
+  // const mainAccount = useMainAccount()
+  const mainAccount = undefined as any
   const modal = useNiceModal()
 
   const formSchema = z.object({
@@ -58,8 +65,8 @@ export const CreateVaultModal = create((props: React.ComponentProps<typeof Modal
   }, [mainAccount])
 
   const { mutate: createVault, isPending } = usePoolCreateVaultApiMutation()
-  const { fetchUserInfo } = useModel('user')
-
+  // const { fetchUserInfo } = useModel('user')
+  const fetchUserInfo = null as any
   const handleSubmitCreateVault = async (data: z.infer<typeof formSchema>) => {
     try {
       console.log('data', data)
@@ -100,7 +107,7 @@ export const CreateVaultModal = create((props: React.ComponentProps<typeof Modal
               <ModalTitle className="">创建金库</ModalTitle>
             </ModalHeader>
 
-            <div className="">
+            <div className="py-5">
               <div className="text-[12px] text-[#9FA0B0]">
                 你选择分发的金额将按每个存款用户比例发放到对应交易账户中。
               </div>
@@ -195,11 +202,12 @@ export const CreateVaultModal = create((props: React.ComponentProps<typeof Modal
                   创建者通过管理金库将会获得{BNumber.toFormatPercent(PROFIT_SHARING_RATIO, { volScale: 2 })}的利润分享。
                 </div>
               </div>
-
-              <Button block type="submit" className="mt-5" loading={form.formState.isSubmitting || isPending}>
+            </div>
+            <ModalFooter>
+              <Button block type="submit" loading={form.formState.isSubmitting || isPending}>
                 确定
               </Button>
-            </div>
+            </ModalFooter>
           </form>
         </Form>
       </ModalContent>

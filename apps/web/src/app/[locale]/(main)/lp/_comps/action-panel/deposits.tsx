@@ -5,15 +5,16 @@ import z from 'zod'
 import { TransactionStatusTrackingGlobalModalProps } from '@/components/providers/global/nice-modal-provider/global-modal'
 import { useNiceModal } from '@/components/providers/global/nice-modal-provider/hooks'
 import { GLOBAL_MODAL_ID } from '@/components/providers/global/nice-modal-provider/register'
+import { IO_ASSETS_TOKEN_SYMBOL } from '@/constants/assets'
 // import { useStores } from '@/context/mobxProvider'
-// import { useLpPoolPrice } from '@/hooks/lp/use-lp-price'
-// import { useUserWallet } from '@/hooks/user/use-wallet-user'
+import { useLpPoolPrice } from '@/hooks/lp/use-lp-price'
+import { useConnectedActiveWallet } from '@/hooks/wallet/use-wallet-instance'
 // import { useATATokenBalance } from '@/hooks/web3-query/use-ata-balance'
 // import { useLpSwapProgram } from '@/hooks/web3/use-anchor-program'
 // import { useSolExploreUrl } from '@/hooks/web3/use-sol-explore-url'
 // import useConnection from '@/hooks/web3/useConnection'
 // import { vaultAccountAddress } from '@/libs/web3/constans/address'
-// import { web3QueryQueriesKey } from '@/libs/web3/constans/queries-eache-key'
+// import { web3QueryQueriesKey } from '@/libs/web3/constans/queries-cache-key'
 // import { waitTransactionConfirm } from '@/libs/web3/helpers/tx'
 import { BN } from '@coral-xyz/anchor'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,41 +25,44 @@ import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
 import { toast } from '@mullet/ui/toast'
 import { formatAddress } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
+import { ChainId, getTokenConfigBySymbol } from '@mullet/web3/config'
+import { useATATokenBalance } from '@mullet/web3/hooks'
 import { getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token'
 
 // import { PublicKey } from '@solana/web3.js'
 
 export default function VaultDetailDeposits() {
-  // const { trade } = useStores()
-  // const currentAccountInfo = trade.currentAccountInfo
-  // const usdcMintAddress = currentAccountInfo.mintAddress
+  const ioAssetsTokenConfig = getTokenConfigBySymbol(ChainId.SOL_DEVNET, IO_ASSETS_TOKEN_SYMBOL)
+  const activeWallet = useConnectedActiveWallet()
 
-  // const userWallet = useUserWallet()
-
-  // const { data: balance, refetch: refetchBalance } = useATATokenBalance({
-  //   ownerAddress: userWallet?.address,
-  //   mintAddress: usdcMintAddress,
-  // })
+  const { data: balance, refetch: refetchBalance } = useATATokenBalance({
+    ownerAddress: activeWallet?.address,
+    mintAddress: ioAssetsTokenConfig.address,
+  })
 
   // const { getSolExplorerUrl } = useSolExploreUrl()
   const formSchema = z.object({
-    amount: z.string(),
-    // .refine(
-    //   (val) => {
-    //     return BNumber.from(val).gte(MIN_DEPOSIT_AMOUNT)
-    //   },
-    //   {
-    //     message: `最低每笔存入${MIN_DEPOSIT_AMOUNT}USDC`
-    //   }
-    // )
-    // .refine(
-    //   (val) => {
-    //     return BNumber.from(val).lte(balance)
-    //   },
-    //   {
-    //     message: `最大存入${BNumber.toFormatNumber(balance)} USDC`,
-    //   },
-    // ),
+    amount: z
+      .string()
+      // .refine(
+      //   (val) => {
+      //     return BNumber.from(val).gte(MIN_DEPOSIT_AMOUNT)
+      //   },
+      //   {
+      //     message: `最低每笔存入${MIN_DEPOSIT_AMOUNT}USDC`
+      //   }
+      // )
+      .refine(
+        (val) => {
+          return BNumber.from(val).lte(balance)
+        },
+        {
+          message: `最大存入${BNumber.toFormatNumber(balance, {
+            unit: ioAssetsTokenConfig.label,
+            volScale: ioAssetsTokenConfig.volScale,
+          })}`,
+        },
+      ),
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -66,8 +70,7 @@ export default function VaultDetailDeposits() {
     defaultValues: { amount: '' },
   })
 
-  // const { price, updatePrice } = useLpPoolPrice(usdcMintAddress)
-  const price = undefined
+  const { price, updatePrice } = useLpPoolPrice(ioAssetsTokenConfig.address)
 
   const usdcAmount = BNumber.from(form.watch('amount'))
   const LpMintAmount = usdcAmount?.div(price)
@@ -76,7 +79,10 @@ export default function VaultDetailDeposits() {
     GLOBAL_MODAL_ID.TransactionStatusTracking,
     {
       title: '存款申请',
-      description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 存款`,
+      description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, {
+        unit: ioAssetsTokenConfig.label,
+        volScale: ioAssetsTokenConfig.volScale,
+      })} 存款`,
     },
   )
 
@@ -170,14 +176,18 @@ export default function VaultDetailDeposits() {
   //   }
   // }
   const onSubmitDeposit = () => {}
-  const balance = undefined
   return (
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmitDeposit)}>
           <div className="flex justify-between text-[12px]">
             <div className="text-[#9FA0B0]">您的金额</div>
-            <div className="text-white">{BNumber.toFormatNumber(balance)} USDC</div>
+            <div className="text-white">
+              {BNumber.toFormatNumber(balance, {
+                unit: ioAssetsTokenConfig.label,
+                volScale: ioAssetsTokenConfig.volScale,
+              })}
+            </div>
           </div>
 
           <div className="mt-3.5">
@@ -191,7 +201,7 @@ export default function VaultDetailDeposits() {
                       <NumberInput
                         allowNegative={false}
                         placeholder="金额"
-                        RightContent={'USDC'}
+                        RightContent={ioAssetsTokenConfig.label}
                         max={BNumber.from(balance)?.toString()}
                         onValueChange={({ value }, { source }) => {
                           if (source === NumberInputSourceType.EVENT) {
@@ -219,7 +229,13 @@ export default function VaultDetailDeposits() {
           <div className="mt-3.5">
             <div className="flex justify-between text-[12px]">
               <div className="text-[#9FA0B0]">MTLP/USDC</div>
-              <div className="text-white">1 MTLP = {BNumber.toFormatNumber(price, { volScale: 2 })} USDC</div>
+              <div className="text-white">
+                1 MTLP ={' '}
+                {BNumber.toFormatNumber(price, {
+                  volScale: ioAssetsTokenConfig.volScale,
+                  unit: ioAssetsTokenConfig.label,
+                })}
+              </div>
             </div>
           </div>
 

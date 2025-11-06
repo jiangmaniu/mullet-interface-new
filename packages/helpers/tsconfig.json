@@ -1,0 +1,26 @@
+{
+  "extends": "@mullet/typescript-config/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "paths": {
+      "@/*": [
+        "./src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "types"
+  ],
+  "exclude": [
+    "dist",
+    "build",
+    "node_modules"
+  ]
+}

@@ -591,6 +591,8 @@ export interface AccountManage {
   id?: number;
   /** PDA地址 */
   pdaAddress?: string;
+  /** 赎回总金额 */
+  redeemTotalMoney?: number;
   /** 备注 */
   remark?: string;
   /** 状态 */
@@ -637,6 +639,8 @@ export interface AccountManage1 {
   id?: number;
   /** PDA地址 */
   pdaAddress?: string;
+  /** 赎回总金额 */
+  redeemTotalMoney?: number;
   /** 备注 */
   remark?: string;
   /** 状态 */
@@ -690,6 +694,8 @@ export interface AccountManage2 {
   lastPurchaseTime?: string;
   /** PDA地址 */
   pdaAddress?: string;
+  /** 赎回总金额 */
+  redeemTotalMoney?: number;
   /** 备注 */
   remark?: string;
   /** 状态 */
@@ -1331,6 +1337,19 @@ export interface IPageTradeRecords {
   /** @format int64 */
   pages?: number;
   records?: TradeRecords[];
+  /** @format int64 */
+  size?: number;
+  /** @format int64 */
+  total?: number;
+}
+
+/** IPage«跟单金库» */
+export interface IPage {
+  /** @format int64 */
+  current?: number;
+  /** @format int64 */
+  pages?: number;
+  records?: _10[];
   /** @format int64 */
   size?: number;
   /** @format int64 */
@@ -2256,6 +2275,24 @@ export interface RIPageTradeRecords {
   code: number;
   /** 承载数据 */
   data?: IPageTradeRecords;
+  /** 返回消息 */
+  msg: string;
+  /** 是否成功 */
+  success: boolean;
+}
+
+/**
+ * R«IPage«跟单金库»»
+ * 返回信息
+ */
+export interface RIPage {
+  /**
+   * 状态码
+   * @format int32
+   */
+  code: number;
+  /** 承载数据 */
+  data?: IPage;
   /** 返回消息 */
   msg: string;
   /** 是否成功 */
@@ -3666,6 +3703,37 @@ export interface _9 {
   transactionFeeConf?: string;
 }
 
+/**
+ * 跟单金库
+ * 跟单金库
+ */
+export interface _10 {
+  /**
+   * 创建时间
+   * @format date-time
+   */
+  createTime?: string;
+  /** 创建者 */
+  creator?: string;
+  /**
+   * 主键ID
+   * @format int64
+   */
+  id?: number;
+  /** 利率 */
+  interestRate?: number;
+  /** 我的份额 */
+  myShares?: number;
+  /** 快照 */
+  snapshot?: string;
+  /** 金库总份额 */
+  totalShares?: number;
+  /** TVL */
+  tvl?: number;
+  /** 金库名 */
+  vaultName?: string;
+}
+
 /** 资金划转 */
 export type AccountGroupSaveVoFundTransferEnum = "ALLOWABLE" | "PROHIBIT";
 
@@ -5035,6 +5103,45 @@ export namespace FollowManage {
     export type RequestHeaders = {};
     export type ResponseBody = R;
   }
+
+  /**
+   * @description 传入poolManage
+   * @tags 跟单池接口
+   * @name GetFollowmanageVaultpageList
+   * @summary 跟单金库
+   * @request GET:/coreApi/followManage/vaultPage
+   * @secure
+   */
+  export namespace GetFollowmanageVaultpageList {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /**
+       * 当前页
+       * @format int32
+       */
+      current?: number;
+      /**
+       * 我的交易账号
+       * @format int64
+       */
+      myTradeAccountId?: number;
+      /**
+       * 我的金库
+       * @default false
+       */
+      myVault?: boolean;
+      /** 查询参数 */
+      searchParam?: string;
+      /**
+       * 每页的数量
+       * @format int32
+       */
+      size?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RIPage;
+  }
 }
 
 export namespace FollowShares {
@@ -6268,7 +6375,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "//172.31.27.8/trade-core";
+  public baseUrl: string = "//172.31.27.8:8000/trade-core";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -6474,7 +6581,7 @@ export class HttpClient<SecurityDataType = unknown> {
  * @version 3.3.1.RELEASE
  * @license Powered By BladeX (https://bladex.cn)
  * @termsOfService https://bladex.cn
- * @baseUrl //172.31.27.8/trade-core
+ * @baseUrl //172.31.27.8:8000/trade-core
  * @contact 翼宿 <bladejava@qq.com> (https://gitee.com/smallc)
  *
  * BladeX 接口文档系统
@@ -7511,6 +7618,50 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
         body: followVaultDivvy,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description 传入poolManage
+     *
+     * @tags 跟单池接口
+     * @name GetFollowmanageVaultpageList
+     * @summary 跟单金库
+     * @request GET:/coreApi/followManage/vaultPage
+     * @secure
+     */
+    getFollowmanageVaultpageList: (
+      query?: {
+        /**
+         * 当前页
+         * @format int32
+         */
+        current?: number;
+        /**
+         * 我的交易账号
+         * @format int64
+         */
+        myTradeAccountId?: number;
+        /**
+         * 我的金库
+         * @default false
+         */
+        myVault?: boolean;
+        /** 查询参数 */
+        searchParam?: string;
+        /**
+         * 每页的数量
+         * @format int32
+         */
+        size?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.http.request<RIPage, void>({
+        path: `/coreApi/followManage/vaultPage`,
+        method: "GET",
+        query: query,
+        secure: true,
         ...params,
       }),
   };

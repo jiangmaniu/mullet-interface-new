@@ -3,6 +3,8 @@
 import { useState } from 'react'
 
 import { Button } from '@mullet/ui/button'
+import { Checkbox } from '@mullet/ui/checkbox'
+import { Switch } from '@mullet/ui/switch'
 
 import { SettingLeverageModal } from './_comps/setting-leverage-modal'
 
@@ -14,6 +16,8 @@ export default function TradePage() {
       <SettingLeverageModal>
         <Button>{leverage}x</Button>
       </SettingLeverageModal>
+      <Checkbox />
+      <Switch />
     </div>
   )
 }

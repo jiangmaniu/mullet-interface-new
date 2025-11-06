@@ -1,3 +1,5 @@
+'use client'
+
 import { show } from '@ebay/nice-modal-react'
 
 import { Button } from '@mullet/ui/button'
@@ -10,28 +12,11 @@ export function VaultOverview() {
 
   return (
     <div
-      className={cn([
-        'flex h-[120px] w-[1200px] justify-between rounded-[10px] bg-[#0A0C27] px-[30px] py-[35px] opacity-1',
-        '',
-      ])}
+      className={cn(['flex justify-between rounded-[10px] bg-[#0A0C27] px-[30px] py-[35px]', 'w-full max-w-[1200px]'])}
     >
       <div className="flex flex-col gap-1.5">
-        <div
-          className={cn([
-            'tracking-0 font-variation-settings:opsz-auto font-feature-settings:kern-on text-[24px] leading-normal font-normal text-white',
-            '',
-          ])}
-        >
-          $18,229,265.84
-        </div>
-        <div
-          className={cn([
-            'tracking-0 font-variation-settings:opsz-auto font-feature-settings:kern-on text-[14px] leading-normal font-normal text-[#9FA0B0]',
-            '',
-          ])}
-        >
-          总锁定价值
-        </div>
+        <div className={cn(['text-[24px] font-bold text-white', ''])}>$18,229,265.84</div>
+        <div className={cn(['text-[14px] text-[#9FA0B0]', ''])}>总锁定价值</div>
       </div>
 
       <div>

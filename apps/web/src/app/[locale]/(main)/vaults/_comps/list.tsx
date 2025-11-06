@@ -1,79 +1,73 @@
-import { useState } from 'react'
+'use client'
 
+import { createContext, useContext, useState } from 'react'
+import { useDebounce } from 'ahooks'
+
+import { IconSearch } from '@mullet/ui/icons'
+import { Input } from '@mullet/ui/input'
 import { cn } from '@mullet/ui/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@mullet/ui/tabs'
 
 import { MyVaultTable } from './my-vault-table'
 import { PopularVaultTable } from './popular-vault-table'
 
-export default function VaultList() {
-  return (
-    <div className={cn(['rounded-[10px] bg-[#0A0C27] opacity-1', ''])}>
-      <div className="px-[30px] pt-5">
-        <SearchInputPanel />
-      </div>
+const VaultListContext = createContext<{
+  searchParam: string
+  debouncedSearchParam: string
+  setSearchParam: (searchParam: string) => void
+}>({
+  searchParam: '',
+  debouncedSearchParam: '',
+  setSearchParam: () => {},
+})
 
-      <div className="mt-2.5">
-        <VaultTabs />
+export const useVaultListContext = () => {
+  const context = useContext(VaultListContext)
+  if (!context) {
+    throw new Error('useVaultListContext must be used within a VaultListProvider')
+  }
+
+  return context
+}
+
+export default function VaultList() {
+  const [searchParam, setSearchParam] = useState('')
+  // 添加防抖，500ms 延迟
+  const debouncedSearchParam = useDebounce(searchParam, { wait: 500 })
+
+  return (
+    <VaultListContext.Provider value={{ searchParam, debouncedSearchParam, setSearchParam }}>
+      <div className={cn(['rounded-[10px] bg-[#0A0C27]', ''])}>
+        <div className="px-[30px] pt-5">
+          <SearchInputPanel />
+        </div>
+
+        <div className="mt-2.5">
+          <VaultTabs />
+        </div>
       </div>
-    </div>
+    </VaultListContext.Provider>
   )
 }
 
 function SearchInputPanel() {
-  const searchInputContainerClassName = useEmotionCss(() => {
-    return {
-      width: '400px',
-      height: '34px',
-      'border-radius': '8px',
-      opacity: '1',
-      background: '#0A0C27',
-      'box-sizing': 'border-box',
-      border: '1px solid #3B3D52',
-    }
-  })
-
-  const searchInputClassName = useEmotionCss(() => {
-    return {
-      'font-family': 'HarmonyOS Sans SC',
-      'font-size': '14px',
-      'font-weight': 'normal',
-      'line-height': 'normal',
-      'letter-spacing': '0em',
-      'font-variation-settings': 'opsz auto',
-      'font-feature-settings': 'kern on',
-      color: '#FFFFFF',
-    }
-  })
+  const { searchParam, setSearchParam } = useVaultListContext()
 
   return (
-    <div className={cn([searchInputContainerClassName, 'flex items-center gap-1.5 p-2.5'])}>
-      <div>
-        <img src={'/img/new/icons/search.webp'} alt="search" className="size-[13px]" />
-      </div>
-
-      <input
-        className={cn([searchInputClassName, 'flex-1 bg-transparent outline-none placeholder:text-[#767783]'])}
+    <>
+      <Input
+        className="w-[400px] px-[10px] py-[9px]"
+        inputClassName="leading-none"
+        LeftContent={<IconSearch className="size-3.5" />}
         placeholder="按金库地址、名称或创建者搜索..."
+        value={searchParam}
+        onValueChange={(v) => setSearchParam(v)}
       />
-    </div>
+    </>
   )
 }
 
 function VaultTabs() {
-  const tabTextClassName = useEmotionCss(() => {
-    return {
-      'font-family': 'HarmonyOS Sans SC',
-      'font-size': '14px',
-      'font-weight': 'normal',
-      'line-height': 'normal',
-      'text-align': 'center',
-      'letter-spacing': '0em',
-      'font-variation-settings': 'opsz auto',
-      'font-feature-settings': 'kern on',
-    }
-  })
-
   const [activeTabValue, setActiveTabValue] = useState(1)
 
   return (
@@ -90,7 +84,7 @@ function VaultTabs() {
           },
         ].map((item) => {
           return (
-            <TabsTrigger key={item.value} value={item.value} className={tabTextClassName}>
+            <TabsTrigger key={item.value} value={item.value} className={cn(['text-[14px] text-white', ''])}>
               {item.label}
             </TabsTrigger>
           )

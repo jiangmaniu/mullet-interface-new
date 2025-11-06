@@ -48,7 +48,7 @@ function Input({
         type={type}
         data-slot="input"
         className={cn(
-          'file:text-foreground dark:bg-input/30 shadow-xs flex w-full min-w-0 bg-transparent leading-normal outline-none transition-[color,box-shadow] placeholder:text-[#767783] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
+          'file:text-foreground shadow-xs flex w-full min-w-0 bg-transparent leading-normal outline-none transition-[color,box-shadow] placeholder:text-[#767783] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
           'file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium',
           inputClassName,
         )}

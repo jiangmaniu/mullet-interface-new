@@ -1,6 +1,6 @@
 import { buildQueriesCacheKey } from '@mullet/utils/query'
 
-import { FollowManage } from '../instance/gen'
+import { FollowManage } from '../instance/_gen'
 import { followManageKeyConfig } from './follow-manage'
 import { followSharesKeyConfig } from './follow-shares'
 

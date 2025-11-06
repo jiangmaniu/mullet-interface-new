@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { FollowShares } from '../../instance/gen'
+import { FollowShares } from '../../instance/_gen'
 import { getTradeCoreApiInstance } from '../../instance'
-import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
-import { getQueryClient } from '@/components/providers/react-query-provider/get-query-client'
+import { tradeCoreApiQueriesKey } from '../../queries-cache-key'
+import { getQueryClient } from '@/import { getQueryClient } from '@/components/providers/global/react-query-provider/get-query-client''
 import { GetPoolDetailRequestQuery } from '../follow-manage/pool-detail'
 
 export type RedeemSharesApiMutationParams = FollowShares.PostFollowSharesRedeemShares.RequestBody

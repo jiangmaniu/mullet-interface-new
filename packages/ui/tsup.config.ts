@@ -27,6 +27,8 @@ export default defineConfig({
     'slider-tooltip': 'src/components/slider-tooltip.tsx',
     alert: 'src/components/alert.tsx',
     'number-input': 'src/components/number-input.tsx',
+    switch: 'src/components/switch.tsx',
+    checkbox: 'src/components/checkbox.tsx',
   },
   format: ['cjs', 'esm'],
   dts: true,
