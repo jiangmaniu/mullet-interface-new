@@ -48,6 +48,7 @@ echarts.use([
 const EChartOption: echarts.EChartsCoreOption = {
   series: [
     {
+      type: 'line',
       showSymbol: false,
       symbol: 'none',
       smooth: true,

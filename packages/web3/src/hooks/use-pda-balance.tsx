@@ -1,10 +1,11 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { web3QueryQueriesKey } from '@/constants/queries-cache-key'
-import { MulletWeb3Config, useMulletWeb3Context } from '@/provider'
 import { BNumber } from '@mullet/utils/number'
 import { fetchMint, fetchToken } from '@solana-program/token-2022'
 import { address, createSolanaRpc, getProgramDerivedAddress } from '@solana/kit'
+
+import { web3QueryQueriesKey } from '../constants/queries-cache-key'
+import { MulletWeb3Config, useMulletWeb3Context } from '../provider'
 
 interface GetPDATokenBalanceParams {
   /** program id */

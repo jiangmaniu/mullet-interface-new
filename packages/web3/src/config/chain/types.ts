@@ -1,6 +1,6 @@
 export enum ChainId {
-  SOL_MAINNET = 'sol-mainnet',
-  SOL_DEVNET = 'sol-devnet',
+  SOL_MAINNET = 'sol:mainnet',
+  SOL_DEVNET = 'sol:devnet',
 }
 
 export type ChainConfig = {
@@ -13,7 +13,7 @@ export type ChainConfig = {
   blockExplorers: {
     default: {
       name: string
-      url: string
+      url: readonly [string, string]
       apiUrl: string
     }
   }

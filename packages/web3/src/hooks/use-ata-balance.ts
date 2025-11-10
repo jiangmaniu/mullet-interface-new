@@ -1,11 +1,12 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { web3QueryQueriesKey } from '@/constants/queries-cache-key'
-import { MulletWeb3Config, useMulletWeb3Context } from '@/provider'
 import { BNumber } from '@mullet/utils/number'
 import { fetchMint, fetchToken, findAssociatedTokenPda, TOKEN_2022_PROGRAM_ADDRESS } from '@solana-program/token-2022'
 import { address, createSolanaRpc } from '@solana/kit'
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token'
+
+import { web3QueryQueriesKey } from '../constants/queries-cache-key'
+import { MulletWeb3Config, useMulletWeb3Context } from '../provider'
 
 async function getATATokenBalance(config: MulletWeb3Config, ownerStr?: string, mintStr?: string) {
   if (!ownerStr || !mintStr) {

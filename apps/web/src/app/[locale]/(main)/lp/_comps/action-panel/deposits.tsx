@@ -6,16 +6,8 @@ import { TransactionStatusTrackingGlobalModalProps } from '@/components/provider
 import { useNiceModal } from '@/components/providers/global/nice-modal-provider/hooks'
 import { GLOBAL_MODAL_ID } from '@/components/providers/global/nice-modal-provider/register'
 import { IO_ASSETS_TOKEN_SYMBOL } from '@/constants/assets'
-// import { useStores } from '@/context/mobxProvider'
 import { useLpPoolPrice } from '@/hooks/lp/use-lp-price'
 import { useConnectedActiveWallet } from '@/hooks/wallet/use-wallet-instance'
-// import { useATATokenBalance } from '@/hooks/web3-query/use-ata-balance'
-// import { useLpSwapProgram } from '@/hooks/web3/use-anchor-program'
-// import { useSolExploreUrl } from '@/hooks/web3/use-sol-explore-url'
-// import useConnection from '@/hooks/web3/useConnection'
-// import { vaultAccountAddress } from '@/libs/web3/constans/address'
-// import { web3QueryQueriesKey } from '@/libs/web3/constans/queries-cache-key'
-// import { waitTransactionConfirm } from '@/libs/web3/helpers/tx'
 import { BN } from '@coral-xyz/anchor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@mullet/ui/button'
@@ -25,14 +17,17 @@ import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
 import { toast } from '@mullet/ui/toast'
 import { formatAddress } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
-import { ChainId, getTokenConfigBySymbol } from '@mullet/web3/config'
-import { useATATokenBalance } from '@mullet/web3/hooks'
+import { ChainId, getProgramConfigBySymbol, getTokenConfigBySymbol, ProgramSymbol } from '@mullet/web3/config'
+import { web3QueryQueriesKey } from '@mullet/web3/constants'
+import { useATATokenBalance, useSolExploreUrl, useWaitTransactionConfirm } from '@mullet/web3/hooks'
+import { useLpSwapProgram } from '@mullet/web3/program'
 import { getAssociatedTokenAddress, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from '@solana/spl-token'
-
-// import { PublicKey } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 
 export default function VaultDetailDeposits() {
   const ioAssetsTokenConfig = getTokenConfigBySymbol(ChainId.SOL_DEVNET, IO_ASSETS_TOKEN_SYMBOL)
+
+  const vaultProgramConfig = getProgramConfigBySymbol(ChainId.SOL_DEVNET, ProgramSymbol.VAULT)
   const activeWallet = useConnectedActiveWallet()
 
   const { data: balance, refetch: refetchBalance } = useATATokenBalance({
@@ -40,7 +35,7 @@ export default function VaultDetailDeposits() {
     mintAddress: ioAssetsTokenConfig.address,
   })
 
-  // const { getSolExplorerUrl } = useSolExploreUrl()
+  const { getSolExplorerUrl } = useSolExploreUrl(ChainId.SOL_DEVNET)
   const formSchema = z.object({
     amount: z
       .string()
@@ -72,9 +67,9 @@ export default function VaultDetailDeposits() {
 
   const { price, updatePrice } = useLpPoolPrice(ioAssetsTokenConfig.address)
 
+  const waitTransactionConfirm = useWaitTransactionConfirm()
   const usdcAmount = BNumber.from(form.watch('amount'))
   const LpMintAmount = usdcAmount?.div(price)
-  // const { connection } = useConnection()
   const transactionStatusTrackingDialog = useNiceModal<TransactionStatusTrackingGlobalModalProps>(
     GLOBAL_MODAL_ID.TransactionStatusTracking,
     {
@@ -86,96 +81,95 @@ export default function VaultDetailDeposits() {
     },
   )
 
-  // const { getSignProgram } = useLpSwapProgram()
-  // const onSubmitDeposit = async (data: z.infer<typeof formSchema>) => {
-  //   try {
-  //     if (!userWallet?.address) {
-  //       throw new Error('请先连接钱包')
-  //     }
-  //     const amountBigInt = BNumber.from(data.amount)
-  //       .multipliedBy(10 ** 6)
-  //       .integerValue()
+  const { getSignProgram } = useLpSwapProgram()
+  const onSubmitDeposit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      if (!activeWallet?.address) {
+        throw new Error('请先连接钱包')
+      }
+      const amountBigInt = BNumber.from(data.amount)
+        .multipliedBy(10 ** 6)
+        .integerValue()
 
-  //     const userWalletPublicKey = new PublicKey(userWallet?.address)
-  //     const usdcMintPublicKey = new PublicKey(usdcMintAddress)
-  //     const purchaseUsdcAccount = await getAssociatedTokenAddress(
-  //       usdcMintPublicKey,
-  //       userWalletPublicKey,
-  //       false,
-  //       TOKEN_PROGRAM_ID,
-  //     )
+      const userWalletPublicKey = new PublicKey(activeWallet.address)
+      const usdcMintPublicKey = new PublicKey(ioAssetsTokenConfig.address)
+      const purchaseUsdcAccount = await getAssociatedTokenAddress(
+        usdcMintPublicKey,
+        userWalletPublicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+      )
 
-  //     const vaultAccountPublicKey = new PublicKey(vaultAccountAddress)
-  //     const lpVault = getAssociatedTokenAddressSync(
-  //       usdcMintPublicKey, // 代币 mint 地址
-  //       vaultAccountPublicKey, // 所有者地址
-  //       true, // allowOwnerOffCurve (设为 true 来允许离线曲线地址)
-  //       TOKEN_PROGRAM_ID,
-  //     )
+      const vaultAccountPublicKey = new PublicKey(vaultProgramConfig.address)
+      const lpVault = getAssociatedTokenAddressSync(
+        usdcMintPublicKey, // 代币 mint 地址
+        vaultAccountPublicKey, // 所有者地址
+        true, // allowOwnerOffCurve (设为 true 来允许离线曲线地址)
+        TOKEN_PROGRAM_ID,
+      )
 
-  //     transactionStatusTrackingDialog.show({
-  //       title: '存款申请',
-  //       description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 存款`,
-  //     })
+      transactionStatusTrackingDialog.show({
+        title: '存款申请',
+        description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 存款`,
+      })
 
-  //     const program = getSignProgram()
-  //     let tx: string
-  //     try {
-  //       tx = await program.methods
-  //         .purchaseMxlp(new BN(amountBigInt.toString()))
-  //         .accounts({
-  //           usdcMint: usdcMintPublicKey,
-  //           lpVault: lpVault,
-  //           purchaseUsdcAccount: purchaseUsdcAccount,
-  //           tokenProgram: TOKEN_PROGRAM_ID,
-  //         })
-  //         .rpc()
-  //     } catch (error) {
-  //       transactionStatusTrackingDialog.show({
-  //         // title: '存款申请',
-  //         // description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 存款`,
-  //         isError: true,
-  //       })
-  //       throw error
-  //     }
+      const program = getSignProgram()
+      let tx: string
+      try {
+        tx = await program.methods
+          .purchaseMxlp(new BN(amountBigInt.toString()))
+          .accounts({
+            usdcMint: usdcMintPublicKey,
+            lpVault: lpVault,
+            purchaseUsdcAccount: purchaseUsdcAccount,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc()
+      } catch (error) {
+        transactionStatusTrackingDialog.show({
+          title: '存款申请',
+          description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: ioAssetsTokenConfig.volScale, unit: ioAssetsTokenConfig.label })} 存款`,
+          isError: true,
+        })
+        throw error
+      }
 
-  //     transactionStatusTrackingDialog.show({
-  //       // title: '存款申请',
-  //       // description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 存款`,
-  //       txHash: tx,
-  //     })
+      transactionStatusTrackingDialog.show({
+        title: '存款申请',
+        description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: ioAssetsTokenConfig.volScale, unit: ioAssetsTokenConfig.label })} 存款`,
+        txHash: tx,
+      })
 
-  //     const txResponse = await waitTransactionConfirm(connection, tx)
+      const txResponse = await waitTransactionConfirm(tx)
 
-  //     if (txResponse) {
-  //       form.reset()
+      if (txResponse) {
+        form.reset()
 
-  //       updatePrice()
-  //       const queryClient = getQueryClient()
-  //       queryClient.invalidateQueries({
-  //         queryKey: web3QueryQueriesKey.sol.balance.ata.toKeyWithArgs({
-  //           ownerAddress: userWallet?.address,
-  //           mintAddress: usdcMintAddress,
-  //         }),
-  //       })
+        updatePrice()
+        const queryClient = getQueryClient()
+        queryClient.invalidateQueries({
+          queryKey: web3QueryQueriesKey.sol.balance.ata.toKeyWithArgs({
+            ownerAddress: activeWallet?.address,
+            mintAddress: ioAssetsTokenConfig.address,
+          }),
+        })
 
-  //       toast.success('存款成功', {
-  //         description: (
-  //           <div>
-  //             查看交易：
-  //             <a href={getSolExplorerUrl(tx)} target="_blank" rel="noreferrer" className="text-blue-400" title={tx}>
-  //               {formatAddress(tx)}
-  //             </a>
-  //           </div>
-  //         ),
-  //       })
-  //     }
-  //   } catch (error: any) {
-  //     console.error('💥 Deposit failed:', error)
-  //     toast.error(error?.message)
-  //   }
-  // }
-  const onSubmitDeposit = () => {}
+        toast.success('存款成功', {
+          description: (
+            <div>
+              查看交易：
+              <a href={getSolExplorerUrl(tx)} target="_blank" rel="noreferrer" className="text-blue-400" title={tx}>
+                {formatAddress(tx)}
+              </a>
+            </div>
+          ),
+        })
+      }
+    } catch (error: any) {
+      console.error('💥 Deposit failed:', error)
+      toast.error(error?.message)
+    }
+  }
   return (
     <div>
       <Form {...form}>

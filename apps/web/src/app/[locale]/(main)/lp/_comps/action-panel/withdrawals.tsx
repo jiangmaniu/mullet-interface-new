@@ -1,11 +1,14 @@
 import { getQueryClient } from '@/components/providers/global/react-query-provider/get-query-client'
-// import { PublicKey } from '@solana/web3.js'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
 import { TransactionStatusTrackingGlobalModalProps } from '@/components/providers/global/nice-modal-provider/global-modal'
 import { useNiceModal } from '@/components/providers/global/nice-modal-provider/hooks'
 import { GLOBAL_MODAL_ID } from '@/components/providers/global/nice-modal-provider/register'
+import { IO_ASSETS_TOKEN_SYMBOL } from '@/constants/assets'
+import { useSolanaErrorHandler } from '@/hooks/error-handler/use-solana-error-handler'
+import { useLpPoolPrice } from '@/hooks/lp/use-lp-price'
+import { useConnectedActiveWallet } from '@/hooks/wallet/use-wallet-instance'
 import { BN } from '@coral-xyz/anchor'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@mullet/ui/button'
@@ -14,60 +17,65 @@ import { IconInfo } from '@mullet/ui/icons'
 import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
 import { toast } from '@mullet/ui/toast'
 import { formatAddress } from '@mullet/utils/format'
-// import { useStores } from '@/context/mobxProvider'
-// import { useLpPoolPrice } from '@/hooks/lp/use-lp-price'
-// import { useUserWallet } from '@/hooks/user/use-wallet-user'
-// import { ATATokenBalanceOptionsQuery, useATATokenBalance } from '@/hooks/web3-query/use-ata-balance'
-// import { useSolanaErrorHandler } from '@/hooks/web3/error-handler/use-solana-error-handler'
-// import { useLpSwapProgram } from '@/hooks/web3/use-anchor-program'
-// import { useSolExploreUrl } from '@/hooks/web3/use-sol-explore-url'
-// import useConnection from '@/hooks/web3/useConnection'
-// import { poolProgramAddress } from '@/libs/web3/constans/address'
-// import { PoolSeed } from '@/libs/web3/constans/enum'
-// import { web3QueryQueriesKey } from '@/libs/web3/constans/queries-cache-key'
-// import { waitTransactionConfirm } from '@/libs/web3/helpers/tx'
 import { BNumber } from '@mullet/utils/number'
+import {
+  ChainId,
+  getProgramConfigBySymbol,
+  getTokenConfigBySymbol,
+  ProgramSymbol,
+  TokenSymbol,
+} from '@mullet/web3/config'
+import { web3QueryQueriesKey } from '@mullet/web3/constants'
+import {
+  ATATokenBalanceOptionsQuery,
+  useATATokenBalance,
+  useSolExploreUrl,
+  useWaitTransactionConfirm,
+} from '@mullet/web3/hooks'
+import { ProgramSeed, useLpSwapProgram } from '@mullet/web3/program'
 import { getAssociatedTokenAddress, TOKEN_PROGRAM_ID } from '@solana/spl-token'
+import { PublicKey } from '@solana/web3.js'
 
 export default function VaultDetailWithdrawals() {
-  // const userWallet = useUserWallet()
-  // const { trade } = useStores()
-  // const currentAccountInfo = trade.currentAccountInfo
-  // const usdcMintAddress = currentAccountInfo.mintAddress
+  const ioAssetsTokenConfig = getTokenConfigBySymbol(ChainId.SOL_DEVNET, IO_ASSETS_TOKEN_SYMBOL)
 
-  // const [lpMintAddress] = PublicKey.findProgramAddressSync([Buffer.from(PoolSeed.LPMint)], new PublicKey(poolProgramAddress))
+  const activeWallet = useConnectedActiveWallet()
+  const lpProgramConfig = getProgramConfigBySymbol(ChainId.SOL_DEVNET, ProgramSymbol.LP)
+  const lpTokenConfig = getTokenConfigBySymbol(ChainId.SOL_DEVNET, TokenSymbol.LP)
 
-  // const lpBalanceQuery: ATATokenBalanceOptionsQuery = {
-  //   ownerAddress: userWallet?.address,
-  //   mintAddress: lpMintAddress.toString()
-  // }
-  // const { data: lpBalance } = useATATokenBalance(lpBalanceQuery)
+  const [lpMintAddress] = PublicKey.findProgramAddressSync(
+    [Buffer.from(ProgramSeed.LPMint)],
+    new PublicKey(lpProgramConfig.address),
+  )
+
+  const lpBalanceQuery: ATATokenBalanceOptionsQuery = {
+    ownerAddress: activeWallet?.address,
+    mintAddress: lpMintAddress.toString(),
+  }
+  const { data: lpBalance } = useATATokenBalance(lpBalanceQuery)
 
   const formSchema = z.object({
-    amount: z.string(),
-    // .refine(
-    //   (val) => {
-    //     return BNumber.from(val).lte(lpBalance)
-    //   },
-    //   {
-    //     message: `最大取现${BNumber.toFormatNumber(lpBalance)} MTLP`
-    //   }
-    // )
+    amount: z.string().refine(
+      (val) => {
+        return BNumber.from(val).lte(lpBalance)
+      },
+      {
+        message: `最大取现${BNumber.toFormatNumber(lpBalance, {
+          unit: lpTokenConfig.label,
+          volScale: lpTokenConfig.volScale,
+        })}`,
+      },
+    ),
   })
-
-  // const { getSignProgram, program } = useLpSwapProgram()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { amount: '' },
   })
 
-  // const { price, updatePrice } = useLpPoolPrice(usdcMintAddress)
-  const price = undefined
+  const { price, updatePrice } = useLpPoolPrice(ioAssetsTokenConfig.address)
   const lpAmount = BNumber.from(form.watch('amount'))
   const usdcAmount = lpAmount?.multipliedBy(price)
-  // const { connection } = useConnection()
-  // const { getSolExplorerUrl } = useSolExploreUrl()
 
   const transactionStatusTrackingDialog = useNiceModal<TransactionStatusTrackingGlobalModalProps>(
     GLOBAL_MODAL_ID.TransactionStatusTracking,
@@ -76,75 +84,78 @@ export default function VaultDetailWithdrawals() {
       description: `正在申请 ${BNumber.toFormatNumber(usdcAmount, { volScale: 2, unit: 'USDC' })} 提款`,
     },
   )
+  const { getSolExplorerUrl } = useSolExploreUrl(ChainId.SOL_DEVNET)
+  const { getSignProgram, program } = useLpSwapProgram()
+  const waitTransactionConfirm = useWaitTransactionConfirm()
+  const { handleSolanaError } = useSolanaErrorHandler(program.idl)
+  const onSubmitWithdrawals = async (data: z.infer<typeof formSchema>) => {
+    try {
+      if (!activeWallet?.address) {
+        throw new Error('请先连接钱包')
+      }
 
-  // const { handleSolanaError } = useSolanaErrorHandler(program.idl)
+      const amountBigInt = BNumber.from(data.amount)
+        .multipliedBy(10 ** 6)
+        .integerValue()
+      const program = getSignProgram()
 
-  // const onSubmitWithdrawals = async (data: z.infer<typeof formSchema>) => {
-  //   try {
-  //     if (!userWallet?.address) {
-  //       throw new Error('请先连接钱包')
-  //     }
+      const userWalletPublicKey = new PublicKey(activeWallet.address)
 
-  //     const amountBigInt = BNumber.from(data.amount)
-  //       .multipliedBy(10 ** 6)
-  //       .integerValue()
-  //     const program = getSignProgram()
+      const redeemMxlpAccount = await getAssociatedTokenAddress(
+        lpMintAddress,
+        userWalletPublicKey,
+        false,
+        TOKEN_PROGRAM_ID,
+      )
 
-  //     const userWalletPublicKey = new PublicKey(userWallet?.address)
+      transactionStatusTrackingDialog.show()
 
-  //     const redeemMxlpAccount = await getAssociatedTokenAddress(lpMintAddress, userWalletPublicKey, false, TOKEN_PROGRAM_ID)
+      let tx: string
+      try {
+        tx = await program.methods
+          .redeemMxlp(new BN(amountBigInt.toString()))
+          .accounts({
+            redeemMxlpAccount: redeemMxlpAccount,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .rpc()
+      } catch (error) {
+        transactionStatusTrackingDialog.show({
+          isError: true,
+        })
 
-  //     transactionStatusTrackingDialog.show()
+        throw error
+      }
 
-  //     let tx: string
-  //     try {
-  //       tx = await program.methods
-  //         .redeemMxlp(new BN(amountBigInt.toString()))
-  //         .accounts({
-  //           redeemMxlpAccount: redeemMxlpAccount,
-  //           tokenProgram: TOKEN_PROGRAM_ID
-  //         })
-  //         .rpc()
-  //     } catch (error) {
-  //       transactionStatusTrackingDialog.show({
-  //         isError: true
-  //       })
+      transactionStatusTrackingDialog.show({ txHash: tx })
 
-  //       throw error
-  //     }
+      const txResponse = await waitTransactionConfirm(tx)
 
-  //     transactionStatusTrackingDialog.show({ txHash: tx })
+      if (txResponse) {
+        form.reset()
 
-  //     const txResponse = await waitTransactionConfirm(connection, tx)
+        updatePrice()
+        const queryClient = getQueryClient()
+        queryClient.invalidateQueries({
+          queryKey: web3QueryQueriesKey.sol.balance.ata.toKeyWithArgs(lpBalanceQuery),
+        })
 
-  //     if (txResponse) {
-  //       form.reset()
-
-  //       updatePrice()
-  //       const queryClient = getQueryClient()
-  //       queryClient.invalidateQueries({
-  //         queryKey: web3QueryQueriesKey.sol.balance.ata.toKeyWithArgs(lpBalanceQuery)
-  //       })
-
-  //       toast.success('交易已确认，等待审核', {
-  //         description: (
-  //           <div>
-  //             查看交易哈希
-  //             <a href={getSolExplorerUrl(tx)} target="_blank" rel="noreferrer" className="text-blue-400" title={tx}>
-  //               {formatAddress(tx)}
-  //             </a>
-  //           </div>
-  //         )
-  //       })
-  //     }
-  //   } catch (error: any) {
-  //     console.error(error)
-
-  //     handleSolanaError(error)
-  //   }
-  // }
-  const onSubmitWithdrawals = () => {}
-  const lpBalance = undefined
+        toast.success('交易已确认，等待审核', {
+          description: (
+            <div>
+              查看交易哈希
+              <a href={getSolExplorerUrl(tx)} target="_blank" rel="noreferrer" className="text-blue-400" title={tx}>
+                {formatAddress(tx)}
+              </a>
+            </div>
+          ),
+        })
+      }
+    } catch (error: any) {
+      console.error(error)
+      handleSolanaError(error)
+    }
+  }
 
   return (
     <div>

@@ -16,6 +16,7 @@
     "@coral-xyz/anchor": "^0.32.1",
     "@ebay/nice-modal-react": "^1.2.13",
     "@hookform/resolvers": "^5.2.2",
+    "@iconify/react": "^6.0.2",
     "@lingui/cli": "^5.5.1",
     "@lingui/conf": "^5.5.1",
     "@lingui/core": "^5.5.1",

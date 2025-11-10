@@ -1,9 +1,10 @@
 import { useCallback, useMemo } from 'react'
 import type { Idl, Wallet } from '@coral-xyz/anchor'
 
-import { MulletWeb3Config, useMulletWeb3Context } from '@/provider'
 import { AnchorProvider, Program } from '@coral-xyz/anchor'
 import { Connection } from '@solana/web3.js'
+
+import { MulletWeb3Config, useMulletWeb3Context } from '../../provider'
 
 export function useAnchorProgram<T extends Idl>(idl: any, config?: MulletWeb3Config) {
   const { config: globalConfig } = useMulletWeb3Context()

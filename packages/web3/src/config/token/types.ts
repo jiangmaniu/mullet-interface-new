@@ -1,6 +1,7 @@
 export enum TokenSymbol {
   USDC = 'USDC',
   SOL = 'SOL',
+  LP = 'MTLP',
 }
 
 export type TokenConfig = {

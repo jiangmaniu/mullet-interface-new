@@ -33,7 +33,6 @@ export function GlobalProviders({ children, ...props }: ProvidersProps) {
                   {/* <WalletProvider> */}
                   {/* <EvmWalletWagmiProvider {...props}> */}
                   {/* <ReduxProvider> */}
-
                   {/* <EvmWalletRainbowKitProvider {...props}> */}
                   <NiceModalProvider>
                     <TooltipProvider>
@@ -41,12 +40,13 @@ export function GlobalProviders({ children, ...props }: ProvidersProps) {
                       <Toaster />
                     </TooltipProvider>
                   </NiceModalProvider>
+                  {/* </EvmWalletRainbowKitProvider> */}
+                  {/* </ReduxProvider> */}
+                  {/* </EvmWalletWagmiProvider> */}
+                  {/* </WalletProvider> */}
                 </MulletWeb3Provider>
               </PrivyProvider>
-              {/* </EvmWalletRainbowKitProvider> */}
             </JotaiStoreProvider>
-            {/* </EvmWalletWagmiProvider> */}
-            {/* </WalletProvider> */}
           </LinguiClientProvider>
         </ReactQueryProvider>
       </ThemeProvider>

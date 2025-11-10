@@ -1,11 +1,12 @@
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
-import { web3QueryQueriesKey } from '@/constants/queries-cache-key'
-import { LpSwapProgram, useLpSwapProgram } from '@/program/hooks'
-import { MulletWeb3Config, useMulletWeb3Context } from '@/provider'
 import { calculateLpPoolShare } from '@mullet/helpers/calculation'
 import { BNumber } from '@mullet/utils/number'
 import { PublicKey } from '@solana/web3.js'
+
+import { web3QueryQueriesKey } from '../constants/queries-cache-key'
+import { LpSwapProgram, useLpSwapProgram } from '../program/hooks'
+import { MulletWeb3Config, useMulletWeb3Context } from '../provider'
 
 interface GetLpTokenManageParams {
   program: LpSwapProgram

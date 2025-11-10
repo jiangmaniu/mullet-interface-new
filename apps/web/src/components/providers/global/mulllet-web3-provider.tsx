@@ -1,3 +1,5 @@
+'use client'
+
 import { useWallets } from '@privy-io/react-auth/solana'
 import { PropsWithChildren, useCallback } from 'react'
 
