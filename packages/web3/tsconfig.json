@@ -1,6 +1,7 @@
 {
   "extends": "@mullet/typescript-config/react-library.json",
   "compilerOptions": {
+    "rootDir": ".",
     "outDir": "dist",
     "module": "ESNext",
     "moduleResolution": "bundler",

@@ -9,7 +9,8 @@
     "./program": "./src/program/index.ts",
     "./hooks": "./src/hooks/index.ts",
     "./constants": "./src/constants/index.ts",
-    "./helpers": "./src/helpers/index.ts"
+    "./helpers": "./src/helpers/index.ts",
+    "./actions": "./src/actions/index.ts"
   },
   "devDependencies": {
     "@mullet/eslint-config": "workspace:*",

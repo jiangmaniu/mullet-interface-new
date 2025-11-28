@@ -1,16 +1,16 @@
 import '@mullet/ui/styles.css'
 import './globals.css'
 
-import { url } from 'inspector'
-import { Geist } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
 import { allMessages, getI18nInstance } from '@/locales/app-router-i18n'
 import { initLingui, PageLangParam } from '@/locales/init-lingui'
 import { msg } from '@lingui/core/macro'
+import { cn } from '@mullet/ui/lib/utils'
 
 import { GlobalProviders } from '../../components/providers/global'
 
-const geist = Geist({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export async function generateMetadata({ params }: PageLangParam) {
   const { locale } = await params
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageLangParam) {
     description: 'Mullet',
     icons: [
       {
-        url: '/icons/logo/mullet-short.svg',
+        url: '/icons/logo/mullet-tag.svg',
         type: 'image/svg+xml',
         rel: 'icon',
       },
@@ -39,7 +39,7 @@ export default async function RootLayout({ children, params }: { children: React
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={geist.className} suppressHydrationWarning>
+      <body className={cn(inter.variable, 'font-sans')} suppressHydrationWarning>
         <GlobalProviders initialLocale={locale} initialMessages={allMessages[locale]!}>
           {children}
         </GlobalProviders>

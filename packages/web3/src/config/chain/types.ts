@@ -13,7 +13,7 @@ export type ChainConfig = {
   blockExplorers: {
     default: {
       name: string
-      url: readonly [string, string]
+      url: readonly [string, ...string[]]
       apiUrl: string
     }
   }

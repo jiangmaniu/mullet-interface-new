@@ -1,7 +1,141 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-blue-1000: #2a8af6;
-  --color-purple-1000: #a853ba;
-  --color-red-1000: #e92a67;
+  --color-*: initial;
+
+  --color-black: #000;
+  --color-white: #fff;
+
+  --color-blue-50: #d2e0ff;
+  --color-blue-100: #bbd1ff;
+  --color-blue-200: #a4c2ff;
+  --color-blue-300: #77a3ff;
+  --color-blue-400: #4985ff;
+  --color-blue-500: #1c66ff;
+  --color-blue-600: #1652cc;
+  --color-blue-700: #113d99;
+  --color-blue-800: #0b2966;
+  --color-blue-900: #081f4c;
+
+  --color-red-50: #ffdadf;
+  --color-red-100: #ffc7ce;
+  --color-red-200: #ff8c99;
+  --color-red-300: #ff6376;
+  --color-red-400: #ff3a53;
+  --color-red-500: #ff112f;
+  --color-red-600: #cc0e26;
+  --color-red-700: #990b1d;
+  --color-red-800: #660814;
+  --color-red-900: #4c060f;
+
+  --color-green-50: #d5f2e6;
+  --color-green-100: #c0ebda;
+  --color-green-200: #abe4ce;
+  --color-green-300: #82d7b5;
+  --color-green-400: #58c99d;
+  --color-green-500: #2ebc84;
+  --color-green-600: #25966a;
+  --color-green-700: #1c714f;
+  --color-green-800: #124b35;
+  --color-green-900: #0e3828;
+
+  --color-zinc-50: #bcbed3;
+  --color-zinc-100: #a6a8c0;
+  --color-zinc-200: #9093ad;
+  --color-zinc-300: #656886;
+  --color-zinc-400: #393d60;
+  --color-zinc-500: #0e123a;
+  --color-zinc-600: #0b0e2e;
+  --color-zinc-700: #080b23;
+  --color-zinc-800: #060717;
+  --color-zinc-900: #040511;
+
+  --color-yellow-50: #fcf7db;
+  --color-yellow-100: #faf4c9;
+  --color-yellow-200: #f8f0b7;
+  --color-yellow-300: #f5e894;
+  --color-yellow-400: #f1e170;
+  --color-yellow-500: #eed94c;
+  --color-yellow-600: #beae3d;
+  --color-yellow-700: #8f822e;
+  --color-yellow-800: #5f571e;
+  --color-yellow-900: #474117;
+}
+
+@layer theme {
+  :root,
+  :host {
+    @variant dark {
+      --color-blue-50: #d2e0ff;
+      --color-blue-100: #bbd1ff;
+      --color-blue-200: #a4c2ff;
+      --color-blue-300: #77a3ff;
+      --color-blue-400: #4985ff;
+      --color-blue-500: #1c66ff;
+      --color-blue-600: #1652cc;
+      --color-blue-700: #113d99;
+      --color-blue-800: #0b2966;
+      --color-blue-900: #081f4c;
+
+      --color-red-50: #ffdadf;
+      --color-red-100: #ffc7ce;
+      --color-red-200: #ff8c99;
+      --color-red-300: #ff6376;
+      --color-red-400: #ff3a53;
+      --color-red-500: #ff112f;
+      --color-red-600: #cc0e26;
+      --color-red-700: #990b1d;
+      --color-red-800: #660814;
+      --color-red-900: #4c060f;
+
+      --color-green-50: #d5f2e6;
+      --color-green-100: #c0ebda;
+      --color-green-200: #abe4ce;
+      --color-green-300: #82d7b5;
+      --color-green-400: #58c99d;
+      --color-green-500: #2ebc84;
+      --color-green-600: #25966a;
+      --color-green-700: #1c714f;
+      --color-green-800: #124b35;
+      --color-green-900: #0e3828;
+
+      --color-zinc-50: #bcbed3;
+      --color-zinc-100: #a6a8c0;
+      --color-zinc-200: #9093ad;
+      --color-zinc-300: #656886;
+      --color-zinc-400: #393d60;
+      --color-zinc-500: #0e123a;
+      --color-zinc-600: #0b0e2e;
+      --color-zinc-700: #080b23;
+      --color-zinc-800: #060717;
+      --color-zinc-900: #040511;
+
+      --color-yellow-50: #fcf7db;
+      --color-yellow-100: #faf4c9;
+      --color-yellow-200: #f8f0b7;
+      --color-yellow-300: #f5e894;
+      --color-yellow-400: #f1e170;
+      --color-yellow-500: #eed94c;
+      --color-yellow-600: #beae3d;
+      --color-yellow-700: #8f822e;
+      --color-yellow-800: #5f571e;
+      --color-yellow-900: #474117;
+    }
+  }
+}
+
+@theme inline {
+  /* Border Radius - 使用 spacing 系统（4 的倍数） */
+  --radius-none: calc(var(--spacing) * 0);
+  --radius-1: calc(var(--spacing) * 1);
+  --radius-2: calc(var(--spacing) * 2);
+  --radius-3: calc(var(--spacing) * 3);
+  --radius-4: calc(var(--spacing) * 4);
+  --radius-5: calc(var(--spacing) * 5);
+  --radius-6: calc(var(--spacing) * 6);
+  --radius-7: calc(var(--spacing) * 7);
+  --radius-8: calc(var(--spacing) * 8);
+  --radius-9: calc(var(--spacing) * 9);
+  --radius-10: calc(var(--spacing) * 10);
+  --radius-full: calc(infinity * 1px);
 }

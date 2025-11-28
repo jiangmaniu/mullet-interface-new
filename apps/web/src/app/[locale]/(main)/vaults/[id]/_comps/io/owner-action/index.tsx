@@ -7,7 +7,7 @@ import { GLOBAL_MODAL_ID } from '@/components/providers/global/nice-modal-provid
 // import { useStores } from '@/context/mobxProvider'
 import { usePoolCloseVaultApiMutation } from '@/services/api/trade-core/hooks/follow-manage/pool-vault-close'
 import { Button } from '@mullet/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@mullet/ui/dropdownMenu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@mullet/ui/dropdown-menu'
 import { IconChevronDown } from '@mullet/ui/icons'
 import { cn } from '@mullet/ui/lib/utils'
 import { toast } from '@mullet/ui/toast'

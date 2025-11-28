@@ -8,7 +8,7 @@ export const PageLoadingWrapper = ({ children }: { children: React.ReactNode }) 
 
   const isLoading = !isReady
   if (isLoading) {
-    return <PageLoading />
+    return <PageLoading className="min-h-screen" />
   }
 
   return children

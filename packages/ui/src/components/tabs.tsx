@@ -11,6 +11,11 @@ const TabsVariants = cva('', {
   variants: {
     variant: {
       line: '',
+      iconsAndText: '',
+    },
+    size: {
+      sm: '',
+      md: '',
     },
   },
   defaultVariants: {
@@ -39,6 +44,7 @@ type TabsProps<T> = Omit<React.ComponentProps<typeof TabsPrimitive.Root>, 'value
 } & VariantProps<typeof TabsVariants>
 
 function Tabs<T>({ className, value, variant, onValueChange, ...props }: TabsProps<T>) {
+  const tabsVariantsClassName = TabsVariants({ variant })
   return (
     <TabsVariantsContext.Provider value={{ variant }}>
       <TabsPrimitive.Root
@@ -51,7 +57,7 @@ function Tabs<T>({ className, value, variant, onValueChange, ...props }: TabsPro
             onValueChange?.(newValue as T)
           }
         }}
-        className={cn('flex flex-col', className)}
+        className={cn('flex flex-col', tabsVariantsClassName, className)}
         {...props}
       />
     </TabsVariantsContext.Provider>
@@ -62,10 +68,16 @@ const TabsListVariants = cva('', {
   variants: {
     variant: {
       line: 'px-2.5 border-b border-[#23253C] inline-flex items-center',
+      iconsAndText: '',
+    },
+    size: {
+      sm: '',
+      md: '',
     },
   },
   defaultVariants: {
     variant: 'line',
+    size: 'sm',
   },
 })
 
@@ -84,10 +96,17 @@ const TabsTargetVariants = cva('bg-transparent', {
   variants: {
     variant: {
       line: ['px-5 cursor-pointer text-[#9FA0B0] active:scale-95 transition-transform'],
+      iconsAndText: [],
+    },
+    size: {
+      sm: '',
+      md: '',
     },
   },
+
   defaultVariants: {
     variant: 'line',
+    size: 'sm',
   },
 })
 
@@ -99,10 +118,35 @@ const TabsTargetContentVariants = cva('', {
         'group-data-[state=active]:border-b-2 group-data-[state=active]:border-[#EED94C] group-data-[state=active]:text-white',
         'group-data-[state=active]:text-white',
       ],
+      iconsAndText: [
+        'border border-transparent py-1 px-3  flex gap-2 items-center bg-zinc-300/20 transition-all',
+        'hover:border hover:border-white',
+        'active:bg-transparent',
+        ['group-data-[state=active]:bg-transparent group-data-[state=active]:border-base'],
+      ],
+    },
+    size: {
+      sm: '',
+      md: '',
     },
   },
+
+  compoundVariants: [
+    {
+      variant: 'iconsAndText',
+      size: 'sm',
+      class: 'rounded-xs',
+    },
+    {
+      variant: 'iconsAndText',
+      size: 'md',
+      class: ['rounded-2 text-button-2'],
+    },
+  ],
+
   defaultVariants: {
     variant: 'line',
+    size: 'md',
   },
 })
 

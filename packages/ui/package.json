@@ -138,7 +138,8 @@
       "import": "./dist/checkbox.mjs",
       "require": "./dist/checkbox.js"
     },
-    "./styles.css": "./dist/index.css",
+    "./hooks": "./src/hooks/index.ts",
+    "./styles.css": "./src/styles/global.css",
     "./*": "./dist/*.js",
     "./lib/*": "./src/lib/*.ts"
   },

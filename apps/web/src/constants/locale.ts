@@ -1,3 +1,5 @@
+import { LanguageCode } from '~/static/charting_library/charting_library'
+
 export const COOKIE_LOCALE_KEY = 'NEXT_LOCALE'
 
 export enum Locale {
@@ -80,42 +82,110 @@ export const LOCALE_LABEL_MAP: Record<SupportedLocale, string> = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type LocaleKey = {}
+export type LocaleKey = {
+  tradingview: LanguageCode
+}
 
 export const LOCALE_KEY_MAP: Record<Locale, LocaleKey> = {
-  [Locale.en]: {},
-  [Locale.zh_CN]: {},
-  [Locale.en_US]: {},
-  [Locale.af_ZA]: {},
-  [Locale.ar_SA]: {},
-  [Locale.ca_ES]: {},
-  [Locale.cs_CZ]: {},
-  [Locale.da_DK]: {},
-  [Locale.de_DE]: {},
-  [Locale.el_GR]: {},
-  [Locale.es_ES]: {},
-  [Locale.fi_FI]: {},
-  [Locale.fr_FR]: {},
-  [Locale.he_IL]: {},
-  [Locale.hu_HU]: {},
-  [Locale.id_ID]: {},
-  [Locale.it_IT]: {},
-  [Locale.ja_JP]: {},
-  [Locale.ko_KR]: {},
-  [Locale.nl_NL]: {},
-  [Locale.no_NO]: {},
-  [Locale.pl_PL]: {},
-  [Locale.pt_BR]: {},
-  [Locale.pt_PT]: {},
-  [Locale.ro_RO]: {},
-  [Locale.ru_RU]: {},
-  [Locale.sr_SP]: {},
-  [Locale.sv_SE]: {},
-  [Locale.sw_TZ]: {},
-  [Locale.tr_TR]: {},
-  [Locale.uk_UA]: {},
-  [Locale.vi_VN]: {},
-  [Locale.zh_TW]: {},
+  [Locale.en]: {
+    tradingview: 'en',
+  },
+  [Locale.zh_CN]: {
+    tradingview: 'zh',
+  },
+  [Locale.en_US]: {
+    tradingview: 'en',
+  },
+  [Locale.af_ZA]: {
+    tradingview: 'en',
+  },
+  [Locale.ar_SA]: {
+    tradingview: 'ar',
+  },
+  [Locale.ca_ES]: {
+    tradingview: 'en',
+  },
+  [Locale.cs_CZ]: {
+    tradingview: 'en',
+  },
+  [Locale.da_DK]: {
+    tradingview: 'en',
+  },
+  [Locale.de_DE]: {
+    tradingview: 'de',
+  },
+  [Locale.el_GR]: {
+    tradingview: 'en',
+  },
+  [Locale.es_ES]: {
+    tradingview: 'es',
+  },
+  [Locale.fi_FI]: {
+    tradingview: 'en',
+  },
+  [Locale.fr_FR]: {
+    tradingview: 'fr',
+  },
+  [Locale.he_IL]: {
+    tradingview: 'en',
+  },
+  [Locale.hu_HU]: {
+    tradingview: 'en',
+  },
+  [Locale.id_ID]: {
+    tradingview: 'en',
+  },
+  [Locale.it_IT]: {
+    tradingview: 'it',
+  },
+  [Locale.ja_JP]: {
+    tradingview: 'ja',
+  },
+  [Locale.ko_KR]: {
+    tradingview: 'ko',
+  },
+  [Locale.nl_NL]: {
+    tradingview: 'en',
+  },
+  [Locale.no_NO]: {
+    tradingview: 'en',
+  },
+  [Locale.pl_PL]: {
+    tradingview: 'pl',
+  },
+  [Locale.pt_BR]: {
+    tradingview: 'pt',
+  },
+  [Locale.pt_PT]: {
+    tradingview: 'pt',
+  },
+  [Locale.ro_RO]: {
+    tradingview: 'en',
+  },
+  [Locale.ru_RU]: {
+    tradingview: 'ru',
+  },
+  [Locale.sr_SP]: {
+    tradingview: 'en',
+  },
+  [Locale.sv_SE]: {
+    tradingview: 'sv',
+  },
+  [Locale.sw_TZ]: {
+    tradingview: 'en',
+  },
+  [Locale.tr_TR]: {
+    tradingview: 'tr',
+  },
+  [Locale.uk_UA]: {
+    tradingview: 'en',
+  },
+  [Locale.vi_VN]: {
+    tradingview: 'vi',
+  },
+  [Locale.zh_TW]: {
+    tradingview: 'zh',
+  },
 }
 
 export const LOCALES = Object.keys(LOCALE_LABEL_MAP) as Locale[]

@@ -11,7 +11,7 @@ export const SOL_DEVNET_CHAIN_CONFIG = defaultChainConfig({
   blockExplorers: {
     default: {
       name: 'Solscan Devnet',
-      url: ['https://explorer.solana.com', '?cluster=devnet'] as const,
+      url: ['https://explorer.solana.com?cluster=devnet'] as const,
       apiUrl: 'https://api.solscan.io/devnet',
     },
   },

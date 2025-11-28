@@ -1,5 +1,6 @@
 /* Component-level styles for the UI package */
 @import 'tailwindcss';
+@import '@mullet/tailwind-config';
 
 @source "../../../apps/**/*.{ts,tsx}";
 @source "../../../components/**/*.{ts,tsx}";
@@ -34,7 +35,7 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.625rem;
+  --radius: 8px;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -80,6 +81,97 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
+@theme {
+  --font-weight-regular: regular;
+  --font-weight-medium: medium;
+  --font-weight-semibold: semibold;
+
+  --font-size-xs: 12px;
+  --font-size-small: 14px;
+  --font-size-medium: 16px;
+  --font-size-large: 18px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 32px;
+
+  --leading-xs: 16px;
+  --leading-small: 20px;
+  --leading-medium: 24px;
+  --leading-large: 28px;
+  --leading-xl: 32px;
+  --leading-2xl: 36px;
+  --leading-3xl: 40px;
+
+  --color-trade-buy: var(--color-green-500);
+  --color-trade-sell: var(--color-red-500);
+
+  --color-market-rise: var(--color-trade-buy);
+  --color-market-fall: var(--color-trade-sell);
+}
+
+@theme inline {
+  --text-color-content-1: var(--color-white);
+  --text-color-content-2: var(--color-zinc-50);
+  --text-color-content-3: var(--color-zinc-100);
+  --text-color-content-4: var(--color-zinc-200);
+  --text-color-content-5: var(--color-zinc-300);
+  --text-color-content-2: var(--color-zinc-800);
+
+  --background-color-primary: var(--color-zinc-500);
+  --background-color-secondary: var(--color-zinc-800);
+
+  --border-color-xs: --alpha(var(--color-zinc-300) / 0.2);
+  --border-color-base: --alpha(var(--color-zinc-300) / 0.4);
+  --border-color-large: var(--color-zinc-300);
+
+  --color-status-success: var(--color-green-500);
+  --color-status-warning: var(--color-yellow-500);
+  --color-status-danger: var(--color-red-500);
+
+  --color-brand-primary: var(--color-yellow-500);
+  --color-brand-secondary: var(--color-blue-500);
+
+  --text-title-h1: 32px;
+  --text-title-h1--line-height: var(--leading-2xl);
+  --text-title-h1--font-weight: var(--font-weight-semibold);
+
+  --text-title-h2: 28px;
+  --text-title-h2--line-height: var(--leading-1xl);
+  --text-title-h2--font-weight: var(--font-weight-semibold);
+
+  --text-title-h3: 24px;
+  --text-title-h3--line-height: var(--leading-large);
+  --text-title-h3--font-weight: var(--font-weight-semibold);
+
+  --text-paragraph-p1: 16px;
+  --text-paragraph-p1--line-height: var(--leading-medium);
+  --text-paragraph-p1--font-weight: var(--font-weight-regular);
+
+  --text-paragraph-p2: 14px;
+  --text-paragraph-p2--line-height: var(--leading-small);
+  --text-paragraph-p2--font-weight: var(--font-weight-regular);
+
+  --text-paragraph-p3: 12px;
+  --text-paragraph-p3--line-height: var(--leading-xs);
+  --text-paragraph-p2--font-weight: var(--font-weight-regular);
+
+  --text-important-1: 14px;
+  --text-important-1--line-height: var(--leading-xs);
+  --text-important-1--font-weight: var(--font-weight-semibold);
+
+  --text-button-1: 12px;
+  --text-button-1--line-height: var(--leading-xs);
+  --text-button-1--font-weight: var(--font-weight-medium);
+
+  --text-button-2: 14px;
+  --text-button-2--line-height: var(--leading-xs);
+  --text-button-2--font-weight: var(--font-weight-medium);
+
+  --shadow-base: 0 4px 4px 0 --alpha(var(--color-black) / 10%);
+
+  --inset-shadow-base: 0 2px 4px 0 --alpha(var(--color-black) / 50%);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -105,10 +197,7 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -117,59 +206,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
-  --text-main-h1: 27px;
-  --text-main-h1--line-height: 22px;
-  --text-main-h1--font-weight: 600;
-
-  --text-main-h2: 22px;
-  --text-main-h2--line-height: 25px;
-  --text-main-h2--font-weight: 600;
-
-  --text-main-h3: 17px;
-  --text-main-h3--line-height: 22px;
-  --text-main-h3--font-weight: 600;
-
-  --text-main-h4: 15px;
-  --text-main-h4--line-height: 22px;
-  --text-main-h4--font-weight: 600;
-
-  --text-main-h5: 15px;
-  --text-main-h5--line-height: 18px;
-  --text-main-h5--font-weight: 600;
-
-  --text-main-h6: 13px;
-  --text-main-h6--line-height: 22px;
-  --text-main-h6--font-weight: 600;
-
-  --text-main-paragraph: 13px;
-  --text-main-paragraph--line-height: 18px;
-  --text-main-paragraph--font-weight: 400;
-
-  --text-main-paragraph-2: 13px;
-  --text-main-paragraph-2--line-height: 22px;
-  --text-main-paragraph-2--font-weight: 400;
-
-  --text-main-caption: 13px;
-  --text-main-caption--line-height: 18px;
-  --text-main-caption--font-weight: 400;
-
-  --text-main-content-paragraph: 13px;
-  --text-main-content-paragraph--line-height: 18px;
-  --text-main-content-paragraph--font-weight: 400;
-
-  --text-main-link: 15px;
-  --text-main-link--line-height: 40px;
-  --text-main-link--font-weight: 400;
-  --text-main-link--text-decoration: underline;
-
-  --text-button-small: 15px;
-  --text-button-small--line-height: 18px;
-  --text-button-small--font-weight: 600;
-
-  --text-button-action: 13px;
-  --text-button-action--line-height: 15px;
-  --text-button-action--font-weight: 400;
 
   --color-blue1: #214ff6;
   --color-blue2: #214ff6;
@@ -191,6 +227,7 @@
   --spacing: 4px;
 
   --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
+
   @keyframes border-beam {
     0% {
       offset-distance: 0%;
@@ -213,5 +250,9 @@
 @layer utilities {
   .flex-center {
     @apply items-center justify-center;
+  }
+
+  .font-sans {
+    font-family: var(--font-inter), 'PingFang SC', 'Microsoft YaHei', var(--font-sans);
   }
 }

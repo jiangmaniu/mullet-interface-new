@@ -4,7 +4,7 @@ import { useWalletAuthState } from '@/hooks/wallet/use-wallet-auth-state'
 import { useWalletLogout } from '@/hooks/wallet/use-wallet-login'
 import { logout } from '@/services/api/user'
 import { Button } from '@mullet/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@mullet/ui/dropdownMenu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@mullet/ui/dropdown-menu'
 import { IconChevronDown, IconDisconnect, IconWallet } from '@mullet/ui/icons'
 import { cn } from '@mullet/ui/lib/utils'
 

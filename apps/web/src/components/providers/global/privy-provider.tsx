@@ -27,7 +27,7 @@ export const PrivyProvider = ({ children }: IProps) => {
             theme: 'dark',
             showWalletLoginFirst: true,
             walletChainType: 'solana-only',
-            logo: '/icons/logo/mullet-short.svg',
+            logo: '/icons/logo/mullet-tag.svg',
             walletList: [
               // 浏览器自动检测
               'detected_solana_wallets',

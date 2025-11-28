@@ -13,7 +13,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@mullet/ui/dropdownMenu'
+} from '@mullet/ui/dropdown-menu'
 import { IconBell, IconLanguage } from '@mullet/ui/icons'
 import { Popover, PopoverContent, PopoverTrigger } from '@mullet/ui/popover'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@mullet/ui/tabs'

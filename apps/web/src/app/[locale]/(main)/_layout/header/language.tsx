@@ -11,7 +11,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@mullet/ui/dropdownMenu'
+} from '@mullet/ui/dropdown-menu'
 import { IconLanguage } from '@mullet/ui/icons'
 
 export const LanguageChanger = () => {

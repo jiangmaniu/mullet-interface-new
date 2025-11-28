@@ -9,6 +9,10 @@ export const SOL_MAINNET_CHAIN_CONFIG = defaultChainConfig({
     default: { http: ['https://api.mainnet-beta.solana.com'], wss: ['wss://api.mainnet-beta.solana.com'] },
   },
   blockExplorers: {
-    default: { name: 'Solscan', url: 'https://explorer.solana.com/?cluster=devnet', apiUrl: 'https://api.solscan.io' },
+    default: {
+      name: 'Solscan',
+      url: ['https://explorer.solana.com'] as const,
+      apiUrl: 'https://api.solscan.io',
+    },
   },
 })

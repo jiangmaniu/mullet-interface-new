@@ -11,7 +11,7 @@ import { WalletConnect } from './wallet-connect'
 
 export const MainLayoutHeader = () => {
   return (
-    <div className="flex justify-between gap-5 bg-[#0A0C27] p-2.5">
+    <div className="sticky top-0 z-1 flex justify-between gap-5 bg-[#0A0C27] p-2.5">
       <div className="flex items-center justify-between gap-5">
         <div>
           <Image src="/icons/logo/mullet-long.svg" alt="logo" width={140} height={40} />
