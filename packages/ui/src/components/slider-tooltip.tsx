@@ -141,50 +141,48 @@ export const SliderTooltip = React.forwardRef<React.ComponentRef<typeof SliderPr
               </TooltipProvider>
             </div>
           </div>
-          <div className="relative mt-2.5 flex h-3.5">
-            {isShowMarkLabels && (
-              <>
-                {marks.map((mark, i) => {
-                  console.log(mark, i)
-                  return (
-                    <div
-                      key={`${i}`}
-                      className={cn(
-                        'absolute top-0 cursor-pointer select-none text-xs text-[#9FA0B0] transition-colors',
-                        {
-                          'text-white': BNumber.from(value[0])?.gte(mark),
-                          '-translate-x-1/2': i > 0 && i < marks.length - 1,
-                          '-translate-x-full': i === marks.length - 1,
-                          'translate-x-0': i === 0,
-                        },
-                      )}
-                      style={{
-                        left: `${(mark / (props.max ?? 100)) * 100}%`,
-                        zIndex: 10,
-                      }}
-                      onMouseDown={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleValueChange([mark])
-                      }}
-                      onPointerDown={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleValueChange([mark])
-                      }}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleValueChange([mark])
-                      }}
-                    >
-                      {markLabelFormat ? markLabelFormat(mark) : <div className="">{mark}%</div>}
-                    </div>
-                  )
-                })}
-              </>
-            )}
-          </div>
+          {isShowMarkLabels && (
+            <div className="relative mt-2.5 flex h-3.5">
+              {marks.map((mark, i) => {
+                console.log(mark, i)
+                return (
+                  <div
+                    key={`${i}`}
+                    className={cn(
+                      'absolute top-0 cursor-pointer select-none text-xs text-[#9FA0B0] transition-colors',
+                      {
+                        'text-white': BNumber.from(value[0])?.gte(mark),
+                        '-translate-x-1/2': i > 0 && i < marks.length - 1,
+                        '-translate-x-full': i === marks.length - 1,
+                        'translate-x-0': i === 0,
+                      },
+                    )}
+                    style={{
+                      left: `${(mark / (props.max ?? 100)) * 100}%`,
+                      zIndex: 10,
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleValueChange([mark])
+                    }}
+                    onPointerDown={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleValueChange([mark])
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      handleValueChange([mark])
+                    }}
+                  >
+                    {markLabelFormat ? markLabelFormat(mark) : <div className="">{mark}%</div>}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </SliderPrimitive.Track>
       </SliderPrimitive.Root>
     )
@@ -192,4 +190,3 @@ export const SliderTooltip = React.forwardRef<React.ComponentRef<typeof SliderPr
 )
 
 SliderTooltip.displayName = 'SliderTooltip'
-export default SliderTooltip

@@ -2,6 +2,8 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  typedRoutes: true,
+
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -35,6 +37,7 @@ const nextConfig: NextConfig = {
   // API 代理配置
   async rewrites() {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+    console.log('xxx', apiBaseUrl)
 
     if (!apiBaseUrl) {
       console.warn('NEXT_PUBLIC_API_BASE_URL is not set, API rewrites will be disabled')
@@ -44,7 +47,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${apiBaseUrl}/:path*`,
+        destination: `${apiBaseUrl}/api/:path*`,
       },
     ]
   },

@@ -8,7 +8,7 @@ import { cn } from '../lib/utils'
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center gap-1 box-border justify-center transition-[colors_transform] text-[14px] whitespace-nowrap font-medium ring-offset-background ',
+    'inline-flex items-center gap-1 box-border justify-center transition-[colors,transform] text-[14px] whitespace-nowrap font-medium ring-offset-background ',
     'enabled:active:scale-95',
     'focus-visible:outline-focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     `data-[disabled='true']:cursor-not-allowed data-[disabled='true']:opacity-35`,
@@ -16,18 +16,24 @@ const buttonVariants = cva(
   ],
   {
     variants: {
+      color: {
+        default: '',
+        primary: '',
+      },
       variant: {
         primary: [
-          'text-[#0A0C27] bg-[#EED94C]',
-          'enabled:hover:bg-[#FDFF84] enabled:hover:outline-none enabled:hover:ring-3 enabled:hover:ring-[#FDFF84]',
-          'focus-visible:bg-[#FDFF84] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#FDFF84]',
+          // 'text-[#0A0C27] bg-[#EED94C]',
+          // 'enabled:hover:bg-[#FDFF84] enabled:hover:outline-none enabled:hover:ring-3 enabled:hover:ring-[#FDFF84]',
+          // 'focus-visible:bg-[#FDFF84] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-[#FDFF84]',
+          '',
         ],
 
         destructive: 'bg-destructive text-destructive-foreground enabled:hover:bg-destructive/90',
         outline: [
-          'border border-[#3B3D52] text-white bg-transparent',
-          ' enabled:hover:text-white enabled:hover:outline-none enabled:hover:ring-3 enabled:hover:border-white',
-          ' focus-visible:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:border-white ',
+          // 'border border-[#3B3D52] text-white bg-transparent',
+          // ' enabled:hover:text-white enabled:hover:outline-none enabled:hover:ring-3 enabled:hover:border-white',
+          // ' focus-visible:text-white focus-visible:outline-none focus-visible:ring-3 focus-visible:border-white ',
+          '',
         ],
         secondary: [
           'border border-[#0A0C27] bg-[#0A0C27] ',
@@ -45,16 +51,51 @@ const buttonVariants = cva(
       size: {
         middle: 'min-h-8 py-3xs px-s box-border rounded-small leading-6 font-semibold',
         middle2: 'min-h-10 min-w-[130px] py-2.5 px-5 box-border rounded-[8px]',
-        sm: 'min-h-8 min-w-[130px] py-2 px-5 box-border rounded-[8px]',
-        lg: 'h-11 rounded-md px-8',
+        sm: 'py-1.5 px-4 rounded-1 ',
+        md: 'rounded-2 py-2 px-6',
+        lg: 'px-8 py-2.5 rounded-2',
         icon: 'p-1 rounded-[8px]',
         large: 'p-4 rounded-2xl text-lg',
         submit: 'py-4 text-lg leading-[30px]',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'primary',
+        color: 'default',
+        class: [
+          'text-content-1 text-button-1 bg-zinc-300/20',
+          'hover:bg-zinc-300/40 hover:shadow-base',
+          'active:shadow-inset-base',
+          'disabled:text-content-6',
+        ],
+      },
+      {
+        variant: 'outline',
+        color: 'default',
+        class: [
+          'text-content-1 text-button-1 border border-zinc-300/20',
+          'hover:bg-zinc-300/0 hover:border-zinc-base hover:shadow-base',
+          'active:shadow-inset-base active:border-white',
+          'disabled:text-content-6 disabled:border-zinc-xs',
+        ],
+      },
+
+      {
+        variant: 'primary',
+        color: 'primary',
+        class: [
+          'text-content-foreground text-button-1 bg-brand-primary',
+          'hover:bg-yellow-400 hover:shadow-base',
+          'active:shadow-inset-base',
+          'disabled:text-content-6 disabled:bg-zinc-300/20',
+        ],
+      },
+    ],
     defaultVariants: {
       variant: 'primary',
-      size: 'middle2',
+      size: 'sm',
+      color: 'default',
     },
   },
 )
@@ -80,6 +121,7 @@ const Button = ({
   className,
   variant,
   size,
+  color,
   asChild = false,
   loading = false,
   block = false,
@@ -104,6 +146,7 @@ const Button = ({
         buttonVariants({
           variant,
           size,
+          color,
           className: cn(
             {
               'flex w-full flex-1': block,
@@ -133,6 +176,7 @@ const Button = ({
         className={className}
         variant={variant}
         size={size}
+        color={color}
         LeftIcon={LeftIcon}
         RightIcon={RightIcon}
       >
@@ -154,6 +198,7 @@ const LinkButton = ({
   className,
   variant,
   size,
+  color,
 
   block = false,
   children,
@@ -162,8 +207,6 @@ const LinkButton = ({
 
   disabled = false,
 
-  href,
-  ref,
   ...props
 }: LinkButtonProps) => {
   const Button = (
@@ -172,6 +215,7 @@ const LinkButton = ({
         buttonVariants({
           variant,
           size,
+          color,
           className: cn(
             {
               'flex w-full flex-1': block,

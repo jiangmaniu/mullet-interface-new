@@ -60,6 +60,17 @@
   --color-yellow-700: #8f822e;
   --color-yellow-800: #5f571e;
   --color-yellow-900: #474117;
+
+  --color-orange-50: #ffe9d6;
+  --color-orange-100: #ffddc2;
+  --color-orange-200: #ffd2ae;
+  --color-orange-300: #ffbc85;
+  --color-orange-400: #ffa55d;
+  --color-orange-500: #ff8f34;
+  --color-orange-600: #d6772a;
+  --color-orange-700: #ae5f1f;
+  --color-orange-800: #854715;
+  --color-orange-900: #713b10;
 }
 
 @layer theme {
@@ -120,6 +131,17 @@
       --color-yellow-700: #8f822e;
       --color-yellow-800: #5f571e;
       --color-yellow-900: #474117;
+
+      --color-orange-50: #ffe9d6;
+      --color-orange-100: #ffddc2;
+      --color-orange-200: #ffd2ae;
+      --color-orange-300: #ffbc85;
+      --color-orange-400: #ffa55d;
+      --color-orange-500: #ff8f34;
+      --color-orange-600: #d6772a;
+      --color-orange-700: #ae5f1f;
+      --color-orange-800: #854715;
+      --color-orange-900: #713b10;
     }
   }
 }

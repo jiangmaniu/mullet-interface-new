@@ -10,7 +10,7 @@ import { Button } from '@mullet/ui/button'
 import { FormControl, FormField, FormItem, FormMessage } from '@mullet/ui/form'
 import { IconInfo } from '@mullet/ui/icons'
 import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
-import SliderTooltip from '@mullet/ui/slider-tooltip'
+import { SliderTooltip } from '@mullet/ui/slider-tooltip'
 import { toast } from '@mullet/ui/toast'
 import { BNumber } from '@mullet/utils/number'
 

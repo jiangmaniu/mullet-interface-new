@@ -102,6 +102,24 @@
   --leading-2xl: 36px;
   --leading-3xl: 40px;
 
+  --size: 4px;
+
+  --spacing: var(--size);
+  --spacing-xs: calc(var(--size) * 1);
+  --spacing-small: calc(var(--size) * 1.5);
+  --spacing-medium: calc(var(--size) * 2);
+  --spacing-large: calc(var(--size) * 2.5);
+  --spacing-xl: calc(var(--size) * 3);
+  --spacing-2xl: calc(var(--size) * 4);
+  --spacing-3xl: calc(var(--size) * 6);
+  --spacing-4xl: calc(var(--size) * 8);
+
+  --radius-xs: calc(var(--spacing) * 1);
+  --radius-small: calc(var(--spacing) * 2);
+  --radius-medium: calc(var(--spacing) * 3);
+  --radius-large: calc(var(--spacing) * 4);
+  --radius-xl: calc(var(--spacing) * 8);
+
   --color-trade-buy: var(--color-green-500);
   --color-trade-sell: var(--color-red-500);
 
@@ -115,14 +133,21 @@
   --text-color-content-3: var(--color-zinc-100);
   --text-color-content-4: var(--color-zinc-200);
   --text-color-content-5: var(--color-zinc-300);
-  --text-color-content-2: var(--color-zinc-800);
+  --text-color-content-6: var(--color-zinc-400);
+  --text-color-content-foreground: var(--color-zinc-800);
 
   --background-color-primary: var(--color-zinc-500);
   --background-color-secondary: var(--color-zinc-800);
 
-  --border-color-xs: --alpha(var(--color-zinc-300) / 0.2);
-  --border-color-base: --alpha(var(--color-zinc-300) / 0.4);
-  --border-color-large: var(--color-zinc-300);
+  --border-color-zinc-xs: --alpha(var(--color-zinc-300) / 0.2);
+  --border-color-zinc-base: --alpha(var(--color-zinc-300) / 0.4);
+  --border-color-zinc-large: var(--color-zinc-300);
+
+  --border-color-white-base: var(--color-white);
+
+  --border-color-yellow-base: var(--color-brand-primary);
+
+  --border-color-orange-base: var(--color-orange-500);
 
   --color-status-success: var(--color-green-500);
   --color-status-warning: var(--color-yellow-500);
@@ -155,9 +180,13 @@
   --text-paragraph-p3--line-height: var(--leading-xs);
   --text-paragraph-p2--font-weight: var(--font-weight-regular);
 
-  --text-important-1: 14px;
-  --text-important-1--line-height: var(--leading-xs);
+  --text-important-1: var(--font-size-medium);
+  --text-important-1--line-height: var(--leading-small);
   --text-important-1--font-weight: var(--font-weight-semibold);
+
+  --text-important-2: 14px;
+  --text-important-2--line-height: var(--leading-xs);
+  --text-important-2--font-weight: var(--font-weight-semibold);
 
   --text-button-1: 12px;
   --text-button-1--line-height: var(--leading-xs);
@@ -166,6 +195,10 @@
   --text-button-2: 14px;
   --text-button-2--line-height: var(--leading-xs);
   --text-button-2--font-weight: var(--font-weight-medium);
+
+  --text-clickable-1: var(--font-size-xs);
+  --text-clickable-1--line-height: var(--leading-xs);
+  /* --text-text-clickable-1--font-weight: var(--font-weight-medium); */
 
   --shadow-base: 0 4px 4px 0 --alpha(var(--color-black) / 10%);
 
@@ -223,8 +256,6 @@
   --color-block10: #f0f0f0;
 
   --color-gray: #686868;
-
-  --spacing: 4px;
 
   --animate-border-beam: border-beam calc(var(--duration) * 1s) infinite linear;
 

@@ -33,9 +33,7 @@ export const GeneralTooltip = ({
   return (
     <TooltipProvider>
       <Tooltip {...{ open, defaultOpen, onOpenChange }}>
-        <TooltipTrigger className="cursor-help" asChild>
-          {children}
-        </TooltipTrigger>
+        <TooltipTrigger className="block cursor-help">{children}</TooltipTrigger>
         <TooltipContent
           className={cn('max-w-[220px]', className)}
           alignOffset={alignOffset}
@@ -47,7 +45,10 @@ export const GeneralTooltip = ({
           {content}
 
           <TooltipArrow
-            className="relative -z-1 size-2.5 translate-y-[calc(-50%_-_0px)] rotate-45 rounded-[2px] border-r border-b border-[#3B3D52] bg-[#0E123A] fill-[#0E123A]"
+            className={cn(
+              'relative -z-1 size-2.5 translate-y-[calc(-50%_-_0px)] rotate-45 rounded-[2px] border-r border-b',
+              'border-zinc-base bg-zinc-800/90 backdrop-blur-[12px]',
+            )}
             {...{ variant: props.variant }}
           />
         </TooltipContent>

@@ -1,9 +1,9 @@
+import { getQueryClient } from '@/components/providers/global/react-query-provider/get-query-client'
 import { useMutation } from '@tanstack/react-query'
 
-import { FollowShares } from '../../instance/_gen'
 import { getTradeCoreApiInstance } from '../../instance'
+import { FollowShares } from '../../instance/_gen'
 import { tradeCoreApiQueriesKey } from '../../queries-cache-key'
-import { getQueryClient } from '@/import { getQueryClient } from '@/components/providers/global/react-query-provider/get-query-client''
 import { GetPoolDetailRequestQuery } from '../follow-manage/pool-detail'
 
 export type RedeemSharesApiMutationParams = FollowShares.PostFollowSharesRedeemShares.RequestBody
@@ -21,10 +21,12 @@ export const useRedeemSharesApiMutation = () => {
       const queryClient = getQueryClient()
       const poolDetailQuery: GetPoolDetailRequestQuery = {
         followManageId: variables.followManageId,
-        tradeAccountId: variables.tradeAccountId
+        tradeAccountId: variables.tradeAccountId,
       } as GetPoolDetailRequestQuery
-      queryClient.invalidateQueries({ queryKey: tradeCoreApiQueriesKey.followManage.poolDetail.toKeyWithArgs(poolDetailQuery) })
-    }
+      queryClient.invalidateQueries({
+        queryKey: tradeCoreApiQueriesKey.followManage.poolDetail.toKeyWithArgs(poolDetailQuery),
+      })
+    },
   })
 
   return redeemSharesApiMutation

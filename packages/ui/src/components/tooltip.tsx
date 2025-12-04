@@ -20,21 +20,28 @@ function Tooltip({ ...props }: TooltipProps) {
   )
 }
 
-function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+function TooltipTrigger({ className, ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" className={cn('', className)} {...props} />
+}
+
+function TooltipTriggerDottedText({ children, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div className="text-clickable-1 underline decoration-dotted underline-offset-4" {...props}>
+      {children}
+    </div>
+  )
 }
 
 const TooltipArrow = TooltipPrimitive.Arrow
 
 const tooltipContentVariants = cva(
   [
-    'z-50 rounded-[8px] shadow-[0px_4px_20px_0px_rgba(0,0,0,0.05)] py-5 px-3.5 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-    'text-[12px] font-normal leading-normal',
+    'z-50 rounded-small p-xl text-content-1 text-paragraph-p3 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
   ],
   {
     variants: {
       variant: {
-        default: 'bg-[#0E123A] text-white border border-[#3B3D52]',
+        default: 'bg-zinc-800/90 backdrop-blur-[12px] text-white border border-zinc-base',
         // outline: 'border bg-popover text-popover-foreground shadow-md',
         // secondary: 'bg-secondary text-secondary-foreground'
       },
@@ -63,4 +70,4 @@ function TooltipContent({ className, sideOffset = 0, variant, children, ...props
   )
 }
 
-export { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger }
+export { Tooltip, TooltipArrow, TooltipContent, TooltipProvider, TooltipTrigger, TooltipTriggerDottedText }

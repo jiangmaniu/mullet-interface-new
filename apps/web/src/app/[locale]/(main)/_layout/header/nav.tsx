@@ -15,6 +15,7 @@ export const MainLayoutHeaderNav = () => {
           label: '交易',
           activeSegment: 'trade',
         },
+
         {
           path: '/lp',
           label: <div>MTLP</div>,

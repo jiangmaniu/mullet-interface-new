@@ -32,8 +32,10 @@
 }
 
 .theme-dark:root {
-  --tv-color-platform-background: rgba(10, 12, 39, 1);
-  --tv-color-pane-background: rgba(10, 12, 39, 1);
+  --bg-primary: #0e123a;
+
+  --tv-color-platform-background: var(--bg-primary);
+  --tv-color-pane-background: var(--bg-primary);
   --tv-color-toolbar-button-background-hover: #2a2e39;
   --tv-color-toolbar-button-background-expanded: transparent;
   --tv-color-toolbar-button-background-active: rgba(255, 255, 255, 1);
@@ -49,7 +51,7 @@
   --tv-color-toolbar-toggle-button-background-active-hover: white;
   --tv-color-toolbar-divider-background: #2a2e39;
   --tv-color-toolbar-save-layout-loader: rgb(134, 137, 147);
-  --tv-color-popup-background: rgba(10, 12, 39, 1);
+  --tv-color-popup-background: var(--bg-primary);
   --tv-color-popup-element-text: rgba(118, 119, 131, 1);
   --tv-color-popup-element-text-hover: rgba(255, 255, 255, 1);
   --tv-color-popup-element-background-hover: #2a2e39;
@@ -65,13 +67,13 @@
   --tv-color-popup-element-toolbox-background-hover: rgba(118, 119, 131, 1);
   --tv-color-popup-element-toolbox-background-active-hover: rgba(118, 119, 131, 1);
 
-  --themed-color-tooltip-wizard-bg: rgba(10, 12, 39, 1);
+  --themed-color-tooltip-wizard-bg: var(--bg-primary);
 
   /* --themed-color-control-intent-default: rgba(10, 12, 39, 1); */
   --themed-color-control-highlight-intent-primary: #eed94c;
   --themed-color-control-intent-primary: #eed94c;
 
-  --themed-color-bg-primary: rgba(10, 12, 39, 1);
+  --themed-color-bg-primary: var(--bg-primary);
 
   --themed-color-btn-black-secondary-active-bg: #eed94c;
   --themed-color-btn-black-secondary-active-border: #eed94c;

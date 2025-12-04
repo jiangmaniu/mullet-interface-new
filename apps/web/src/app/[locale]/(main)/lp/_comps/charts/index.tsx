@@ -3,16 +3,11 @@
 import { useEffect, useState } from 'react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@mullet/ui/tabs'
-import { basicExample } from '@mullet/ws/examples'
 
 import { VaultPNLCharts } from './pnl'
 import { VaultBalanceCharts } from './vault-balance'
 
 export default function VaultDetailCharts() {
-  useEffect(() => {
-    basicExample()
-  }, [])
-
   enum TabEnum {
     PNL,
     VaultBalance,

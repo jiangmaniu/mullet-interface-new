@@ -7,17 +7,21 @@ import { useWalletLogin } from '@/hooks/wallet/use-wallet-login'
 import { Button } from '@mullet/ui/button'
 
 export const WalletConnect = () => {
-  const walletLogin = useWalletLogin()
-  const { isAuthenticated } = useWalletAuthState()
+  const {
+    connectAndlogin,
+    loginAccountMutationResult: { isPending },
+  } = useWalletLogin()
 
+  const { isAuthenticated } = useWalletAuthState()
   if (isAuthenticated) {
     return null
   }
 
   return (
     <div>
-      <Button onClick={walletLogin}>
-        <Trans>连接钱包</Trans>
+      loading: {String(isPending)}
+      <Button block size={'lg'} color={'primary'} variant={'primary'} loading={isPending} onClick={connectAndlogin}>
+        {!isAuthenticated ? <Trans>连接钱包</Trans> : isPending ? <Trans>正在登录</Trans> : '已登录'}
       </Button>
     </div>
   )

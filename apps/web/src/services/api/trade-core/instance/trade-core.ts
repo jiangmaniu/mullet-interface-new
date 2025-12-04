@@ -33,7 +33,21 @@ export const getTradeCoreApiInstance = () => {
 
       const rs = await fetch(input, requestInit)
 
-      const rsData = await rs.clone().json()
+      // 检查响应是否为 JSON
+      const contentType = rs.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await rs.text()
+        console.error('API returned non-JSON response:', {
+          status: rs.status,
+          statusText: rs.statusText,
+          contentType,
+          url: input,
+          body: text.substring(0, 500), // 只打印前500字符
+        })
+        throw new Error(`API returned HTML instead of JSON. Status: ${rs.status}`)
+      }
+
+      const rsData = await rs.json()
 
       // const { data: response, status } = rsData ?? {}
       // if (status !== 200) {

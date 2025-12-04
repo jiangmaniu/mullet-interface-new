@@ -49,6 +49,7 @@ export class SubscriptionManager {
 
     // 设置数据处理器
     this.client.setDataHandler((type: SubscriptionType, data: string) => {
+      // debugger
       this._dispatchToCallbacks(type, data)
     })
 
@@ -191,6 +192,7 @@ export class SubscriptionManager {
    * @param data 数据
    */
   private _dispatchToCallbacks(type: SubscriptionType, data: string): void {
+    // debugger
     const typeCallbacks = this.subscriptionCallbacks.get(type)
     if (!typeCallbacks) return
 
@@ -259,6 +261,7 @@ export class SubscriptionManager {
       key: params.symbol,
       header: params.header,
     }
+    // debugger
     return this._subscribe(SubscriptionType.MARKET_DATA, subscriptionParams, callback)
   }
 

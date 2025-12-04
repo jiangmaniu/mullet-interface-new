@@ -35,14 +35,39 @@
     "yaml"
   ],
   "tailwindCSS.experimental.classRegex": [
+    // cva 函数支持
     [
       "cva\\(([^)]*)\\)",
       "[\"'`]([^\"'`]*).*?[\"'`]"
     ],
     [
+      "cva\\(.*?,\\s*([\\s\\S]*?)\\)$",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    // cx 函数支持
+    [
       "cx\\(([^)]*)\\)",
       "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ],
+    // cn 函数支持
+    [
+      "cn\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ],
+    // className 属性支持
+    [
+      "className[=:]\\s*['\"`]([^'\"`]*)['\"`]"
+    ],
+    // 数组中的类名
+    [
+      "[\"'`]([^\"'`]*)[\"'`]"
     ]
+  ],
+  "tailwindCSS.classAttributes": [
+    "class",
+    "className",
+    "contentClassName",
+    ".*[cC]lassName.*"
   ],
   "tailwindCSS.classFunctions": [
     "cva",

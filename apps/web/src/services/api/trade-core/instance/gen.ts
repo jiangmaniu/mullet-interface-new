@@ -13,20 +13,20 @@
 /** AccountCountVO */
 export interface AccountCountVO {
   /** 账户净值 */
-  availableBalance?: number;
+  availableBalance?: number
   /**
    * 交易账户id
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 总入金 */
-  totalDeposit?: number;
+  totalDeposit?: number
   /** 总盈亏 */
-  totalProfitLoss?: number;
+  totalProfitLoss?: number
   /** 总成交量 */
-  totalTradeVolume?: number;
+  totalTradeVolume?: number
   /** 总出金 */
-  totalWithdrawal?: number;
+  totalWithdrawal?: number
 }
 
 /** AccountCreateVO */
@@ -35,33 +35,33 @@ export interface AccountCreateVO {
    * 账户组ID
    * @format int64
    */
-  accountGroupId: number;
+  accountGroupId: number
   /**
    * 客户ID
    * @format int64
    */
-  clientId: number;
+  clientId: number
   /** 名称 */
-  name?: string;
+  name?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** AccountGroupCloneVO */
 export interface AccountGroupCloneVO {
   /** 组别 */
-  groupCode?: string;
+  groupCode?: string
   /** 组名称 */
-  groupName?: string;
+  groupName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否模拟 */
-  isSimulate?: boolean;
+  isSimulate?: boolean
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** AccountGroupSaveVO */
@@ -70,82 +70,82 @@ export interface AccountGroupSaveVO {
    * 追加预付款比例
    * @format int32
    */
-  addAdvanceCharge?: number;
+  addAdvanceCharge?: number
   /**
    * 强制平仓比例
    * @format int32
    */
-  compelCloseRatio?: number;
+  compelCloseRatio?: number
   /**
    * 货币小数位
    * @format int32
    */
-  currencyDecimal?: number;
+  currencyDecimal?: number
   /** 货币单位 */
-  currencyUnit?: string;
+  currencyUnit?: string
   /** 默认入金 */
-  defaultDeposit?: number;
+  defaultDeposit?: number
   /** 启用链接 */
-  enableConnect?: boolean;
+  enableConnect?: boolean
   /** 启用逐仓 */
-  enableIsolated?: boolean;
+  enableIsolated?: boolean
   /** 强平后补偿后结余 */
-  enableQphbcfjy?: boolean;
+  enableQphbcfjy?: boolean
   /** 启用交易 */
-  enableTrade?: boolean;
+  enableTrade?: boolean
   /** 资金划转 */
-  fundTransfer?: AccountGroupSaveVoFundTransferEnum;
+  fundTransfer?: AccountGroupSaveVoFundTransferEnum
   /** 组别 */
-  groupCode?: string;
+  groupCode?: string
   /** 组名称 */
-  groupName?: string;
+  groupName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否模拟 */
-  isSimulate?: boolean;
+  isSimulate?: boolean
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /** Solana网络 */
-  network?: string;
+  network?: string
   /** Solana网络别名 */
-  networkAlias?: string;
+  networkAlias?: string
   /** 订单模式 */
-  orderMode?: AccountGroupSaveVoOrderModeEnum;
+  orderMode?: AccountGroupSaveVoOrderModeEnum
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 简介 */
-  synopsis?: string;
+  synopsis?: string
   /** 可用预付款 */
-  usableAdvanceCharge?: AccountGroupSaveVoUsableAdvanceChargeEnum;
+  usableAdvanceCharge?: AccountGroupSaveVoUsableAdvanceChargeEnum
   /**
    * 可用历史
    * @format int32
    */
-  usableHistory?: number;
+  usableHistory?: number
 }
 
 /** AccountHighVO */
 export interface AccountHighVO {
   /** 账户组别 */
-  accountGroup?: string;
+  accountGroup?: string
   /**
    * 交易账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /** 客户 */
-  client?: string;
+  client?: string
   /** 客户id */
-  clientId?: string;
+  clientId?: string
   /** 保证金比例 */
-  marginRatio?: number;
+  marginRatio?: number
   /** 余额 */
-  money?: number;
+  money?: number
 }
 
 /** AccountMoneyTransferVO */
@@ -154,16 +154,16 @@ export interface AccountMoneyTransferVO {
    * 转出交易账户ID
    * @format int64
    */
-  fromAccountId: number;
+  fromAccountId: number
   /** 金额 */
-  money?: number;
+  money?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /**
    * 转入交易账户ID
    * @format int64
    */
-  toAccountId: number;
+  toAccountId: number
 }
 
 /** AccountUpdateVO */
@@ -172,37 +172,37 @@ export interface AccountUpdateVO {
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 启用交易 */
-  isTrade?: boolean;
+  isTrade?: boolean
   /** 名称 */
-  name?: string;
+  name?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountUpdateVoStatusEnum;
+  status?: AccountUpdateVoStatusEnum
 }
 
 /** FollowManageCreateVO */
 export interface FollowManageCreateVO {
   /** 跟单池名称 */
-  followPoolName?: string;
+  followPoolName?: string
   /** 初始金额 */
-  initialMoney?: number;
+  initialMoney?: number
   /**
    * 跟单主账户ID
    * @format int64
    */
-  mainAccountId?: number;
+  mainAccountId?: number
   /** 赎回是否平仓订单 */
-  redeemCloseOrder?: boolean;
+  redeemCloseOrder?: boolean
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** FollowPurchaseSharesVO */
@@ -211,16 +211,16 @@ export interface FollowPurchaseSharesVO {
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 申购金额 */
-  purchaseMoney?: number;
+  purchaseMoney?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
 }
 
 /** FollowRedeemSharesVO */
@@ -229,29 +229,29 @@ export interface FollowRedeemSharesVO {
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 赎回份额 */
-  sharesAmount?: number;
+  sharesAmount?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
 }
 
 /** FollowVaultDivvyVO */
 export interface FollowVaultDivvyVO {
   /** 分红金额 */
-  divvyMoney?: number;
+  divvyMoney?: number
   /**
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** HandRechargeVO */
@@ -260,13 +260,13 @@ export interface HandRechargeVO {
    * 交易账户ID
    * @format int64
    */
-  accountId: number;
+  accountId: number
   /** 金额 */
-  money?: number;
+  money?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 类型 */
-  type: HandRechargeVoTypeEnum;
+  type: HandRechargeVoTypeEnum
 }
 
 /** HandWithdrawVO */
@@ -275,100 +275,100 @@ export interface HandWithdrawVO {
    * 交易账户ID
    * @format int64
    */
-  accountId: number;
+  accountId: number
   /** 金额 */
-  money?: number;
+  money?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /**
    * 出金地址
    * @minLength 43
    * @maxLength 44
    */
-  withdrawAddress: string;
+  withdrawAddress: string
 }
 
 /** JSONObject */
-export type JSONObject = Record<string, object>;
+export type JSONObject = Record<string, object>
 
 /** LbPoolAddVO */
 export interface LbPoolAddVO {
   /** 基础金额 */
-  baseMoney?: number;
+  baseMoney?: number
   /** LB code */
-  lbCode?: string;
+  lbCode?: string
   /** LB名称 */
-  lbName?: string;
+  lbName?: string
   /** LP金库地址 */
-  lpAddress?: string;
+  lpAddress?: string
   /** LP金库分成比例 */
-  lpSharingRatio?: number;
+  lpSharingRatio?: number
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /** Solana网络RPC */
-  networkRpc?: string;
+  networkRpc?: string
   /** Solana网络WS */
-  networkWs?: string;
+  networkWs?: string
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 协议金库地址 */
-  protocolAddress?: string;
+  protocolAddress?: string
   /** 协议金库分成比例 */
-  protocolSharingRatio?: number;
+  protocolSharingRatio?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** LbPoolUpdateVO */
 export interface LbPoolUpdateVO {
   /** 基础金额 */
-  baseMoney?: number;
+  baseMoney?: number
   /** 关联交易品种 */
-  correlationSymbols?: string;
+  correlationSymbols?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** LB code */
-  lbCode?: string;
+  lbCode?: string
   /** LB名称 */
-  lbName?: string;
+  lbName?: string
   /** LP金库分成比例 */
-  lpSharingRatio?: number;
+  lpSharingRatio?: number
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /** Solana网络RPC */
-  networkRpc?: string;
+  networkRpc?: string
   /** Solana网络WS */
-  networkWs?: string;
+  networkWs?: string
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 协议金库分成比例 */
-  protocolSharingRatio?: number;
+  protocolSharingRatio?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /** OrderHighVO */
 export interface OrderHighVO {
   /** 账户组别 */
-  accountGroup?: string;
+  accountGroup?: string
   /**
    * 交易账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /** 持仓单id */
-  bagOrderId?: string;
+  bagOrderId?: string
   /** 客户 */
-  client?: string;
+  client?: string
   /** 客户id */
-  clientId?: string;
+  clientId?: string
   /** 保证金比例 */
-  marginRatio?: number;
+  marginRatio?: number
   /** 余额 */
-  money?: number;
+  money?: number
 }
 
 /**
@@ -380,33 +380,33 @@ export interface R {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: object;
+  data?: object
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /** TwrRecordVO */
 export interface TwrRecordVO {
   /** 净值回报率 */
-  navReturnRate?: number;
+  navReturnRate?: number
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** TWR */
-  twr?: number;
+  twr?: number
   /**
    * TWR时间
    * @format int64
    */
-  twrTime?: number;
+  twrTime?: number
 }
 
 /** Type */
 export interface Type {
-  typeName?: string;
+  typeName?: string
 }
 
 /**
@@ -418,28 +418,28 @@ export interface AccountGroupSymbols {
    * 关联交易账户组
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否默认配置 */
-  isDefault?: boolean;
+  isDefault?: boolean
   /**
    * 排序
    * @format int32
    */
-  sort?: number;
+  sort?: number
   /** 状态 */
-  status?: AccountGroupSymbolsStatusEnum;
+  status?: AccountGroupSymbolsStatusEnum
   /**
    * 关联交易品种配置
    * @format int64
    */
-  symbolConfId?: number;
+  symbolConfId?: number
   /** 交易品种 */
-  symbols?: string;
+  symbols?: string
 }
 
 /**
@@ -451,30 +451,30 @@ export interface AccountGroupSymbols1 {
    * 关联交易账户组
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否默认配置 */
-  isDefault?: boolean;
+  isDefault?: boolean
   /**
    * 排序
    * @format int32
    */
-  sort?: number;
+  sort?: number
   /** 状态 */
-  status?: AccountGroupSymbols1StatusEnum;
+  status?: AccountGroupSymbols1StatusEnum
   /** 主键 */
-  symbolConf?: SymbolConf;
+  symbolConf?: SymbolConf
   /**
    * 关联交易品种配置
    * @format int64
    */
-  symbolConfId?: number;
+  symbolConfId?: number
   /** 交易品种 */
-  symbols?: string;
+  symbols?: string
 }
 
 /**
@@ -486,74 +486,74 @@ export interface AccountGroup {
    * 追加预付款比例
    * @format int32
    */
-  addAdvanceCharge?: number;
+  addAdvanceCharge?: number
   /**
    * 强制平仓比例
    * @format int32
    */
-  compelCloseRatio?: number;
+  compelCloseRatio?: number
   /**
    * 货币小数位
    * @format int32
    */
-  currencyDecimal?: number;
+  currencyDecimal?: number
   /** 货币单位 */
-  currencyUnit?: string;
+  currencyUnit?: string
   /** 默认入金 */
-  defaultDeposit?: number;
+  defaultDeposit?: number
   /** 启用链接 */
-  enableConnect?: boolean;
+  enableConnect?: boolean
   /** 启用逐仓 */
-  enableIsolated?: boolean;
+  enableIsolated?: boolean
   /** 强平后补偿后结余 */
-  enableQphbcfjy?: boolean;
+  enableQphbcfjy?: boolean
   /** 启用交易 */
-  enableTrade?: boolean;
+  enableTrade?: boolean
   /** 资金划转 */
-  fundTransfer?: AccountGroupFundTransferEnum;
+  fundTransfer?: AccountGroupFundTransferEnum
   /** 组别 */
-  groupCode?: string;
+  groupCode?: string
   /** 组名称 */
-  groupName?: string;
+  groupName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否模拟 */
-  isSimulate?: boolean;
+  isSimulate?: boolean
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /**
    * Mint代币小数位
    * @format int32
    */
-  mintDecimals?: number;
+  mintDecimals?: number
   /** Solana网络别名 */
-  networkAlias?: string;
+  networkAlias?: string
   /** Solana网络RPC */
-  networkRpc?: string;
+  networkRpc?: string
   /** Solana网络WS */
-  networkWs?: string;
+  networkWs?: string
   /** 订单模式 */
-  orderMode?: AccountGroupOrderModeEnum;
+  orderMode?: AccountGroupOrderModeEnum
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 协议金库地址 */
-  protocolVaultAddress?: string;
+  protocolVaultAddress?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountGroupStatusEnum;
+  status?: AccountGroupStatusEnum
   /** 简介 */
-  synopsis?: string;
+  synopsis?: string
   /** 可用预付款 */
-  usableAdvanceCharge?: AccountGroupUsableAdvanceChargeEnum;
+  usableAdvanceCharge?: AccountGroupUsableAdvanceChargeEnum
   /**
    * 可用历史
    * @format int32
    */
-  usableHistory?: number;
+  usableHistory?: number
 }
 
 /**
@@ -565,43 +565,43 @@ export interface AccountManage {
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /**
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 跟单盈亏 */
-  followProfit?: number;
+  followProfit?: number
   /** 跟单份额 */
-  followShares?: number;
+  followShares?: number
   /** 跟单总金额 */
-  followTotalMoney?: number;
+  followTotalMoney?: number
   /** 跟单总份额 */
-  followTotalShares?: number;
+  followTotalShares?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 赎回总金额 */
-  redeemTotalMoney?: number;
+  redeemTotalMoney?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountManageStatusEnum;
+  status?: AccountManageStatusEnum
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
 }
 
 /**
@@ -613,43 +613,43 @@ export interface AccountManage1 {
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /**
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 跟单盈亏 */
-  followProfit?: number;
+  followProfit?: number
   /** 跟单份额 */
-  followShares?: number;
+  followShares?: number
   /** 跟单总金额 */
-  followTotalMoney?: number;
+  followTotalMoney?: number
   /** 跟单总份额 */
-  followTotalShares?: number;
+  followTotalShares?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 赎回总金额 */
-  redeemTotalMoney?: number;
+  redeemTotalMoney?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountManage1StatusEnum;
+  status?: AccountManage1StatusEnum
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
 }
 
 /**
@@ -661,50 +661,50 @@ export interface AccountManage2 {
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /** 跟单管理信息 */
-  followManage?: PoolManage1;
+  followManage?: PoolManage1
   /**
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /** 跟单盈亏 */
-  followProfit?: number;
+  followProfit?: number
   /** 跟单份额 */
-  followShares?: number;
+  followShares?: number
   /** 跟单总金额 */
-  followTotalMoney?: number;
+  followTotalMoney?: number
   /** 跟单总份额 */
-  followTotalShares?: number;
+  followTotalShares?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 追后申购时间
    * @format date-time
    */
-  lastPurchaseTime?: string;
+  lastPurchaseTime?: string
   /** PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 赎回总金额 */
-  redeemTotalMoney?: number;
+  redeemTotalMoney?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountManage2StatusEnum;
+  status?: AccountManage2StatusEnum
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
 }
 
 /**
@@ -716,102 +716,102 @@ export interface AccountPage {
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 追加预付款比例
    * @format int32
    */
-  addAdvanceCharge?: number;
+  addAdvanceCharge?: number
   /**
    * 客户ID
    * @format int64
    */
-  clientId?: number;
+  clientId?: number
   /**
    * 强制平仓比例
    * @format int32
    */
-  compelCloseRatio?: number;
+  compelCloseRatio?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 货币单位 */
-  currencyUnit?: string;
+  currencyUnit?: string
   /** 启用链接 */
-  enableConnect?: boolean;
+  enableConnect?: boolean
   /** 启用逐仓 */
-  enableIsolated?: boolean;
+  enableIsolated?: boolean
   /** 强平后补偿后结余 */
-  enableQphbcfjy?: boolean;
+  enableQphbcfjy?: boolean
   /** 启用交易 */
-  enableTrade?: boolean;
+  enableTrade?: boolean
   /** 资金划转 */
-  fundTransfer?: AccountPageFundTransferEnum;
+  fundTransfer?: AccountPageFundTransferEnum
   /** 组别 */
-  groupCode?: string;
+  groupCode?: string
   /** 组名称 */
-  groupName?: string;
+  groupName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 是否模拟 */
-  isSimulate?: boolean;
+  isSimulate?: boolean
   /** 启用交易 */
-  isTrade?: boolean;
+  isTrade?: boolean
   /** 逐仓保证金 */
-  isolatedMargin?: number;
+  isolatedMargin?: number
   /**
    * 最近访问
    * @format date-time
    */
-  lastVisitedTime?: string;
+  lastVisitedTime?: string
   /** 保证金 */
-  margin?: number;
+  margin?: number
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /**
    * Mint代币小数位
    * @format int32
    */
-  mintDecimals?: number;
+  mintDecimals?: number
   /** 余额 */
-  money?: number;
+  money?: number
   /** 名称 */
-  name?: string;
+  name?: string
   /** Solana网络别名 */
-  networkAlias?: string;
+  networkAlias?: string
   /** Solana网络RPC */
-  networkRpc?: string;
+  networkRpc?: string
   /** Solana网络WS */
-  networkWs?: string;
+  networkWs?: string
   /** 订单模式 */
-  orderMode?: AccountPageOrderModeEnum;
+  orderMode?: AccountPageOrderModeEnum
   /** PDA代币账户 */
-  pdaTokenAddress?: string;
+  pdaTokenAddress?: string
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountPageStatusEnum;
+  status?: AccountPageStatusEnum
   /** 总盈亏 */
-  totalProfit?: number;
+  totalProfit?: number
   /** 账户类型 */
-  type?: AccountPageTypeEnum;
+  type?: AccountPageTypeEnum
   /** 用户登录账户 */
-  userAccount?: string;
+  userAccount?: string
   /** 用户邮箱 */
-  userEmail?: string;
+  userEmail?: string
   /** 用户名称 */
-  userName?: string;
+  userName?: string
   /** 用户手机号 */
-  userPhone?: string;
+  userPhone?: string
   /** 用户手机国际区号 */
-  userPhoneAreaCode?: string;
+  userPhoneAreaCode?: string
 }
 
 /**
@@ -823,47 +823,47 @@ export interface Account {
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 客户ID
    * @format int64
    */
-  clientId?: number;
+  clientId?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 货币单位 */
-  currencyUnit?: string;
+  currencyUnit?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 启用交易 */
-  isTrade?: boolean;
+  isTrade?: boolean
   /** 逐仓保证金 */
-  isolatedMargin?: number;
+  isolatedMargin?: number
   /**
    * 最近访问
    * @format date-time
    */
-  lastVisitedTime?: string;
+  lastVisitedTime?: string
   /** 保证金 */
-  margin?: number;
+  margin?: number
   /** 余额 */
-  money?: number;
+  money?: number
   /** 名称 */
-  name?: string;
+  name?: string
   /** PDA代币账户 */
-  pdaTokenAddress?: string;
+  pdaTokenAddress?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: AccountStatusEnum;
+  status?: AccountStatusEnum
   /** 账户类型 */
-  type?: AccountTypeEnum;
+  type?: AccountTypeEnum
 }
 
 /**
@@ -875,114 +875,114 @@ export interface BagOrder {
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /** 交易账户名 */
-  accountName?: string;
+  accountName?: string
   /**
    * 追加预付款比例
    * @format int32
    */
-  addAdvanceCharge?: number;
+  addAdvanceCharge?: number
   /** 別名 */
-  alias?: string;
+  alias?: string
   /** 订单方向 */
-  buySell?: BagOrderBuySellEnum;
+  buySell?: BagOrderBuySellEnum
   /** 平仓价格 */
-  closePrice?: number;
+  closePrice?: number
   /**
    * 强制平仓比例
    * @format int32
    */
-  compelCloseRatio?: number;
+  compelCloseRatio?: number
   /** 配置 */
-  conf?: string;
+  conf?: string
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 汇率 */
-  exchangeRate?: string;
+  exchangeRate?: string
   /**
    * 完成时间
    * @format date-time
    */
-  finishTime?: string;
+  finishTime?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /** 库存费 */
-  interestFees?: number;
+  interestFees?: number
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 保证金类型 */
-  marginType?: BagOrderMarginTypeEnum;
+  marginType?: BagOrderMarginTypeEnum
   /** 订单模式 */
-  mode?: BagOrderModeEnum;
+  mode?: BagOrderModeEnum
   /** 订单基础保证金 */
-  orderBaseMargin?: number;
+  orderBaseMargin?: number
   /** 订单保证金 */
-  orderMargin?: number;
+  orderMargin?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 持仓PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 开仓价格 */
-  startPrice?: number;
+  startPrice?: number
   /** 状态 */
-  status?: BagOrderStatusEnum;
+  status?: BagOrderStatusEnum
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /**
    * 更新时间
    * @format date-time
    */
-  updateTime?: string;
+  updateTime?: string
   /** 用户登录账户 */
-  userAccount?: string;
+  userAccount?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
   /** 用户名称 */
-  userName?: string;
+  userName?: string
 }
 
 /**
@@ -991,91 +991,91 @@ export interface BagOrder {
  */
 export interface BagOrder1 {
   /** 用户信息 */
-  accountDetail?: AccountPage;
+  accountDetail?: AccountPage
   /**
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /** 订单方向 */
-  buySell?: BagOrder1BuySellEnum;
+  buySell?: BagOrder1BuySellEnum
   /** 平仓价格 */
-  closePrice?: number;
+  closePrice?: number
   /** 配置 */
-  conf?: string;
+  conf?: string
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 汇率 */
-  exchangeRate?: string;
+  exchangeRate?: string
   /**
    * 完成时间
    * @format date-time
    */
-  finishTime?: string;
+  finishTime?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 库存费 */
-  interestFees?: number;
+  interestFees?: number
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 保证金类型 */
-  marginType?: BagOrder1MarginTypeEnum;
+  marginType?: BagOrder1MarginTypeEnum
   /** 订单模式 */
-  mode?: BagOrder1ModeEnum;
+  mode?: BagOrder1ModeEnum
   /** 订单基础保证金 */
-  orderBaseMargin?: number;
+  orderBaseMargin?: number
   /** 订单保证金 */
-  orderMargin?: number;
+  orderMargin?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 订单集合 */
-  ordersInfo?: Orders2[];
+  ordersInfo?: Orders2[]
   /** 持仓PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 开仓价格 */
-  startPrice?: number;
+  startPrice?: number
   /** 状态 */
-  status?: BagOrder1StatusEnum;
+  status?: BagOrder1StatusEnum
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /**
    * 更新时间
    * @format date-time
    */
-  updateTime?: string;
+  updateTime?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -1084,21 +1084,21 @@ export interface BagOrder1 {
  */
 export interface DelayUser {
   /** 账号 */
-  account?: string;
+  account?: string
   /**
    * 加入时间
    * @format date-time
    */
-  addTime?: string;
+  addTime?: string
   /** 邮箱 */
-  email?: string;
+  email?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 手机 */
-  phone?: string;
+  phone?: string
 }
 
 /**
@@ -1107,28 +1107,28 @@ export interface DelayUser {
  */
 export interface Holiday {
   /** 描述 */
-  describeInfo?: string;
+  describeInfo?: string
   /**
    * 结束时间
    * @format date-time
    */
-  endTime: string;
+  endTime: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 每年重复 */
-  repeatYear: boolean;
+  repeatYear: boolean
   /**
    * 开始时间
    * @format date-time
    */
-  startTime: string;
+  startTime: string
   /** 状态 */
-  status: HolidayStatusEnum;
+  status: HolidayStatusEnum
   /** 交易品种 */
-  symbols: string;
+  symbols: string
 }
 
 /**
@@ -1137,223 +1137,223 @@ export interface Holiday {
  */
 export interface Holiday1 {
   /** 描述 */
-  describeInfo?: string;
+  describeInfo?: string
   /**
    * 结束时间
    * @format date-time
    */
-  endTime: string;
+  endTime: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 每年重复 */
-  repeatYear: boolean;
+  repeatYear: boolean
   /**
    * 开始时间
    * @format date-time
    */
-  startTime: string;
+  startTime: string
   /** 状态 */
-  status: Holiday1StatusEnum;
+  status: Holiday1StatusEnum
   /** 交易品种 */
-  symbols: string;
+  symbols: string
 }
 
 /** IPage«AccountGroupSymbols对象» */
 export interface IPageAccountGroupSymbols {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: AccountGroupSymbols1[];
+  pages?: number
+  records?: AccountGroupSymbols1[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«AccountGroup对象» */
 export interface IPageAccountGroup {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: AccountGroup[];
+  pages?: number
+  records?: AccountGroup[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«AccountManage对象» */
 export interface IPageAccountManage {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: AccountManage1[];
+  pages?: number
+  records?: AccountManage1[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«AccountPage对象» */
 export interface IPageAccountPage {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: AccountPage[];
+  pages?: number
+  records?: AccountPage[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«BagOrder对象» */
 export interface IPageBagOrder {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: BagOrder[];
+  pages?: number
+  records?: BagOrder[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«DelayUser对象» */
 export interface IPageDelayUser {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: DelayUser[];
+  pages?: number
+  records?: DelayUser[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«Holiday对象» */
 export interface IPageHoliday {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: Holiday1[];
+  pages?: number
+  records?: Holiday1[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«LbPool对象» */
 export interface IPageLbPool {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: LbPool[];
+  pages?: number
+  records?: LbPool[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«MoneyRecords对象» */
 export interface IPageMoneyRecords {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: MoneyRecords[];
+  pages?: number
+  records?: MoneyRecords[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«Orders对象» */
 export interface IPageOrders {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: Orders[];
+  pages?: number
+  records?: Orders[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«PoolManage对象» */
 export interface IPagePoolManage {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: PoolManage[];
+  pages?: number
+  records?: PoolManage[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«SharesRecord对象» */
 export interface IPageSharesRecord {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: SharesRecord[];
+  pages?: number
+  records?: SharesRecord[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«Symbols对象» */
 export interface IPageSymbols {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: Symbols[];
+  pages?: number
+  records?: Symbols[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«TradeRecords对象» */
 export interface IPageTradeRecords {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: TradeRecords[];
+  pages?: number
+  records?: TradeRecords[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /** IPage«跟单金库» */
 export interface IPage {
   /** @format int64 */
-  current?: number;
+  current?: number
   /** @format int64 */
-  pages?: number;
-  records?: _10[];
+  pages?: number
+  records?: _10[]
   /** @format int64 */
-  size?: number;
+  size?: number
   /** @format int64 */
-  total?: number;
+  total?: number
 }
 
 /**
@@ -1362,53 +1362,53 @@ export interface IPage {
  */
 export interface LbPool {
   /** 基础金额 */
-  baseMoney?: number;
+  baseMoney?: number
   /** 关联交易品种 */
-  correlationSymbol?: string;
+  correlationSymbol?: string
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** LB code */
-  lbCode?: string;
+  lbCode?: string
   /** LB金额 */
-  lbMoney?: number;
+  lbMoney?: number
   /** LB名称 */
-  lbName?: string;
+  lbName?: string
   /** LB金库PDA地址 */
-  lbPdaAddress?: string;
+  lbPdaAddress?: string
   /** LP金库地址 */
-  lpAddress?: string;
+  lpAddress?: string
   /** LP金库分成比例 */
-  lpSharingRatio?: number;
+  lpSharingRatio?: number
   /** Mint代币地址 */
-  mintAddress?: string;
+  mintAddress?: string
   /** Solana网络RPC */
-  networkRpc?: string;
+  networkRpc?: string
   /** Solana网络WS */
-  networkWs?: string;
+  networkWs?: string
   /** 智能合约ID */
-  programId?: string;
+  programId?: string
   /** 协议金库地址 */
-  protocolAddress?: string;
+  protocolAddress?: string
   /** 协议金库分成比例 */
-  protocolSharingRatio?: number;
+  protocolSharingRatio?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: LbPoolStatusEnum;
+  status?: LbPoolStatusEnum
   /** 转移金额 */
-  transferMoney?: number;
+  transferMoney?: number
 }
 
 /** Map«string,boolean» */
-export type MapStringBoolean = Record<string, boolean>;
+export type MapStringBoolean = Record<string, boolean>
 
 /**
  * MoneyRecords对象
@@ -1419,40 +1419,40 @@ export interface MoneyRecords {
    * 账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** @format int64 */
-  createTimeLong?: number;
+  createTimeLong?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 金额 */
-  money?: number;
+  money?: number
   /** 新余额 */
-  newBalance?: number;
+  newBalance?: number
   /** 旧余额 */
-  oldBalance?: number;
+  oldBalance?: number
   /** 操作人 */
-  operationUser?: string;
+  operationUser?: string
   /** 订单号 */
-  orderNo?: string;
+  orderNo?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** TX签名 */
-  signature?: string;
+  signature?: string
   /** 类型 */
-  type?: MoneyRecordsTypeEnum;
+  type?: MoneyRecordsTypeEnum
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -1464,40 +1464,40 @@ export interface MoneyRecords1 {
    * 账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** @format int64 */
-  createTimeLong?: number;
+  createTimeLong?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 金额 */
-  money?: number;
+  money?: number
   /** 新余额 */
-  newBalance?: number;
+  newBalance?: number
   /** 旧余额 */
-  oldBalance?: number;
+  oldBalance?: number
   /** 操作人 */
-  operationUser?: string;
+  operationUser?: string
   /** 订单号 */
-  orderNo?: string;
+  orderNo?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** TX签名 */
-  signature?: string;
+  signature?: string
   /** 类型 */
-  type?: MoneyRecords1TypeEnum;
+  type?: MoneyRecords1TypeEnum
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -1509,116 +1509,116 @@ export interface Orders {
    * 交易账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /** 交易账户名 */
-  accountName?: string;
+  accountName?: string
   /** 別名 */
-  alias?: string;
+  alias?: string
   /** 持仓ID */
-  bagOrderIds?: string;
+  bagOrderIds?: string
   /** 订单方向 */
-  buySell?: OrdersBuySellEnum;
+  buySell?: OrdersBuySellEnum
   /** 配置 */
-  conf?: string;
+  conf?: string
   /** 创建原因 */
-  createReason?: OrdersCreateReasonEnum;
+  createReason?: OrdersCreateReasonEnum
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 执行订单ID
    * @format int64
    */
-  executeOrderId?: number;
+  executeOrderId?: number
   /**
    * 过期时间
    * @format date-time
    */
-  expirationTime?: string;
+  expirationTime?: string
   /**
    * 完成时间
    * @format date-time
    */
-  finishTime?: string;
+  finishTime?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /** 成交方向 */
-  inOut?: OrdersInOutEnum;
+  inOut?: OrdersInOutEnum
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 限价价格 */
-  limitPrice?: number;
+  limitPrice?: number
   /** 保证金类型 */
-  marginType?: OrdersMarginTypeEnum;
+  marginType?: OrdersMarginTypeEnum
   /** 订单模式 */
-  mode?: OrdersModeEnum;
+  mode?: OrdersModeEnum
   /**
    * 操作员ID
    * @format int64
    */
-  operatorId?: number;
+  operatorId?: number
   /** 订单保证金 */
-  orderMargin?: number;
+  orderMargin?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: OrdersStatusEnum;
+  status?: OrdersStatusEnum
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /** 成交价格 */
-  tradePrice?: number;
+  tradePrice?: number
   /** 成交量 */
-  tradingVolume?: number;
+  tradingVolume?: number
   /** 订单类型 */
-  type?: OrdersTypeEnum;
+  type?: OrdersTypeEnum
   /**
    * 更新时间
    * @format date-time
    */
-  updateTime?: string;
+  updateTime?: string
   /** 用户登录账户 */
-  userAccount?: string;
+  userAccount?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
   /** 用户名称 */
-  userName?: string;
+  userName?: string
 }
 
 /**
@@ -1627,97 +1627,97 @@ export interface Orders {
  */
 export interface Orders1 {
   /** 持仓ID */
-  bagOrderIds?: string;
+  bagOrderIds?: string
   /** 订单方向 */
-  buySell?: Orders1BuySellEnum;
+  buySell?: Orders1BuySellEnum
   /** 配置 */
-  conf?: string;
+  conf?: string
   /** 创建原因 */
-  createReason?: Orders1CreateReasonEnum;
+  createReason?: Orders1CreateReasonEnum
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 执行订单ID
    * @format int64
    */
-  executeOrderId?: number;
+  executeOrderId?: number
   /**
    * 过期时间
    * @format date-time
    */
-  expirationTime?: string;
+  expirationTime?: string
   /**
    * 完成时间
    * @format date-time
    */
-  finishTime?: string;
+  finishTime?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 成交方向 */
-  inOut?: Orders1InOutEnum;
+  inOut?: Orders1InOutEnum
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 限价价格 */
-  limitPrice?: number;
+  limitPrice?: number
   /** 保证金类型 */
-  marginType?: Orders1MarginTypeEnum;
+  marginType?: Orders1MarginTypeEnum
   /** 订单模式 */
-  mode?: Orders1ModeEnum;
+  mode?: Orders1ModeEnum
   /**
    * 操作员ID
    * @format int64
    */
-  operatorId?: number;
+  operatorId?: number
   /** 订单保证金 */
-  orderMargin?: number;
+  orderMargin?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: Orders1StatusEnum;
+  status?: Orders1StatusEnum
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /** 成交价格 */
-  tradePrice?: number;
+  tradePrice?: number
   /** 成交量 */
-  tradingVolume?: number;
+  tradingVolume?: number
   /** 订单类型 */
-  type?: Orders1TypeEnum;
+  type?: Orders1TypeEnum
   /**
    * 更新时间
    * @format date-time
    */
-  updateTime?: string;
+  updateTime?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -1726,103 +1726,103 @@ export interface Orders1 {
  */
 export interface Orders2 {
   /** 用户信息 */
-  accountDetail?: AccountPage;
+  accountDetail?: AccountPage
   /** 持仓ID */
-  bagOrderIds?: string;
+  bagOrderIds?: string
   /** 订单方向 */
-  buySell?: Orders2BuySellEnum;
+  buySell?: Orders2BuySellEnum
   /** 配置 */
-  conf?: string;
+  conf?: string
   /** 创建原因 */
-  createReason?: Orders2CreateReasonEnum;
+  createReason?: Orders2CreateReasonEnum
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 执行订单ID
    * @format int64
    */
-  executeOrderId?: number;
+  executeOrderId?: number
   /**
    * 过期时间
    * @format date-time
    */
-  expirationTime?: string;
+  expirationTime?: string
   /**
    * 完成时间
    * @format date-time
    */
-  finishTime?: string;
+  finishTime?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 成交方向 */
-  inOut?: Orders2InOutEnum;
+  inOut?: Orders2InOutEnum
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 限价价格 */
-  limitPrice?: number;
+  limitPrice?: number
   /** 保证金类型 */
-  marginType?: Orders2MarginTypeEnum;
+  marginType?: Orders2MarginTypeEnum
   /** 订单模式 */
-  mode?: Orders2ModeEnum;
+  mode?: Orders2ModeEnum
   /**
    * 操作员ID
    * @format int64
    */
-  operatorId?: number;
+  operatorId?: number
   /** 订单保证金 */
-  orderMargin?: number;
+  orderMargin?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: Orders2StatusEnum;
+  status?: Orders2StatusEnum
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /** 成交价格 */
-  tradePrice?: number;
+  tradePrice?: number
   /** 成交记录集合 */
-  tradeRecordsInfo?: TradeRecords1[];
+  tradeRecordsInfo?: TradeRecords1[]
   /** 成交量 */
-  tradingVolume?: number;
+  tradingVolume?: number
   /** 订单类型 */
-  type?: Orders2TypeEnum;
+  type?: Orders2TypeEnum
   /**
    * 更新时间
    * @format date-time
    */
-  updateTime?: string;
+  updateTime?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -1831,57 +1831,57 @@ export interface Orders2 {
  */
 export interface PoolManage {
   /** 账户份额 */
-  accountFollowShares?: AccountManage;
+  accountFollowShares?: AccountManage
   /** APR */
-  apr?: number;
+  apr?: number
   /** 管理员最小占比(%) */
-  authorityMinProportion?: number;
+  authorityMinProportion?: number
   /** 管理员分润(%) */
-  authorityProfitSharing?: number;
+  authorityProfitSharing?: number
   /** 管理员份额 */
-  authorityShares?: number;
+  authorityShares?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 跟单账户 */
-  followAccount?: Account;
+  followAccount?: Account
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /** 跟单池名称 */
-  followPoolName?: string;
+  followPoolName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 跟单账户ID
    * @format int64
    */
-  mainAccountId?: number;
+  mainAccountId?: number
   /** 最大回撤 */
-  maxDrawdown?: number;
+  maxDrawdown?: number
   /** PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 赎回是否平仓订单 */
-  redeemCloseOrder?: boolean;
+  redeemCloseOrder?: boolean
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: PoolManageStatusEnum;
+  status?: PoolManageStatusEnum
   /** 总交易额 */
-  totalAmount?: number;
+  totalAmount?: number
   /** 总盈亏 */
-  totalProfit?: number;
+  totalProfit?: number
   /** 总申购金额 */
-  totalPurchaseMoney?: number;
+  totalPurchaseMoney?: number
   /** 总份额 */
-  totalShares?: number;
+  totalShares?: number
 }
 
 /**
@@ -1890,53 +1890,53 @@ export interface PoolManage {
  */
 export interface PoolManage1 {
   /** APR */
-  apr?: number;
+  apr?: number
   /** 管理员最小占比(%) */
-  authorityMinProportion?: number;
+  authorityMinProportion?: number
   /** 管理员分润(%) */
-  authorityProfitSharing?: number;
+  authorityProfitSharing?: number
   /** 管理员份额 */
-  authorityShares?: number;
+  authorityShares?: number
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /** 跟单池名称 */
-  followPoolName?: string;
+  followPoolName?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 跟单账户ID
    * @format int64
    */
-  mainAccountId?: number;
+  mainAccountId?: number
   /** 最大回撤 */
-  maxDrawdown?: number;
+  maxDrawdown?: number
   /** PDA地址 */
-  pdaAddress?: string;
+  pdaAddress?: string
   /** 赎回是否平仓订单 */
-  redeemCloseOrder?: boolean;
+  redeemCloseOrder?: boolean
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: PoolManage1StatusEnum;
+  status?: PoolManage1StatusEnum
   /** 总交易额 */
-  totalAmount?: number;
+  totalAmount?: number
   /** 总盈亏 */
-  totalProfit?: number;
+  totalProfit?: number
   /** 总申购金额 */
-  totalPurchaseMoney?: number;
+  totalPurchaseMoney?: number
   /** 总份额 */
-  totalShares?: number;
+  totalShares?: number
 }
 
 /**
@@ -1948,13 +1948,13 @@ export interface RAccountGroup {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: AccountGroup;
+  data?: AccountGroup
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -1966,13 +1966,13 @@ export interface RAccountManage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: AccountManage2;
+  data?: AccountManage2
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -1984,13 +1984,13 @@ export interface RAccountPage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: AccountPage;
+  data?: AccountPage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2002,13 +2002,13 @@ export interface RBagOrder {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: BagOrder1;
+  data?: BagOrder1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2020,13 +2020,13 @@ export interface RHoliday {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Holiday1;
+  data?: Holiday1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2038,13 +2038,13 @@ export interface RIPageAccountGroupSymbols {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageAccountGroupSymbols;
+  data?: IPageAccountGroupSymbols
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2056,13 +2056,13 @@ export interface RIPageAccountGroup {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageAccountGroup;
+  data?: IPageAccountGroup
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2074,13 +2074,13 @@ export interface RIPageAccountManage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageAccountManage;
+  data?: IPageAccountManage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2092,13 +2092,13 @@ export interface RIPageAccountPage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageAccountPage;
+  data?: IPageAccountPage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2110,13 +2110,13 @@ export interface RIPageBagOrder {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageBagOrder;
+  data?: IPageBagOrder
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2128,13 +2128,13 @@ export interface RIPageDelayUser {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageDelayUser;
+  data?: IPageDelayUser
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2146,13 +2146,13 @@ export interface RIPageHoliday {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageHoliday;
+  data?: IPageHoliday
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2164,13 +2164,13 @@ export interface RIPageLbPool {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageLbPool;
+  data?: IPageLbPool
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2182,13 +2182,13 @@ export interface RIPageMoneyRecords {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageMoneyRecords;
+  data?: IPageMoneyRecords
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2200,13 +2200,13 @@ export interface RIPageOrders {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageOrders;
+  data?: IPageOrders
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2218,13 +2218,13 @@ export interface RIPagePoolManage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPagePoolManage;
+  data?: IPagePoolManage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2236,13 +2236,13 @@ export interface RIPageSharesRecord {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageSharesRecord;
+  data?: IPageSharesRecord
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2254,13 +2254,13 @@ export interface RIPageSymbols {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageSymbols;
+  data?: IPageSymbols
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2272,13 +2272,13 @@ export interface RIPageTradeRecords {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPageTradeRecords;
+  data?: IPageTradeRecords
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2290,13 +2290,13 @@ export interface RIPage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: IPage;
+  data?: IPage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2308,13 +2308,13 @@ export interface RJSONArray {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: object[];
+  data?: object[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2326,13 +2326,13 @@ export interface RJSONObject {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Record<string, object>;
+  data?: Record<string, object>
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2344,13 +2344,13 @@ export interface RLbPool {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: LbPool;
+  data?: LbPool
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2362,13 +2362,13 @@ export interface RListAccountCountVO {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: AccountCountVO[];
+  data?: AccountCountVO[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2380,13 +2380,13 @@ export interface RListAccountHighVO {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: AccountHighVO[];
+  data?: AccountHighVO[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2398,13 +2398,13 @@ export interface RListOrderHighVO {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: OrderHighVO[];
+  data?: OrderHighVO[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2416,13 +2416,13 @@ export interface RListSymbolGroup {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: SymbolGroup1[];
+  data?: SymbolGroup1[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2434,13 +2434,13 @@ export interface RListSymbols {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Symbols[];
+  data?: Symbols[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2452,13 +2452,13 @@ export interface RListSymbols1 {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Symbols1[];
+  data?: Symbols1[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2470,13 +2470,13 @@ export interface RListTwrRecordVO {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: TwrRecordVO[];
+  data?: TwrRecordVO[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2488,13 +2488,13 @@ export interface RMapStringBoolean {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Record<string, boolean>;
+  data?: Record<string, boolean>
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2506,13 +2506,13 @@ export interface RMoneyRecords {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: MoneyRecords1;
+  data?: MoneyRecords1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2524,13 +2524,13 @@ export interface ROrders {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Orders1;
+  data?: Orders1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2542,13 +2542,13 @@ export interface ROrders1 {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Orders2;
+  data?: Orders2
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2560,13 +2560,13 @@ export interface RPoolManage {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: PoolManage;
+  data?: PoolManage
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2578,13 +2578,13 @@ export interface RSetObject {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: object[];
+  data?: object[]
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2596,13 +2596,13 @@ export interface RSymbolConf {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: SymbolConf1;
+  data?: SymbolConf1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2614,13 +2614,13 @@ export interface RSymbols {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Symbols1;
+  data?: Symbols1
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2632,13 +2632,13 @@ export interface RSymbols1 {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: Symbols;
+  data?: Symbols
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2650,13 +2650,13 @@ export interface RBigdecimal {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: number;
+  data?: number
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2668,13 +2668,13 @@ export interface RBoolean {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: boolean;
+  data?: boolean
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2686,13 +2686,13 @@ export interface RString {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: string;
+  data?: string
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2704,13 +2704,13 @@ export interface R_ {
    * 状态码
    * @format int32
    */
-  code: number;
+  code: number
   /** 承载数据 */
-  data?: _6;
+  data?: _6
   /** 返回消息 */
-  msg: string;
+  msg: string
   /** 是否成功 */
-  success: boolean;
+  success: boolean
 }
 
 /**
@@ -2722,53 +2722,53 @@ export interface SharesRecord {
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 当前份额单价 */
-  currentSharePrice?: number;
+  currentSharePrice?: number
   /**
    * 跟单账户ID
    * @format int64
    */
-  followAccountId?: number;
+  followAccountId?: number
   /**
    * 跟单管理ID
    * @format int64
    */
-  followManageId?: number;
+  followManageId?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 金额 */
-  moneyAmount?: number;
+  moneyAmount?: number
   /** 新份额 */
-  newShares?: number;
+  newShares?: number
   /** 旧份额 */
-  oldShares?: number;
+  oldShares?: number
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 分润金额 */
-  profitSharing?: number;
+  profitSharing?: number
   /** 用户申购份额单价 */
-  purchaseSharePrice?: number;
+  purchaseSharePrice?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 份额 */
-  sharesAmount?: number;
+  sharesAmount?: number
   /** 交易签名 */
-  signature?: string;
+  signature?: string
   /** 状态 */
-  status?: SharesRecordStatusEnum;
+  status?: SharesRecordStatusEnum
   /** 总份额 */
-  totalShares?: number;
+  totalShares?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 记录类型 */
-  type?: SharesRecordTypeEnum;
+  type?: SharesRecordTypeEnum
 }
 
 /**
@@ -2777,85 +2777,85 @@ export interface SharesRecord {
  */
 export interface SymbolConf {
   /** 货币-基础货币 */
-  baseCurrency?: string;
+  baseCurrency?: string
   /**
    * 货币-基础货币小数位
    * @format int32
    */
-  baseCurrencyDecimal?: number;
+  baseCurrencyDecimal?: number
   /** 交易-计算类型 */
-  calculationType?: SymbolConfCalculationTypeEnum;
+  calculationType?: SymbolConfCalculationTypeEnum
   /**
    * 交易-合约大小
    * @format int32
    */
-  contractSize?: number;
+  contractSize?: number
   /**
    * 常规-市场深度
    * @format int32
    */
-  depthOfMarket?: number;
+  depthOfMarket?: number
   /** 启用库存费 */
-  enableHoldingCost?: boolean;
+  enableHoldingCost?: boolean
   /** 交易-GTC */
-  gtc?: SymbolConfGtcEnum;
+  gtc?: SymbolConfGtcEnum
   /** 库存费配置（JSON）{"isEnable":true,"isHoliday":true,"type":"percentage","buyBag":100,"sellBag":100,"days":10,"multiplier":{"MONDAY":1,"TUESDAY":1,"WEDNESDAY":1,"THURSDAY":1,"FRIDAY":1,"SATURDAY":1,"SUNDAY":1}} */
-  holdingCostConf?: string;
+  holdingCostConf?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 交易-限价和停损级别
    * @format int32
    */
-  limitStopLevel?: number;
+  limitStopLevel?: number
   /** 交易量-最大单量 */
-  maxTrade?: number;
+  maxTrade?: number
   /** 交易量-最小单量 */
-  minTrade?: number;
+  minTrade?: number
   /** 交易量-最大名义价值 */
-  nominalValue?: number;
+  nominalValue?: number
   /** 交易-订单类型 */
-  orderType?: string;
+  orderType?: string
   /** 预付款配置（JSON）{"mode":"fixed_margin","fixed_margin":{"initial_margin":1000,"locked_position_margin":2000,"is_unilateral":true},"fixed_leverage":{"leverage_multiple":100,"is_unilateral":true},"float_leverage":{"type":"volume/nominal","min_lever":1,"max_lever":100,"is_unilateral":true,"lever_grade":[{"lever_start_value":1,"lever_end_value":50,"bag_nominal_value":10000},{"lever_start_value":51,"lever_end_value":80,"bag_nominal_value":20000},{"lever_start_value":81,"lever_end_value":100,"bag_nominal_value":30000}]}} */
-  prepaymentConf?: string;
+  prepaymentConf?: string
   /** 货币-预付款货币 */
-  prepaymentCurrency?: string;
+  prepaymentCurrency?: string
   /**
    * 货币-预付款货币小数位
    * @format int32
    */
-  prepaymentCurrencyDecimal?: number;
+  prepaymentCurrencyDecimal?: number
   /** 货币-盈利货币 */
-  profitCurrency?: string;
+  profitCurrency?: string
   /**
    * 货币-盈利货币小数位
    * @format int32
    */
-  profitCurrencyDecimal?: number;
+  profitCurrencyDecimal?: number
   /** 报价配置（JSON）{"ordinary":0,"filterNum":1,"discard":0,"minSpread":0,"maxSpread":0} */
-  quotationConf?: string;
+  quotationConf?: string
   /**
    * 交易-最高报价延迟
    * @format int32
    */
-  quotationDelay?: number;
+  quotationDelay?: number
   /** 交易-报价大小 */
-  quotationSize?: number;
+  quotationSize?: number
   /** 常规-点差配置（JSON）{"type":"fixed"，"fixed":{"buy":10,"sell":10},"float":{"buy":11,"sell":12}} */
-  spreadConf?: string;
+  spreadConf?: string
   /** 交易-交易许可 */
-  tradeLicense?: SymbolConfTradeLicenseEnum;
+  tradeLicense?: SymbolConfTradeLicenseEnum
   /** 交易量-限制 */
-  tradeLimit?: number;
+  tradeLimit?: number
   /** 交易量-步长 */
-  tradeStep?: number;
+  tradeStep?: number
   /** 交易时间（JSON）{"MONDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"TUESDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"WEDNESDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"THURSDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"FRIDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"SATURDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"SUNDAY":{"isAlone":true,"price":[{"start":"07:00","end":"23:59"}],"trade":[{"start":"07:00","end":"23:59"}]},} */
-  tradeTimeConf?: string;
+  tradeTimeConf?: string
   /** 手续费配置（JSON）{"type":"trade_vol""trade_vol":[{"from":0,"to":10,"compute_mode":"currency","market_fee":10,"limit_fee":10,"min_value":0,"max_value":10}],"trade_hand":[{"from":0,"to":10,"compute_mode":"percentage","market_fee":10,"limit_fee":10,"min_value":0,"max_value":10}]} */
-  transactionFeeConf?: string;
+  transactionFeeConf?: string
 }
 
 /**
@@ -2864,85 +2864,85 @@ export interface SymbolConf {
  */
 export interface SymbolConf1 {
   /** 货币-基础货币 */
-  baseCurrency?: string;
+  baseCurrency?: string
   /**
    * 货币-基础货币小数位
    * @format int32
    */
-  baseCurrencyDecimal?: number;
+  baseCurrencyDecimal?: number
   /** 交易-计算类型 */
-  calculationType?: SymbolConf1CalculationTypeEnum;
+  calculationType?: SymbolConf1CalculationTypeEnum
   /**
    * 交易-合约大小
    * @format int32
    */
-  contractSize?: number;
+  contractSize?: number
   /**
    * 常规-市场深度
    * @format int32
    */
-  depthOfMarket?: number;
+  depthOfMarket?: number
   /** 启用库存费 */
-  enableHoldingCost?: boolean;
+  enableHoldingCost?: boolean
   /** 交易-GTC */
-  gtc?: SymbolConf1GtcEnum;
+  gtc?: SymbolConf1GtcEnum
   /** 库存费配置（JSON）{"isEnable":true,"isHoliday":true,"type":"percentage","buyBag":100,"sellBag":100,"days":10,"multiplier":{"MONDAY":1,"TUESDAY":1,"WEDNESDAY":1,"THURSDAY":1,"FRIDAY":1,"SATURDAY":1,"SUNDAY":1}} */
-  holdingCostConf?: string;
+  holdingCostConf?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 交易-限价和停损级别
    * @format int32
    */
-  limitStopLevel?: number;
+  limitStopLevel?: number
   /** 交易量-最大单量 */
-  maxTrade?: number;
+  maxTrade?: number
   /** 交易量-最小单量 */
-  minTrade?: number;
+  minTrade?: number
   /** 交易量-最大名义价值 */
-  nominalValue?: number;
+  nominalValue?: number
   /** 交易-订单类型 */
-  orderType?: string;
+  orderType?: string
   /** 预付款配置（JSON）{"mode":"fixed_margin","fixed_margin":{"initial_margin":1000,"locked_position_margin":2000,"is_unilateral":true},"fixed_leverage":{"leverage_multiple":100,"is_unilateral":true},"float_leverage":{"type":"volume/nominal","min_lever":1,"max_lever":100,"is_unilateral":true,"lever_grade":[{"lever_start_value":1,"lever_end_value":50,"bag_nominal_value":10000},{"lever_start_value":51,"lever_end_value":80,"bag_nominal_value":20000},{"lever_start_value":81,"lever_end_value":100,"bag_nominal_value":30000}]}} */
-  prepaymentConf?: string;
+  prepaymentConf?: string
   /** 货币-预付款货币 */
-  prepaymentCurrency?: string;
+  prepaymentCurrency?: string
   /**
    * 货币-预付款货币小数位
    * @format int32
    */
-  prepaymentCurrencyDecimal?: number;
+  prepaymentCurrencyDecimal?: number
   /** 货币-盈利货币 */
-  profitCurrency?: string;
+  profitCurrency?: string
   /**
    * 货币-盈利货币小数位
    * @format int32
    */
-  profitCurrencyDecimal?: number;
+  profitCurrencyDecimal?: number
   /** 报价配置（JSON）{"ordinary":0,"filterNum":1,"discard":0,"minSpread":0,"maxSpread":0} */
-  quotationConf?: string;
+  quotationConf?: string
   /**
    * 交易-最高报价延迟
    * @format int32
    */
-  quotationDelay?: number;
+  quotationDelay?: number
   /** 交易-报价大小 */
-  quotationSize?: number;
+  quotationSize?: number
   /** 常规-点差配置（JSON）{"type":"fixed"，"fixed":{"buy":10,"sell":10},"float":{"buy":11,"sell":12}} */
-  spreadConf?: string;
+  spreadConf?: string
   /** 交易-交易许可 */
-  tradeLicense?: SymbolConf1TradeLicenseEnum;
+  tradeLicense?: SymbolConf1TradeLicenseEnum
   /** 交易量-限制 */
-  tradeLimit?: number;
+  tradeLimit?: number
   /** 交易量-步长 */
-  tradeStep?: number;
+  tradeStep?: number
   /** 交易时间（JSON）{"MONDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"TUESDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"WEDNESDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"THURSDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"FRIDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"SATURDAY":{"isAlone":true,"price":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}],"trade":[{"start":"00:00","end":"04:55"},{"start":"06:00","end":"23:59"}]},"SUNDAY":{"isAlone":true,"price":[{"start":"07:00","end":"23:59"}],"trade":[{"start":"07:00","end":"23:59"}]},} */
-  tradeTimeConf?: string;
+  tradeTimeConf?: string
   /** 手续费配置（JSON）{"type":"trade_vol""trade_vol":[{"from":0,"to":10,"compute_mode":"currency","market_fee":10,"limit_fee":10,"min_value":0,"max_value":10}],"trade_hand":[{"from":0,"to":10,"compute_mode":"percentage","market_fee":10,"limit_fee":10,"min_value":0,"max_value":10}]} */
-  transactionFeeConf?: string;
+  transactionFeeConf?: string
 }
 
 /**
@@ -2955,19 +2955,19 @@ export interface SymbolGroup {
    * @minLength 0
    * @maxLength 100
    */
-  groupName: string;
+  groupName: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 父级ID
    * @format int64
    */
-  parentId?: number;
+  parentId?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /**
@@ -2975,21 +2975,21 @@ export interface SymbolGroup {
  * 交易品种组
  */
 export interface SymbolGroup1 {
-  children?: SymbolGroup1[];
+  children?: SymbolGroup1[]
   /**
    * 组名称
    * @minLength 0
    * @maxLength 100
    */
-  groupName: string;
-  hasChildren?: boolean;
+  groupName: string
+  hasChildren?: boolean
   /** @format int64 */
-  id?: number;
+  id?: number
   /** @format int64 */
-  parentId?: number;
-  parentName?: string;
+  parentId?: number
+  parentName?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
 }
 
 /**
@@ -3001,47 +3001,47 @@ export interface Symbols {
    * 账户组ID
    * @format int64
    */
-  accountGroupId?: number;
+  accountGroupId?: number
   /** 别名 */
-  alias?: string;
+  alias?: string
   /** 分类 */
-  classify?: string;
+  classify?: 'aa' | 'bb' | 'cc' | 'dd'
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: SymbolsStatusEnum;
+  status?: SymbolsStatusEnum
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 品种名称 */
-  symbol?: string;
+  symbol?: string
   /** 品种配置 */
-  symbolConf?: SymbolConf;
+  symbolConf?: SymbolConf
   /**
    * 品种组配置ID
    * @format int64
    */
-  symbolConfId?: number;
+  symbolConfId?: number
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /**
    * 品种组ID
    * @format int64
    */
-  symbolGroupId?: number;
+  symbolGroupId?: number
   /** 最新行情 */
-  symbolNewPrice?: Record<string, object>;
+  symbolNewPrice?: Record<string, object>
   /** 最新Ticker */
-  symbolNewTicker?: Ticker;
+  symbolNewTicker?: Ticker
 }
 
 /**
@@ -3050,39 +3050,39 @@ export interface Symbols {
  */
 export interface Symbols1 {
   /** 别名 */
-  alias?: string;
+  alias?: string
   /** 分类 */
-  classify?: string;
+  classify?: string
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 状态 */
-  status?: Symbols1StatusEnum;
+  status?: Symbols1StatusEnum
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 品种名称 */
-  symbol?: string;
+  symbol?: string
   /**
    * 品种组配置ID
    * @format int64
    */
-  symbolConfId?: number;
+  symbolConfId?: number
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /**
    * 品种组ID
    * @format int64
    */
-  symbolGroupId?: number;
+  symbolGroupId?: number
 }
 
 /**
@@ -3094,91 +3094,91 @@ export interface TradeRecords {
    * 交易账户ID
    * @format int64
    */
-  accountId?: number;
+  accountId?: number
   /** 交易账户名 */
-  accountName?: string;
+  accountName?: string
   /** 別名 */
-  alias?: string;
+  alias?: string
   /**
    * 持仓订单ID
    * @format int64
    */
-  bagOrderId?: number;
+  bagOrderId?: number
   /** 订单方向 */
-  buySell?: TradeRecordsBuySellEnum;
+  buySell?: TradeRecordsBuySellEnum
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 汇率 */
-  exchangeRate?: string;
+  exchangeRate?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /** 成交方向 */
-  inOut?: TradeRecordsInOutEnum;
+  inOut?: TradeRecordsInOutEnum
   /** 库存费 */
-  interestFees?: number;
+  interestFees?: number
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 保证金类型 */
-  marginType?: TradeRecordsMarginTypeEnum;
+  marginType?: TradeRecordsMarginTypeEnum
   /** 订单模式 */
-  mode?: TradeRecordsModeEnum;
+  mode?: TradeRecordsModeEnum
   /**
    * 订单ID
    * @format int64
    */
-  orderId?: number;
+  orderId?: number
   /** 价格id */
-  priceValueId?: string;
+  priceValueId?: string
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** TX签名 */
-  signature?: string;
+  signature?: string
   /** 开仓价格 */
-  startPrice?: number;
+  startPrice?: number
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /** 成交价格 */
-  tradePrice?: number;
+  tradePrice?: number
   /** 成交量 */
-  tradingVolume?: number;
+  tradingVolume?: number
   /** 用户登录账户 */
-  userAccount?: string;
+  userAccount?: string
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
   /** 用户名称 */
-  userName?: string;
+  userName?: string
 }
 
 /**
@@ -3190,67 +3190,67 @@ export interface TradeRecords1 {
    * 持仓订单ID
    * @format int64
    */
-  bagOrderId?: number;
+  bagOrderId?: number
   /** 订单方向 */
-  buySell?: TradeRecords1BuySellEnum;
+  buySell?: TradeRecords1BuySellEnum
   /**
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 汇率 */
-  exchangeRate?: string;
+  exchangeRate?: string
   /** 手续费 */
-  handlingFees?: number;
+  handlingFees?: number
   /**
    * 主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 成交方向 */
-  inOut?: TradeRecords1InOutEnum;
+  inOut?: TradeRecords1InOutEnum
   /** 库存费 */
-  interestFees?: number;
+  interestFees?: number
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 订单模式 */
-  mode?: TradeRecords1ModeEnum;
+  mode?: TradeRecords1ModeEnum
   /**
    * 订单ID
    * @format int64
    */
-  orderId?: number;
+  orderId?: number
   /** 价格id */
-  priceValueId?: string;
+  priceValueId?: string
   /** 盈亏 */
-  profit?: number;
+  profit?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** TX签名 */
-  signature?: string;
+  signature?: string
   /** 开仓价格 */
-  startPrice?: number;
+  startPrice?: number
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId?: number;
+  tradeAccountId?: number
   /** 交易额 */
-  tradeAmount?: number;
+  tradeAmount?: number
   /** 成交价格 */
-  tradePrice?: number;
+  tradePrice?: number
   /** 成交量 */
-  tradingVolume?: number;
+  tradingVolume?: number
   /**
    * 用户ID
    * @format int64
    */
-  userId?: number;
+  userId?: number
 }
 
 /**
@@ -3259,20 +3259,20 @@ export interface TradeRecords1 {
  */
 export interface Ticker {
   /** 最新价 */
-  close?: number;
+  close?: number
   /** 最高价 */
-  high?: number;
+  high?: number
   /** 最低价 */
-  low?: number;
+  low?: number
   /** 开盘价 */
-  open?: number;
+  open?: number
   /** 交易品种 */
-  symbol?: string;
+  symbol?: string
   /**
    * 响应生成时间点
    * @format int64
    */
-  time?: number;
+  time?: number
 }
 
 /**
@@ -3281,111 +3281,111 @@ export interface Ticker {
  */
 export interface _ {
   /** 别名 */
-  alias?: string;
+  alias?: string
   /** 货币-基础货币 */
-  baseCurrency?: string;
+  baseCurrency?: string
   /**
    * 货币-基础货币小数位
    * @format int32
    */
-  baseCurrencyDecimal?: number;
+  baseCurrencyDecimal?: number
   /** 交易-计算类型 */
-  calculationType?: CalculationTypeEnum;
+  calculationType?: CalculationTypeEnum
   /** 分类 */
-  classify?: string;
+  classify?: string
   /**
    * 交易-合约大小
    * @format int32
    */
-  contractSize?: number;
+  contractSize?: number
   /**
    * 常规-市场深度
    * @format int32
    */
-  depthOfMarket?: number;
+  depthOfMarket?: number
   /** 启用库存费 */
-  enableHoldingCost?: boolean;
+  enableHoldingCost?: boolean
   /** 交易-GTC */
-  gtc?: GtcEnum;
+  gtc?: GtcEnum
   /** 库存费配置（JSON） */
-  holdingCostConf?: string;
+  holdingCostConf?: string
   /**
    * 品种主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /**
    * 交易-限价和停损级别
    * @format int32
    */
-  limitStopLevel?: number;
+  limitStopLevel?: number
   /** 交易量-最大单量 */
-  maxTrade?: number;
+  maxTrade?: number
   /** 交易量-最小单量 */
-  minTrade?: number;
+  minTrade?: number
   /** 交易量-最大名义价值 */
-  nominalValue?: number;
+  nominalValue?: number
   /** 交易-订单类型 */
-  orderType?: string;
+  orderType?: string
   /** 预付款配置（JSON） */
-  prepaymentConf?: string;
+  prepaymentConf?: string
   /** 货币-预付款货币 */
-  prepaymentCurrency?: string;
+  prepaymentCurrency?: string
   /**
    * 货币-预付款货币小数位
    * @format int32
    */
-  prepaymentCurrencyDecimal?: number;
+  prepaymentCurrencyDecimal?: number
   /** 货币-盈利货币 */
-  profitCurrency?: string;
+  profitCurrency?: string
   /**
    * 货币-盈利货币小数位
    * @format int32
    */
-  profitCurrencyDecimal?: number;
+  profitCurrencyDecimal?: number
   /** 报价配置（JSON） */
-  quotationConf?: string;
+  quotationConf?: string
   /**
    * 交易-最高报价延迟
    * @format int32
    */
-  quotationDelay?: number;
+  quotationDelay?: number
   /** 交易-报价大小 */
-  quotationSize?: number;
+  quotationSize?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 常规-点差配置（JSON） */
-  spreadConf?: string;
+  spreadConf?: string
   /** 状态 */
-  status?: StatusEnum;
+  status?: StatusEnum
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 品种名称 */
-  symbol: string;
+  symbol: string
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /**
    * 品种组ID
    * @format int64
    */
-  symbolGroupId?: number;
+  symbolGroupId?: number
   /** 交易-交易方向 */
-  tradeBuySell?: TradeBuySellEnum;
+  tradeBuySell?: TradeBuySellEnum
   /** 交易-交易许可 */
-  tradeLicense?: TradeLicenseEnum;
+  tradeLicense?: TradeLicenseEnum
   /** 交易量-限制 */
-  tradeLimit?: number;
+  tradeLimit?: number
   /** 交易量-步长 */
-  tradeStep?: number;
+  tradeStep?: number
   /** 交易时间（JSON） */
-  tradeTimeConf?: string;
+  tradeTimeConf?: string
   /** 手续费配置（JSON） */
-  transactionFeeConf?: string;
+  transactionFeeConf?: string
 }
 
 /**
@@ -3394,18 +3394,18 @@ export interface _ {
  */
 export interface _2 {
   /** 限价价格 */
-  limitPrice?: number;
+  limitPrice?: number
   /**
    * 委托订单号
    * @format int64
    */
-  orderId?: number;
+  orderId?: number
   /** 订单数量 */
-  orderVolume?: number;
+  orderVolume?: number
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
 }
 
 /**
@@ -3417,11 +3417,11 @@ export interface _3 {
    * 持仓订单号
    * @format int64
    */
-  bagOrderId?: number;
+  bagOrderId?: number
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
 }
 
 /**
@@ -3430,106 +3430,106 @@ export interface _3 {
  */
 export interface _4 {
   /** 别名 */
-  alias?: string;
+  alias?: string
   /** 货币-基础货币 */
-  baseCurrency?: string;
+  baseCurrency?: string
   /**
    * 货币-基础货币小数位
    * @format int32
    */
-  baseCurrencyDecimal?: number;
+  baseCurrencyDecimal?: number
   /** 交易-计算类型 */
-  calculationType?: Type4CalculationTypeEnum;
+  calculationType?: Type4CalculationTypeEnum
   /** 分类 */
-  classify?: string;
+  classify?: string
   /**
    * 交易-合约大小
    * @format int32
    */
-  contractSize?: number;
+  contractSize?: number
   /**
    * 常规-市场深度
    * @format int32
    */
-  depthOfMarket?: number;
+  depthOfMarket?: number
   /** 启用库存费 */
-  enableHoldingCost?: boolean;
+  enableHoldingCost?: boolean
   /** 交易-GTC */
-  gtc?: Type4GtcEnum;
+  gtc?: Type4GtcEnum
   /** 库存费配置（JSON） */
-  holdingCostConf?: string;
+  holdingCostConf?: string
   /** 图标 */
-  imgUrl?: string;
+  imgUrl?: string
   /**
    * 交易-限价和停损级别
    * @format int32
    */
-  limitStopLevel?: number;
+  limitStopLevel?: number
   /** 交易量-最大单量 */
-  maxTrade?: number;
+  maxTrade?: number
   /** 交易量-最小单量 */
-  minTrade?: number;
+  minTrade?: number
   /** 交易量-最大名义价值 */
-  nominalValue?: number;
+  nominalValue?: number
   /** 交易-订单类型 */
-  orderType?: string;
+  orderType?: string
   /** 预付款配置（JSON） */
-  prepaymentConf?: string;
+  prepaymentConf?: string
   /** 货币-预付款货币 */
-  prepaymentCurrency?: string;
+  prepaymentCurrency?: string
   /**
    * 货币-预付款货币小数位
    * @format int32
    */
-  prepaymentCurrencyDecimal?: number;
+  prepaymentCurrencyDecimal?: number
   /** 货币-盈利货币 */
-  profitCurrency?: string;
+  profitCurrency?: string
   /**
    * 货币-盈利货币小数位
    * @format int32
    */
-  profitCurrencyDecimal?: number;
+  profitCurrencyDecimal?: number
   /** 报价配置（JSON） */
-  quotationConf?: string;
+  quotationConf?: string
   /**
    * 交易-最高报价延迟
    * @format int32
    */
-  quotationDelay?: number;
+  quotationDelay?: number
   /** 交易-报价大小 */
-  quotationSize?: number;
+  quotationSize?: number
   /** 备注 */
-  remark?: string;
+  remark?: string
   /** 常规-点差配置（JSON） */
-  spreadConf?: string;
+  spreadConf?: string
   /** 状态 */
-  status?: Type4StatusEnum;
+  status?: Type4StatusEnum
   /** 订阅Symbol */
-  subSymbol?: string;
+  subSymbol?: string
   /** 品种名称 */
-  symbol: string;
+  symbol: string
   /**
    * 品种小数位
    * @format int32
    */
-  symbolDecimal?: number;
+  symbolDecimal?: number
   /**
    * 品种组ID
    * @format int64
    */
-  symbolGroupId: number;
+  symbolGroupId: number
   /** 交易-交易方向 */
-  tradeBuySell?: Type4TradeBuySellEnum;
+  tradeBuySell?: Type4TradeBuySellEnum
   /** 交易-交易许可 */
-  tradeLicense?: Type4TradeLicenseEnum;
+  tradeLicense?: Type4TradeLicenseEnum
   /** 交易量-限制 */
-  tradeLimit?: number;
+  tradeLimit?: number
   /** 交易量-步长 */
-  tradeStep?: number;
+  tradeStep?: number
   /** 交易时间（JSON） */
-  tradeTimeConf?: string;
+  tradeTimeConf?: string
   /** 手续费配置（JSON） */
-  transactionFeeConf?: string;
+  transactionFeeConf?: string
 }
 
 /**
@@ -3538,38 +3538,38 @@ export interface _4 {
  */
 export interface _5 {
   /** 订单方向 */
-  buySell: Type5BuySellEnum;
+  buySell: Type5BuySellEnum
   /** 创建原因 */
-  createReason?: Type5CreateReasonEnum;
+  createReason?: Type5CreateReasonEnum
   /**
    * 携带持仓订单号则为平仓单，只需要传递持仓单号、交易账户ID、订单数量、订单类型和反向订单方向，其他参数无效
    * @format int64
    */
-  executeOrderId?: number;
+  executeOrderId?: number
   /**
    * 杠杆倍数
    * @format int32
    */
-  leverageMultiple?: number;
+  leverageMultiple?: number
   /** 限价价格 */
-  limitPrice?: number;
+  limitPrice?: number
   /** 保证金类型 */
-  marginType: Type5MarginTypeEnum;
+  marginType: Type5MarginTypeEnum
   /** 订单数量 */
-  orderVolume: number;
+  orderVolume: number
   /** 止损 */
-  stopLoss?: number;
+  stopLoss?: number
   /** 交易品种 */
-  symbol: string;
+  symbol: string
   /** 止盈 */
-  takeProfit?: number;
+  takeProfit?: number
   /**
    * 交易账户ID
    * @format int64
    */
-  tradeAccountId: number;
+  tradeAccountId: number
   /** 订单类型 */
-  type: Type5TypeEnum;
+  type: Type5TypeEnum
 }
 
 /**
@@ -3578,11 +3578,11 @@ export interface _5 {
  */
 export interface _6 {
   /** 日结 */
-  daily: string;
+  daily: string
   /** 启用夏令时 */
-  daylightTime: string;
+  daylightTime: string
   /** 交易系统时区 */
-  timeZone: string;
+  timeZone: string
 }
 
 /**
@@ -3594,9 +3594,9 @@ export interface _7 {
    * 持仓订单号
    * @format int64
    */
-  bagOrderId: number;
+  bagOrderId: number
   /** 提取保证金 */
-  extractMargin: number;
+  extractMargin: number
 }
 
 /**
@@ -3605,12 +3605,12 @@ export interface _7 {
  */
 export interface _8 {
   /** 追加保证金 */
-  addMargin: number;
+  addMargin: number
   /**
    * 持仓订单号
    * @format int64
    */
-  bagOrderId: number;
+  bagOrderId: number
 }
 
 /**
@@ -3622,85 +3622,85 @@ export interface _9 {
    * 交易账户组关联产品主键
    * @format int64
    */
-  accountGroupSymbolsId: number;
+  accountGroupSymbolsId: number
   /** 货币-基础货币 */
-  baseCurrency?: string;
+  baseCurrency?: string
   /**
    * 货币-基础货币小数位
    * @format int32
    */
-  baseCurrencyDecimal?: number;
+  baseCurrencyDecimal?: number
   /** 交易-计算类型 */
-  calculationType?: Type9CalculationTypeEnum;
+  calculationType?: Type9CalculationTypeEnum
   /**
    * 交易-合约大小
    * @format int32
    */
-  contractSize?: number;
+  contractSize?: number
   /**
    * 常规-市场深度
    * @format int32
    */
-  depthOfMarket?: number;
+  depthOfMarket?: number
   /** 启用库存费 */
-  enableHoldingCost?: boolean;
+  enableHoldingCost?: boolean
   /** 交易-GTC */
-  gtc?: Type9GtcEnum;
+  gtc?: Type9GtcEnum
   /** 库存费配置（JSON） */
-  holdingCostConf?: string;
+  holdingCostConf?: string
   /**
    * 品种配置主键
    * @format int64
    */
-  id?: number;
+  id?: number
   /**
    * 交易-限价和停损级别
    * @format int32
    */
-  limitStopLevel?: number;
+  limitStopLevel?: number
   /** 交易量-最大单量 */
-  maxTrade?: number;
+  maxTrade?: number
   /** 交易量-最小单量 */
-  minTrade?: number;
+  minTrade?: number
   /** 交易量-最大名义价值 */
-  nominalValue?: number;
+  nominalValue?: number
   /** 预付款配置（JSON） */
-  prepaymentConf?: string;
+  prepaymentConf?: string
   /** 货币-预付款货币 */
-  prepaymentCurrency?: string;
+  prepaymentCurrency?: string
   /**
    * 货币-预付款货币小数位
    * @format int32
    */
-  prepaymentCurrencyDecimal?: number;
+  prepaymentCurrencyDecimal?: number
   /** 货币-盈利货币 */
-  profitCurrency?: string;
+  profitCurrency?: string
   /**
    * 货币-盈利货币小数位
    * @format int32
    */
-  profitCurrencyDecimal?: number;
+  profitCurrencyDecimal?: number
   /** 报价配置（JSON） */
-  quotationConf?: string;
+  quotationConf?: string
   /**
    * 交易-最高报价延迟
    * @format int32
    */
-  quotationDelay?: number;
+  quotationDelay?: number
   /** 常规-点差配置（JSON） */
-  spreadConf?: string;
+  spreadConf?: string
   /** 交易-交易方向 */
-  tradeBuySell?: Type9TradeBuySellEnum;
+  tradeBuySell?: Type9TradeBuySellEnum
   /** 交易-交易许可 */
-  tradeLicense?: Type9TradeLicenseEnum;
+  tradeLicense?: Type9TradeLicenseEnum
   /** 交易量-限制 */
-  tradeLimit?: number;
+  tradeLimit?: number
   /** 交易量-步长 */
-  tradeStep?: number;
+  tradeStep?: number
   /** 交易时间（JSON） */
-  tradeTimeConf?: string;
+  tradeTimeConf?: string
   /** 手续费配置（JSON） */
-  transactionFeeConf?: string;
+  transactionFeeConf?: string
 }
 
 /**
@@ -3712,564 +3712,500 @@ export interface _10 {
    * 创建时间
    * @format date-time
    */
-  createTime?: string;
+  createTime?: string
   /** 创建者 */
-  creator?: string;
+  creator?: string
   /**
    * 主键ID
    * @format int64
    */
-  id?: number;
+  id?: number
   /** 利率 */
-  interestRate?: number;
+  interestRate?: number
   /** 我的份额 */
-  myShares?: number;
+  myShares?: number
   /** 快照 */
-  snapshot?: string;
+  snapshot?: string
   /** 金库总份额 */
-  totalShares?: number;
+  totalShares?: number
   /** TVL */
-  tvl?: number;
+  tvl?: number
   /** 金库名 */
-  vaultName?: string;
+  vaultName?: string
 }
 
 /** 资金划转 */
-export type AccountGroupSaveVoFundTransferEnum = "ALLOWABLE" | "PROHIBIT";
+export type AccountGroupSaveVoFundTransferEnum = 'ALLOWABLE' | 'PROHIBIT'
 
 /** 订单模式 */
-export type AccountGroupSaveVoOrderModeEnum = "NETTING" | "LOCKED_POSITION";
+export type AccountGroupSaveVoOrderModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 可用预付款 */
-export type AccountGroupSaveVoUsableAdvanceChargeEnum =
-  | "NOT_PROFIT_LOSS"
-  | "PROFIT_LOSS";
+export type AccountGroupSaveVoUsableAdvanceChargeEnum = 'NOT_PROFIT_LOSS' | 'PROFIT_LOSS'
 
 /** 状态 */
-export type AccountUpdateVoStatusEnum = "DISABLED" | "ENABLE";
+export type AccountUpdateVoStatusEnum = 'DISABLED' | 'ENABLE'
 
 /** 类型 */
 export type HandRechargeVoTypeEnum =
-  | "DEPOSIT"
-  | "ACTIVITY"
-  | "DEPOSIT_SIMULATE"
-  | "WITHDRAWAL"
-  | "MARGIN"
-  | "PROFIT"
-  | "HANDLING_FEES"
-  | "INTEREST_FEES"
-  | "GIFT"
-  | "TRANSFER"
-  | "FOLLOW_INITIAL"
-  | "FOLLOW_PURCHASE"
-  | "FOLLOW_REDEEM"
-  | "FOLLOW_PROFIT_SHARING"
-  | "FOLLOW_VAULT_DIVVY"
-  | "FOLLOW_CLOSE"
-  | "BACK"
-  | "ZERO"
-  | "BALANCE";
+  | 'DEPOSIT'
+  | 'ACTIVITY'
+  | 'DEPOSIT_SIMULATE'
+  | 'WITHDRAWAL'
+  | 'MARGIN'
+  | 'PROFIT'
+  | 'HANDLING_FEES'
+  | 'INTEREST_FEES'
+  | 'GIFT'
+  | 'TRANSFER'
+  | 'FOLLOW_INITIAL'
+  | 'FOLLOW_PURCHASE'
+  | 'FOLLOW_REDEEM'
+  | 'FOLLOW_PROFIT_SHARING'
+  | 'FOLLOW_VAULT_DIVVY'
+  | 'FOLLOW_CLOSE'
+  | 'BACK'
+  | 'ZERO'
+  | 'BALANCE'
 
 /** 状态 */
-export type AccountGroupSymbolsStatusEnum = "ENABLE" | "DISABLED";
+export type AccountGroupSymbolsStatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 状态 */
-export type AccountGroupSymbols1StatusEnum = "ENABLE" | "DISABLED";
+export type AccountGroupSymbols1StatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 资金划转 */
-export type AccountGroupFundTransferEnum = "ALLOWABLE" | "PROHIBIT";
+export type AccountGroupFundTransferEnum = 'ALLOWABLE' | 'PROHIBIT'
 
 /** 订单模式 */
-export type AccountGroupOrderModeEnum = "NETTING" | "LOCKED_POSITION";
+export type AccountGroupOrderModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type AccountGroupStatusEnum = "ENABLE" | "DISABLED";
+export type AccountGroupStatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 可用预付款 */
-export type AccountGroupUsableAdvanceChargeEnum =
-  | "NOT_PROFIT_LOSS"
-  | "PROFIT_LOSS";
+export type AccountGroupUsableAdvanceChargeEnum = 'NOT_PROFIT_LOSS' | 'PROFIT_LOSS'
 
 /** 状态 */
-export type AccountManageStatusEnum = "NORMAL" | "CANCEL";
+export type AccountManageStatusEnum = 'NORMAL' | 'CANCEL'
 
 /** 状态 */
-export type AccountManage1StatusEnum = "NORMAL" | "CANCEL";
+export type AccountManage1StatusEnum = 'NORMAL' | 'CANCEL'
 
 /** 状态 */
-export type AccountManage2StatusEnum = "NORMAL" | "CANCEL";
+export type AccountManage2StatusEnum = 'NORMAL' | 'CANCEL'
 
 /** 资金划转 */
-export type AccountPageFundTransferEnum = "ALLOWABLE" | "PROHIBIT";
+export type AccountPageFundTransferEnum = 'ALLOWABLE' | 'PROHIBIT'
 
 /** 订单模式 */
-export type AccountPageOrderModeEnum = "NETTING" | "LOCKED_POSITION";
+export type AccountPageOrderModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type AccountPageStatusEnum = "DISABLED" | "ENABLE";
+export type AccountPageStatusEnum = 'DISABLED' | 'ENABLE'
 
 /** 账户类型 */
-export type AccountPageTypeEnum = "MAIN" | "SIMULATE" | "FOLLOW";
+export type AccountPageTypeEnum = 'MAIN' | 'SIMULATE' | 'FOLLOW'
 
 /** 状态 */
-export type AccountStatusEnum = "DISABLED" | "ENABLE";
+export type AccountStatusEnum = 'DISABLED' | 'ENABLE'
 
 /** 账户类型 */
-export type AccountTypeEnum = "MAIN" | "SIMULATE" | "FOLLOW";
+export type AccountTypeEnum = 'MAIN' | 'SIMULATE' | 'FOLLOW'
 
 /** 订单方向 */
-export type BagOrderBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type BagOrderBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 保证金类型 */
-export type BagOrderMarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type BagOrderMarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type BagOrderModeEnum = "NETTING" | "LOCKED_POSITION";
+export type BagOrderModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type BagOrderStatusEnum = "BAG" | "FINISH";
+export type BagOrderStatusEnum = 'BAG' | 'FINISH'
 
 /** 订单方向 */
-export type BagOrder1BuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type BagOrder1BuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 保证金类型 */
-export type BagOrder1MarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type BagOrder1MarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type BagOrder1ModeEnum = "NETTING" | "LOCKED_POSITION";
+export type BagOrder1ModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type BagOrder1StatusEnum = "BAG" | "FINISH";
+export type BagOrder1StatusEnum = 'BAG' | 'FINISH'
 
 /** 状态 */
-export type HolidayStatusEnum = "ENABLE" | "DISABLED";
+export type HolidayStatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 状态 */
-export type Holiday1StatusEnum = "ENABLE" | "DISABLED";
+export type Holiday1StatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 状态 */
-export type LbPoolStatusEnum = "INIT" | "NORMAL" | "PAUSE" | "CLOSE";
+export type LbPoolStatusEnum = 'INIT' | 'NORMAL' | 'PAUSE' | 'CLOSE'
 
 /** 类型 */
 export type MoneyRecordsTypeEnum =
-  | "DEPOSIT"
-  | "ACTIVITY"
-  | "DEPOSIT_SIMULATE"
-  | "WITHDRAWAL"
-  | "MARGIN"
-  | "PROFIT"
-  | "HANDLING_FEES"
-  | "INTEREST_FEES"
-  | "GIFT"
-  | "TRANSFER"
-  | "FOLLOW_INITIAL"
-  | "FOLLOW_PURCHASE"
-  | "FOLLOW_REDEEM"
-  | "FOLLOW_PROFIT_SHARING"
-  | "FOLLOW_VAULT_DIVVY"
-  | "FOLLOW_CLOSE"
-  | "BACK"
-  | "ZERO"
-  | "BALANCE";
+  | 'DEPOSIT'
+  | 'ACTIVITY'
+  | 'DEPOSIT_SIMULATE'
+  | 'WITHDRAWAL'
+  | 'MARGIN'
+  | 'PROFIT'
+  | 'HANDLING_FEES'
+  | 'INTEREST_FEES'
+  | 'GIFT'
+  | 'TRANSFER'
+  | 'FOLLOW_INITIAL'
+  | 'FOLLOW_PURCHASE'
+  | 'FOLLOW_REDEEM'
+  | 'FOLLOW_PROFIT_SHARING'
+  | 'FOLLOW_VAULT_DIVVY'
+  | 'FOLLOW_CLOSE'
+  | 'BACK'
+  | 'ZERO'
+  | 'BALANCE'
 
 /** 类型 */
 export type MoneyRecords1TypeEnum =
-  | "DEPOSIT"
-  | "ACTIVITY"
-  | "DEPOSIT_SIMULATE"
-  | "WITHDRAWAL"
-  | "MARGIN"
-  | "PROFIT"
-  | "HANDLING_FEES"
-  | "INTEREST_FEES"
-  | "GIFT"
-  | "TRANSFER"
-  | "FOLLOW_INITIAL"
-  | "FOLLOW_PURCHASE"
-  | "FOLLOW_REDEEM"
-  | "FOLLOW_PROFIT_SHARING"
-  | "FOLLOW_VAULT_DIVVY"
-  | "FOLLOW_CLOSE"
-  | "BACK"
-  | "ZERO"
-  | "BALANCE";
+  | 'DEPOSIT'
+  | 'ACTIVITY'
+  | 'DEPOSIT_SIMULATE'
+  | 'WITHDRAWAL'
+  | 'MARGIN'
+  | 'PROFIT'
+  | 'HANDLING_FEES'
+  | 'INTEREST_FEES'
+  | 'GIFT'
+  | 'TRANSFER'
+  | 'FOLLOW_INITIAL'
+  | 'FOLLOW_PURCHASE'
+  | 'FOLLOW_REDEEM'
+  | 'FOLLOW_PROFIT_SHARING'
+  | 'FOLLOW_VAULT_DIVVY'
+  | 'FOLLOW_CLOSE'
+  | 'BACK'
+  | 'ZERO'
+  | 'BALANCE'
 
 /** 订单方向 */
-export type OrdersBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type OrdersBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 创建原因 */
 export type OrdersCreateReasonEnum =
-  | "CLIENT"
-  | "MANAGER"
-  | "DEALER"
-  | "STOP_LOSS"
-  | "TAKE_PROFIT"
-  | "STOP_OUT"
-  | "FOLLOW_REDEEM"
-  | "SYSTEM";
+  | 'CLIENT'
+  | 'MANAGER'
+  | 'DEALER'
+  | 'STOP_LOSS'
+  | 'TAKE_PROFIT'
+  | 'STOP_OUT'
+  | 'FOLLOW_REDEEM'
+  | 'SYSTEM'
 
 /** 成交方向 */
-export type OrdersInOutEnum = "IN" | "OUT" | "IN_OUT";
+export type OrdersInOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 保证金类型 */
-export type OrdersMarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type OrdersMarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type OrdersModeEnum = "NETTING" | "LOCKED_POSITION";
+export type OrdersModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type OrdersStatusEnum = "FINISH" | "ENTRUST" | "CANCEL" | "FAIL";
+export type OrdersStatusEnum = 'FINISH' | 'ENTRUST' | 'CANCEL' | 'FAIL'
 
 /** 订单类型 */
 export type OrdersTypeEnum =
-  | "MARKET_ORDER"
-  | "STOP_LOSS_ORDER"
-  | "TAKE_PROFIT_ORDER"
-  | "LIMIT_BUY_ORDER"
-  | "LIMIT_SELL_ORDER"
-  | "STOP_LOSS_LIMIT_BUY_ORDER"
-  | "STOP_LOSS_LIMIT_SELL_ORDER"
-  | "STOP_LOSS_MARKET_BUY_ORDER"
-  | "STOP_LOSS_MARKET_SELL_ORDER";
+  | 'MARKET_ORDER'
+  | 'STOP_LOSS_ORDER'
+  | 'TAKE_PROFIT_ORDER'
+  | 'LIMIT_BUY_ORDER'
+  | 'LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_LIMIT_BUY_ORDER'
+  | 'STOP_LOSS_LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_MARKET_BUY_ORDER'
+  | 'STOP_LOSS_MARKET_SELL_ORDER'
 
 /** 订单方向 */
-export type Orders1BuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type Orders1BuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 创建原因 */
 export type Orders1CreateReasonEnum =
-  | "CLIENT"
-  | "MANAGER"
-  | "DEALER"
-  | "STOP_LOSS"
-  | "TAKE_PROFIT"
-  | "STOP_OUT"
-  | "FOLLOW_REDEEM"
-  | "SYSTEM";
+  | 'CLIENT'
+  | 'MANAGER'
+  | 'DEALER'
+  | 'STOP_LOSS'
+  | 'TAKE_PROFIT'
+  | 'STOP_OUT'
+  | 'FOLLOW_REDEEM'
+  | 'SYSTEM'
 
 /** 成交方向 */
-export type Orders1InOutEnum = "IN" | "OUT" | "IN_OUT";
+export type Orders1InOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 保证金类型 */
-export type Orders1MarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type Orders1MarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type Orders1ModeEnum = "NETTING" | "LOCKED_POSITION";
+export type Orders1ModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type Orders1StatusEnum = "FINISH" | "ENTRUST" | "CANCEL" | "FAIL";
+export type Orders1StatusEnum = 'FINISH' | 'ENTRUST' | 'CANCEL' | 'FAIL'
 
 /** 订单类型 */
 export type Orders1TypeEnum =
-  | "MARKET_ORDER"
-  | "STOP_LOSS_ORDER"
-  | "TAKE_PROFIT_ORDER"
-  | "LIMIT_BUY_ORDER"
-  | "LIMIT_SELL_ORDER"
-  | "STOP_LOSS_LIMIT_BUY_ORDER"
-  | "STOP_LOSS_LIMIT_SELL_ORDER"
-  | "STOP_LOSS_MARKET_BUY_ORDER"
-  | "STOP_LOSS_MARKET_SELL_ORDER";
+  | 'MARKET_ORDER'
+  | 'STOP_LOSS_ORDER'
+  | 'TAKE_PROFIT_ORDER'
+  | 'LIMIT_BUY_ORDER'
+  | 'LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_LIMIT_BUY_ORDER'
+  | 'STOP_LOSS_LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_MARKET_BUY_ORDER'
+  | 'STOP_LOSS_MARKET_SELL_ORDER'
 
 /** 订单方向 */
-export type Orders2BuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type Orders2BuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 创建原因 */
 export type Orders2CreateReasonEnum =
-  | "CLIENT"
-  | "MANAGER"
-  | "DEALER"
-  | "STOP_LOSS"
-  | "TAKE_PROFIT"
-  | "STOP_OUT"
-  | "FOLLOW_REDEEM"
-  | "SYSTEM";
+  | 'CLIENT'
+  | 'MANAGER'
+  | 'DEALER'
+  | 'STOP_LOSS'
+  | 'TAKE_PROFIT'
+  | 'STOP_OUT'
+  | 'FOLLOW_REDEEM'
+  | 'SYSTEM'
 
 /** 成交方向 */
-export type Orders2InOutEnum = "IN" | "OUT" | "IN_OUT";
+export type Orders2InOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 保证金类型 */
-export type Orders2MarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type Orders2MarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type Orders2ModeEnum = "NETTING" | "LOCKED_POSITION";
+export type Orders2ModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 状态 */
-export type Orders2StatusEnum = "FINISH" | "ENTRUST" | "CANCEL" | "FAIL";
+export type Orders2StatusEnum = 'FINISH' | 'ENTRUST' | 'CANCEL' | 'FAIL'
 
 /** 订单类型 */
 export type Orders2TypeEnum =
-  | "MARKET_ORDER"
-  | "STOP_LOSS_ORDER"
-  | "TAKE_PROFIT_ORDER"
-  | "LIMIT_BUY_ORDER"
-  | "LIMIT_SELL_ORDER"
-  | "STOP_LOSS_LIMIT_BUY_ORDER"
-  | "STOP_LOSS_LIMIT_SELL_ORDER"
-  | "STOP_LOSS_MARKET_BUY_ORDER"
-  | "STOP_LOSS_MARKET_SELL_ORDER";
+  | 'MARKET_ORDER'
+  | 'STOP_LOSS_ORDER'
+  | 'TAKE_PROFIT_ORDER'
+  | 'LIMIT_BUY_ORDER'
+  | 'LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_LIMIT_BUY_ORDER'
+  | 'STOP_LOSS_LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_MARKET_BUY_ORDER'
+  | 'STOP_LOSS_MARKET_SELL_ORDER'
 
 /** 状态 */
-export type PoolManageStatusEnum = "INIT" | "NORMAL" | "PAUSE" | "CLOSE";
+export type PoolManageStatusEnum = 'INIT' | 'NORMAL' | 'PAUSE' | 'CLOSE'
 
 /** 状态 */
-export type PoolManage1StatusEnum = "INIT" | "NORMAL" | "PAUSE" | "CLOSE";
+export type PoolManage1StatusEnum = 'INIT' | 'NORMAL' | 'PAUSE' | 'CLOSE'
 
 /** 状态 */
-export type SharesRecordStatusEnum =
-  | "INITIALIZE"
-  | "FIRST_CLOSE_ORDER"
-  | "AGAIN_CLOSE_ORDER"
-  | "SUCCESS"
-  | "FAIL";
+export type SharesRecordStatusEnum = 'INITIALIZE' | 'FIRST_CLOSE_ORDER' | 'AGAIN_CLOSE_ORDER' | 'SUCCESS' | 'FAIL'
 
 /** 记录类型 */
-export type SharesRecordTypeEnum =
-  | "INITIALIZE"
-  | "PURCHASE_SHARES"
-  | "REDEEM_SHARES"
-  | "DIVVY"
-  | "CLOSE";
+export type SharesRecordTypeEnum = 'INITIALIZE' | 'PURCHASE_SHARES' | 'REDEEM_SHARES' | 'DIVVY' | 'CLOSE'
 
 /** 交易-计算类型 */
-export type SymbolConfCalculationTypeEnum = "FOREIGN_CURRENCY" | "CFD";
+export type SymbolConfCalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 交易-GTC */
-export type SymbolConfGtcEnum = "DAY_VALID" | "DAY_VALID_NOT" | "CLIENT_CANCEL";
+export type SymbolConfGtcEnum = 'DAY_VALID' | 'DAY_VALID_NOT' | 'CLIENT_CANCEL'
 
 /** 交易-交易许可 */
-export type SymbolConfTradeLicenseEnum =
-  | "ENABLE"
-  | "DISABLED"
-  | "ONLY_BUY"
-  | "ONLY_SELL"
-  | "ONLY_CLOSE";
+export type SymbolConfTradeLicenseEnum = 'ENABLE' | 'DISABLED' | 'ONLY_BUY' | 'ONLY_SELL' | 'ONLY_CLOSE'
 
 /** 交易-计算类型 */
-export type SymbolConf1CalculationTypeEnum = "FOREIGN_CURRENCY" | "CFD";
+export type SymbolConf1CalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 交易-GTC */
-export type SymbolConf1GtcEnum =
-  | "DAY_VALID"
-  | "DAY_VALID_NOT"
-  | "CLIENT_CANCEL";
+export type SymbolConf1GtcEnum = 'DAY_VALID' | 'DAY_VALID_NOT' | 'CLIENT_CANCEL'
 
 /** 交易-交易许可 */
-export type SymbolConf1TradeLicenseEnum =
-  | "ENABLE"
-  | "DISABLED"
-  | "ONLY_BUY"
-  | "ONLY_SELL"
-  | "ONLY_CLOSE";
+export type SymbolConf1TradeLicenseEnum = 'ENABLE' | 'DISABLED' | 'ONLY_BUY' | 'ONLY_SELL' | 'ONLY_CLOSE'
 
 /** 状态 */
-export type SymbolsStatusEnum = "ENABLE" | "DISABLED";
+export type SymbolsStatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 状态 */
-export type Symbols1StatusEnum = "ENABLE" | "DISABLED";
+export type Symbols1StatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 订单方向 */
-export type TradeRecordsBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type TradeRecordsBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 成交方向 */
-export type TradeRecordsInOutEnum = "IN" | "OUT" | "IN_OUT";
+export type TradeRecordsInOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 保证金类型 */
-export type TradeRecordsMarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type TradeRecordsMarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type TradeRecordsModeEnum = "NETTING" | "LOCKED_POSITION";
+export type TradeRecordsModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 订单方向 */
-export type TradeRecords1BuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type TradeRecords1BuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 成交方向 */
-export type TradeRecords1InOutEnum = "IN" | "OUT" | "IN_OUT";
+export type TradeRecords1InOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 订单模式 */
-export type TradeRecords1ModeEnum = "NETTING" | "LOCKED_POSITION";
+export type TradeRecords1ModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 交易-计算类型 */
-export type CalculationTypeEnum = "FOREIGN_CURRENCY" | "CFD";
+export type CalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 交易-GTC */
-export type GtcEnum = "DAY_VALID" | "DAY_VALID_NOT" | "CLIENT_CANCEL";
+export type GtcEnum = 'DAY_VALID' | 'DAY_VALID_NOT' | 'CLIENT_CANCEL'
 
 /** 状态 */
-export type StatusEnum = "ENABLE" | "DISABLED";
+export type StatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 交易-交易方向 */
-export type TradeBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type TradeBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 交易-交易许可 */
-export type TradeLicenseEnum =
-  | "ENABLE"
-  | "DISABLED"
-  | "ONLY_BUY"
-  | "ONLY_SELL"
-  | "ONLY_CLOSE";
+export type TradeLicenseEnum = 'ENABLE' | 'DISABLED' | 'ONLY_BUY' | 'ONLY_SELL' | 'ONLY_CLOSE'
 
 /** 交易-计算类型 */
-export type Type4CalculationTypeEnum = "FOREIGN_CURRENCY" | "CFD";
+export type Type4CalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 交易-GTC */
-export type Type4GtcEnum = "DAY_VALID" | "DAY_VALID_NOT" | "CLIENT_CANCEL";
+export type Type4GtcEnum = 'DAY_VALID' | 'DAY_VALID_NOT' | 'CLIENT_CANCEL'
 
 /** 状态 */
-export type Type4StatusEnum = "ENABLE" | "DISABLED";
+export type Type4StatusEnum = 'ENABLE' | 'DISABLED'
 
 /** 交易-交易方向 */
-export type Type4TradeBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type Type4TradeBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 交易-交易许可 */
-export type Type4TradeLicenseEnum =
-  | "ENABLE"
-  | "DISABLED"
-  | "ONLY_BUY"
-  | "ONLY_SELL"
-  | "ONLY_CLOSE";
+export type Type4TradeLicenseEnum = 'ENABLE' | 'DISABLED' | 'ONLY_BUY' | 'ONLY_SELL' | 'ONLY_CLOSE'
 
 /** 订单方向 */
-export type Type5BuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type Type5BuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 创建原因 */
 export type Type5CreateReasonEnum =
-  | "CLIENT"
-  | "MANAGER"
-  | "DEALER"
-  | "STOP_LOSS"
-  | "TAKE_PROFIT"
-  | "STOP_OUT"
-  | "FOLLOW_REDEEM"
-  | "SYSTEM";
+  | 'CLIENT'
+  | 'MANAGER'
+  | 'DEALER'
+  | 'STOP_LOSS'
+  | 'TAKE_PROFIT'
+  | 'STOP_OUT'
+  | 'FOLLOW_REDEEM'
+  | 'SYSTEM'
 
 /** 保证金类型 */
-export type Type5MarginTypeEnum = "CROSS_MARGIN" | "ISOLATED_MARGIN";
+export type Type5MarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单类型 */
 export type Type5TypeEnum =
-  | "MARKET_ORDER"
-  | "STOP_LOSS_ORDER"
-  | "TAKE_PROFIT_ORDER"
-  | "LIMIT_BUY_ORDER"
-  | "LIMIT_SELL_ORDER"
-  | "STOP_LOSS_LIMIT_BUY_ORDER"
-  | "STOP_LOSS_LIMIT_SELL_ORDER"
-  | "STOP_LOSS_MARKET_BUY_ORDER"
-  | "STOP_LOSS_MARKET_SELL_ORDER";
+  | 'MARKET_ORDER'
+  | 'STOP_LOSS_ORDER'
+  | 'TAKE_PROFIT_ORDER'
+  | 'LIMIT_BUY_ORDER'
+  | 'LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_LIMIT_BUY_ORDER'
+  | 'STOP_LOSS_LIMIT_SELL_ORDER'
+  | 'STOP_LOSS_MARKET_BUY_ORDER'
+  | 'STOP_LOSS_MARKET_SELL_ORDER'
 
 /** 交易-计算类型 */
-export type Type9CalculationTypeEnum = "FOREIGN_CURRENCY" | "CFD";
+export type Type9CalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 交易-GTC */
-export type Type9GtcEnum = "DAY_VALID" | "DAY_VALID_NOT" | "CLIENT_CANCEL";
+export type Type9GtcEnum = 'DAY_VALID' | 'DAY_VALID_NOT' | 'CLIENT_CANCEL'
 
 /** 交易-交易方向 */
-export type Type9TradeBuySellEnum = "BUY" | "SELL" | "BUY_OR_SELL";
+export type Type9TradeBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 交易-交易许可 */
-export type Type9TradeLicenseEnum =
-  | "ENABLE"
-  | "DISABLED"
-  | "ONLY_BUY"
-  | "ONLY_SELL"
-  | "ONLY_CLOSE";
+export type Type9TradeLicenseEnum = 'ENABLE' | 'DISABLED' | 'ONLY_BUY' | 'ONLY_SELL' | 'ONLY_CLOSE'
 
 /** 订单模式 */
-export type GetAccountListParamsOrderModeEnum = "NETTING" | "LOCKED_POSITION";
+export type GetAccountListParamsOrderModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 类型 */
 export type GetAccountMoneyrecordsParamsTypeEnum =
-  | "DEPOSIT"
-  | "ACTIVITY"
-  | "DEPOSIT_SIMULATE"
-  | "WITHDRAWAL"
-  | "MARGIN"
-  | "PROFIT"
-  | "HANDLING_FEES"
-  | "INTEREST_FEES"
-  | "GIFT"
-  | "TRANSFER"
-  | "FOLLOW_INITIAL"
-  | "FOLLOW_PURCHASE"
-  | "FOLLOW_REDEEM"
-  | "FOLLOW_PROFIT_SHARING"
-  | "FOLLOW_VAULT_DIVVY"
-  | "FOLLOW_CLOSE"
-  | "BACK"
-  | "ZERO"
-  | "BALANCE";
+  | 'DEPOSIT'
+  | 'ACTIVITY'
+  | 'DEPOSIT_SIMULATE'
+  | 'WITHDRAWAL'
+  | 'MARGIN'
+  | 'PROFIT'
+  | 'HANDLING_FEES'
+  | 'INTEREST_FEES'
+  | 'GIFT'
+  | 'TRANSFER'
+  | 'FOLLOW_INITIAL'
+  | 'FOLLOW_PURCHASE'
+  | 'FOLLOW_REDEEM'
+  | 'FOLLOW_PROFIT_SHARING'
+  | 'FOLLOW_VAULT_DIVVY'
+  | 'FOLLOW_CLOSE'
+  | 'BACK'
+  | 'ZERO'
+  | 'BALANCE'
 
 /** 类型 */
 export type GetFollowmanageSharesrecordlistParamsFollowSharesRecordTypeEnum =
-  | "INITIALIZE"
-  | "PURCHASE_SHARES"
-  | "REDEEM_SHARES"
-  | "DIVVY"
-  | "CLOSE";
+  | 'INITIALIZE'
+  | 'PURCHASE_SHARES'
+  | 'REDEEM_SHARES'
+  | 'DIVVY'
+  | 'CLOSE'
 
 /** 时间范围 */
-export type GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum =
-  | "HOUR24"
-  | "DAY30"
-  | "ALL_TIME";
+export type GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum = 'HOUR24' | 'DAY30' | 'ALL_TIME'
 
 /** 订单方向 */
-export type GetOrdersBgaorderpageListParamsBuySellEnum =
-  | "BUY"
-  | "SELL"
-  | "BUY_OR_SELL";
+export type GetOrdersBgaorderpageListParamsBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 保证金类型 */
-export type GetOrdersBgaorderpageListParamsMarginTypeEnum =
-  | "CROSS_MARGIN"
-  | "ISOLATED_MARGIN";
+export type GetOrdersBgaorderpageListParamsMarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type GetOrdersBgaorderpageListParamsModeEnum =
-  | "NETTING"
-  | "LOCKED_POSITION";
+export type GetOrdersBgaorderpageListParamsModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 排序 */
-export type GetOrdersBgaorderpageListParamsOrderByEnum = "ASC" | "DESC";
+export type GetOrdersBgaorderpageListParamsOrderByEnum = 'ASC' | 'DESC'
 
 /** 状态 */
-export type GetOrdersBgaorderpageListParamsStatusEnum = "BAG" | "FINISH";
+export type GetOrdersBgaorderpageListParamsStatusEnum = 'BAG' | 'FINISH'
 
 /** 订单方向 */
-export type GetOrdersOrderpageListParamsBuySellEnum =
-  | "BUY"
-  | "SELL"
-  | "BUY_OR_SELL";
+export type GetOrdersOrderpageListParamsBuySellEnum = 'BUY' | 'SELL' | 'BUY_OR_SELL'
 
 /** 保证金类型 */
-export type GetOrdersOrderpageListParamsMarginTypeEnum =
-  | "CROSS_MARGIN"
-  | "ISOLATED_MARGIN";
+export type GetOrdersOrderpageListParamsMarginTypeEnum = 'CROSS_MARGIN' | 'ISOLATED_MARGIN'
 
 /** 订单模式 */
-export type GetOrdersOrderpageListParamsModeEnum =
-  | "NETTING"
-  | "LOCKED_POSITION";
+export type GetOrdersOrderpageListParamsModeEnum = 'NETTING' | 'LOCKED_POSITION'
 
 /** 排序 */
-export type GetOrdersOrderpageListParamsOrderByEnum = "ASC" | "DESC";
+export type GetOrdersOrderpageListParamsOrderByEnum = 'ASC' | 'DESC'
 
 /** 成交方向 */
-export type GetOrdersTraderecordspageListParamsInOutEnum =
-  | "IN"
-  | "OUT"
-  | "IN_OUT";
+export type GetOrdersTraderecordspageListParamsInOutEnum = 'IN' | 'OUT' | 'IN_OUT'
 
 /** 排序 */
-export type GetOrdersTraderecordspageListParamsOrderByEnum = "ASC" | "DESC";
+export type GetOrdersTraderecordspageListParamsOrderByEnum = 'ASC' | 'DESC'
 
 /** 交易-计算类型 */
-export type GetSymbolsPageListParamsCalculationTypeEnum =
-  | "FOREIGN_CURRENCY"
-  | "CFD";
+export type GetSymbolsPageListParamsCalculationTypeEnum = 'FOREIGN_CURRENCY' | 'CFD'
 
 /** 状态 */
-export type GetSymbolsPageListParamsStatusEnum = "ENABLE" | "DISABLED";
+export type GetSymbolsPageListParamsStatusEnum = 'ENABLE' | 'DISABLED'
 
 export namespace Account {
   /**
@@ -4281,17 +4217,17 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountCount {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      accountId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListAccountCountVO;
+      accountId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListAccountCountVO
   }
 
   /**
@@ -4303,17 +4239,17 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountCountAccountprofit {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 账户ID
        * @format int64
        */
-      accountId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RBigdecimal;
+      accountId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RBigdecimal
   }
 
   /**
@@ -4325,17 +4261,17 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RAccountPage;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RAccountPage
   }
 
   /**
@@ -4347,45 +4283,45 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账号组ID
        * @format int64
        */
-      accountGroupId?: number;
+      accountGroupId?: number
       /**
        * 交易账号ID
        * @format int64
        */
-      accountId?: number;
+      accountId?: number
       /** 客户登录账号 */
-      clientAccount?: string;
+      clientAccount?: string
       /**
        * 客户ID
        * @format int64
        */
-      clientId?: number;
+      clientId?: number
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 是否模拟 */
-      isSimulate?: boolean;
+      isSimulate?: boolean
       /** 交易账号名称 */
-      name?: string;
+      name?: string
       /** 订单模式 */
-      orderMode?: GetAccountListParamsOrderModeEnum;
+      orderMode?: GetAccountListParamsOrderModeEnum
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageAccountPage;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageAccountPage
   }
 
   /**
@@ -4397,39 +4333,39 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountMoneyrecords {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账号ID
        * @format int64
        */
-      accountId: number;
+      accountId: number
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 结束时间
        * @format date-time
        */
-      endTime?: string;
+      endTime?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 开始时间
        * @format date-time
        */
-      startTime?: string;
+      startTime?: string
       /** 类型 */
-      type?: GetAccountMoneyrecordsParamsTypeEnum;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageMoneyRecords;
+      type?: GetAccountMoneyrecordsParamsTypeEnum
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageMoneyRecords
   }
 
   /**
@@ -4441,11 +4377,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountRecharge {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = HandRechargeVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = HandRechargeVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4457,11 +4393,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountRechargeSimulate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = HandRechargeVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = HandRechargeVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4473,14 +4409,14 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 主键ID */
-      id: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4492,11 +4428,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountSave {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountCreateVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountCreateVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4508,23 +4444,23 @@ export namespace Account {
    * @secure
    */
   export namespace GetAccountTradesymbollist {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账户ID
        * @format int64
        */
-      accountId?: number;
+      accountId?: number
       /** 交易品种分类 */
-      classify?: string;
+      classify?: string
       /** 交易品种 */
-      symbol?: string;
+      symbol?: string
       /** 交易品种路径 */
-      symbolPath?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListSymbols;
+      symbolPath?: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListSymbols
   }
 
   /**
@@ -4536,11 +4472,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountTransfer {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountMoneyTransferVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountMoneyTransferVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4552,11 +4488,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountUpdateVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountUpdateVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4568,11 +4504,11 @@ export namespace Account {
    * @secure
    */
   export namespace PostAccountWithdraw {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = HandWithdrawVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = HandWithdrawVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
@@ -4586,11 +4522,11 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupAdd {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountGroupSaveVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountGroupSaveVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4602,11 +4538,11 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupClone {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountGroupCloneVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountGroupCloneVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4618,17 +4554,17 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupConfDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RSymbolConf;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RSymbolConf
   }
 
   /**
@@ -4640,11 +4576,11 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupConfEdit {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _9;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _9
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4656,17 +4592,17 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RAccountGroup;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RAccountGroup
   }
 
   /**
@@ -4678,22 +4614,22 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageAccountGroup;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageAccountGroup
   }
 
   /**
@@ -4705,17 +4641,17 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4727,17 +4663,17 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupSymbolDelete {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4749,27 +4685,27 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupSymbolList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 账户组id
        * @format int64
        */
-      accountGroupId: number;
+      accountGroupId: number
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageAccountGroupSymbols;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageAccountGroupSymbols
   }
 
   /**
@@ -4781,11 +4717,11 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupSymbolSave {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountGroupSymbols;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountGroupSymbols
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4797,19 +4733,19 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace GetAccountgroupSymbolSwitch {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
+      id: number
       /** 是否默认配置 */
-      isDefault: boolean;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      isDefault: boolean
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4821,11 +4757,11 @@ export namespace AccountGroup {
    * @secure
    */
   export namespace PostAccountGroupUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = AccountGroupSaveVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = AccountGroupSaveVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
@@ -4839,14 +4775,14 @@ export namespace DelayUser {
    * @secure
    */
   export namespace PostDelayUserAdd {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 用户名/手机/邮箱 */
-      accountEmailPhone: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      accountEmailPhone: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4858,24 +4794,24 @@ export namespace DelayUser {
    * @secure
    */
   export namespace GetDelayuserPageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /** accountEmailPhone */
-      accountEmailPhone?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageDelayUser;
+      accountEmailPhone?: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageDelayUser
   }
 
   /**
@@ -4887,14 +4823,14 @@ export namespace DelayUser {
    * @secure
    */
   export namespace PostDelayUserRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 主键集合 */
-      ids: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      ids: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
@@ -4908,27 +4844,27 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanageAccountshares {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 主键id
        * @format int64
        */
-      followManageId: number;
+      followManageId: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageAccountManage;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageAccountManage
   }
 
   /**
@@ -4940,11 +4876,11 @@ export namespace FollowManage {
    * @secure
    */
   export namespace PostFollowManageCreatePool {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = FollowManageCreateVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = FollowManageCreateVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -4956,22 +4892,22 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanagePooldetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 跟单管理id
        * @format int64
        */
-      followManageId: number;
+      followManageId: number
       /**
        * 交易账户id
        * @format int64
        */
-      tradeAccountId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RPoolManage;
+      tradeAccountId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RPoolManage
   }
 
   /**
@@ -4983,24 +4919,24 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanagePoollist {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 查询参数 */
-      searchParam?: string;
+      searchParam?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPagePoolManage;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPagePoolManage
   }
 
   /**
@@ -5012,34 +4948,34 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanageSharesrecordlist {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 跟单管理ID
        * @format int64
        */
-      followManageId: number;
+      followManageId: number
       /** 类型 */
-      followSharesRecordType?: GetFollowmanageSharesrecordlistParamsFollowSharesRecordTypeEnum;
+      followSharesRecordType?: GetFollowmanageSharesrecordlistParamsFollowSharesRecordTypeEnum
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 交易账户ID
        * @format int64
        */
-      tradeAccountId?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageSharesRecord;
+      tradeAccountId?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageSharesRecord
   }
 
   /**
@@ -5051,19 +4987,19 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanageTwrrecordlist {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      followManageId: number;
+      followManageId: number
       /** 时间范围 */
-      followTwrQueryScope: GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListTwrRecordVO;
+      followTwrQueryScope: GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListTwrRecordVO
   }
 
   /**
@@ -5075,17 +5011,17 @@ export namespace FollowManage {
    * @secure
    */
   export namespace PostFollowManageVaultClose {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      followManageId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      followManageId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5097,11 +5033,11 @@ export namespace FollowManage {
    * @secure
    */
   export namespace PostFollowManageVaultDivvy {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = FollowVaultDivvyVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = FollowVaultDivvyVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5113,34 +5049,34 @@ export namespace FollowManage {
    * @secure
    */
   export namespace GetFollowmanageVaultpageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 我的交易账号
        * @format int64
        */
-      myTradeAccountId?: number;
+      myTradeAccountId?: number
       /**
        * 我的金库
        * @default false
        */
-      myVault?: boolean;
+      myVault?: boolean
       /** 查询参数 */
-      searchParam?: string;
+      searchParam?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPage;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPage
   }
 }
 
@@ -5154,27 +5090,27 @@ export namespace FollowShares {
    * @secure
    */
   export namespace GetFollowsharesFollowlist {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 主键id
        * @format int64
        */
-      tradeAccountId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageAccountManage;
+      tradeAccountId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageAccountManage
   }
 
   /**
@@ -5186,11 +5122,11 @@ export namespace FollowShares {
    * @secure
    */
   export namespace PostFollowSharesPurchaseShares {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = FollowPurchaseSharesVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = FollowPurchaseSharesVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5202,11 +5138,11 @@ export namespace FollowShares {
    * @secure
    */
   export namespace PostFollowSharesRedeemShares {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = FollowRedeemSharesVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = FollowRedeemSharesVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5218,17 +5154,17 @@ export namespace FollowShares {
    * @secure
    */
   export namespace GetFollowsharesSharesdetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      followSharesId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RAccountManage;
+      followSharesId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RAccountManage
   }
 }
 
@@ -5242,17 +5178,17 @@ export namespace Holiday {
    * @secure
    */
   export namespace GetHolidayDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RHoliday;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RHoliday
   }
 
   /**
@@ -5264,22 +5200,22 @@ export namespace Holiday {
    * @secure
    */
   export namespace GetHolidayList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageHoliday;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageHoliday
   }
 
   /**
@@ -5291,14 +5227,14 @@ export namespace Holiday {
    * @secure
    */
   export namespace PostHolidayRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 主键集合 */
-      ids: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      ids: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5310,11 +5246,11 @@ export namespace Holiday {
    * @secure
    */
   export namespace PostHolidaySubmit {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = Holiday;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = Holiday
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5326,14 +5262,14 @@ export namespace Holiday {
    * @secure
    */
   export namespace GetHolidaySymbolisholiday {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 品种集合 */
-      symbols: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RMapStringBoolean;
+      symbols: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RMapStringBoolean
   }
 }
 
@@ -5347,11 +5283,11 @@ export namespace LbPool {
    * @secure
    */
   export namespace PostLbPoolAdd {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = LbPoolAddVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = LbPoolAddVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5363,17 +5299,17 @@ export namespace LbPool {
    * @secure
    */
   export namespace GetLbpoolDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RLbPool;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RLbPool
   }
 
   /**
@@ -5385,17 +5321,17 @@ export namespace LbPool {
    * @secure
    */
   export namespace PostLbPoolInit {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5407,22 +5343,22 @@ export namespace LbPool {
    * @secure
    */
   export namespace GetLbpoolList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageLbPool;
+      size?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageLbPool
   }
 
   /**
@@ -5434,17 +5370,17 @@ export namespace LbPool {
    * @secure
    */
   export namespace PostLbPoolRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5456,11 +5392,11 @@ export namespace LbPool {
    * @secure
    */
   export namespace PostLbPoolSymbolGroup {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RSetObject;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RSetObject
   }
 
   /**
@@ -5472,11 +5408,11 @@ export namespace LbPool {
    * @secure
    */
   export namespace PostLbPoolUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = LbPoolUpdateVO;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = LbPoolUpdateVO
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
@@ -5490,11 +5426,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersAddMargin {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _8;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _8
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5506,17 +5442,17 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersAlldetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RBagOrder;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RBagOrder
   }
 
   /**
@@ -5528,72 +5464,72 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersBgaorderpageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账户ID
        * @pattern ^(?:\d+)?$
        */
-      accountId?: string;
+      accountId?: string
       /**
        * 持仓订单号ID
        * @pattern ^(?:\d+)?$
        */
-      bagOrderId?: string;
+      bagOrderId?: string
       /**
        * 持仓时间（秒）
        * @format int32
        */
-      bagOrderTime?: number;
+      bagOrderTime?: number
       /** 订单方向 */
-      buySell?: GetOrdersBgaorderpageListParamsBuySellEnum;
+      buySell?: GetOrdersBgaorderpageListParamsBuySellEnum
       /**
        * 客户ID
        * @pattern ^(?:\d+)?$
        */
-      clientId?: string;
+      clientId?: string
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 邮箱或者手机号 */
-      emailOrPhone?: string;
+      emailOrPhone?: string
       /**
        * 结束时间
        * @format date-time
        */
-      endTime?: string;
+      endTime?: string
       /** 是否模拟，false真实，true模拟 */
-      isSimulate?: boolean;
+      isSimulate?: boolean
       /** 保证金类型 */
-      marginType?: GetOrdersBgaorderpageListParamsMarginTypeEnum;
+      marginType?: GetOrdersBgaorderpageListParamsMarginTypeEnum
       /** 订单模式 */
-      mode?: GetOrdersBgaorderpageListParamsModeEnum;
+      mode?: GetOrdersBgaorderpageListParamsModeEnum
       /** 排序 */
-      orderBy?: GetOrdersBgaorderpageListParamsOrderByEnum;
+      orderBy?: GetOrdersBgaorderpageListParamsOrderByEnum
       /** 排序字段 */
-      orderByField?: string;
+      orderByField?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 开始时间
        * @format date-time
        */
-      startTime?: string;
+      startTime?: string
       /** 状态 */
-      status?: GetOrdersBgaorderpageListParamsStatusEnum;
+      status?: GetOrdersBgaorderpageListParamsStatusEnum
       /** 交易品种 */
-      symbol?: string;
+      symbol?: string
       /** 客户UID */
-      userAccount?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageBagOrder;
+      userAccount?: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageBagOrder
   }
 
   /**
@@ -5605,14 +5541,14 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersBgaorderpriceprofit {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 交易账户ID-交易品种-账户组ID-持仓单ID（多个用','隔开） */
-      asgoArrayStr: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RJSONObject;
+      asgoArrayStr: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RJSONObject
   }
 
   /**
@@ -5624,11 +5560,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersCreateOrder {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _5;
-    export type RequestHeaders = {};
-    export type ResponseBody = ROrders;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _5
+    export type RequestHeaders = {}
+    export type ResponseBody = ROrders
   }
 
   /**
@@ -5640,11 +5576,11 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersCrosshigh {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListAccountHighVO;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListAccountHighVO
   }
 
   /**
@@ -5656,11 +5592,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersExtractMargin {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _7;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _7
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5672,11 +5608,11 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersIsolatedhigh {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListOrderHighVO;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListOrderHighVO
   }
 
   /**
@@ -5688,11 +5624,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersNewOrderMargin {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _5;
-    export type RequestHeaders = {};
-    export type ResponseBody = RString;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _5
+    export type RequestHeaders = {}
+    export type ResponseBody = RString
   }
 
   /**
@@ -5704,17 +5640,17 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersOrderCancel {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 订单id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5726,17 +5662,17 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersOrderdetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = ROrders1;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = ROrders1
   }
 
   /**
@@ -5748,11 +5684,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersOrderEdit {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _2;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _2
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5764,69 +5700,69 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersOrderpageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账户ID
        * @pattern ^(?:\d+)?$
        */
-      accountId?: string;
+      accountId?: string
       /** 订单方向 */
-      buySell?: GetOrdersOrderpageListParamsBuySellEnum;
+      buySell?: GetOrdersOrderpageListParamsBuySellEnum
       /**
        * 客户ID
        * @pattern ^(?:\d+)?$
        */
-      clientId?: string;
+      clientId?: string
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 邮箱或者手机号 */
-      emailOrPhone?: string;
+      emailOrPhone?: string
       /**
        * 结束时间
        * @format date-time
        */
-      endTime?: string;
+      endTime?: string
       /** 是否模拟，false真实，true模拟 */
-      isSimulate?: boolean;
+      isSimulate?: boolean
       /** 保证金类型 */
-      marginType?: GetOrdersOrderpageListParamsMarginTypeEnum;
+      marginType?: GetOrdersOrderpageListParamsMarginTypeEnum
       /** 订单模式 */
-      mode?: GetOrdersOrderpageListParamsModeEnum;
+      mode?: GetOrdersOrderpageListParamsModeEnum
       /** 排序 */
-      orderBy?: GetOrdersOrderpageListParamsOrderByEnum;
+      orderBy?: GetOrdersOrderpageListParamsOrderByEnum
       /** 排序字段 */
-      orderByField?: string;
+      orderByField?: string
       /**
        * 订单号ID
        * @pattern ^(?:\d+)?$
        */
-      orderId?: string;
+      orderId?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 开始时间
        * @format date-time
        */
-      startTime?: string;
+      startTime?: string
       /** 状态 */
-      status?: string;
+      status?: string
       /** 交易品种 */
-      symbol?: string;
+      symbol?: string
       /** 订单类型 */
-      type?: string;
+      type?: string
       /** 客户UID */
-      userAccount?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageOrders;
+      userAccount?: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageOrders
   }
 
   /**
@@ -5838,11 +5774,11 @@ export namespace Orders {
    * @secure
    */
   export namespace PostOrdersStopProfitLoss {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _3;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _3
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -5854,71 +5790,71 @@ export namespace Orders {
    * @secure
    */
   export namespace GetOrdersTraderecordspageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 交易账户ID
        * @pattern ^(?:\d+)?$
        */
-      accountId?: string;
+      accountId?: string
       /**
        * 持仓订单ID
        * @pattern ^(?:\d+)?$
        */
-      bagOrderId?: string;
+      bagOrderId?: string
       /**
        * 客户ID
        * @pattern ^(?:\d+)?$
        */
-      clientId?: string;
+      clientId?: string
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 邮箱或者手机号 */
-      emailOrPhone?: string;
+      emailOrPhone?: string
       /**
        * 结束时间
        * @format date-time
        */
-      endTime?: string;
+      endTime?: string
       /** 成交方向 */
-      inOut?: GetOrdersTraderecordspageListParamsInOutEnum;
+      inOut?: GetOrdersTraderecordspageListParamsInOutEnum
       /** 是否模拟，false真实，true模拟 */
-      isSimulate?: boolean;
+      isSimulate?: boolean
       /** 排序 */
-      orderBy?: GetOrdersTraderecordspageListParamsOrderByEnum;
+      orderBy?: GetOrdersTraderecordspageListParamsOrderByEnum
       /** 排序字段 */
-      orderByField?: string;
+      orderByField?: string
       /**
        * 订单ID
        * @pattern ^(?:\d+)?$
        */
-      orderId?: string;
+      orderId?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /**
        * 开始时间
        * @format date-time
        */
-      startTime?: string;
+      startTime?: string
       /** 交易品种 */
-      symbol?: string;
+      symbol?: string
       /**
        * 成交单号ID
        * @pattern ^(?:\d+)?$
        */
-      tradeRecordsId?: string;
+      tradeRecordsId?: string
       /** 客户UID */
-      userAccount?: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageTradeRecords;
+      userAccount?: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageTradeRecords
   }
 }
 
@@ -5932,20 +5868,20 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicLpRedeemapply {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** address */
-      address: string;
+      address: string
       /** applySignature */
-      applySignature?: string;
+      applySignature?: string
       /** mxlpPrice */
-      mxlpPrice: number;
+      mxlpPrice: number
       /** redeemMxlp */
-      redeemMxlp: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RBoolean;
+      redeemMxlp: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RBoolean
   }
 
   /**
@@ -5957,14 +5893,14 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicSymbolHoliday {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** symbol */
-      symbol: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RBoolean;
+      symbol: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RBoolean
   }
 
   /**
@@ -5976,11 +5912,11 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicTestGetip {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RString;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RString
   }
 
   /**
@@ -5992,14 +5928,14 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicTestI18N {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** key */
-      key: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RString;
+      key: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RString
   }
 
   /**
@@ -6011,14 +5947,14 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicTestOrderby {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** field */
-      field: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RString;
+      field: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RString
   }
 
   /**
@@ -6030,17 +5966,17 @@ export namespace Public {
    * @secure
    */
   export namespace GetPublicTestTimeconvert {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * moneyRecordsId
        * @format int64
        */
-      moneyRecordsId: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RMoneyRecords;
+      moneyRecordsId: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RMoneyRecords
   }
 }
 
@@ -6054,17 +5990,17 @@ export namespace SymbolGroup {
    * @secure
    */
   export namespace PostSymbolGroupRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -6076,11 +6012,11 @@ export namespace SymbolGroup {
    * @secure
    */
   export namespace PostSymbolGroupSubmit {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = SymbolGroup;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = SymbolGroup
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -6092,11 +6028,11 @@ export namespace SymbolGroup {
    * @secure
    */
   export namespace GetSymbolgroupTree {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListSymbolGroup;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListSymbolGroup
   }
 }
 
@@ -6110,11 +6046,11 @@ export namespace Symbols {
    * @secure
    */
   export namespace PostSymbolsAdd {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _4;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _4
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -6126,17 +6062,17 @@ export namespace Symbols {
    * @secure
    */
   export namespace GetSymbolsDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RSymbols1;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RSymbols1
   }
 
   /**
@@ -6148,11 +6084,11 @@ export namespace Symbols {
    * @secure
    */
   export namespace GetSymbolsList {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RListSymbols1;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RListSymbols1
   }
 
   /**
@@ -6164,35 +6100,35 @@ export namespace Symbols {
    * @secure
    */
   export namespace GetSymbolsPageList {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 交易-计算类型 */
-      calculationType?: GetSymbolsPageListParamsCalculationTypeEnum;
+      calculationType?: GetSymbolsPageListParamsCalculationTypeEnum
       /**
        * 当前页
        * @format int32
        */
-      current?: number;
+      current?: number
       /** 备注 */
-      remark?: string;
+      remark?: string
       /**
        * 每页的数量
        * @format int32
        */
-      size?: number;
+      size?: number
       /** 状态 */
-      status?: GetSymbolsPageListParamsStatusEnum;
+      status?: GetSymbolsPageListParamsStatusEnum
       /** 品种名称 */
-      symbol?: string;
+      symbol?: string
       /**
        * 品种组ID
        * @format int64
        */
-      symbolGroupId?: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RIPageSymbols;
+      symbolGroupId?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RIPageSymbols
   }
 
   /**
@@ -6204,17 +6140,17 @@ export namespace Symbols {
    * @secure
    */
   export namespace PostSymbolsRemove {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /**
        * 主键id
        * @format int64
        */
-      id: number;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+      id: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 
   /**
@@ -6226,14 +6162,14 @@ export namespace Symbols {
    * @secure
    */
   export namespace GetSymbolsSymbolDetail {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** symbol */
-      symbol: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RSymbols;
+      symbol: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RSymbols
   }
 
   /**
@@ -6245,11 +6181,11 @@ export namespace Symbols {
    * @secure
    */
   export namespace GetSymbolsTree {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = RJSONArray;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = RJSONArray
   }
 
   /**
@@ -6261,11 +6197,11 @@ export namespace Symbols {
    * @secure
    */
   export namespace PostSymbolsUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
@@ -6279,11 +6215,11 @@ export namespace SystemSet {
    * @secure
    */
   export namespace GetSystemsetDetail {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = R_;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = R_
   }
 
   /**
@@ -6295,14 +6231,14 @@ export namespace SystemSet {
    * @secure
    */
   export namespace GetSystemsetLanguage {
-    export type RequestParams = {};
+    export type RequestParams = {}
     export type RequestQuery = {
       /** 多语言key */
-      key: string;
-    };
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = string;
+      key: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
   }
 
   /**
@@ -6314,160 +6250,137 @@ export namespace SystemSet {
    * @secure
    */
   export namespace PostSystemSetUpdate {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = _6;
-    export type RequestHeaders = {};
-    export type ResponseBody = R;
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = _6
+    export type RequestHeaders = {}
+    export type ResponseBody = R
   }
 }
 
-export type QueryParamsType = Record<string | number, any>;
-export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
+export type QueryParamsType = Record<string | number, any>
+export type ResponseFormat = keyof Omit<Body, 'body' | 'bodyUsed'>
 
-export interface FullRequestParams extends Omit<RequestInit, "body"> {
+export interface FullRequestParams extends Omit<RequestInit, 'body'> {
   /** set parameter to `true` for call `securityWorker` for this request */
-  secure?: boolean;
+  secure?: boolean
   /** request path */
-  path: string;
+  path: string
   /** content type of request body */
-  type?: ContentType;
+  type?: ContentType
   /** query params */
-  query?: QueryParamsType;
+  query?: QueryParamsType
   /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseFormat;
+  format?: ResponseFormat
   /** request body */
-  body?: unknown;
+  body?: unknown
   /** base url */
-  baseUrl?: string;
+  baseUrl?: string
   /** request cancellation token */
-  cancelToken?: CancelToken;
+  cancelToken?: CancelToken
 }
 
-export type RequestParams = Omit<
-  FullRequestParams,
-  "body" | "method" | "query" | "path"
->;
+export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>
 
 export interface ApiConfig<SecurityDataType = unknown> {
-  baseUrl?: string;
-  baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
-  securityWorker?: (
-    securityData: SecurityDataType | null,
-  ) => Promise<RequestParams | void> | RequestParams | void;
-  customFetch?: typeof fetch;
+  baseUrl?: string
+  baseApiParams?: Omit<RequestParams, 'baseUrl' | 'cancelToken' | 'signal'>
+  securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void
+  customFetch?: typeof fetch
 }
 
-export interface HttpResponse<D extends unknown, E extends unknown = unknown>
-  extends Response {
-  data: D;
-  error: E;
+export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+  data: D
+  error: E
 }
 
-type CancelToken = Symbol | string | number;
+type CancelToken = Symbol | string | number
 
 export enum ContentType {
-  Json = "application/json",
-  JsonApi = "application/vnd.api+json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
+  Json = 'application/json',
+  JsonApi = 'application/vnd.api+json',
+  FormData = 'multipart/form-data',
+  UrlEncoded = 'application/x-www-form-urlencoded',
+  Text = 'text/plain',
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "//172.31.27.8:8000/trade-core";
-  private securityData: SecurityDataType | null = null;
-  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
-  private abortControllers = new Map<CancelToken, AbortController>();
-  private customFetch = (...fetchParams: Parameters<typeof fetch>) =>
-    fetch(...fetchParams);
+  public baseUrl: string = '//172.31.27.8:8000/trade-core'
+  private securityData: SecurityDataType | null = null
+  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker']
+  private abortControllers = new Map<CancelToken, AbortController>()
+  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams)
 
   private baseApiParams: RequestParams = {
-    credentials: "same-origin",
+    credentials: 'same-origin',
     headers: {},
-    redirect: "follow",
-    referrerPolicy: "no-referrer",
-  };
+    redirect: 'follow',
+    referrerPolicy: 'no-referrer',
+  }
 
   constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
-    Object.assign(this, apiConfig);
+    Object.assign(this, apiConfig)
   }
 
   public setSecurityData = (data: SecurityDataType | null) => {
-    this.securityData = data;
-  };
+    this.securityData = data
+  }
 
   protected encodeQueryParam(key: string, value: any) {
-    const encodedKey = encodeURIComponent(key);
-    return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
+    const encodedKey = encodeURIComponent(key)
+    return `${encodedKey}=${encodeURIComponent(typeof value === 'number' ? value : `${value}`)}`
   }
 
   protected addQueryParam(query: QueryParamsType, key: string) {
-    return this.encodeQueryParam(key, query[key]);
+    return this.encodeQueryParam(key, query[key])
   }
 
   protected addArrayQueryParam(query: QueryParamsType, key: string) {
-    const value = query[key];
-    return value.map((v: any) => this.encodeQueryParam(key, v)).join("&");
+    const value = query[key]
+    return value.map((v: any) => this.encodeQueryParam(key, v)).join('&')
   }
 
   protected toQueryString(rawQuery?: QueryParamsType): string {
-    const query = rawQuery || {};
-    const keys = Object.keys(query).filter(
-      (key) => "undefined" !== typeof query[key],
-    );
+    const query = rawQuery || {}
+    const keys = Object.keys(query).filter((key) => 'undefined' !== typeof query[key])
     return keys
-      .map((key) =>
-        Array.isArray(query[key])
-          ? this.addArrayQueryParam(query, key)
-          : this.addQueryParam(query, key),
-      )
-      .join("&");
+      .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
+      .join('&')
   }
 
   protected addQueryParams(rawQuery?: QueryParamsType): string {
-    const queryString = this.toQueryString(rawQuery);
-    return queryString ? `?${queryString}` : "";
+    const queryString = this.toQueryString(rawQuery)
+    return queryString ? `?${queryString}` : ''
   }
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
     [ContentType.Json]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string")
-        ? JSON.stringify(input)
-        : input,
+      input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
     [ContentType.JsonApi]: (input: any) =>
-      input !== null && (typeof input === "object" || typeof input === "string")
-        ? JSON.stringify(input)
-        : input,
-    [ContentType.Text]: (input: any) =>
-      input !== null && typeof input !== "string"
-        ? JSON.stringify(input)
-        : input,
+      input !== null && (typeof input === 'object' || typeof input === 'string') ? JSON.stringify(input) : input,
+    [ContentType.Text]: (input: any) => (input !== null && typeof input !== 'string' ? JSON.stringify(input) : input),
     [ContentType.FormData]: (input: any) => {
       if (input instanceof FormData) {
-        return input;
+        return input
       }
 
       return Object.keys(input || {}).reduce((formData, key) => {
-        const property = input[key];
+        const property = input[key]
         formData.append(
           key,
           property instanceof Blob
             ? property
-            : typeof property === "object" && property !== null
+            : typeof property === 'object' && property !== null
               ? JSON.stringify(property)
               : `${property}`,
-        );
-        return formData;
-      }, new FormData());
+        )
+        return formData
+      }, new FormData())
     },
     [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
-  };
+  }
 
-  protected mergeRequestParams(
-    params1: RequestParams,
-    params2?: RequestParams,
-  ): RequestParams {
+  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
     return {
       ...this.baseApiParams,
       ...params1,
@@ -6477,33 +6390,31 @@ export class HttpClient<SecurityDataType = unknown> {
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
-    };
+    }
   }
 
-  protected createAbortSignal = (
-    cancelToken: CancelToken,
-  ): AbortSignal | undefined => {
+  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
     if (this.abortControllers.has(cancelToken)) {
-      const abortController = this.abortControllers.get(cancelToken);
+      const abortController = this.abortControllers.get(cancelToken)
       if (abortController) {
-        return abortController.signal;
+        return abortController.signal
       }
-      return void 0;
+      return void 0
     }
 
-    const abortController = new AbortController();
-    this.abortControllers.set(cancelToken, abortController);
-    return abortController.signal;
-  };
+    const abortController = new AbortController()
+    this.abortControllers.set(cancelToken, abortController)
+    return abortController.signal
+  }
 
   public abortRequest = (cancelToken: CancelToken) => {
-    const abortController = this.abortControllers.get(cancelToken);
+    const abortController = this.abortControllers.get(cancelToken)
 
     if (abortController) {
-      abortController.abort();
-      this.abortControllers.delete(cancelToken);
+      abortController.abort()
+      this.abortControllers.delete(cancelToken)
     }
-  };
+  }
 
   public request = async <T = any, E = any>({
     body,
@@ -6517,63 +6428,52 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.baseApiParams.secure) &&
+      ((typeof secure === 'boolean' ? secure : this.baseApiParams.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
-      {};
-    const requestParams = this.mergeRequestParams(params, secureParams);
-    const queryString = query && this.toQueryString(query);
-    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
-    const responseFormat = format || requestParams.format;
+      {}
+    const requestParams = this.mergeRequestParams(params, secureParams)
+    const queryString = query && this.toQueryString(query)
+    const payloadFormatter = this.contentFormatters[type || ContentType.Json]
+    const responseFormat = format || requestParams.format
 
-    return this.customFetch(
-      `${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`,
-      {
-        ...requestParams,
-        headers: {
-          ...(requestParams.headers || {}),
-          ...(type && type !== ContentType.FormData
-            ? { "Content-Type": type }
-            : {}),
-        },
-        signal:
-          (cancelToken
-            ? this.createAbortSignal(cancelToken)
-            : requestParams.signal) || null,
-        body:
-          typeof body === "undefined" || body === null
-            ? null
-            : payloadFormatter(body),
+    return this.customFetch(`${baseUrl || this.baseUrl || ''}${path}${queryString ? `?${queryString}` : ''}`, {
+      ...requestParams,
+      headers: {
+        ...(requestParams.headers || {}),
+        ...(type && type !== ContentType.FormData ? { 'Content-Type': type } : {}),
       },
-    ).then(async (response) => {
-      const r = response as HttpResponse<T, E>;
-      r.data = null as unknown as T;
-      r.error = null as unknown as E;
+      signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
+      body: typeof body === 'undefined' || body === null ? null : payloadFormatter(body),
+    }).then(async (response) => {
+      const r = response as HttpResponse<T, E>
+      r.data = null as unknown as T
+      r.error = null as unknown as E
 
       const data = !responseFormat
         ? r
         : await response[responseFormat]()
             .then((data) => {
               if (r.ok) {
-                r.data = data;
+                r.data = data
               } else {
-                r.error = data;
+                r.error = data
               }
-              return r;
+              return r
             })
             .catch((e) => {
-              r.error = e;
-              return r;
-            });
+              r.error = e
+              return r
+            })
 
       if (cancelToken) {
-        this.abortControllers.delete(cancelToken);
+        this.abortControllers.delete(cancelToken)
       }
 
-      if (!response.ok) throw data;
-      return data;
-    });
-  };
+      if (!response.ok) throw data
+      return data
+    })
+  }
 }
 
 /**
@@ -6587,10 +6487,10 @@ export class HttpClient<SecurityDataType = unknown> {
  * BladeX 接口文档系统
  */
 export class TradeCoreApi<SecurityDataType extends unknown> {
-  http: HttpClient<SecurityDataType>;
+  http: HttpClient<SecurityDataType>
 
   constructor(http: HttpClient<SecurityDataType>) {
-    this.http = http;
+    this.http = http
   }
 
   account = {
@@ -6609,13 +6509,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        accountId: number;
+        accountId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RListAccountCountVO, void>({
         path: `/coreApi/account/count`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6636,13 +6536,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 账户ID
          * @format int64
          */
-        accountId: number;
+        accountId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RBigdecimal, void>({
         path: `/coreApi/account/count/accountProfit`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6663,13 +6563,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RAccountPage, void>({
         path: `/coreApi/account/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6690,41 +6590,41 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账号组ID
          * @format int64
          */
-        accountGroupId?: number;
+        accountGroupId?: number
         /**
          * 交易账号ID
          * @format int64
          */
-        accountId?: number;
+        accountId?: number
         /** 客户登录账号 */
-        clientAccount?: string;
+        clientAccount?: string
         /**
          * 客户ID
          * @format int64
          */
-        clientId?: number;
+        clientId?: number
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 是否模拟 */
-        isSimulate?: boolean;
+        isSimulate?: boolean
         /** 交易账号名称 */
-        name?: string;
+        name?: string
         /** 订单模式 */
-        orderMode?: GetAccountListParamsOrderModeEnum;
+        orderMode?: GetAccountListParamsOrderModeEnum
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageAccountPage, void>({
         path: `/coreApi/account/list`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6745,35 +6645,35 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账号ID
          * @format int64
          */
-        accountId: number;
+        accountId: number
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 结束时间
          * @format date-time
          */
-        endTime?: string;
+        endTime?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 开始时间
          * @format date-time
          */
-        startTime?: string;
+        startTime?: string
         /** 类型 */
-        type?: GetAccountMoneyrecordsParamsTypeEnum;
+        type?: GetAccountMoneyrecordsParamsTypeEnum
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageMoneyRecords, void>({
         path: `/coreApi/account/moneyRecords`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6788,13 +6688,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/recharge
      * @secure
      */
-    postAccountRecharge: (
-      handRechargeVO: HandRechargeVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountRecharge: (handRechargeVO: HandRechargeVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/recharge`,
-        method: "POST",
+        method: 'POST',
         body: handRechargeVO,
         secure: true,
         type: ContentType.Json,
@@ -6810,13 +6707,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/rechargeSimulate
      * @secure
      */
-    postAccountRechargeSimulate: (
-      handRechargeVO: HandRechargeVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountRechargeSimulate: (handRechargeVO: HandRechargeVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/rechargeSimulate`,
-        method: "POST",
+        method: 'POST',
         body: handRechargeVO,
         secure: true,
         type: ContentType.Json,
@@ -6835,13 +6729,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postAccountRemove: (
       query: {
         /** 主键ID */
-        id: string;
+        id: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/account/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -6857,13 +6751,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/save
      * @secure
      */
-    postAccountSave: (
-      accountCreate: AccountCreateVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountSave: (accountCreate: AccountCreateVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/save`,
-        method: "POST",
+        method: 'POST',
         body: accountCreate,
         secure: true,
         type: ContentType.Json,
@@ -6885,19 +6776,19 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账户ID
          * @format int64
          */
-        accountId?: number;
+        accountId?: number
         /** 交易品种分类 */
-        classify?: string;
+        classify?: string
         /** 交易品种 */
-        symbol?: string;
+        symbol?: string
         /** 交易品种路径 */
-        symbolPath?: string;
+        symbolPath?: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RListSymbols, void>({
         path: `/coreApi/account/tradeSymbolList`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -6912,13 +6803,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/transfer
      * @secure
      */
-    postAccountTransfer: (
-      accountMoneyTransferVO: AccountMoneyTransferVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountTransfer: (accountMoneyTransferVO: AccountMoneyTransferVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/transfer`,
-        method: "POST",
+        method: 'POST',
         body: accountMoneyTransferVO,
         secure: true,
         type: ContentType.Json,
@@ -6934,13 +6822,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/update
      * @secure
      */
-    postAccountUpdate: (
-      accountUpdate: AccountUpdateVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountUpdate: (accountUpdate: AccountUpdateVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/update`,
-        method: "POST",
+        method: 'POST',
         body: accountUpdate,
         secure: true,
         type: ContentType.Json,
@@ -6956,19 +6841,16 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/account/withdraw
      * @secure
      */
-    postAccountWithdraw: (
-      handWithdrawVO: HandWithdrawVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountWithdraw: (handWithdrawVO: HandWithdrawVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/account/withdraw`,
-        method: "POST",
+        method: 'POST',
         body: handWithdrawVO,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   accountGroup = {
     /**
      * @description 传入accountGroup
@@ -6979,13 +6861,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/accountGroup/add
      * @secure
      */
-    postAccountGroupAdd: (
-      accountGroupSave: AccountGroupSaveVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountGroupAdd: (accountGroupSave: AccountGroupSaveVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/add`,
-        method: "POST",
+        method: 'POST',
         body: accountGroupSave,
         secure: true,
         type: ContentType.Json,
@@ -7001,13 +6880,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/accountGroup/clone
      * @secure
      */
-    postAccountGroupClone: (
-      accountGroupClone: AccountGroupCloneVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountGroupClone: (accountGroupClone: AccountGroupCloneVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/clone`,
-        method: "POST",
+        method: 'POST',
         body: accountGroupClone,
         secure: true,
         type: ContentType.Json,
@@ -7029,13 +6905,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RSymbolConf, void>({
         path: `/coreApi/accountGroup/conf/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7050,13 +6926,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/accountGroup/conf/edit
      * @secure
      */
-    postAccountGroupConfEdit: (
-      accountGroupSymbolConfSave: _9,
-      params: RequestParams = {},
-    ) =>
+    postAccountGroupConfEdit: (accountGroupSymbolConfSave: _9, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/conf/edit`,
-        method: "POST",
+        method: 'POST',
         body: accountGroupSymbolConfSave,
         secure: true,
         type: ContentType.Json,
@@ -7078,13 +6951,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RAccountGroup, void>({
         path: `/coreApi/accountGroup/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7105,18 +6978,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageAccountGroup, void>({
         path: `/coreApi/accountGroup/list`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7137,13 +7010,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -7165,13 +7038,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/symbol/delete`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7192,23 +7065,23 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 账户组id
          * @format int64
          */
-        accountGroupId: number;
+        accountGroupId: number
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageAccountGroupSymbols, void>({
         path: `/coreApi/accountGroup/symbol/list`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7223,13 +7096,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/accountGroup/symbol/save
      * @secure
      */
-    postAccountGroupSymbolSave: (
-      accountGroupSymbols: AccountGroupSymbols,
-      params: RequestParams = {},
-    ) =>
+    postAccountGroupSymbolSave: (accountGroupSymbols: AccountGroupSymbols, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/symbol/save`,
-        method: "POST",
+        method: 'POST',
         body: accountGroupSymbols,
         secure: true,
         type: ContentType.Json,
@@ -7251,15 +7121,15 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
         /** 是否默认配置 */
-        isDefault: boolean;
+        isDefault: boolean
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/symbol/switch`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7274,19 +7144,16 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/accountGroup/update
      * @secure
      */
-    postAccountGroupUpdate: (
-      accountGroupSave: AccountGroupSaveVO,
-      params: RequestParams = {},
-    ) =>
+    postAccountGroupUpdate: (accountGroupSave: AccountGroupSaveVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/accountGroup/update`,
-        method: "POST",
+        method: 'POST',
         body: accountGroupSave,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   delayUser = {
     /**
      * @description 传入delayUser
@@ -7300,13 +7167,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postDelayUserAdd: (
       query: {
         /** 用户名/手机/邮箱 */
-        accountEmailPhone: string;
+        accountEmailPhone: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/delayUser/add`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -7328,20 +7195,20 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /** accountEmailPhone */
-        accountEmailPhone?: string;
+        accountEmailPhone?: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageDelayUser, void>({
         path: `/coreApi/delayUser/page`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7359,19 +7226,19 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postDelayUserRemove: (
       query: {
         /** 主键集合 */
-        ids: string;
+        ids: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/delayUser/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   followManage = {
     /**
      * @description 传入followManageId
@@ -7388,23 +7255,23 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 主键id
          * @format int64
          */
-        followManageId: number;
+        followManageId: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageAccountManage, void>({
         path: `/coreApi/followManage/accountShares`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7419,13 +7286,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/followManage/createPool
      * @secure
      */
-    postFollowManageCreatePool: (
-      followManageCreate: FollowManageCreateVO,
-      params: RequestParams = {},
-    ) =>
+    postFollowManageCreatePool: (followManageCreate: FollowManageCreateVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/followManage/createPool`,
-        method: "POST",
+        method: 'POST',
         body: followManageCreate,
         secure: true,
         type: ContentType.Json,
@@ -7447,18 +7311,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 跟单管理id
          * @format int64
          */
-        followManageId: number;
+        followManageId: number
         /**
          * 交易账户id
          * @format int64
          */
-        tradeAccountId: number;
+        tradeAccountId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RPoolManage, void>({
         path: `/coreApi/followManage/poolDetail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7479,20 +7343,20 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 查询参数 */
-        searchParam?: string;
+        searchParam?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPagePoolManage, void>({
         path: `/coreApi/followManage/poolList`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7513,30 +7377,30 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 跟单管理ID
          * @format int64
          */
-        followManageId: number;
+        followManageId: number
         /** 类型 */
-        followSharesRecordType?: GetFollowmanageSharesrecordlistParamsFollowSharesRecordTypeEnum;
+        followSharesRecordType?: GetFollowmanageSharesrecordlistParamsFollowSharesRecordTypeEnum
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 交易账户ID
          * @format int64
          */
-        tradeAccountId?: number;
+        tradeAccountId?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageSharesRecord, void>({
         path: `/coreApi/followManage/sharesRecordList`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7557,15 +7421,15 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        followManageId: number;
+        followManageId: number
         /** 时间范围 */
-        followTwrQueryScope: GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum;
+        followTwrQueryScope: GetFollowmanageTwrrecordlistParamsFollowTwrQueryScopeEnum
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RListTwrRecordVO, void>({
         path: `/coreApi/followManage/twrRecordList`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7586,13 +7450,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        followManageId: number;
+        followManageId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/followManage/vaultClose`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -7608,13 +7472,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/followManage/vaultDivvy
      * @secure
      */
-    postFollowManageVaultDivvy: (
-      followVaultDivvy: FollowVaultDivvyVO,
-      params: RequestParams = {},
-    ) =>
+    postFollowManageVaultDivvy: (followVaultDivvy: FollowVaultDivvyVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/followManage/vaultDivvy`,
-        method: "POST",
+        method: 'POST',
         body: followVaultDivvy,
         secure: true,
         type: ContentType.Json,
@@ -7636,35 +7497,35 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 我的交易账号
          * @format int64
          */
-        myTradeAccountId?: number;
+        myTradeAccountId?: number
         /**
          * 我的金库
          * @default false
          */
-        myVault?: boolean;
+        myVault?: boolean
         /** 查询参数 */
-        searchParam?: string;
+        searchParam?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPage, void>({
         path: `/coreApi/followManage/vaultPage`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
       }),
-  };
+  }
   followShares = {
     /**
      * @description 传入tradeAccountId
@@ -7681,23 +7542,23 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 主键id
          * @format int64
          */
-        tradeAccountId: number;
+        tradeAccountId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageAccountManage, void>({
         path: `/coreApi/followShares/followList`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7712,13 +7573,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/followShares/purchaseShares
      * @secure
      */
-    postFollowSharesPurchaseShares: (
-      followPurchaseShares: FollowPurchaseSharesVO,
-      params: RequestParams = {},
-    ) =>
+    postFollowSharesPurchaseShares: (followPurchaseShares: FollowPurchaseSharesVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/followShares/purchaseShares`,
-        method: "POST",
+        method: 'POST',
         body: followPurchaseShares,
         secure: true,
         type: ContentType.Json,
@@ -7734,13 +7592,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/followShares/redeemShares
      * @secure
      */
-    postFollowSharesRedeemShares: (
-      followRedeemShares: FollowRedeemSharesVO,
-      params: RequestParams = {},
-    ) =>
+    postFollowSharesRedeemShares: (followRedeemShares: FollowRedeemSharesVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/followShares/redeemShares`,
-        method: "POST",
+        method: 'POST',
         body: followRedeemShares,
         secure: true,
         type: ContentType.Json,
@@ -7762,18 +7617,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        followSharesId: number;
+        followSharesId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RAccountManage, void>({
         path: `/coreApi/followShares/sharesDetail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
       }),
-  };
+  }
   holiday = {
     /**
      * @description 传入holiday
@@ -7790,13 +7645,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RHoliday, void>({
         path: `/coreApi/holiday/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7817,18 +7672,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageHoliday, void>({
         path: `/coreApi/holiday/list`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7846,13 +7701,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postHolidayRemove: (
       query: {
         /** 主键集合 */
-        ids: string;
+        ids: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/holiday/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -7871,7 +7726,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postHolidaySubmit: (holiday: Holiday, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/holiday/submit`,
-        method: "POST",
+        method: 'POST',
         body: holiday,
         secure: true,
         type: ContentType.Json,
@@ -7890,18 +7745,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getHolidaySymbolisholiday: (
       query: {
         /** 品种集合 */
-        symbols: string;
+        symbols: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RMapStringBoolean, void>({
         path: `/coreApi/holiday/symbolIsHoliday`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
       }),
-  };
+  }
   lbPool = {
     /**
      * @description 传入lbPool
@@ -7915,7 +7770,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postLbPoolAdd: (lbPoolAdd: LbPoolAddVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/lbPool/add`,
-        method: "POST",
+        method: 'POST',
         body: lbPoolAdd,
         secure: true,
         type: ContentType.Json,
@@ -7937,13 +7792,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RLbPool, void>({
         path: `/coreApi/lbPool/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -7964,13 +7819,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/lbPool/init`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -7992,18 +7847,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageLbPool, void>({
         path: `/coreApi/lbPool/list`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8024,13 +7879,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/lbPool/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -8049,7 +7904,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postLbPoolSymbolGroup: (params: RequestParams = {}) =>
       this.http.request<RSetObject, void>({
         path: `/coreApi/lbPool/symbol-group`,
-        method: "POST",
+        method: 'POST',
         secure: true,
         type: ContentType.Json,
         ...params,
@@ -8064,19 +7919,16 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/lbPool/update
      * @secure
      */
-    postLbPoolUpdate: (
-      lbPoolUpdate: LbPoolUpdateVO,
-      params: RequestParams = {},
-    ) =>
+    postLbPoolUpdate: (lbPoolUpdate: LbPoolUpdateVO, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/lbPool/update`,
-        method: "POST",
+        method: 'POST',
         body: lbPoolUpdate,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   orders = {
     /**
      * @description 传入orders
@@ -8090,7 +7942,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postOrdersAddMargin: (orderAddMargin: _8, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/orders/addMargin`,
-        method: "POST",
+        method: 'POST',
         body: orderAddMargin,
         secure: true,
         type: ContentType.Json,
@@ -8112,13 +7964,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RBagOrder, void>({
         path: `/coreApi/orders/allDetail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8139,68 +7991,68 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账户ID
          * @pattern ^(?:\d+)?$
          */
-        accountId?: string;
+        accountId?: string
         /**
          * 持仓订单号ID
          * @pattern ^(?:\d+)?$
          */
-        bagOrderId?: string;
+        bagOrderId?: string
         /**
          * 持仓时间（秒）
          * @format int32
          */
-        bagOrderTime?: number;
+        bagOrderTime?: number
         /** 订单方向 */
-        buySell?: GetOrdersBgaorderpageListParamsBuySellEnum;
+        buySell?: GetOrdersBgaorderpageListParamsBuySellEnum
         /**
          * 客户ID
          * @pattern ^(?:\d+)?$
          */
-        clientId?: string;
+        clientId?: string
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 邮箱或者手机号 */
-        emailOrPhone?: string;
+        emailOrPhone?: string
         /**
          * 结束时间
          * @format date-time
          */
-        endTime?: string;
+        endTime?: string
         /** 是否模拟，false真实，true模拟 */
-        isSimulate?: boolean;
+        isSimulate?: boolean
         /** 保证金类型 */
-        marginType?: GetOrdersBgaorderpageListParamsMarginTypeEnum;
+        marginType?: GetOrdersBgaorderpageListParamsMarginTypeEnum
         /** 订单模式 */
-        mode?: GetOrdersBgaorderpageListParamsModeEnum;
+        mode?: GetOrdersBgaorderpageListParamsModeEnum
         /** 排序 */
-        orderBy?: GetOrdersBgaorderpageListParamsOrderByEnum;
+        orderBy?: GetOrdersBgaorderpageListParamsOrderByEnum
         /** 排序字段 */
-        orderByField?: string;
+        orderByField?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 开始时间
          * @format date-time
          */
-        startTime?: string;
+        startTime?: string
         /** 状态 */
-        status?: GetOrdersBgaorderpageListParamsStatusEnum;
+        status?: GetOrdersBgaorderpageListParamsStatusEnum
         /** 交易品种 */
-        symbol?: string;
+        symbol?: string
         /** 客户UID */
-        userAccount?: string;
+        userAccount?: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageBagOrder, void>({
         path: `/coreApi/orders/bgaOrderPage`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8218,13 +8070,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getOrdersBgaorderpriceprofit: (
       query: {
         /** 交易账户ID-交易品种-账户组ID-持仓单ID（多个用','隔开） */
-        asgoArrayStr: string;
+        asgoArrayStr: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RJSONObject, void>({
         path: `/coreApi/orders/bgaOrderPriceProfit`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8242,7 +8094,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postOrdersCreateOrder: (orderCreate: _5, params: RequestParams = {}) =>
       this.http.request<ROrders, void>({
         path: `/coreApi/orders/createOrder`,
-        method: "POST",
+        method: 'POST',
         body: orderCreate,
         secure: true,
         type: ContentType.Json,
@@ -8261,7 +8113,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getOrdersCrosshigh: (params: RequestParams = {}) =>
       this.http.request<RListAccountHighVO, void>({
         path: `/coreApi/orders/crossHigh`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -8275,13 +8127,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/orders/extractMargin
      * @secure
      */
-    postOrdersExtractMargin: (
-      orderExtractMargin: _7,
-      params: RequestParams = {},
-    ) =>
+    postOrdersExtractMargin: (orderExtractMargin: _7, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/orders/extractMargin`,
-        method: "POST",
+        method: 'POST',
         body: orderExtractMargin,
         secure: true,
         type: ContentType.Json,
@@ -8300,7 +8149,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getOrdersIsolatedhigh: (params: RequestParams = {}) =>
       this.http.request<RListOrderHighVO, void>({
         path: `/coreApi/orders/isolatedHigh`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -8317,7 +8166,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postOrdersNewOrderMargin: (orderCreate: _5, params: RequestParams = {}) =>
       this.http.request<RString, void>({
         path: `/coreApi/orders/newOrderMargin`,
-        method: "POST",
+        method: 'POST',
         body: orderCreate,
         secure: true,
         type: ContentType.Json,
@@ -8339,13 +8188,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 订单id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/orders/orderCancel`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -8367,13 +8216,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<ROrders1, void>({
         path: `/coreApi/orders/orderDetail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8391,7 +8240,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postOrdersOrderEdit: (orderEdit: _2, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/orders/orderEdit`,
-        method: "POST",
+        method: 'POST',
         body: orderEdit,
         secure: true,
         type: ContentType.Json,
@@ -8413,65 +8262,65 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账户ID
          * @pattern ^(?:\d+)?$
          */
-        accountId?: string;
+        accountId?: string
         /** 订单方向 */
-        buySell?: GetOrdersOrderpageListParamsBuySellEnum;
+        buySell?: GetOrdersOrderpageListParamsBuySellEnum
         /**
          * 客户ID
          * @pattern ^(?:\d+)?$
          */
-        clientId?: string;
+        clientId?: string
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 邮箱或者手机号 */
-        emailOrPhone?: string;
+        emailOrPhone?: string
         /**
          * 结束时间
          * @format date-time
          */
-        endTime?: string;
+        endTime?: string
         /** 是否模拟，false真实，true模拟 */
-        isSimulate?: boolean;
+        isSimulate?: boolean
         /** 保证金类型 */
-        marginType?: GetOrdersOrderpageListParamsMarginTypeEnum;
+        marginType?: GetOrdersOrderpageListParamsMarginTypeEnum
         /** 订单模式 */
-        mode?: GetOrdersOrderpageListParamsModeEnum;
+        mode?: GetOrdersOrderpageListParamsModeEnum
         /** 排序 */
-        orderBy?: GetOrdersOrderpageListParamsOrderByEnum;
+        orderBy?: GetOrdersOrderpageListParamsOrderByEnum
         /** 排序字段 */
-        orderByField?: string;
+        orderByField?: string
         /**
          * 订单号ID
          * @pattern ^(?:\d+)?$
          */
-        orderId?: string;
+        orderId?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 开始时间
          * @format date-time
          */
-        startTime?: string;
+        startTime?: string
         /** 状态 */
-        status?: string;
+        status?: string
         /** 交易品种 */
-        symbol?: string;
+        symbol?: string
         /** 订单类型 */
-        type?: string;
+        type?: string
         /** 客户UID */
-        userAccount?: string;
+        userAccount?: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageOrders, void>({
         path: `/coreApi/orders/orderPage`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8486,13 +8335,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/orders/stopProfitLoss
      * @secure
      */
-    postOrdersStopProfitLoss: (
-      stopProfitLossVO: _3,
-      params: RequestParams = {},
-    ) =>
+    postOrdersStopProfitLoss: (stopProfitLossVO: _3, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/orders/stopProfitLoss`,
-        method: "POST",
+        method: 'POST',
         body: stopProfitLossVO,
         secure: true,
         type: ContentType.Json,
@@ -8514,72 +8360,72 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 交易账户ID
          * @pattern ^(?:\d+)?$
          */
-        accountId?: string;
+        accountId?: string
         /**
          * 持仓订单ID
          * @pattern ^(?:\d+)?$
          */
-        bagOrderId?: string;
+        bagOrderId?: string
         /**
          * 客户ID
          * @pattern ^(?:\d+)?$
          */
-        clientId?: string;
+        clientId?: string
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 邮箱或者手机号 */
-        emailOrPhone?: string;
+        emailOrPhone?: string
         /**
          * 结束时间
          * @format date-time
          */
-        endTime?: string;
+        endTime?: string
         /** 成交方向 */
-        inOut?: GetOrdersTraderecordspageListParamsInOutEnum;
+        inOut?: GetOrdersTraderecordspageListParamsInOutEnum
         /** 是否模拟，false真实，true模拟 */
-        isSimulate?: boolean;
+        isSimulate?: boolean
         /** 排序 */
-        orderBy?: GetOrdersTraderecordspageListParamsOrderByEnum;
+        orderBy?: GetOrdersTraderecordspageListParamsOrderByEnum
         /** 排序字段 */
-        orderByField?: string;
+        orderByField?: string
         /**
          * 订单ID
          * @pattern ^(?:\d+)?$
          */
-        orderId?: string;
+        orderId?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /**
          * 开始时间
          * @format date-time
          */
-        startTime?: string;
+        startTime?: string
         /** 交易品种 */
-        symbol?: string;
+        symbol?: string
         /**
          * 成交单号ID
          * @pattern ^(?:\d+)?$
          */
-        tradeRecordsId?: string;
+        tradeRecordsId?: string
         /** 客户UID */
-        userAccount?: string;
+        userAccount?: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageTradeRecords, void>({
         path: `/coreApi/orders/tradeRecordsPage`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
       }),
-  };
+  }
   public = {
     /**
      * @description 传入
@@ -8593,19 +8439,19 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getPublicLpRedeemapply: (
       query: {
         /** address */
-        address: string;
+        address: string
         /** applySignature */
-        applySignature?: string;
+        applySignature?: string
         /** mxlpPrice */
-        mxlpPrice: number;
+        mxlpPrice: number
         /** redeemMxlp */
-        redeemMxlp: number;
+        redeemMxlp: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RBoolean, void>({
         path: `/coreApi/public/lp/redeemApply`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8623,13 +8469,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getPublicSymbolHoliday: (
       query: {
         /** symbol */
-        symbol: string;
+        symbol: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RBoolean, void>({
         path: `/coreApi/public/symbol/holiday`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8647,7 +8493,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getPublicTestGetip: (params: RequestParams = {}) =>
       this.http.request<RString, void>({
         path: `/coreApi/public/test/getIp`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -8664,13 +8510,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getPublicTestI18N: (
       query: {
         /** key */
-        key: string;
+        key: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RString, void>({
         path: `/coreApi/public/test/i18n`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8688,13 +8534,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getPublicTestOrderby: (
       query: {
         /** field */
-        field: string;
+        field: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RString, void>({
         path: `/coreApi/public/test/orderBy`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8715,18 +8561,18 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * moneyRecordsId
          * @format int64
          */
-        moneyRecordsId: number;
+        moneyRecordsId: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RMoneyRecords, void>({
         path: `/coreApi/public/test/timeConvert`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
       }),
-  };
+  }
   symbolGroup = {
     /**
      * @description 传入id
@@ -8743,13 +8589,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/symbolGroup/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -8765,13 +8611,10 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
      * @request POST:/coreApi/symbolGroup/submit
      * @secure
      */
-    postSymbolGroupSubmit: (
-      symbolGroup: SymbolGroup,
-      params: RequestParams = {},
-    ) =>
+    postSymbolGroupSubmit: (symbolGroup: SymbolGroup, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/symbolGroup/submit`,
-        method: "POST",
+        method: 'POST',
         body: symbolGroup,
         secure: true,
         type: ContentType.Json,
@@ -8790,11 +8633,11 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSymbolgroupTree: (params: RequestParams = {}) =>
       this.http.request<RListSymbolGroup, void>({
         path: `/coreApi/symbolGroup/tree`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
-  };
+  }
   symbols = {
     /**
      * @description 传入symbols
@@ -8808,7 +8651,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postSymbolsAdd: (symbolAndConfAdd: _4, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/symbols/add`,
-        method: "POST",
+        method: 'POST',
         body: symbolAndConfAdd,
         secure: true,
         type: ContentType.Json,
@@ -8830,13 +8673,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RSymbols1, void>({
         path: `/coreApi/symbols/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8854,7 +8697,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSymbolsList: (params: RequestParams = {}) =>
       this.http.request<RListSymbols1, void>({
         path: `/coreApi/symbols/list`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -8871,34 +8714,34 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSymbolsPageList: (
       query?: {
         /** 交易-计算类型 */
-        calculationType?: GetSymbolsPageListParamsCalculationTypeEnum;
+        calculationType?: GetSymbolsPageListParamsCalculationTypeEnum
         /**
          * 当前页
          * @format int32
          */
-        current?: number;
+        current?: number
         /** 备注 */
-        remark?: string;
+        remark?: string
         /**
          * 每页的数量
          * @format int32
          */
-        size?: number;
+        size?: number
         /** 状态 */
-        status?: GetSymbolsPageListParamsStatusEnum;
+        status?: GetSymbolsPageListParamsStatusEnum
         /** 品种名称 */
-        symbol?: string;
+        symbol?: string
         /**
          * 品种组ID
          * @format int64
          */
-        symbolGroupId?: number;
+        symbolGroupId?: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RIPageSymbols, void>({
         path: `/coreApi/symbols/page`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8919,13 +8762,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
          * 主键id
          * @format int64
          */
-        id: number;
+        id: number
       },
       params: RequestParams = {},
     ) =>
       this.http.request<R, void>({
         path: `/coreApi/symbols/remove`,
-        method: "POST",
+        method: 'POST',
         query: query,
         secure: true,
         type: ContentType.Json,
@@ -8944,13 +8787,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSymbolsSymbolDetail: (
       query: {
         /** symbol */
-        symbol: string;
+        symbol: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<RSymbols, void>({
         path: `/coreApi/symbols/symbol/detail`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -8968,7 +8811,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSymbolsTree: (params: RequestParams = {}) =>
       this.http.request<RJSONArray, void>({
         path: `/coreApi/symbols/tree`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -8985,13 +8828,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postSymbolsUpdate: (symbolAndConfUpdate: _, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/symbols/update`,
-        method: "POST",
+        method: 'POST',
         body: symbolAndConfUpdate,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
   systemSet = {
     /**
      * @description 传入manager
@@ -9005,7 +8848,7 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSystemsetDetail: (params: RequestParams = {}) =>
       this.http.request<R_, void>({
         path: `/coreApi/systemSet/detail`,
-        method: "GET",
+        method: 'GET',
         secure: true,
         ...params,
       }),
@@ -9022,13 +8865,13 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     getSystemsetLanguage: (
       query: {
         /** 多语言key */
-        key: string;
+        key: string
       },
       params: RequestParams = {},
     ) =>
       this.http.request<string, void>({
         path: `/coreApi/systemSet/language`,
-        method: "GET",
+        method: 'GET',
         query: query,
         secure: true,
         ...params,
@@ -9046,11 +8889,11 @@ export class TradeCoreApi<SecurityDataType extends unknown> {
     postSystemSetUpdate: (systemSetVO: _6, params: RequestParams = {}) =>
       this.http.request<R, void>({
         path: `/coreApi/systemSet/update`,
-        method: "POST",
+        method: 'POST',
         body: systemSetVO,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
+  }
 }

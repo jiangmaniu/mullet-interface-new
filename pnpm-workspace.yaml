@@ -1,3 +1,14 @@
 packages:
-  - "apps/*"
-  - "packages/*"
+  - apps/*
+  - packages/*
+
+onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - '@tailwindcss/oxide'
+  - bigint-buffer
+  - bufferutil
+  - core-js-pure
+  - esbuild
+  - sharp
+  - unrs-resolver
+  - utf-8-validate

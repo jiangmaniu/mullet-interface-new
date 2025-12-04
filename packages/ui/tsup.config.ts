@@ -29,6 +29,8 @@ export default defineConfig({
     'number-input': 'src/components/number-input.tsx',
     switch: 'src/components/switch.tsx',
     checkbox: 'src/components/checkbox.tsx',
+    'hover-card': 'src/components/hover-card.tsx',
+    empty: 'src/components/empty.tsx',
   },
   format: ['cjs', 'esm'],
   dts: true,
