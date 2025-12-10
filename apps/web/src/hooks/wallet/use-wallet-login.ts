@@ -1,23 +1,33 @@
 import { getAccessToken, useLogin, useLogout } from '@privy-io/react-auth'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { useAtom, useSetAtom } from 'jotai'
 
+import { activeAccountIdAtom } from '@/atoms/user/account'
+import { loginInfoAtom, loginUserInfoAtom } from '@/atoms/user/login-info'
 import { useAccountLoginApiMutation } from '@/services/api/blade-auth/hooks/oauth/use-account-login'
-import { getTradeCoreApiInstance } from '@/services/api/trade-core/instance'
 
 export const useWalletLogin = () => {
+  const setLoginInfoAtom = useSetAtom(loginInfoAtom)
+  const setLoginUserInfoAtom = useSetAtom(loginUserInfoAtom)
+  const setActiveAccountIdAtom = useSetAtom(activeAccountIdAtom)
+
   const loginAccountMutationResult = useAccountLoginApiMutation()
   const { login } = useLogin({
     onComplete: async (params) => {
-      console.log(params)
-      // mutationResult.mutate()
       accountLogin()
     },
   })
 
   const accountLogin = async () => {
-    const a = await loginAccountMutationResult.mutateAsync({
+    const { loginInfo } = await loginAccountMutationResult.mutateAsync({
       grant_type: 'privy_token',
     })
+
+    // loginUserInfo
+
+    setLoginInfoAtom(loginInfo)
+    // setLoginUserInfoAtom(loginUserInfo)
+    // setActiveAccountIdAtom(loginUserInfo?.accountList?.[0]?.id)
   }
   return {
     connectAndlogin: login,

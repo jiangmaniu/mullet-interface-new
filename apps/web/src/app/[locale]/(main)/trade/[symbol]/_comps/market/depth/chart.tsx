@@ -45,7 +45,9 @@ export default function DepthChart({ bids, asks }: DepthChartProps) {
 
   return (
     <Chart
-      containerProps={{ style: { height: '100%', width: '100%' } }}
+      containerProps={{
+        style: { height: '100%', width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' },
+      }}
       options={{
         chart: {
           type: 'area',

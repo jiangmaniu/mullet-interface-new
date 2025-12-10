@@ -1,6 +1,8 @@
 import { getAccessToken } from '@privy-io/react-auth'
 import Cookies from 'js-cookie'
 
+import { jotaiStore } from '@/atoms'
+import { loginInfoAtom, loginInfoAtomBase } from '@/atoms/user/login-info'
 import { COOKIE_LOCALE_KEY, DEFAULT_LOCALE } from '@/constants/locale'
 
 import { HttpClient, TradeCoreApi } from './gen'
@@ -21,6 +23,11 @@ export const getTradeCoreApiInstance = () => {
       if (privyAccessToken) {
         // 使用Privy的token
         headers['privy-token'] = privyAccessToken
+      }
+
+      const loginInfo = await jotaiStore.get(loginInfoAtomBase)
+      if (loginInfo?.access_token) {
+        headers['Blade-Auth'] = `${loginInfo?.token_type || 'Bearer'} ${loginInfo.access_token}`
       }
 
       const requestInit: RequestInit = {
@@ -47,7 +54,7 @@ export const getTradeCoreApiInstance = () => {
         throw new Error(`API returned HTML instead of JSON. Status: ${rs.status}`)
       }
 
-      const rsData = await rs.json()
+      const rsData = await rs.clone().json()
 
       // const { data: response, status } = rsData ?? {}
       // if (status !== 200) {

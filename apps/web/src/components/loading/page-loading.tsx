@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import Image from 'next/image'
 
 import { BorderBeam } from '@mullet/ui/borderBeam'
@@ -8,9 +9,10 @@ interface PageLoadingProps {
   className?: string
   show?: boolean
   duration?: number
+  loadingText?: ReactNode
 }
 
-export const PageLoading = ({ size = 64, className, show = true, duration = 500 }: PageLoadingProps) => {
+export const PageLoading = ({ size = 64, loadingText, className, show = true, duration = 500 }: PageLoadingProps) => {
   return (
     <div
       className={cn(
@@ -20,9 +22,13 @@ export const PageLoading = ({ size = 64, className, show = true, duration = 500 
       )}
       style={{ transitionDuration: `${duration}ms` }}
     >
-      <div className="relative flex items-center justify-center rounded-full bg-[#1e2329] p-1">
-        <Image src={'/icons/logo/mullet-tag.svg'} width={size} height={size} className={cn()} alt="" />
-        <BorderBeam duration={4} borderWidth={4} colorFrom="#1e2329" colorTo="#fcd535" />
+      <div className="flex flex-col gap-3">
+        <div className="relative mx-auto flex items-center justify-center rounded-full bg-[#1e2329] p-1">
+          <Image src={'/icons/logo/mullet-tag.svg'} width={size} height={size} className={cn()} alt="" />
+          <BorderBeam duration={4} borderWidth={4} colorFrom="#1e2329" colorTo="#fcd535" />
+        </div>
+
+        {loadingText && <div className="text-center text-xl text-white">{loadingText}</div>}
       </div>
     </div>
   )

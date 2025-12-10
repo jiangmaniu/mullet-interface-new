@@ -36,43 +36,46 @@ const InputContainerVariants = cva('bg-transparent relative', {
   },
 })
 
-export type InputContainerProps = React.ComponentProps<'div'> & {
-  LeftContent?: React.ReactNode
-  RightContent?: React.ReactNode
-  clean?: boolean
-  value?: string | number | readonly string[]
-  onClean?: () => void
-  hintLabel?: React.ReactNode
-  hintValue?: React.ReactNode
-  inputClassName?: string
-  children?: React.ReactNode
-  errorMessage?: string
-  /**
-   * 标签文本（聚焦或有值时显示在左上角）
-   * 如果未提供，则使用 placeholder 的值
-   */
-  labelText?: string | ((props: { isFocused: boolean }) => React.ReactNode)
-  /**
-   * 占位符文本（未聚焦且无值时显示在输入框中间）
-   * 如果未提供，则使用 labelText 的值
-   */
-  placeholder?: string | ((props: { isFocused: boolean }) => React.ReactNode)
-  /**
-   * 标签背景色（浮动到上方时使用）
-   * 默认值：#27272a (zinc-800)
-   * 也可以通过 CSS 变量 --input-label-bg 全局设置
-   */
-  labelBgColor?: string
-  /**
-   * 标签浮动时的自定义类名（用于设置背景色等样式）
-   * 注意：需要包含完整的 peer 修饰符
-   * 例如：'peer-[:not(:placeholder-shown)]:bg-zinc-900 peer-focus:bg-zinc-900'
-   * 或使用任意值：'peer-[:not(:placeholder-shown)]:bg-[#1a1f3a] peer-focus:bg-[#1a1f3a]'
-   */
-  labelClassName?: string
-} & VariantProps<typeof InputContainerVariants>
+export type InputContainerProps<T = string> = Prettify<
+  React.ComponentProps<'div'> & {
+    LeftContent?: React.ReactNode
+    RightContent?: React.ReactNode
+    clean?: boolean
+    value?: T
+    onClean?: () => void
+    hintLabel?: React.ReactNode
+    hintValue?: React.ReactNode
+    inputClassName?: string
+    children?: React.ReactNode
+    block?: boolean
+    errorMessage?: string
+    /**
+     * 标签文本（聚焦或有值时显示在左上角）
+     * 如果未提供，则使用 placeholder 的值
+     */
+    labelText?: React.ReactNode | ((props: { isFocused: boolean }) => React.ReactNode)
+    /**
+     * 占位符文本（未聚焦且无值时显示在输入框中间）
+     * 如果未提供，则使用 labelText 的值
+     */
+    placeholder?: React.ReactNode | ((props: { isFocused: boolean }) => React.ReactNode)
+    /**
+     * 标签背景色（浮动到上方时使用）
+     * 默认值：#27272a (zinc-800)
+     * 也可以通过 CSS 变量 --input-label-bg 全局设置
+     */
+    labelBgColor?: string
+    /**
+     * 标签浮动时的自定义类名（用于设置背景色等样式）
+     * 注意：需要包含完整的 peer 修饰符
+     * 例如：'peer-[:not(:placeholder-shown)]:bg-zinc-900 peer-focus:bg-zinc-900'
+     * 或使用任意值：'peer-[:not(:placeholder-shown)]:bg-[#1a1f3a] peer-focus:bg-[#1a1f3a]'
+     */
+    labelClassName?: string
+  } & VariantProps<typeof InputContainerVariants>
+>
 
-const InputContainer = ({
+const InputContainer = <T,>({
   size,
   variant,
   children,
@@ -89,8 +92,9 @@ const InputContainer = ({
   placeholder,
   labelBgColor,
   labelClassName,
+  block = false,
   ...props
-}: InputContainerProps) => {
+}: InputContainerProps<T>) => {
   const [isFocused, setIsFocused] = React.useState(false)
   const [leftContentWidth, setLeftContentWidth] = React.useState(0)
   const inputRef = React.useRef<HTMLDivElement>(null)
@@ -177,6 +181,7 @@ const InputContainer = ({
   // 计算应该显示的标签内容
   const hasValue = value !== undefined && value !== '' && value !== null
   const shouldFloat = isFocused || hasValue
+  console.log(hasValue, value, shouldFloat)
 
   // 根据聚焦状态决定显示 labelText 还是 placeholder
   const displayLabel = React.useMemo(() => {
@@ -190,7 +195,16 @@ const InputContainer = ({
   }, [labelText, placeholder, shouldFloat])
 
   return (
-    <div className={cn('gap-medium flex flex-col', className)} {...props}>
+    <div
+      className={cn(
+        'gap-medium flex flex-col',
+        {
+          'w-full flex-1': block,
+        },
+        className,
+      )}
+      {...props}
+    >
       {errorMessage && <div className={cn('text-paragraph-p3 text-status-danger text-right')}>{errorMessage}</div>}
 
       <div

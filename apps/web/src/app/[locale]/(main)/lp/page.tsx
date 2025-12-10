@@ -3,12 +3,17 @@
 import { GeneralTooltip } from '@/components/tooltip/general'
 import { IconInfo } from '@mullet/ui/icons'
 
+import './styles.css'
+
+// import { useEffect } from 'react'
+
 import VaultDetailActionPanel from './_comps/action-panel'
 import VaultDetailCharts from './_comps/charts'
 import VaultDetailInfo from './_comps/info'
 import VaultDetailRecords from './_comps/records'
 
 export default function LPVaultPage() {
+  // useEffect(() => {}, [])
   return (
     <div className="mx-auto w-full max-w-[1200px]">
       <VaultDetailTitle />

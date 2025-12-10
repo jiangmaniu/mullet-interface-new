@@ -1,36 +1,42 @@
 'use client'
 
-import { useState } from 'react'
+import { useParams } from 'next/navigation'
 
+import { useKeepRouter } from '@/hooks/common/use-keep-router'
 import { Tabs, TabsList, TabsTrigger } from '@mullet/ui/tabs'
 
-const TRADING_PAIRS = [
-  { symbol: 'SOL-USD', icon: '◎' },
-  { symbol: 'BTC-USD', icon: '₿' },
-  { symbol: 'ETH-USD', icon: 'Ξ' },
-  { symbol: 'DOGE-USD', icon: 'Ð' },
-]
+import { useActiveAccountTradeSymbolList } from '../../_hooks/use-trade-symbol-list'
+import { TradeSymbolPageParams } from '../../layout'
 
 export function TradingPairTabs() {
-  const [activePair, setActivePair] = useState('SOL-USD')
+  const { symbol: activeSymbol } = useParams<TradeSymbolPageParams>()
+  const { activeAccountTradeSymbolList } = useActiveAccountTradeSymbolList()
+  // 过滤前三个交易对
+  const list = activeAccountTradeSymbolList?.slice(0, 3)
+  const { pushKeepQuery } = useKeepRouter()
 
-  const handleChangePair = (pair: string) => {
-    setActivePair(pair)
+  const handleChangePair = (symbol: string) => {
+    pushKeepQuery(`#/${symbol}`)
   }
   return (
-    <Tabs variant={'iconsAndText'} className="rounded-lg" value={activePair} onValueChange={handleChangePair}>
+    <Tabs variant={'iconsAndText'} className="rounded-lg" value={activeSymbol} onValueChange={handleChangePair}>
       <TabsList className="flex items-center gap-2">
-        {TRADING_PAIRS.map((pair) => (
+        {list?.map((symbolInfo) => (
           <TabsTrigger
-            key={pair.symbol}
-            value={pair.symbol}
+            key={symbolInfo?.symbol}
+            value={symbolInfo?.symbol}
             // className={`flex items-center gap-2 rounded px-4 py-2 transition-colors ${
-            //   activePair === pair.symbol ? 'bg-[#1a1f3a] text-white' : 'text-gray-400 hover:text-white'
+            //   activeSymbol === symbolInfo.symbol ? 'bg-[#1a1f3a] text-white' : 'text-gray-400 hover:text-white'
             // }`}
           >
-            <span className="size-6 rounded-full bg-white">{}</span>
-            <span className="font-medium">{pair.symbol}</span>
-            {activePair === pair.symbol && (
+            <img
+              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${symbolInfo?.imgUrl}`}
+              alt={'symbol logo'}
+              className="size-6 rounded-full"
+            />
+
+            <span className="font-medium">{symbolInfo?.symbol}</span>
+            {activeSymbol === symbolInfo?.symbol && (
               <div
                 onClick={(e) => {
                   e.stopPropagation()

@@ -1,3 +1,5 @@
+'use client'
+
 import { Trans } from '@lingui/react/macro'
 import { useEffect, useRef } from 'react'
 import router from 'next/router'
@@ -16,10 +18,18 @@ export const CheckLoginAuth = ({ children }: { children: React.ReactNode }) => {
   const { accountLogin } = useWalletLogin()
 
   const initIsNotLogin = useRef(isAuthenticated && !isLogin)
+  const isLoggingInRef = useRef(false)
 
   useEffect(() => {
     if (initIsNotLogin.current) {
-      accountLogin()
+      if (isLoggingInRef.current) {
+        return
+      }
+
+      isLoggingInRef.current = true
+      accountLogin().finally(() => {
+        isLoggingInRef.current = false
+      })
     }
   }, [])
 
@@ -45,7 +55,11 @@ export const CheckLoginAuth = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!isLogin) {
-    return <PageLoading />
+    return (
+      <PageLoading
+      // loadingText={<Trans>登录中...</Trans>}
+      />
+    )
   }
 
   return <>{children}</>

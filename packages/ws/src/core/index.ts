@@ -5,7 +5,6 @@ import { WSClient } from './ws-client'
 
 // 导出类型
 export * from './types'
-export type { UserConfig } from './message-converter'
 
 // 导出核心类
 export { WSClient } from './ws-client'

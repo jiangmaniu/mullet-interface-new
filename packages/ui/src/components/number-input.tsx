@@ -9,8 +9,8 @@ import { InputContainer, InputContainerProps } from './input-container'
 import { NumberInputPrimitive, NumberInputSourceType } from './number-input-primitive'
 
 export type NumberFieldProps = Omit<NumberInputPrimitiveProps, 'size' | 'placeholder'> &
-  Omit<React.ComponentProps<'input'>, 'size' | 'placeholder'> &
-  Omit<InputContainerProps, 'children' | 'onClean' | 'value'> & {
+  Omit<React.ComponentProps<'input'>, 'value' | 'size' | 'placeholder'> &
+  Omit<InputContainerProps<NumberInputPrimitiveProps['value']>, 'children' | 'onClean' | 'value'> & {
     status?: 'error'
     sourceEventType?: NumberInputSourceType | 'all'
     inputClassName?: string
@@ -32,6 +32,7 @@ const NumberInput = ({
   hintValue,
   errorMessage,
   inputClassName,
+  block,
   // NumberInput specific props
   sourceEventType = NumberInputSourceType.EVENT,
   status,
@@ -43,9 +44,10 @@ const NumberInput = ({
   ...props
 }: NumberFieldProps) => {
   const isError = status === 'error'
+  console.log(value)
 
   return (
-    <InputContainer
+    <InputContainer<NumberFieldProps['value']>
       labelText={labelText}
       placeholder={placeholder}
       labelBgColor={labelBgColor}
@@ -57,6 +59,7 @@ const NumberInput = ({
       className={className}
       clean={clean}
       value={value}
+      block={block}
       hintLabel={hintLabel}
       hintValue={hintValue}
       errorMessage={errorMessage || (isError ? 'Error' : undefined)}

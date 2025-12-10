@@ -33,6 +33,10 @@ declare global {
       NEXT_PUBLIC_PRIVY_APP_ID: string
       NEXT_PUBLIC_PRIVY_CLIENT_ID: string
       NEXT_PUBLIC_API_BASE_URL: string
+      NEXT_PUBLIC_CLIENT_ID: string
+      NEXT_PUBLIC_CLIENT_SECRET: string
+      NEXT_PUBLIC_IMAGE_DOMAIN: string
+      NEXT_PUBLIC_WS_URL: string
     }
   }
 

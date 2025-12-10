@@ -13,7 +13,9 @@ export const DepositAssets = () => {
   return (
     <div>
       <div>
-        <Button size={'sm'}>存款</Button>
+        <Button variant={'primary'} size={'md'} color={'primary'}>
+          存款
+        </Button>
       </div>
     </div>
   )

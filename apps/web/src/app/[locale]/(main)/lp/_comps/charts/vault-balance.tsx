@@ -40,7 +40,7 @@ export const VaultBalanceCharts = () => {
               },
             ],
           })
-        }, 5000)
+        }, 500)
       })
     },
   })

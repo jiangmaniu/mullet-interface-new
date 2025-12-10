@@ -37,7 +37,7 @@ export const VaultPNLCharts = () => {
               },
             ],
           })
-        }, 5000)
+        }, 500)
       })
     },
   })

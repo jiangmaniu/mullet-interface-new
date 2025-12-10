@@ -33,7 +33,7 @@ export const GeneralTooltip = ({
   return (
     <TooltipProvider>
       <Tooltip {...{ open, defaultOpen, onOpenChange }}>
-        <TooltipTrigger className="block cursor-help">{children}</TooltipTrigger>
+        <TooltipTrigger className="block">{children}</TooltipTrigger>
         <TooltipContent
           className={cn('max-w-[220px]', className)}
           alignOffset={alignOffset}

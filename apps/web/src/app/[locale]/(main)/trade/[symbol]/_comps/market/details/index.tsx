@@ -88,9 +88,9 @@ export const MarketDetails = () => {
         <div className="text-important-1">市场详情</div>
 
         <div className="grid grid-cols-2 gap-x-16 gap-y-2">
-          {marketDetails.map((rule) => {
+          {marketDetails.map((rule, index) => {
             return (
-              <div className="text-paragraph-p3 flex justify-between gap-2">
+              <div key={index} className="text-paragraph-p3 flex justify-between gap-2">
                 <div className="text-content-4">{rule.label}</div>
                 <div className="text-content-1">{rule.value}</div>
               </div>

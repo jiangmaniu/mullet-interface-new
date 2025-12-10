@@ -1,8 +1,10 @@
 import { setI18n } from '@lingui/react/server'
 
+import { Locale } from '@/constants/locale'
+
 import { getI18nInstance } from './app-router-i18n'
 
-export type PageLangParam = {
+export type LangPageParam = {
   params: Promise<{ locale: Locale }>
 }
 

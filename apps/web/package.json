@@ -10,7 +10,8 @@
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --fix",
     "check-types": "tsc --noEmit",
-    "lingui:extract": "lingui extract --clean"
+    "lingui:extract": "lingui extract --clean",
+    "gen:api": "esno ./scripts/services/genApi/index.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.32.1",
@@ -42,6 +43,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint-config-next": "^16.0.1",
     "jotai": "^2.15.1",
+    "js-base64": "^3.7.8",
     "js-cookie": "^3.0.5",
     "lightweight-charts": "^5.0.9",
     "lodash-es": "^4.17.21",
@@ -73,6 +75,7 @@
     "@types/react-dom": "^19.2.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.33.0",
+    "esno": "^4.8.0",
     "jotai-devtools": "^0.13.0",
     "jotai-tanstack-query": "^0.11.0",
     "postcss": "^8.5.3",

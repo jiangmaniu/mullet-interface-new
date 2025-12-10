@@ -7,15 +7,10 @@ import { GeneralTooltip } from '@/components/tooltip/general'
 import { cn } from '@mullet/ui/lib/utils'
 import { TooltipTriggerDottedText } from '@mullet/ui/tooltip'
 import { BNumber } from '@mullet/utils/number'
-import { basicExample } from '@mullet/ws/examples'
 
 import { SymbolSelector } from './symbol-selector'
 
 export function Overview() {
-  useEffect(() => {
-    basicExample()
-  }, [])
-
   return (
     <div className="bg-primary flex h-full items-center gap-6 rounded-lg px-3">
       <div className="flex items-center gap-5">

@@ -11,16 +11,16 @@ import { WalletConnect } from './wallet-connect'
 
 export const MainLayoutHeader = () => {
   return (
-    <div className="sticky top-0 z-1 flex justify-between gap-5 bg-[#0A0C27] p-2.5">
-      <div className="flex items-center justify-between gap-5">
+    <div className="py-small px-3xl bg-navigation backdrop-blur-base sticky top-0 z-1 flex justify-between gap-5">
+      <div className="gap-4xl flex items-center justify-between">
         <div>
-          <Image src="/icons/logo/mullet-long.svg" alt="logo" width={140} height={40} />
+          <Image src="/icons/logo/mullet-long.svg" alt="logo" className="h-[48px] w-[130px]" width={130} height={48} />
         </div>
 
         <MainLayoutHeaderNav />
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="gap-2xl flex items-center">
         <DepositAssets />
         <WalletConnect />
         <Notification />

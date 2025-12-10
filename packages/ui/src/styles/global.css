@@ -138,6 +138,12 @@
 
   --background-color-primary: var(--color-zinc-500);
   --background-color-secondary: var(--color-zinc-800);
+  --background-color-move-in: --alpha(var(--color-zinc-300) / 0.1);
+  --background-color-button: --alpha(var(--color-zinc-300) / 0.2);
+  --background-color-button-box: --alpha(var(--color-zinc-300) / 0.4);
+  --background-color-card: --alpha(var(--color-zinc-800) / 0.5);
+  --background-color-navigation: --alpha(var(--color-zinc-800) / 0.8);
+  --background-color-pop-up-mask: --alpha(var(--color-zinc-800) / 0.9);
 
   --border-color-zinc-xs: --alpha(var(--color-zinc-300) / 0.2);
   --border-color-zinc-base: --alpha(var(--color-zinc-300) / 0.4);
@@ -203,6 +209,8 @@
   --shadow-base: 0 4px 4px 0 --alpha(var(--color-black) / 10%);
 
   --inset-shadow-base: 0 2px 4px 0 --alpha(var(--color-black) / 50%);
+
+  --blur-base: calc(var(--size) * 3);
 }
 
 @theme inline {

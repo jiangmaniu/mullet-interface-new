@@ -8,7 +8,7 @@ import { cn } from '@mullet/ui/lib/utils'
 export const MainLayoutHeaderNav = () => {
   const activeSegment = useSelectedLayoutSegment()
   return (
-    <div className="flex gap-0">
+    <div className="gap-medium flex">
       {[
         {
           path: '/trade',

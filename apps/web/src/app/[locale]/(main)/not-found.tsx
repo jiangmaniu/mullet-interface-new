@@ -18,9 +18,9 @@ export default function NotFound() {
             <Trans>The page you are trying to view is temporarily unavailable. Please try again later</Trans>
           </p>
         </div>
-        <Link href="/">
+        <Link href="/trade">
           <Button>
-            <Trans>Return Home</Trans>
+            <Trans>Return trade</Trans>
           </Button>
         </Link>
       </div>

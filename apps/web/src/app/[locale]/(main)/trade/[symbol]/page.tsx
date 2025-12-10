@@ -1,4 +1,6 @@
-'use client'
+// import 'react-grid-layout/css/styles.css'
+// import 'react-resizable/css/styles.css'
+// import './_comps/layout/styles.css'
 
 import { AccountDetails } from './_comps/account'
 import { TradeAction } from './_comps/action'
@@ -25,29 +27,29 @@ export default function TradeSymbolPage() {
           </div>
         ),
         [TradeLayoutKey.Tradingview]: (
-          <>
+          <div className="h-full">
             <TradeMarket />
-          </>
+          </div>
         ),
         [TradeLayoutKey.Orderbooks]: (
-          <>
+          <div className="h-full">
             <OrderBooks />
-          </>
+          </div>
         ),
         [TradeLayoutKey.Account]: (
-          <>
+          <div className="h-full">
             <AccountDetails />
-          </>
+          </div>
         ),
         [TradeLayoutKey.Action]: (
-          <>
+          <div className="h-full">
             <TradeAction />
-          </>
+          </div>
         ),
         [TradeLayoutKey.Position]: (
-          <>
+          <div className="h-full">
             <Records />
-          </>
+          </div>
         ),
       }}
     />

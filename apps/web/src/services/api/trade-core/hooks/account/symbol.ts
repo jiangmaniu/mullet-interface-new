@@ -14,7 +14,7 @@ export type GetTradeSymbolListRequestQuery = Account.GetAccountTradesymbollist.R
 
 export const useGetTradeSymbolListApiOptions = (query?: GetTradeSymbolListRequestQuery) => {
   const getPoolAccountDetailApiOptions = queryOptions({
-    // enabled: !!query.accountId,
+    enabled: !!query?.accountId,
     queryKey: tradeCoreApiQueriesKey.account.tradeSymbolList.toKeyWithArgs(query),
     placeholderData: keepPreviousData,
     queryFn: useCallback(async () => {

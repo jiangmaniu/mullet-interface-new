@@ -249,7 +249,7 @@ type LoginResult = Partial<{
   role_name: string
   license: string
   post_id: string
-  user_id: string
+  user_id: number
   role_id: string
   nick_name: string
   oauth_id: string
@@ -294,7 +294,7 @@ export namespace OAuth {
     export type RequestQuery = {}
     export type RequestBody = LoginParams
     export type RequestHeaders = {}
-    export type ResponseBody = RLoginResult
+    export type ResponseBody = LoginResult
   }
 }
 

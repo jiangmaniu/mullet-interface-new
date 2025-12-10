@@ -42,7 +42,7 @@ export const MarketDepth = () => {
   ]
 
   return (
-    <div className="size-full">
+    <div className="flex size-full flex-col justify-center">
       <DepthChart bids={bids} asks={asks} />
     </div>
   )

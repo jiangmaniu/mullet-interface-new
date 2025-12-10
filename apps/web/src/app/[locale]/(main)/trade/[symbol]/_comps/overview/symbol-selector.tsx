@@ -3,10 +3,18 @@
 import { Trans } from '@lingui/react/macro'
 import { useQuery } from '@tanstack/react-query'
 import * as React from 'react'
+import { useEffect } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
 import { parseAsJson, parseAsStringEnum, useQueryState } from 'nuqs'
 
+import { GeneralTooltip } from '@/components/tooltip/general'
+import { useKeepRouter } from '@/hooks/common/use-keep-router'
+import { useLoginUserInfo } from '@/hooks/user/use-login-user-info'
 import { useGetTradeSymbolListApiOptions } from '@/services/api/trade-core/hooks/account/symbol'
 import { Symbols } from '@/services/api/trade-core/instance/gen'
+import { getWsClientInstance } from '@/utils/ws'
 import { Button } from '@mullet/ui/button'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@mullet/ui/hover-card'
 import { Iconify, IconNavArrowDown } from '@mullet/ui/icons'
@@ -16,7 +24,11 @@ import { NumberInput } from '@mullet/ui/numberInput'
 import { Tabs, TabsList, TabsTrigger } from '@mullet/ui/tabs'
 import { BNumber } from '@mullet/utils/number'
 
+import { useActiveAccountInfo, useActiveAccountInfoSafe } from '../../_hooks/use-active-account-info'
+import { useActiveTradeSymbolInfo } from '../../_hooks/use-active-symbol-info'
+import { useActiveAccountTradeSymbolList } from '../../_hooks/use-trade-symbol-list'
 import { SYMBOL_FILTER_MODE_OPTIONS, SymbolFilterMode } from '../../_options/symbol'
+import { TradeSymbolPageParams } from '../../layout'
 
 export const SymbolSelector = () => {
   /**
@@ -31,11 +43,14 @@ export const SymbolSelector = () => {
     Crypto = '50',
   }
 
+  const { createHref } = useKeepRouter()
   const [searchContent, setSearchContent] = React.useState<string>('')
   const [activeSymbolCategory, setActiveSymbolCategory] = useQueryState(
     'symbol-category',
     parseAsStringEnum<SymbolCategory>(Object.values(SymbolCategory)).withDefault(SymbolCategory.All),
   )
+
+  const { symbol } = useParams<TradeSymbolPageParams>()
 
   const CATEGORY_OPTIONS: {
     label: React.ReactNode
@@ -65,31 +80,44 @@ export const SymbolSelector = () => {
     },
   ]
 
-  const { getPoolAccountDetailApiOptions } = useGetTradeSymbolListApiOptions({
-    // accountId: 1,
-    // classify: activeSymbolCategory,
-    // symbol: searchContent,
-    // symbolPath: '',
-  })
-  const { data } = useQuery(getPoolAccountDetailApiOptions)
+  const { activeTradeSymbolInfo } = useActiveTradeSymbolInfo()
+  const { activeAccountTradeSymbolList } = useActiveAccountTradeSymbolList()
 
   const [symbolFilterMode, setSymbolFilterMode] = useQueryState(
     'symbol-filter-mode',
     parseAsStringEnum<SymbolFilterMode>(Object.values(SymbolFilterMode)).withDefault(SymbolFilterMode.All),
   )
 
-  const symbolColumns = [
+  const symbolColumns: {
+    key: string
+    header: React.ReactNode
+    cell: (symbolItem: Symbols) => React.ReactNode
+  }[] = [
     {
       key: 'symbol',
       header: <Trans>交易对</Trans>,
-      cell: () => {
+      cell: (symbolItem) => {
         return (
           <div className="flex items-center gap-2">
             <Iconify icon="iconoir:star" className="size-3.5" />
 
-            <div className="size-3.5 rounded-full bg-white"></div>
+            <div className="">
+              {/* <Image
+                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${symbolItem.imgUrl}`}
+                alt={'symbol logo'}
+                width={14}
+                height={14}
+              /> */}
 
-            <div className="text-paragraph-p2 text-content-1">SOL-USD</div>
+              <img
+                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${symbolItem.imgUrl}`}
+                alt={'symbol logo'}
+                className="size-3.5 rounded-full"
+              />
+            </div>
+            <GeneralTooltip align="center" content={symbolItem.remark}>
+              <div className="text-paragraph-p2 text-content-1">{symbolItem.alias}</div>
+            </GeneralTooltip>
           </div>
         )
       },
@@ -97,8 +125,8 @@ export const SymbolSelector = () => {
     {
       key: 'price',
       header: <Trans>价格</Trans>,
-      cell: () => {
-        return <div>{BNumber.toFormatNumber(183.52, { volScale: 2 })}</div>
+      cell: (symbolInfo) => {
+        return <SymbolPrice symbolInfo={symbolInfo} />
       },
     },
 
@@ -152,12 +180,20 @@ export const SymbolSelector = () => {
     },
   ]
   return (
-    <HoverCard open={true}>
+    <HoverCard
+      openDelay={100}
+      // open={true}
+    >
       <HoverCardTrigger asChild>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="size-6 rounded-full bg-white"></div>
-            <div className="text-button-2 text-white">SOL-USD</div>
+            <img
+              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${activeTradeSymbolInfo?.imgUrl}`}
+              alt={'symbol logo'}
+              className="size-6 rounded-full"
+            />
+
+            <div className="text-button-2 text-white">{activeTradeSymbolInfo?.alias}</div>
           </div>
 
           <div>
@@ -177,14 +213,6 @@ export const SymbolSelector = () => {
             RightContent={<div>USDC</div>}
             placeholder="搜索"
             size="sm"
-          />
-
-          <NumberInput
-            className="w-full max-w-[300px]"
-            LeftContent={<Iconify icon={'iconoir:search'} className="size-5" />}
-            RightContent={<div>USDC</div>}
-            placeholder="0.00"
-            labelText={'保证金'}
           />
 
           <div className="flex items-center gap-2">
@@ -212,31 +240,73 @@ export const SymbolSelector = () => {
               )
             })}
           </TabsList>
-
-          <div className="">
-            <div className="flex gap-6 px-6 py-2">
-              {symbolColumns.map((column) => {
-                console.log(column.key)
-                return (
-                  <div key={column.key} className="text-paragraph-p3 text-content-5 flex flex-1 items-center">
-                    {column.header}
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="flex gap-6 px-6 py-2">
-              {symbolColumns.map((column) => {
-                return (
-                  <div key={column.key} className="text-paragraph-p2 text-content-1 flex flex-1 items-center">
-                    {column.cell()}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
         </Tabs>
+
+        <div className="">
+          <div className="flex gap-6 px-6 py-2">
+            {symbolColumns.map((column) => {
+              console.log(column.key)
+              return (
+                <div key={column.key} className="text-paragraph-p3 text-content-5 flex flex-1 items-center">
+                  {column.header}
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="max-h-[400px] overflow-y-auto">
+            {activeAccountTradeSymbolList?.map((symbolItem) => {
+              return (
+                <Link
+                  key={symbolItem.symbol}
+                  className={cn('flex gap-6 px-6 py-2', 'hover:bg-[#ccc]/10', {
+                    'bg-[#ccc]/10': symbolItem.symbol === symbol,
+                  })}
+                  href={createHref(`#/${symbolItem.symbol}`)}
+                >
+                  {symbolColumns.map((column) => {
+                    return (
+                      <div key={column.key} className="text-paragraph-p2 text-content-1 flex flex-1 items-center">
+                        {column.cell(symbolItem)}
+                      </div>
+                    )
+                  })}
+                </Link>
+              )
+            })}
+          </div>
+        </div>
       </HoverCardContent>
     </HoverCard>
   )
+}
+
+const SymbolPrice = ({ symbolInfo }: { symbolInfo: Symbols }) => {
+  const { activeAccountInfo } = useActiveAccountInfoSafe()
+  const { loginUserInfo } = useLoginUserInfo()
+
+  useEffect(() => {
+    const ws = getWsClientInstance()
+
+    const tenantId = '000000'
+    // 订阅行情数据
+    if (!symbolInfo.symbol || !activeAccountInfo.id || !loginUserInfo?.userInfo?.id) {
+      debugger
+      return
+    }
+    const userId = loginUserInfo?.userInfo?.id!.toString()
+    const accountId = activeAccountInfo.id!?.toString()
+
+    const unsubscribe = ws.subscriptionManager.subscribeMarketData(
+      { symbol: symbolInfo.symbol, accountId, header: { userId, tenantId } },
+      (data) => {
+        debugger
+        console.log('BTCUSDT 行情:', data)
+      },
+    )
+
+    return unsubscribe
+  }, [symbolInfo.symbol, activeAccountInfo.id, loginUserInfo?.userInfo?.id])
+
+  return <div>50000 USD</div>
 }

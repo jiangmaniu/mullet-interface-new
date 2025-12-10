@@ -9,7 +9,7 @@ import { cn } from '../lib/utils'
 const buttonVariants = cva(
   [
     'inline-flex items-center gap-1 box-border justify-center transition-[colors,transform] text-[14px] whitespace-nowrap font-medium ring-offset-background ',
-    'enabled:active:scale-95',
+    // 'enabled:active:scale-95',
     'focus-visible:outline-focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     `data-[disabled='true']:cursor-not-allowed data-[disabled='true']:opacity-35`,
     `disabled:cursor-not-allowed disabled:opacity-35`,
@@ -54,7 +54,7 @@ const buttonVariants = cva(
         sm: 'py-1.5 px-4 rounded-1 ',
         md: 'rounded-2 py-2 px-6',
         lg: 'px-8 py-2.5 rounded-2',
-        icon: 'p-1 rounded-[8px]',
+        icon: 'p-small rounded-[8px]',
         large: 'p-4 rounded-2xl text-lg',
         submit: 'py-4 text-lg leading-[30px]',
       },

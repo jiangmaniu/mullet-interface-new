@@ -4,7 +4,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 
 import { allMessages, getI18nInstance } from '@/locales/app-router-i18n'
-import { initLingui, PageLangParam } from '@/locales/init-lingui'
+import { initLingui, LangPageParam } from '@/locales/init-lingui'
 import { msg } from '@lingui/core/macro'
 import { cn } from '@mullet/ui/lib/utils'
 
@@ -12,7 +12,7 @@ import { GlobalProviders } from '../../components/providers/global'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
-export async function generateMetadata({ params }: PageLangParam) {
+export async function generateMetadata({ params }: LangPageParam) {
   const { locale } = await params
   const i18n = getI18nInstance(locale)
 
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageLangParam) {
   }
 }
 
-export default async function RootLayout({ children, params }: { children: React.ReactNode } & PageLangParam) {
+export default async function RootLayout({ children, params }: { children: React.ReactNode } & LangPageParam) {
   const { locale } = await params
   initLingui(locale)
 

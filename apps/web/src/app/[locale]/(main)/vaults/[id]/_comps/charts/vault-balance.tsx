@@ -44,7 +44,7 @@ export const VaultBalanceCharts = ({ timeInterval }: { timeInterval: VaultCharts
               },
             ],
           })
-        }, 5000)
+        }, 500)
       })
     },
   })

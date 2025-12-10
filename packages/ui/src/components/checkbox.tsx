@@ -9,7 +9,7 @@ import { cn } from '@mullet/ui/lib/utils'
 
 import { Iconify } from './icons'
 
-const checkboxVariants = cva(['group', '', ''], {
+const checkboxVariants = cva(['group', ' transition-all', ''], {
   variants: {
     color: {
       default: [],
@@ -66,9 +66,10 @@ const labelVariants = cva('text-paragraph-p3', {
 type CheckboxProps = React.ComponentProps<typeof CheckboxPrimitive.Root> &
   VariantProps<typeof checkboxIconVariants> & {
     label: React.ReactNode
+    labelClassName?: string
   } & React.ComponentProps<typeof LabelPrimitive.Root>
 
-function Checkbox({ className, color, label, ...props }: CheckboxProps) {
+function Checkbox({ className, labelClassName, color, label, ...props }: CheckboxProps) {
   const Checkbox = (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
@@ -91,7 +92,7 @@ function Checkbox({ className, color, label, ...props }: CheckboxProps) {
       </div>
 
       {!!label && (
-        <LabelPrimitive.Root data-slot="label" className={cn(labelVariants({ color }), className)} {...props}>
+        <LabelPrimitive.Root data-slot="label" className={cn(labelVariants({ color }), labelClassName)} {...props}>
           {label}
         </LabelPrimitive.Root>
       )}

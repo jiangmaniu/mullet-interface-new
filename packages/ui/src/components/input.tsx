@@ -4,7 +4,7 @@ import { cn } from '../lib/utils'
 import { InputContainer, InputContainerProps } from './input-container'
 
 export type InputProps = Omit<React.ComponentProps<'input'>, 'size' | 'placeholder'> &
-  Omit<InputContainerProps, 'children'> & {
+  Omit<InputContainerProps<React.ComponentProps<'input'>['value']>, 'children' | 'value'> & {
     inputClassName?: string
     onValueChange?: (value: string) => void
   }
@@ -40,7 +40,7 @@ function Input({
   }
 
   return (
-    <InputContainer
+    <InputContainer<InputProps['value']>
       clean={clean}
       value={value}
       variant={variant}

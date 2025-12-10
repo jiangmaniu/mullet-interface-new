@@ -13,6 +13,11 @@ import { Tabs, TabsList, TabsTrigger } from '@mullet/ui/tabs'
 import { TooltipTriggerDottedText } from '@mullet/ui/tooltip'
 import { BNumber } from '@mullet/utils/number'
 
+import { AdjustMarginModal } from '../adjust-margin-modal'
+import { ClosePositionModal } from '../close-position-modal'
+import { MarginModeModal } from '../margin-mode-modal'
+import { OrderConfirmModal } from '../order-confirm-modal'
+import { PositionPnlModal } from '../position-pnl-modal'
 import { SettingLeverageModal } from '../setting-leverage-modal'
 
 export function TradeAction() {
@@ -20,7 +25,7 @@ export function TradeAction() {
   const [tradeType, setTradeType] = useState<'market' | 'limit'>('market')
   const [orderSide, setOrderSide] = useState<'buy' | 'sell'>('buy')
   const [stopLimit, setStopLimit] = useState(false)
-
+  const [isOrderConfirmModalOpen, setIsOrderConfirmModalOpen] = useState(false)
   enum OrderTypeEnum {
     MARKET = 'market',
     LIMIT = 'limit',
@@ -48,15 +53,32 @@ export function TradeAction() {
   return (
     <div className="rounded-large bg-primary flex h-full flex-col gap-3 p-3">
       <div className="flex flex-col gap-2">
-        <div className="gap-xl flex">
-          <Button className="flex-1" variant={'primary'} size={'md'} color="default">
-            <Trans>全仓</Trans>
-          </Button>
+        <div className="gap-xl flex flex-wrap">
+          <MarginModeModal>
+            <Button className="flex-1" variant={'primary'} size={'md'} color="default">
+              <Trans>全仓</Trans>
+            </Button>
+          </MarginModeModal>
           <SettingLeverageModal>
             <Button className="flex-1" variant={'primary'} size={'md'} color="default">
               <Trans>1x</Trans>
             </Button>
           </SettingLeverageModal>
+          <AdjustMarginModal>
+            <Button className="flex-1" variant={'primary'} size={'md'} color="default">
+              <Trans>调整保证金</Trans>
+            </Button>
+          </AdjustMarginModal>
+          <ClosePositionModal>
+            <Button className="flex-1" variant={'primary'} size={'md'} color="default">
+              <Trans>平仓</Trans>
+            </Button>
+          </ClosePositionModal>
+          <PositionPnlModal>
+            <Button className="flex-1" variant={'primary'} size={'md'} color="default">
+              <Trans>平仓</Trans>
+            </Button>
+          </PositionPnlModal>
         </div>
 
         <Tabs value={selectedOrderType} onValueChange={setSelectedOrderType}>
@@ -83,6 +105,19 @@ export function TradeAction() {
           </Button>
         </div>
 
+        <div>
+          <NumberInput
+            placeholder="0.00"
+            labelText={<Trans>价格</Trans>}
+            RightContent={
+              <div className="text-paragraph-p2 flex gap-1">
+                <div>USDC</div>
+                <div>|</div>
+                <div className={'text-brand-primary'}>最新</div>
+              </div>
+            }
+          />
+        </div>
         {/* 保证金 */}
         <div className={'gap-medium flex flex-col'}>
           <Input placeholder="0.00" />
@@ -137,7 +172,7 @@ export function TradeAction() {
 
         {/* 止盈止损 */}
         <div className="">
-          <Switch disabled checked={stopLimit} onCheckedChange={setStopLimit}>
+          <Switch checked={stopLimit} onCheckedChange={setStopLimit}>
             <Trans>止盈/止损</Trans>
           </Switch>
         </div>
@@ -180,9 +215,26 @@ export function TradeAction() {
         )}
 
         {/* 下单按钮 */}
-        <Button block variant="primary" color="primary" size="md">
+        <Button
+          block
+          variant="primary"
+          color="primary"
+          size="md"
+          onClick={() => {
+            setIsOrderConfirmModalOpen(true)
+          }}
+        >
           下单
         </Button>
+        <OrderConfirmModal
+          isOpen={isOrderConfirmModalOpen}
+          onClose={() => {
+            setIsOrderConfirmModalOpen(false)
+          }}
+          onConfirm={() => {
+            console.log('onConfirm')
+          }}
+        />
 
         <OrderOverview />
       </div>
