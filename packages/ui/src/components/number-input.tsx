@@ -31,6 +31,7 @@ const NumberInput = ({
   hintLabel,
   hintValue,
   errorMessage,
+  hideLabel,
   inputClassName,
   block,
   // NumberInput specific props
@@ -44,7 +45,6 @@ const NumberInput = ({
   ...props
 }: NumberFieldProps) => {
   const isError = status === 'error'
-  console.log(value)
 
   return (
     <InputContainer<NumberFieldProps['value']>
@@ -53,6 +53,7 @@ const NumberInput = ({
       labelBgColor={labelBgColor}
       labelClassName={labelClassName}
       size={size}
+      hideLabel={hideLabel}
       LeftContent={LeftContent}
       RightContent={RightContent}
       variant={variant}

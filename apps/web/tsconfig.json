@@ -1,6 +1,8 @@
 {
   "extends": "@mullet/typescript-config/nextjs.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "plugins": [
       {
         "name": "next"
@@ -10,7 +12,7 @@
       "@/*": [
         "./src/*"
       ],
-      "~/*": [
+      "#/*": [
         "./public/*"
       ]
     }
@@ -20,7 +22,8 @@
     "**/*.tsx",
     "next-env.d.ts",
     "next.config.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "public/static/**/*.ts"
   ],
   "exclude": [
     "node_modules"

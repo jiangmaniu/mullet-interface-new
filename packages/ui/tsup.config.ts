@@ -31,6 +31,7 @@ export default defineConfig({
     checkbox: 'src/components/checkbox.tsx',
     'hover-card': 'src/components/hover-card.tsx',
     empty: 'src/components/empty.tsx',
+    badge: 'src/components/badge.tsx',
   },
   format: ['cjs', 'esm'],
   dts: true,

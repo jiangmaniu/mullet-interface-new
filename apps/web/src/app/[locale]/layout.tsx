@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 
 import { allMessages, getI18nInstance } from '@/locales/app-router-i18n'
 import { initLingui, LangPageParam } from '@/locales/init-lingui'
+import { OldProvider } from '@/v1/provider'
 import { msg } from '@lingui/core/macro'
 import { cn } from '@mullet/ui/lib/utils'
 
@@ -41,7 +42,7 @@ export default async function RootLayout({ children, params }: { children: React
     <html lang={locale} suppressHydrationWarning>
       <body className={cn(inter.variable, 'font-sans')} suppressHydrationWarning>
         <GlobalProviders initialLocale={locale} initialMessages={allMessages[locale]!}>
-          {children}
+          <OldProvider>{children}</OldProvider>
         </GlobalProviders>
       </body>
     </html>

@@ -36,7 +36,7 @@ export const MainLayoutHeaderNav = () => {
         return (
           <Link
             key={key}
-            href={item.path}
+            href={{ pathname: item.path }}
             className={cn('rounded-[8px] border border-transparent px-4 py-2.5 text-[14px] leading-[16px]', {
               'border-[#3B3D52] text-white': isActiveNav,
               'text-[#9FA0B0] hover:text-white': !isActiveNav,

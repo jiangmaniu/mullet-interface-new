@@ -3,8 +3,9 @@ import { NumericFormat } from 'react-number-format'
 import { isUndefined } from 'lodash-es'
 import type { NumberFormatValues, SourceInfo } from 'react-number-format'
 
-import { cn } from '@/lib/utils'
 import { BNumber } from '@mullet/utils/number'
+
+import { cn } from '../lib/utils'
 
 // TODO: Unable to import `SourceType` enumeration directly from `react-number-format`
 export enum NumberInputSourceType {
@@ -28,7 +29,7 @@ export type NumberInputPrimitiveProps = Prettify<
 
 const NumberInputPrimitiveBase = ({
   className,
-  allowNegative = true,
+  allowNegative = false,
   valueIsNumericString = false,
   thousandSeparator = ',',
   onValueChange,

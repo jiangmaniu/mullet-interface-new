@@ -2,7 +2,7 @@
   "name": "@mullet",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
+    "build": "turbo run build --filter='!@mullet/ui-docs' --filter='!@mullet/docs'",
     "dev": "turbo run dev --filter='!@mullet/ui-docs' --filter='!@mullet/docs'",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
@@ -18,10 +18,28 @@
     "@innei/prettier": "^1.0.0",
     "prettier": "^3.6.0",
     "prettier-plugin-tailwindcss": "^0.6.11",
-    "turbo": "^2.5.8"
+    "turbo": "^2.7.0"
   },
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "engines": {
     "node": ">=18"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.7",
+      "@types/react-dom": "19.2.3"
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@reown/appkit",
+      "@tailwindcss/oxide",
+      "bigint-buffer",
+      "bufferutil",
+      "core-js-pure",
+      "esbuild",
+      "sharp",
+      "unrs-resolver",
+      "utf-8-validate"
+    ]
   }
 }

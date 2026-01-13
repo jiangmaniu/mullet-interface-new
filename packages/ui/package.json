@@ -23,6 +23,11 @@
       "import": "./dist/drawer.mjs",
       "require": "./dist/drawer.js"
     },
+    "./badge": {
+      "types": "./src/components/badge.tsx",
+      "import": "./dist/badge.mjs",
+      "require": "./dist/badge.js"
+    },
     "./input": {
       "types": "./src/components/input.tsx",
       "import": "./dist/input.mjs",

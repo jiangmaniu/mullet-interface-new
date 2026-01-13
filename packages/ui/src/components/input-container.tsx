@@ -72,6 +72,8 @@ export type InputContainerProps<T = string> = Prettify<
      * 或使用任意值：'peer-[:not(:placeholder-shown)]:bg-[#1a1f3a] peer-focus:bg-[#1a1f3a]'
      */
     labelClassName?: string
+
+    hideLabel?: boolean
   } & VariantProps<typeof InputContainerVariants>
 >
 
@@ -91,6 +93,7 @@ const InputContainer = <T,>({
   labelText,
   placeholder,
   labelBgColor,
+  hideLabel = false,
   labelClassName,
   block = false,
   ...props
@@ -181,10 +184,19 @@ const InputContainer = <T,>({
   // 计算应该显示的标签内容
   const hasValue = value !== undefined && value !== '' && value !== null
   const shouldFloat = isFocused || hasValue
-  console.log(hasValue, value, shouldFloat)
 
   // 根据聚焦状态决定显示 labelText 还是 placeholder
-  const displayLabel = React.useMemo(() => {
+  const displayLabelText = React.useMemo(() => {
+    if (hideLabel) {
+      // if (isFocused && !hasValue) {
+      //   return placeholder
+      // }
+
+      if (isFocused || hasValue) {
+        return
+      }
+    }
+
     // 如果有值或聚焦，显示 labelText（如果没有则回退到 placeholder）
     if (shouldFloat) {
       return labelText || placeholder
@@ -192,7 +204,7 @@ const InputContainer = <T,>({
 
     // 如果没有值且未聚焦，显示 placeholder（如果没有则回退到 labelText）
     return placeholder || labelText
-  }, [labelText, placeholder, shouldFloat])
+  }, [labelText, value, hasValue, isFocused, placeholder, hideLabel, shouldFloat])
 
   return (
     <div
@@ -239,18 +251,22 @@ const InputContainer = <T,>({
         {children}
 
         {/* Label - 紧跟 input，peer 才能工作，定位相对于容器 */}
-        {displayLabel && (
+        {displayLabelText && (
           <label
             className={cn(
               'text-paragraph-p2 text-content-5 pointer-events-none absolute transition-all duration-200 ease-out',
               'top-1/2 origin-left -translate-y-1/2',
-              // 有值时（placeholder 不显示）→ label 浮动到容器左上角并缩小，颜色灰色
-              'peer-[:not(:placeholder-shown)]:!left-xl peer-[:not(:placeholder-shown)]:px-xs peer-[:not(:placeholder-shown)]:text-content-5 peer-[:not(:placeholder-shown)]:scale-80 peer-[:not(:placeholder-shown)]:-top-[9px] peer-[:not(:placeholder-shown)]:translate-y-0',
+              {
+                // 有值时（placeholder 不显示）→ label 浮动到容器左上角并缩小，颜色灰色
+                'peer-[:not(:placeholder-shown)]:!left-xl peer-[:not(:placeholder-shown)]:px-xs peer-[:not(:placeholder-shown)]:text-content-5 peer-[:not(:placeholder-shown)]:scale-80 peer-[:not(:placeholder-shown)]:-top-[9px] peer-[:not(:placeholder-shown)]:translate-y-0':
+                  !(hideLabel && isFocused && !hasValue),
+                'peer-focus:!left-xl': !(hideLabel && isFocused && !hasValue),
+              },
+
               // 聚焦时 → 覆盖上面的样式，颜色变为品牌色（必须在后面，优先级更高）
-              'peer-focus:!left-xl peer-focus:px-xs peer-focus:!text-brand-primary peer-focus:-top-[9px] peer-focus:translate-y-0 peer-focus:scale-90',
+              'peer-focus:px-xs peer-focus:!text-brand-primary peer-focus:-top-[9px] peer-focus:translate-y-0 peer-focus:scale-90',
               // 默认背景色（如果没有提供自定义类）
-              !labelClassName &&
-                'peer-focus:bg-[var(--input-label-bg,#27272a)] peer-[:not(:placeholder-shown)]:bg-[var(--input-label-bg,#27272a)]',
+              !labelClassName && 'peer-focus:bg-primary peer-[:not(:placeholder-shown)]:bg-primary',
               // 自定义类（外部传入，需要包含完整的 peer 修饰符）
               labelClassName,
             )}
@@ -258,7 +274,7 @@ const InputContainer = <T,>({
               left: labelInitialLeft,
             }}
           >
-            {typeof displayLabel === 'function' ? displayLabel({ isFocused }) : displayLabel}
+            {typeof displayLabelText === 'function' ? displayLabelText({ isFocused }) : displayLabelText}
           </label>
         )}
 

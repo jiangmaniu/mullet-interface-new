@@ -18,7 +18,7 @@ export default function NotFound() {
             <Trans>The page you are trying to view is temporarily unavailable. Please try again later</Trans>
           </p>
         </div>
-        <Link href="/trade">
+        <Link href={{ pathname: '/trade' }}>
           <Button>
             <Trans>Return trade</Trans>
           </Button>

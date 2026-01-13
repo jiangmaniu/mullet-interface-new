@@ -78,6 +78,7 @@ export function useKeepRouter() {
   const pushKeepQuery = (path: string, extra?: QueryObject, removeKeys?: string[]) => {
     const finalPath = resolvePath(path)
     const qs = buildQueryString(extra, removeKeys)
+    // @ts-ignore
     router.push(qs ? `${finalPath}?${qs}` : finalPath)
   }
 
@@ -89,7 +90,8 @@ export function useKeepRouter() {
   const replaceKeepQuery = (path: string, extra?: QueryObject, removeKeys?: string[]) => {
     const finalPath = resolvePath(path)
     const qs = buildQueryString(extra, removeKeys)
-    router.replace(qs ? `${finalPath}?${qs}` : finalPath)
+    // @ts-ignore
+    router.replace({ pathname: qs ? `${finalPath}?${qs}` : finalPath })
     return null
   }
 

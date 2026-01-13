@@ -1,217 +1,90 @@
 'use client'
 
-import { Trans } from '@lingui/react/macro'
-import { useQuery } from '@tanstack/react-query'
+import { observer } from 'mobx-react'
 import * as React from 'react'
-import { useEffect } from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { parseAsJson, parseAsStringEnum, useQueryState } from 'nuqs'
+import { useState } from 'react'
 
-import { GeneralTooltip } from '@/components/tooltip/general'
-import { useKeepRouter } from '@/hooks/common/use-keep-router'
-import { useLoginUserInfo } from '@/hooks/user/use-login-user-info'
-import { useGetTradeSymbolListApiOptions } from '@/services/api/trade-core/hooks/account/symbol'
-import { Symbols } from '@/services/api/trade-core/instance/gen'
-import { getWsClientInstance } from '@/utils/ws'
+// import { useSwitchSymbol } from '@/pages/webapp/hooks/useSwitchSymbol'
+import SymbolIcon from '@/v1/components/Base/SymbolIcon'
+import { EmptyNoData } from '@/v1/components/empty/no-data'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { Button } from '@mullet/ui/button'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@mullet/ui/hover-card'
 import { Iconify, IconNavArrowDown } from '@mullet/ui/icons'
 import { Input } from '@mullet/ui/input'
 import { cn } from '@mullet/ui/lib/utils'
-import { NumberInput } from '@mullet/ui/numberInput'
 import { Tabs, TabsList, TabsTrigger } from '@mullet/ui/tabs'
-import { BNumber } from '@mullet/utils/number'
 
-import { useActiveAccountInfo, useActiveAccountInfoSafe } from '../../_hooks/use-active-account-info'
-import { useActiveTradeSymbolInfo } from '../../_hooks/use-active-symbol-info'
-import { useActiveAccountTradeSymbolList } from '../../_hooks/use-trade-symbol-list'
-import { SYMBOL_FILTER_MODE_OPTIONS, SymbolFilterMode } from '../../_options/symbol'
-import { TradeSymbolPageParams } from '../../layout'
+import {
+  SYMBOL_CATEGORY_OPTIONS,
+  SYMBOL_FILTER_MODE_OPTIONS,
+  SymbolCategory,
+  SymbolFilterMode,
+} from '../../_options/symbol'
+import { symbolColumns } from './symbol-selector-columns'
 
-export const SymbolSelector = () => {
-  /**
-   * 需要与管理后台写死的枚举保持一致，管理后台有变动需要通知前端改对应的枚举
-   */
-  enum SymbolCategory {
-    All = '0',
-    Forex = '10',
-    Commodities = '20',
-    Indices = '30',
-    Stock = '40',
-    Crypto = '50',
-  }
-
-  const { createHref } = useKeepRouter()
+export const SymbolSelector = observer(() => {
   const [searchContent, setSearchContent] = React.useState<string>('')
-  const [activeSymbolCategory, setActiveSymbolCategory] = useQueryState(
-    'symbol-category',
-    parseAsStringEnum<SymbolCategory>(Object.values(SymbolCategory)).withDefault(SymbolCategory.All),
-  )
+  // const [activeSymbolCategory, setActiveSymbolCategory] = useQueryState(
+  //   'symbol-category',
+  //   parseAsStringEnum<SymbolCategory>(Object.values(SymbolCategory)).withDefault(SymbolCategory.All),
+  // )
+  const [activeSymbolCategory, setActiveSymbolCategory] = useState(SymbolCategory.All)
 
-  const { symbol } = useParams<TradeSymbolPageParams>()
+  // const [symbolFilterMode, setSymbolFilterMode] = useQueryState(
+  //   'symbol-filter-mode',
+  //   parseAsStringEnum<SymbolFilterMode>(Object.values(SymbolFilterMode)).withDefault(SymbolFilterMode.All),
+  // )
+  // const { switchSymbol } = useSwitchSymbol()
+  const { trade } = useStores()
 
-  const CATEGORY_OPTIONS: {
-    label: React.ReactNode
-    value: SymbolCategory
-  }[] = [
-    {
-      label: <Trans>外汇</Trans>,
-      value: SymbolCategory.Forex,
-    },
+  const activeSymbolInfo = trade.activeSymbolInfo
 
-    {
-      label: <Trans>商品</Trans>,
-      value: SymbolCategory.Commodities,
-    },
-    {
-      label: <Trans>指数</Trans>,
-      value: SymbolCategory.Indices,
-    },
-    {
-      label: <Trans>股票</Trans>,
-      value: SymbolCategory.Stock,
-    },
+  const [symbolFilterMode, setSymbolFilterMode] = useState(SymbolFilterMode.All)
 
-    {
-      label: <Trans>数字货币</Trans>,
-      value: SymbolCategory.Crypto,
-    },
-  ]
+  const symbolListByFilterMode =
+    symbolFilterMode === SymbolFilterMode.Favorite ? trade.favoriteList : trade.symbolListAll
+  const symbolListByCategory =
+    activeSymbolCategory === SymbolCategory.All
+      ? symbolListByFilterMode
+      : symbolListByFilterMode.filter((item) => item.classify === activeSymbolCategory)
+  const renderSymbolList = !searchContent
+    ? symbolListByCategory
+    : symbolListByCategory.filter((item) => item.symbol.toLowerCase().includes(searchContent.toLowerCase()))
 
-  const { activeTradeSymbolInfo } = useActiveTradeSymbolInfo()
-  const { activeAccountTradeSymbolList } = useActiveAccountTradeSymbolList()
+  const [open, setOpen] = useState(false)
 
-  const [symbolFilterMode, setSymbolFilterMode] = useQueryState(
-    'symbol-filter-mode',
-    parseAsStringEnum<SymbolFilterMode>(Object.values(SymbolFilterMode)).withDefault(SymbolFilterMode.All),
-  )
-
-  const symbolColumns: {
-    key: string
-    header: React.ReactNode
-    cell: (symbolItem: Symbols) => React.ReactNode
-  }[] = [
-    {
-      key: 'symbol',
-      header: <Trans>交易对</Trans>,
-      cell: (symbolItem) => {
-        return (
-          <div className="flex items-center gap-2">
-            <Iconify icon="iconoir:star" className="size-3.5" />
-
-            <div className="">
-              {/* <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${symbolItem.imgUrl}`}
-                alt={'symbol logo'}
-                width={14}
-                height={14}
-              /> */}
-
-              <img
-                src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${symbolItem.imgUrl}`}
-                alt={'symbol logo'}
-                className="size-3.5 rounded-full"
-              />
-            </div>
-            <GeneralTooltip align="center" content={symbolItem.remark}>
-              <div className="text-paragraph-p2 text-content-1">{symbolItem.alias}</div>
-            </GeneralTooltip>
-          </div>
-        )
-      },
-    },
-    {
-      key: 'price',
-      header: <Trans>价格</Trans>,
-      cell: (symbolInfo) => {
-        return <SymbolPrice symbolInfo={symbolInfo} />
-      },
-    },
-
-    {
-      key: 'h24Change',
-      header: <Trans>24H 涨幅</Trans>,
-      cell: () => {
-        const newValue = 2130
-        const oldValue = 2100
-        const difference = newValue - oldValue
-        const percentage = difference / oldValue
-        const isPositive = newValue > oldValue
-        return (
-          <div
-            className={cn('text-paragraph-p2 text-content-1', {
-              'text-market-rise': isPositive,
-              'text-market-fall': !isPositive,
-            })}
-          >
-            {BNumber.toFormatNumber(difference, { forceSign: true, volScale: 2 })} /{' '}
-            {BNumber.toFormatPercent(percentage, { forceSign: true, volScale: 2 })}
-          </div>
-        )
-      },
-    },
-    {
-      key: 'volume',
-      header: <Trans>交易量</Trans>,
-      cell: () => {
-        return <div>{BNumber.toFormatNumber(613428511.36, { volScale: 2, prefix: '$' })}</div>
-      },
-    },
-    {
-      key: 'openInterest',
-      header: <Trans>未平仓合约</Trans>,
-      cell: () => {
-        return <div>{BNumber.toFormatNumber(154, { unit: 'SOL', volScale: 2 })}</div>
-      },
-    },
-    {
-      key: 'holdingCostRate',
-      header: <Trans>展期费率</Trans>,
-      cell: () => {
-        return (
-          <div>
-            {BNumber.toFormatPercent(0.000001, { forceSign: true, volScale: undefined })} /{' '}
-            {BNumber.toFormatPercent(0.000002, { volScale: undefined })}
-          </div>
-        )
-      },
-    },
-  ]
   return (
-    <HoverCard
-      openDelay={100}
-      // open={true}
-    >
+    <HoverCard open={open} onOpenChange={setOpen} openDelay={100}>
       <HoverCardTrigger asChild>
-        <div className="flex items-center gap-4">
+        <div
+          className="flex h-full items-center gap-4 pl-3"
+          onPointerDownCapture={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+        >
           <div className="flex items-center gap-3">
-            <img
-              src={`${process.env.NEXT_PUBLIC_IMAGE_DOMAIN}/${activeTradeSymbolInfo?.imgUrl}`}
-              alt={'symbol logo'}
-              className="size-6 rounded-full"
-            />
+            <SymbolIcon src={activeSymbolInfo?.imgUrl} width={24} height={24} className="size-6 rounded-full" />
 
-            <div className="text-button-2 text-white">{activeTradeSymbolInfo?.alias}</div>
+            <div className="text-button-2 text-white">{activeSymbolInfo?.alias}</div>
           </div>
 
-          <div>
-            <IconNavArrowDown />
-          </div>
+          <IconNavArrowDown className="size-4" />
         </div>
       </HoverCardTrigger>
       <HoverCardContent
-        sideOffset={22}
-        alignOffset={-12}
-        className="flex w-[var(--radix-hover-card-content-available-width)] max-w-[1048px] min-w-[480px] flex-col gap-1.5"
+        sideOffset={0}
+        alignOffset={0}
+        className="flex w-[var(--radix-hover-card-content-available-width)] max-w-[720px] min-w-[480px] flex-col gap-1.5"
       >
         <div className="flex items-center gap-6">
           <Input
             className="w-full max-w-[300px]"
             LeftContent={<Iconify icon={'iconoir:search'} className="size-5" />}
-            RightContent={<div>USDC</div>}
             placeholder="搜索"
+            value={searchContent}
+            onValueChange={(value) => setSearchContent(value)}
             size="sm"
           />
 
@@ -232,7 +105,7 @@ export const SymbolSelector = () => {
 
         <Tabs value={activeSymbolCategory} className="flex flex-col gap-1.5" onValueChange={setActiveSymbolCategory}>
           <TabsList>
-            {CATEGORY_OPTIONS.map((category) => {
+            {SYMBOL_CATEGORY_OPTIONS.map((category) => {
               return (
                 <TabsTrigger value={category.value} key={category.value}>
                   {category.label}
@@ -243,70 +116,40 @@ export const SymbolSelector = () => {
         </Tabs>
 
         <div className="">
-          <div className="flex gap-6 px-6 py-2">
+          <div className="text-paragraph-p3 text-content-5 flex gap-6 px-6 py-2">
             {symbolColumns.map((column) => {
-              console.log(column.key)
-              return (
-                <div key={column.key} className="text-paragraph-p3 text-content-5 flex flex-1 items-center">
-                  {column.header}
-                </div>
-              )
+              return <React.Fragment key={column.key}>{column.header}</React.Fragment>
             })}
           </div>
 
           <div className="max-h-[400px] overflow-y-auto">
-            {activeAccountTradeSymbolList?.map((symbolItem) => {
-              return (
-                <Link
-                  key={symbolItem.symbol}
-                  className={cn('flex gap-6 px-6 py-2', 'hover:bg-[#ccc]/10', {
-                    'bg-[#ccc]/10': symbolItem.symbol === symbol,
-                  })}
-                  href={createHref(`#/${symbolItem.symbol}`)}
-                >
-                  {symbolColumns.map((column) => {
-                    return (
-                      <div key={column.key} className="text-paragraph-p2 text-content-1 flex flex-1 items-center">
-                        {column.cell(symbolItem)}
-                      </div>
-                    )
-                  })}
-                </Link>
-              )
-            })}
+            {!renderSymbolList?.length ? (
+              <div className="py-3xl">
+                <EmptyNoData />
+              </div>
+            ) : (
+              renderSymbolList?.map((symbolItem) => {
+                return (
+                  <div
+                    key={symbolItem.symbol}
+                    className={cn('text-paragraph-p3 text-content-5 flex gap-6 px-6 py-2', 'hover:bg-[#ccc]/10', {
+                      'bg-[#ccc]/10': symbolItem.symbol === activeSymbolInfo?.symbol,
+                    })}
+                    onClick={() => {
+                      trade.switchSymbol(symbolItem.symbol)
+                      setOpen(false)
+                    }}
+                  >
+                    {symbolColumns.map((column) => {
+                      return <React.Fragment key={column.key}>{column.cell(symbolItem)}</React.Fragment>
+                    })}
+                  </div>
+                )
+              })
+            )}
           </div>
         </div>
       </HoverCardContent>
     </HoverCard>
   )
-}
-
-const SymbolPrice = ({ symbolInfo }: { symbolInfo: Symbols }) => {
-  const { activeAccountInfo } = useActiveAccountInfoSafe()
-  const { loginUserInfo } = useLoginUserInfo()
-
-  useEffect(() => {
-    const ws = getWsClientInstance()
-
-    const tenantId = '000000'
-    // 订阅行情数据
-    if (!symbolInfo.symbol || !activeAccountInfo.id || !loginUserInfo?.userInfo?.id) {
-      debugger
-      return
-    }
-    const userId = loginUserInfo?.userInfo?.id!.toString()
-    const accountId = activeAccountInfo.id!?.toString()
-
-    const unsubscribe = ws.subscriptionManager.subscribeMarketData(
-      { symbol: symbolInfo.symbol, accountId, header: { userId, tenantId } },
-      (data) => {
-        debugger
-        console.log('BTCUSDT 行情:', data)
-      },
-    )
-
-    return unsubscribe
-  }, [symbolInfo.symbol, activeAccountInfo.id, loginUserInfo?.userInfo?.id])
-
-  return <div>50000 USD</div>
-}
+})

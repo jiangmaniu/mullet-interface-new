@@ -1,19 +1,21 @@
 'use client'
 
 import { Trans } from '@lingui/react/macro'
-import { Activity, useState } from 'react'
+import { useState } from 'react'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@mullet/ui/tabs'
 
-import { MarketCharts } from './charts'
-import { MarketDepth } from './depth'
+// import { MarketCharts } from './charts'
+// import { MarketDepth } from './depth'
 import { MarketDetails } from './details'
+import { TradingviewWrapper } from './Tradingview/wrapper'
 
 export const TradeMarket = () => {
   enum TabEnum {
     charts,
     depth,
     detail,
+    old,
   }
   const [activeTab, setActiveTab] = useState(TabEnum.charts)
 
@@ -26,11 +28,16 @@ export const TradeMarket = () => {
               <Trans>图表</Trans>
             </span>
           </TabsTrigger>
-          <TabsTrigger value={TabEnum.depth}>
+          {/* <TabsTrigger value={TabEnum.depth}>
             <span>
               <Trans>深度</Trans>
             </span>
-          </TabsTrigger>
+          </TabsTrigger> */}
+          {/* <TabsTrigger value={TabEnum.old}>
+            <span>
+              <Trans>老详情</Trans>
+            </span>
+          </TabsTrigger> */}
           <TabsTrigger value={TabEnum.detail}>
             <span>
               <Trans>详情</Trans>
@@ -38,11 +45,13 @@ export const TradeMarket = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value={TabEnum.charts} forceMount>
-          <MarketCharts />
+          {/* <MarketCharts /> */}
+          <TradingviewWrapper />
         </TabsContent>
-        <TabsContent value={TabEnum.depth} forceMount>
+        {/* <TabsContent value={TabEnum.depth} forceMount>
           <MarketDepth />
-        </TabsContent>
+        </TabsContent> */}
+        <TabsContent value={TabEnum.old}>{/* <Futures /> */}</TabsContent>
         <TabsContent value={TabEnum.detail}>
           <MarketDetails />
         </TabsContent>

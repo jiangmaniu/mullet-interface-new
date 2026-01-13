@@ -1,11 +1,16 @@
-import { CheckLoginAuth } from '../../_comps/check/check-auth'
-import { CheckSymbol } from './[symbol]/_comps/check/check-symbol'
+import { CheckLoginAuth } from '@/v1/compatible/components/check/check-auth'
+import { CheckSymbol } from '@/v1/compatible/components/check/check-symbol'
+
+import { TradeContent } from './_layouts/trade-content'
 
 export default function TradeLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <CheckLoginAuth>
-        <CheckSymbol>{children}</CheckSymbol>
+        <CheckSymbol>
+          <TradeContent />
+          {children}
+        </CheckSymbol>
       </CheckLoginAuth>
     </>
   )

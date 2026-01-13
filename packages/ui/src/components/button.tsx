@@ -8,11 +8,11 @@ import { cn } from '../lib/utils'
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center gap-1 box-border justify-center transition-[colors,transform] text-[14px] whitespace-nowrap font-medium ring-offset-background ',
+    'inline-flex items-center gap-1 box-border justify-center transition-all text-[14px] whitespace-nowrap font-medium ring-offset-background ',
     // 'enabled:active:scale-95',
     'focus-visible:outline-focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-    `data-[disabled='true']:cursor-not-allowed data-[disabled='true']:opacity-35`,
-    `disabled:cursor-not-allowed disabled:opacity-35`,
+    `data-[disabled='true']:cursor-not-allowed data-[disabled='true']:opacity-80`,
+    `disabled:cursor-not-allowed disabled:opacity-80`,
   ],
   {
     variants: {
@@ -65,8 +65,8 @@ const buttonVariants = cva(
         color: 'default',
         class: [
           'text-content-1 text-button-1 bg-zinc-300/20',
-          'hover:bg-zinc-300/40 hover:shadow-base',
-          'active:shadow-inset-base',
+          'enabled:hover:bg-zinc-300/40 enabled:hover:shadow-base',
+          'enabled:active:shadow-inset-base',
           'disabled:text-content-6',
         ],
       },
@@ -75,8 +75,8 @@ const buttonVariants = cva(
         color: 'default',
         class: [
           'text-content-1 text-button-1 border border-zinc-300/20',
-          'hover:bg-zinc-300/0 hover:border-zinc-base hover:shadow-base',
-          'active:shadow-inset-base active:border-white',
+          'enabled:hover:bg-zinc-300/0 enabled:hover:border-zinc-base enabled:hover:shadow-base',
+          'enabled:active:shadow-inset-base enabled:active:border-white',
           'disabled:text-content-6 disabled:border-zinc-xs',
         ],
       },
@@ -86,8 +86,8 @@ const buttonVariants = cva(
         color: 'primary',
         class: [
           'text-content-foreground text-button-1 bg-brand-primary',
-          'hover:bg-yellow-400 hover:shadow-base',
-          'active:shadow-inset-base',
+          'enabled:hover:bg-yellow-400 enabled:hover:shadow-base',
+          'enabled:active:shadow-inset-base',
           'disabled:text-content-6 disabled:bg-zinc-300/20',
         ],
       },

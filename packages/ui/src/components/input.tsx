@@ -22,6 +22,7 @@ function Input({
   labelText,
   placeholder,
   labelBgColor,
+  hideLabel,
   labelClassName,
   size,
   LeftContent,
@@ -53,6 +54,7 @@ function Input({
       LeftContent={LeftContent}
       RightContent={RightContent}
       hintLabel={hintLabel}
+      hideLabel={hideLabel}
       hintValue={hintValue}
       errorMessage={errorMessage}
       className={className}

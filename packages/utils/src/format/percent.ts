@@ -1,7 +1,7 @@
 import { BNumber, BNumberValue } from '../number/b-number'
 import { FormatNumberOpt, toFormatNumber } from './number'
 
-const COMMON_PERCENT_DISPLAY_DECIMALS = 2
+export const COMMON_PERCENT_DISPLAY_DECIMALS = 2
 
 export type FormatPercentOpt = Prettify<
   FormatNumberOpt & {

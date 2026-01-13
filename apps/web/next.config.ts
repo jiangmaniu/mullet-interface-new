@@ -2,17 +2,34 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  typedRoutes: true,
+  typedRoutes: false,
 
   typescript: {
     ignoreBuildErrors: true,
   },
 
-  // Webpack 配置（仅在非 Turbopack 模式下使用）
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.output.globalObject = 'self'
-    }
+  /**
+   * 暂时使用 webbpack 打包， @privy-io/react-auth 在 turbopack 下无法正常打包的问题。
+   * @link https://github.com/vercel/next.js/issues/87342
+   * @link https://github.com/vercel/next.js/issues/86099#issuecomment-3630980322
+   * 当 @privy-io/react-auth 问题解决时使用 trubopack
+   */
+  webpack: (config) => {
+    // 忽略 @lingui 相关的动态依赖警告
+    config.ignoreWarnings = [{ module: /node_modules\/cosmiconfig/ }, { module: /node_modules\/jiti/ }]
+
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: {
+        loader: '@svgr/webpack',
+      },
+    })
+    config.module.rules.push({
+      test: /\.po$/,
+      use: {
+        loader: '@lingui/loader',
+      },
+    })
     return config
   },
 
@@ -27,6 +44,8 @@ const nextConfig: NextConfig = {
         loaders: ['@lingui/loader'],
         as: '*.js',
       },
+
+      ignore: ['**/*.test.ts', '**/*.test.js', '**/test/**'],
     },
   },
 

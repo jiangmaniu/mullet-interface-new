@@ -38,7 +38,8 @@ function DropdownMenuContent({
         data-slot="dropdown-menu-content"
         sideOffset={sideOffset}
         className={cn(
-          'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin) z-50 min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-[8px] border border-[#3B3D52] bg-[#0E123A] p-1 py-2.5 text-white shadow-md',
+          'rounded-large bg-pop-up-mask backdrop-blur-base flex flex-col gap-3 border border-[#3B3D52] p-3 text-white shadow-md',
+          'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 max-h-(--radix-dropdown-menu-content-available-height) origin-(--radix-dropdown-menu-content-transform-origin) z-50 min-w-[8rem] overflow-y-auto overflow-x-hidden',
           'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
           'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
           className,
@@ -69,7 +70,7 @@ function DropdownMenuItem({
       data-variant={variant}
       className={cn(
         'text-[14px] text-white',
-        'outline-hidden relative flex cursor-default select-none items-center gap-2 rounded-[6px] px-2.5 py-3 focus:bg-[#181E5A] focus:text-[white] data-[inset]:pl-8',
+        'outline-hidden focus:bg-primary relative flex cursor-default select-none items-center gap-2 rounded-[6px] px-2.5 py-3 focus:text-[white] data-[inset]:pl-8',
         'data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive',
         "[&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-white [&_svg]:pointer-events-none [&_svg]:shrink-0",
         'data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
@@ -231,4 +232,5 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  DropdownMenuPrimitive,
 }

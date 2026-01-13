@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { isNil, isUndefined, merge } from 'lodash-es'
+import { isNaN, isNil, isUndefined, merge } from 'lodash-es'
 import numbro from 'numbro'
 
 import { BNumber, BNumberValue } from '../number/b-number'
@@ -65,7 +65,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     amount = BNumber.from(amount).toFixed(0)
   }
 
-  if (isNil(amount) || amount.toString().length === 0) {
+  if (isNil(amount) || isNaN(amount) || amount.toString().length === 0) {
     if (!fallbackToZero) {
       return defaultLabel
     }
