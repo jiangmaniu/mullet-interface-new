@@ -1,3 +1,5 @@
+// "main": "expo-router/entry",
+
 // Import required polyfills first
 import 'fast-text-encoding'
 import 'react-native-get-random-values'
