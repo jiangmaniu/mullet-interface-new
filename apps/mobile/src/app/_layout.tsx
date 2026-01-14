@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 
 import { Providers } from '@/components/providers'
 
+import '../../global.css'
 import 'react-native-reanimated'
 
 export const unstable_settings = {

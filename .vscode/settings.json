@@ -91,11 +91,40 @@
     "class",
     "className",
     "contentClassName",
-    ".*[cC]lassName.*"
+    ".*[cC]lassName.*",
+    "class",
+    "className",
+    "headerClassName",
+    "contentContainerClassName",
+    "columnWrapperClassName",
+    "endFillColorClassName",
+    "imageClassName",
+    "tintColorClassName",
+    "ios_backgroundColorClassName",
+    "thumbColorClassName",
+    "trackColorOnClassName",
+    "trackColorOffClassName",
+    "selectionColorClassName",
+    "cursorColorClassName",
+    "underlineColorAndroidClassName",
+    "placeholderTextColorClassName",
+    "selectionHandleColorClassName",
+    "colorsClassName",
+    "progressBackgroundColorClassName",
+    "titleColorClassName",
+    "underlayColorClassName",
+    "colorClassName",
+    "drawerBackgroundColorClassName",
+    "statusBarBackgroundColorClassName",
+    "backdropColorClassName",
+    "backgroundColorClassName",
+    "ListFooterComponentClassName",
+    "ListHeaderComponentClassName"
   ],
   "tailwindCSS.classFunctions": [
     "cva",
-    "cx"
+    "cx",
+    "useResolveClassNames",
   ],
   "commentTranslate.multiLineMerge": true,
   "[typescriptreact]": {
@@ -113,5 +142,5 @@
       "mode": "auto"
     }
   ],
-  "cSpell.words": []
+  "cSpell.words": [],
 }
