@@ -40,6 +40,6 @@ config.resolver.sourceExts.push('po', 'pot')
 config.transformer.babelTransformerPath = require.resolve('@lingui/metro-transformer/expo')
 
 module.exports = withUniwindConfig(config, {
-  cssEntryFile: './global.css',
+  cssEntryFile: './src/app/global.css',
   dtsFile: './types/uniwind-types.d.ts'
 })

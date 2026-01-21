@@ -1,16 +1,17 @@
+import './global.css'
+import { Uniwind } from 'uniwind'
+
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 
 import { Providers } from '@/components/providers'
-
-import '../../global.css'
-import 'react-native-reanimated'
 
 export const unstable_settings = {
   anchor: '(tabs)',
 }
 
 export default function RootLayout() {
+ Uniwind.setTheme('dark')
   return (
     <Providers>
       <Stack>
