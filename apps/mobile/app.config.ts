@@ -69,6 +69,7 @@ export default ({ config }: { config: ConfigContext }) => {
       ],
       'expo-secure-store',
       'expo-web-browser',
+      'expo-localization',
     ],
     experiments: {
       typedRoutes: true,

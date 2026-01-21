@@ -36,6 +36,9 @@ const resolveRequestWithPackageExports = (context, moduleName, platform) => {
 
 config.resolver.resolveRequest = resolveRequestWithPackageExports
 
+config.resolver.sourceExts.push('po', 'pot')
+config.transformer.babelTransformerPath = require.resolve('@lingui/metro-transformer/expo')
+
 module.exports = withUniwindConfig(config, {
   cssEntryFile: './global.css',
   dtsFile: './types/uniwind-types.d.ts'
