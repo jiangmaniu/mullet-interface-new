@@ -1,5 +1,6 @@
 import './global.css'
 import { Uniwind } from 'uniwind'
+import React from 'react'
 
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
@@ -11,12 +12,13 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
- Uniwind.setTheme('dark')
+  React.useEffect(() => {
+    Uniwind.setTheme('dark')
+  }, [])
   return (
     <Providers>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>
