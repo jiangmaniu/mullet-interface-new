@@ -1,7 +1,5 @@
 import './global.css'
-import { Uniwind } from 'uniwind'
 import React from 'react'
-
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 
@@ -12,9 +10,7 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
-  React.useEffect(() => {
-    Uniwind.setTheme('dark')
-  }, [])
+
   return (
     <Providers>
       <Stack>

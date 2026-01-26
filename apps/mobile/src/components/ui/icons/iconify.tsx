@@ -1,1 +1,17 @@
-export { Activity as IconifyActivity, Wallet as IconifyWallet, HomeSimple as IconifyHomeSimple } from 'iconoir-react-native'
+export {
+  Activity as IconifyActivity,
+  Wallet as IconifyWallet,
+  HomeSimple as IconifyHomeSimple,
+  Bell as IconifyBell,
+  Search as IconifySearch,
+  XmarkCircleSolid as IconifyXmarkCircleSolid,
+  UserCircle as IconifyUserCircle,
+  NavArrowDown as IconifyNavArrowDown,
+  Settings as IconifySettings,
+  EyeClosed as IconifyEyeClosed,
+  Eye as IconifyEye,
+  Copy as IconifyCopy,
+  CoinsSwap as IconifyCoinsSwap,
+  PlusCircle as IconifyPlusCircle,
+  NavArrowRight as IconifyNavArrowRight,
+} from 'iconoir-react-native'
