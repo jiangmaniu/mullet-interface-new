@@ -1,4 +1,3 @@
-import { Drawer, DrawerProps } from '@/components/ui/drawer';
 import { IconifyUserCircle } from '@/components/ui/icons';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useThemeColors } from '@/hooks/use-theme-colors';
@@ -10,7 +9,7 @@ import { Text } from '@/components/ui/text';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 
 const REAL_ACCOUNTS = [
 	{ id: '88234911', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -28,35 +27,38 @@ const MOCK_ACCOUNTS = [
 export function AccountSwitcherModal({
 	visible,
 	onClose
-}: Pick<DrawerProps, 'visible' | 'onClose'>) {
+}: {
+	visible: boolean
+	onClose: () => void
+}) {
 	const [activeTab, setActiveTab] = useState('real');
 
 	return (
-		<Drawer
-			visible={visible}
-			onClose={onClose}
-		>
-			<View className="h-[292px]">
-				<Tabs value={activeTab} onValueChange={setActiveTab}>
-					<TabsList variant="underline" size="md" className='w-screen my-xl flex-shrink-0'>
-						<TabsTrigger value="real" className='flex-1'>
-							<Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
-						</TabsTrigger>
-						<TabsTrigger value="mock" className='flex-1'>
-							<Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
-						</TabsTrigger>
-					</TabsList>
-				</Tabs>				
 
-				<ScrollView showsVerticalScrollIndicator={false} className='flex-1'>
-					{activeTab === 'real' ? REAL_ACCOUNTS.map(account => (
+		<Drawer open={visible} onOpenChange={onClose}>
+			<DrawerContent className='p-0'>
+				<View className="h-[292px]">
+					<Tabs value={activeTab} onValueChange={setActiveTab}>
+						<TabsList variant="underline" size="md" className='w-screen my-xl flex-shrink-0'>
+							<TabsTrigger value="real" className='flex-1'>
+								<Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
+							</TabsTrigger>
+							<TabsTrigger value="mock" className='flex-1'>
+								<Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
+							</TabsTrigger>
+						</TabsList>
+					</Tabs>
+
+					<ScrollView showsVerticalScrollIndicator={false} className='flex-1'>
+						{activeTab === 'real' ? REAL_ACCOUNTS.map(account => (
 							<AccountRow isReal key={account.id} {...account} onPress={() => { }} />
-						)):MOCK_ACCOUNTS.map(account => (
+						)) : MOCK_ACCOUNTS.map(account => (
 							<AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
 						))}
-					
-				</ScrollView>
-			</View>
+
+					</ScrollView>
+				</View>
+			</DrawerContent>
 		</Drawer>
 	);
 }

@@ -11,11 +11,6 @@
     "source.organizeImports": "never",
     "source.sortImports": "never"
   },
-  "eslint.options": {
-    "flags": [
-      "unstable_ts_config"
-    ]
-  },
   // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",
@@ -128,7 +123,7 @@
   ],
   "commentTranslate.multiLineMerge": true,
   "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "i18n-ally.localesPaths": [
     "src/locales",

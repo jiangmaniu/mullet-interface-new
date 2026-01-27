@@ -1,87 +1,334 @@
-import React from 'react';
-import { Modal, View, TouchableWithoutFeedback, ModalProps } from 'react-native';
-import Animated, { SlideInDown, Easing, SlideOutDown, FadeIn, FadeOut } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Svg, { Path, SvgProps } from "react-native-svg";
-import { cn } from '@/lib/utils';
-import { Button } from './button';
-import { Text } from './text';
+import * as React from 'react'
+import {
+  View,
+  Text,
+  Pressable,
+  Modal,
+  Dimensions,
+  type ViewProps,
+  type TextProps,
+  type PressableProps,
+} from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated'
+import { cn } from '@/lib/utils'
 
-export interface DrawerProps extends ModalProps {
-    visible: boolean;
-    onClose: () => void;
-    children: React.ReactNode;
-    overlayClassName?: string;
+const { height: screenHeight } = Dimensions.get('window')
+
+// Context for drawer state
+interface DrawerContextValue {
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-export function Drawer({
-    visible,
-    onClose,
-    children,
-    overlayClassName,
-    ...props
-}: DrawerProps) {
-    const insets = useSafeAreaInsets();
-    const [showModal, setShowModal] = React.useState(visible);
+const DrawerContext = React.createContext<DrawerContextValue | null>(null)
 
-    React.useEffect(() => {
-        if (visible) {
-            setShowModal(true);
-        } else {
-            const timer = setTimeout(() => setShowModal(false), 500);
-            return () => clearTimeout(timer);
-        }
-    }, [visible]);
+function useDrawerContext() {
+  const context = React.useContext(DrawerContext)
+  if (!context) {
+    throw new Error('Drawer components must be used within a Drawer')
+  }
+  return context
+}
 
-    if (!showModal) return null;
+// Animation config
+const animConfig = {
+  duration: 300,
+  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+}
 
-    return (
-        <Modal
-            transparent
-            visible={true}
-            animationType='none'
-            onRequestClose={onClose}
-            {...props}
+const closeDuration = 350
+
+// ============================================================================
+// Drawer Root
+// ============================================================================
+
+interface DrawerProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  children: React.ReactNode
+}
+
+function Drawer({ open, onOpenChange, children }: DrawerProps) {
+  return (
+    <DrawerContext.Provider value={{ open, onOpenChange }}>
+      {children}
+    </DrawerContext.Provider>
+  )
+}
+Drawer.displayName = 'Drawer'
+
+// ============================================================================
+// Drawer Trigger
+// ============================================================================
+
+interface DrawerTriggerProps extends PressableProps {
+  ref?: React.Ref<View>
+  asChild?: boolean
+}
+
+function DrawerTrigger({ onPress, ref, ...props }: DrawerTriggerProps) {
+  const { onOpenChange } = useDrawerContext()
+
+  return (
+    <Pressable
+      ref={ref}
+      onPress={(e) => {
+        onOpenChange(true)
+        onPress?.(e)
+      }}
+      {...props}
+    />
+  )
+}
+DrawerTrigger.displayName = 'DrawerTrigger'
+
+// ============================================================================
+// Drawer Portal (Modal with animations)
+// ============================================================================
+
+interface DrawerPortalProps {
+  children: React.ReactNode
+}
+
+function DrawerPortal({ children }: DrawerPortalProps) {
+  const { open, onOpenChange } = useDrawerContext()
+  const [modalVisible, setModalVisible] = React.useState(false)
+
+  // Reanimated shared values
+  const overlayOpacity = useSharedValue(0)
+  const drawerTranslateY = useSharedValue(screenHeight)
+
+  // Animation effects
+  React.useEffect(() => {
+    if (open) {
+      setModalVisible(true)
+      overlayOpacity.value = withTiming(1, animConfig)
+      drawerTranslateY.value = withTiming(0, animConfig)
+    } else if (modalVisible) {
+      overlayOpacity.value = withTiming(0, { ...animConfig, duration: closeDuration })
+      drawerTranslateY.value = withTiming(screenHeight, { ...animConfig, duration: closeDuration })
+      const timer = setTimeout(() => {
+        setModalVisible(false)
+      }, closeDuration)
+      return () => clearTimeout(timer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, modalVisible])
+
+  // Animated styles
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: overlayOpacity.value,
+  }))
+
+  const drawerAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: drawerTranslateY.value }],
+  }))
+
+  const handleClose = React.useCallback(() => {
+    onOpenChange(false)
+  }, [onOpenChange])
+
+  return (
+    <Modal
+      visible={modalVisible}
+      transparent
+      animationType="none"
+      onRequestClose={handleClose}
+    >
+      {/* Overlay */}
+      <Animated.View
+        style={[
+          {
+            flex: 1,
+            justifyContent: 'flex-end',
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          },
+          overlayAnimatedStyle,
+        ]}
+      >
+        {/* Backdrop pressable for closing */}
+        <Pressable
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+          onPress={handleClose}
+        />
+
+        {/* Drawer content wrapper */}
+        <Animated.View
+          style={[
+            { maxHeight: screenHeight * 0.85 },
+            drawerAnimatedStyle,
+          ]}
         >
-            <View className={cn("flex-1 justify-end", overlayClassName)}>
-                {visible && (
-                    <Animated.View 
-                        entering={FadeIn}
-                        exiting={FadeOut.duration(400)}
-                        className="absolute inset-0 bg-card"
-                    >
-                        <TouchableWithoutFeedback onPress={onClose}>
-                            <View className="flex-1" />
-                        </TouchableWithoutFeedback>
-                    </Animated.View>
-                )}
+          {children}
+        </Animated.View>
+      </Animated.View>
+    </Modal>
+  )
+}
+DrawerPortal.displayName = 'DrawerPortal'
 
-                {visible && (
-                    <Animated.View
-                        entering={SlideInDown.duration(400).easing(Easing.out(Easing.cubic))}
-                        exiting={SlideOutDown.duration(400).easing(Easing.out(Easing.cubic))}
-                        className={cn("bg-special rounded-t-large overflow-hidden w-full")}
-                        style={{ paddingBottom: insets.bottom }}
-                    >
-                        {children}
-                    </Animated.View>
-                )}
-            </View>
-        </Modal>
-    );
+// ============================================================================
+// Drawer Overlay (optional explicit overlay)
+// ============================================================================
+
+interface DrawerOverlayProps extends ViewProps {
+  ref?: React.Ref<View>
 }
 
-const IconClose = ({ className, ...props }: SvgProps & { className?: string }) => (
-    <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" className={className} {...props}>
-        <Path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-    </Svg>
-);
+function DrawerOverlay({ className, ref, ...props }: DrawerOverlayProps) {
+  return (
+    <View
+      ref={ref}
+      className={cn('absolute inset-0 bg-black/60', className)}
+      {...props}
+    />
+  )
+}
+DrawerOverlay.displayName = 'DrawerOverlay'
 
-export interface DrawerHeaderProps {
-    icon?: React.ReactNode;
-    title?: React.ReactNode;
-    onClose?: () => void;
-	closeButton?: React.ReactNode;
-    className?: string;
-    children?: React.ReactNode;
+// ============================================================================
+// Drawer Content
+// ============================================================================
+
+interface DrawerContentProps extends ViewProps {
+  ref?: React.Ref<View>
+}
+
+function DrawerContent({ className, children, ref, ...props }: DrawerContentProps) {
+  return (
+    <DrawerPortal>
+      <View
+        ref={ref}
+        className={cn(
+          'bg-zinc-900 rounded-t-3xl px-6 pt-6 pb-10',
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </View>
+    </DrawerPortal>
+  )
+}
+DrawerContent.displayName = 'DrawerContent'
+
+// ============================================================================
+// Drawer Header
+// ============================================================================
+
+interface DrawerHeaderProps extends ViewProps {
+  ref?: React.Ref<View>
+}
+
+function DrawerHeader({ className, ref, ...props }: DrawerHeaderProps) {
+  return (
+    <View
+      ref={ref}
+      className={cn('flex-row items-center justify-between mb-2', className)}
+      {...props}
+    />
+  )
+}
+DrawerHeader.displayName = 'DrawerHeader'
+
+// ============================================================================
+// Drawer Title
+// ============================================================================
+
+interface DrawerTitleProps extends TextProps {
+  ref?: React.Ref<Text>
+}
+
+function DrawerTitle({ className, ref, ...props }: DrawerTitleProps) {
+  return (
+    <Text
+      ref={ref}
+      className={cn('text-white text-xl font-bold', className)}
+      {...props}
+    />
+  )
+}
+DrawerTitle.displayName = 'DrawerTitle'
+
+// ============================================================================
+// Drawer Description
+// ============================================================================
+
+interface DrawerDescriptionProps extends TextProps {
+  ref?: React.Ref<Text>
+}
+
+function DrawerDescription({ className, ref, ...props }: DrawerDescriptionProps) {
+  return (
+    <Text
+      ref={ref}
+      className={cn('text-content-4 text-paragraph-p2 mb-8', className)}
+      {...props}
+    />
+  )
+}
+DrawerDescription.displayName = 'DrawerDescription'
+
+// ============================================================================
+// Drawer Footer
+// ============================================================================
+
+interface DrawerFooterProps extends ViewProps {
+  ref?: React.Ref<View>
+}
+
+function DrawerFooter({ className, ref, ...props }: DrawerFooterProps) {
+  return (
+    <View
+      ref={ref}
+      className={cn('mt-auto', className)}
+      {...props}
+    />
+  )
+}
+DrawerFooter.displayName = 'DrawerFooter'
+
+// ============================================================================
+// Drawer Close
+// ============================================================================
+
+interface DrawerCloseProps extends PressableProps {
+  ref?: React.Ref<View>
+}
+
+function DrawerClose({ onPress, className, children, ref, ...props }: DrawerCloseProps) {
+  const { onOpenChange } = useDrawerContext()
+
+  return (
+    <Pressable
+      ref={ref}
+      onPress={(e) => {
+        onOpenChange(false)
+        onPress?.(e)
+      }}
+      className={cn('w-8 h-8 items-center justify-center', className)}
+      {...props}
+    >
+      {children ?? <Text className="text-content-4 text-3xl leading-7">×</Text>}
+    </Pressable>
+  )
+}
+DrawerClose.displayName = 'DrawerClose'
+
+export {
+  Drawer,
+  DrawerTrigger,
+  DrawerPortal,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerClose,
 }

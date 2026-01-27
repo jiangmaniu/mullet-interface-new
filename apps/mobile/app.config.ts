@@ -19,6 +19,7 @@ export default ({ config }: { config: ConfigContext }) => {
     API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
     IMAGE_DOMAIN: process.env.EXPO_PUBLIC_IMAGE_DOMAIN,
     WS_URL: process.env.EXPO_PUBLIC_WS_URL,
+    REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID,
   }
 
   const result: ExpoConfig = {
@@ -37,6 +38,24 @@ export default ({ config }: { config: ConfigContext }) => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.mullet.mobile',
+      // 钱包检测 - LSApplicationQueriesSchemes
+      // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
+      infoPlist: {
+        LSApplicationQueriesSchemes: [
+          // Solana 钱包
+          'phantom',
+          'solflare',
+          'backpack',
+          'glow',
+          'okx',
+          // 其他常用钱包
+          'trust',
+          'rainbow',
+          'uniswap',
+          'zerion',
+          'safe',
+        ],
+      },
     },
     android: {
       adaptiveIcon: {
@@ -70,6 +89,9 @@ export default ({ config }: { config: ConfigContext }) => {
       'expo-secure-store',
       'expo-web-browser',
       'expo-localization',
+      // Android 钱包检测插件
+      // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
+      './plugins/queries.js',
     ],
     experiments: {
       typedRoutes: true,

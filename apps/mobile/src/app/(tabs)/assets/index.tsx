@@ -6,9 +6,9 @@ import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { Trans } from '@lingui/react/macro';
-import { useRouter } from 'expo-router';
+import { useRouter, router } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, View, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { ScrollView, View, TouchableOpacity, TouchableHighlight, Pressable } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AccountSwitcherModal } from './_comps/account-switcher-modal';
@@ -27,32 +27,46 @@ export default function AssetsScreen() {
   const [currentAccount, setCurrentAccount] = useState<typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0]>(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
 
+  const handleLogin = () => {
+    router.push("/(login)");
+  };
+
+
   return (
     <View className="flex-1">
-     <ScreenHeader 
-        showBackButton={false} 
-        content={<Text className='text-content-1 text-important-1'><Trans>资产</Trans></Text>} 
+      <ScreenHeader
+        showBackButton={false}
+        content={<Text className='text-content-1 text-important-1'><Trans>资产</Trans></Text>}
         right={
           <View className="flex-row items-center gap-4">
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => { }}>
               <IconifyBell width={22} height={22} />
             </TouchableOpacity>
             <TouchableOpacity>
               <IconifySettings width={22} height={22} />
             </TouchableOpacity>
           </View>
-      } />
+        } />
 
       <ScrollView className="flex-1 px-xl py-2xl" showsVerticalScrollIndicator={false}>
-        <AssetOverviewCard 
-            account={currentAccount} 
-            onPressSwitch={() => setIsSwitcherVisible(true)}
+        <AssetOverviewCard
+          account={currentAccount}
+          onPressSwitch={() => setIsSwitcherVisible(true)}
         />
         <AssetActions />
         <AccountList />
+        <Pressable
+          onPress={handleLogin}
+          className="bg-primary px-8 py-4 rounded-lg active:opacity-80"
+        >
+          <Text className="text-primary-foreground text-lg font-semibold">
+            登录
+          </Text>
+        </Pressable>
+
       </ScrollView>
 
-      <AccountSwitcherModal 
+      <AccountSwitcherModal
         visible={isSwitcherVisible}
         onClose={() => setIsSwitcherVisible(false)}
       />
@@ -61,8 +75,8 @@ export default function AssetsScreen() {
 }
 
 interface AssetOverviewCardProps {
-    account: typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0];
-    onPressSwitch: () => void;
+  account: typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0];
+  onPressSwitch: () => void;
 }
 
 function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
@@ -125,7 +139,7 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
           </View>
         </View>
       </View>
-        
+
       {/* 分割线 */}
       <Separator />
 
@@ -155,39 +169,39 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
 }
 
 
-function AssetActions () {
+function AssetActions() {
 
   return (
     <View className='flex-row items-center justify-between px-xl py-xl'>
       <TouchableOpacity>
         <View className="flex-col items-center">
           <View className='p-medium'>
-            <IconWithdrawFunds width={24} height={24}/>
+            <IconWithdrawFunds width={24} height={24} />
           </View>
           <Text className="text-paragraph-p3 text-content-1"><Trans>取现</Trans></Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity>
         <View className="flex-col items-center">
-         <View className='p-medium'>
-            <IconPayment width={24} height={24}/>
-           </View>
+          <View className='p-medium'>
+            <IconPayment width={24} height={24} />
+          </View>
           <Text className="text-paragraph-p3 text-content-1"><Trans>存款</Trans></Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity>
         <View className="flex-col items-center">
-         <View className='p-medium'>
-            <IconifyCoinsSwap width={24} height={24}/>
-           </View>
+          <View className='p-medium'>
+            <IconifyCoinsSwap width={24} height={24} />
+          </View>
           <Text className="text-paragraph-p3 text-content-1"><Trans>划转</Trans></Text>
         </View>
       </TouchableOpacity>
       <TouchableOpacity>
         <View className="flex-col items-center">
-         <View className='p-medium'>
-            <IconRecord width={24} height={24}/>
-           </View>
+          <View className='p-medium'>
+            <IconRecord width={24} height={24} />
+          </View>
           <Text className="text-paragraph-p3 text-content-1"><Trans>账单</Trans></Text>
         </View>
       </TouchableOpacity>
@@ -195,7 +209,7 @@ function AssetActions () {
   )
 }
 
-function AccountList () {
+function AccountList() {
   const [activeTab, setActiveTab] = useState('real')
 
   return (
@@ -203,27 +217,27 @@ function AccountList () {
       <View className='justify-between items-center flex-row mb-medium'>
         <TabsList variant="underline" size="md">
           <TabsTrigger value="real">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
+            <Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
           </TabsTrigger>
           <TabsTrigger value="mock">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
+            <Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
           </TabsTrigger>
         </TabsList>
 
         <TouchableOpacity>
-            <IconifyPlusCircle width={20} height={20} className="text-content-1" />
+          <IconifyPlusCircle width={20} height={20} className="text-content-1" />
         </TouchableOpacity>
       </View>
 
       <TabsContent value="real" className='gap-medium'>
         {REAL_ACCOUNTS.map(account => (
-            <AccountRow isReal key={account.id} {...account} onPress={() => {}} />
+          <AccountRow isReal key={account.id} {...account} onPress={() => { }} />
         ))}
       </TabsContent>
-      
+
       <TabsContent value="mock" className='gap-medium'>
-          {MOCK_ACCOUNTS.map(account => (
-            <AccountRow isReal={false} key={account.id} {...account} onPress={() => {}} />
+        {MOCK_ACCOUNTS.map(account => (
+          <AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
         ))}
       </TabsContent>
     </Tabs>
@@ -240,14 +254,14 @@ interface AccountRowProps {
   onPress?: () => void
 }
 
-export function AccountRow({ 
-  id, 
-  type, 
-  balance, 
-  currency, 
+export function AccountRow({
+  id,
+  type,
+  balance,
+  currency,
   isReal = true,
   address = '0x0000...0000',
-  onPress 
+  onPress
 }: AccountRowProps) {
   const { textColorContent1, colorBrandPrimary, colorBrandSecondary1 } = useThemeColors()
 
@@ -257,29 +271,29 @@ export function AccountRow({
         <CardContent className='gap-xs'>
           {/* Header: User & Badges */}
           <View className="flex-row items-center justify-between">
-             <View className="flex-row items-center gap-medium">
-                 <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-                 <Text className="text-paragraph-p1 text-content-1">{id}</Text>
-             </View>
-             
-             <View className="flex-row items-center gap-medium">
-				<Badge color={isReal ? 'rise' : 'secondary'} >
-					<Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
-				</Badge>
-                <Badge color='default'>
-                    <Text>{type.toUpperCase()}</Text>
-                </Badge>
-             </View>
+            <View className="flex-row items-center gap-medium">
+              <IconifyUserCircle width={20} height={20} color={textColorContent1} />
+              <Text className="text-paragraph-p1 text-content-1">{id}</Text>
+            </View>
+
+            <View className="flex-row items-center gap-medium">
+              <Badge color={isReal ? 'rise' : 'secondary'} >
+                <Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
+              </Badge>
+              <Badge color='default'>
+                <Text>{type.toUpperCase()}</Text>
+              </Badge>
+            </View>
           </View>
 
           {/* Balance */}
           <View className="flex-row items-center justify-between min-h-[24px]">
             <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
             <View className="flex-row items-center gap-xs">
-                <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
-                <TouchableOpacity>
-                   <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-                </TouchableOpacity>
+              <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
+              <TouchableOpacity>
+                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -289,12 +303,14 @@ export function AccountRow({
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">{address}</Text>
               <TouchableOpacity>
-              <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
+                <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
               </TouchableOpacity>
             </View>
           </View>}
         </CardContent>
       </Card>
+
+
     </TouchableOpacity>
   )
 }
