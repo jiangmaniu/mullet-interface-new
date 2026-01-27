@@ -135,22 +135,22 @@ function TabsList({
   return (
     <TabsContext.Provider value={{ variant, size, onTriggerLayout }}>
         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-        <TabsPrimitive.List
-          className={cn(
-            tabsListVariants({ variant, size }),
-            Platform.select({ web: 'inline-flex w-fit', native: 'mr-auto' }),
-            className
-          )}
-          {...props}
-        >
-          {props.children}
-          {variant === 'underline' && (
-            <Animated.View
-              className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
-              style={indicatorStyle}
-            />
-          )}
-        </TabsPrimitive.List>
+          <TabsPrimitive.List
+            className={cn(
+              tabsListVariants({ variant, size }),
+              Platform.select({ web: 'inline-flex w-fit', native: 'mr-auto' }),
+              className
+            )}
+            {...props}
+          >
+            {props.children}
+            {variant === 'underline' && (
+              <Animated.View
+                className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
+                style={indicatorStyle}
+              />
+            )}
+          </TabsPrimitive.List>
       </ScrollView>
       </TabsContext.Provider>
   );
@@ -188,7 +188,7 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       className={cn(
-        'mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         Platform.select({ web: 'flex-1 outline-none' }),
         className
       )}

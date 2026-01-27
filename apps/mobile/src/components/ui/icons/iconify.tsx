@@ -14,4 +14,5 @@ export {
   CoinsSwap as IconifyCoinsSwap,
   PlusCircle as IconifyPlusCircle,
   NavArrowRight as IconifyNavArrowRight,
+  Check as IconifyCheck,
 } from 'iconoir-react-native'

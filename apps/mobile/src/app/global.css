@@ -314,6 +314,7 @@
   --border-color-white-base: var(--color-white);
   --border-color-yellow-base: var(--color-brand-primary);
   --border-color-orange-base: var(--color-orange-500);
+  --border-color-special: var(--color-zinc-300);
 
   --color-status-success: var(--color-green-500);
   --color-status-warning: var(--color-yellow-500);

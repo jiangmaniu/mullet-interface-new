@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils';
 import { Trans } from '@lingui/react/macro';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, View, TouchableOpacity } from 'react-native';
+import { ScrollView, View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AccountSwitcherModal } from './_comps/account-switcher-modal';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -23,6 +24,8 @@ const MOCK_ACCOUNTS = [
 
 export default function AssetsScreen() {
   const router = useRouter();
+  const [currentAccount, setCurrentAccount] = useState<typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0]>(REAL_ACCOUNTS[0]);
+  const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
 
   return (
     <View className="flex-1">
@@ -34,39 +37,62 @@ export default function AssetsScreen() {
             <TouchableOpacity onPress={() => {}}>
               <IconifyBell width={22} height={22} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/settings')}>
+            <TouchableOpacity>
               <IconifySettings width={22} height={22} />
             </TouchableOpacity>
           </View>
       } />
 
       <ScrollView className="flex-1 px-xl py-2xl" showsVerticalScrollIndicator={false}>
-        <AssetOverviewCard />
+        <AssetOverviewCard 
+            account={currentAccount} 
+            onPressSwitch={() => setIsSwitcherVisible(true)}
+        />
         <AssetActions />
         <AccountList />
       </ScrollView>
+
+      <AccountSwitcherModal 
+        visible={isSwitcherVisible}
+        onClose={() => setIsSwitcherVisible(false)}
+      />
     </View>
   );
 }
 
-function AssetOverviewCard() {
+interface AssetOverviewCardProps {
+    account: typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0];
+    onPressSwitch: () => void;
+}
+
+function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const { textColorContent4, textColorContent1 } = useThemeColors();
+
+  // Determine if it is a real account based on the list it comes from or a property.
+  // The mock data doesn't explicitly say "isReal" but we can infer or pass it.
+  // For now checking if it's in REAL_ACCOUNTS by ID or we can add a helper.
+  // Actually the account object has `type` which might help, or we can just assume based on tab context.
+  // But wait, `currentAccount` comes from the switcher which mixes them.
+  // Let's add a helper or just check id existence in REAL_ACCOUNTS.
+  const isReal = REAL_ACCOUNTS.some(a => a.id === account.id);
 
   return (
     <Card className="px-xl py-2xl gap-xl">
       {/* 账户信息 */}
-      <View className="flex-row items-center justify-between gap-2xl bg-special rounded-small px-xl py-xs h-8">
-        <View className="flex-row items-center gap-medium">
-          <View className="flex-row items-center gap-xs">
-            <IconifyUserCircle width={20} height={20} className="text-content-1" />
-            <Text className="text-content-1 text-paragraph-p2">152365963</Text>
+      <TouchableHighlight onPress={onPressSwitch} underlayColor="transparent">
+        <View className="flex-row items-center justify-between gap-2xl bg-special rounded-small px-xl py-xs h-8">
+          <View className="flex-row items-center gap-medium">
+            <View className="flex-row items-center gap-xs">
+              <IconifyUserCircle width={20} height={20} className="text-content-1" />
+              <Text className="text-content-1 text-paragraph-p2">{account.id}</Text>
+            </View>
+            <Badge color={isReal ? "rise" : "secondary"}><Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text></Badge>
+            <Badge><Text>{account.type.toUpperCase()}</Text></Badge>
           </View>
-          <Badge color="rise"><Text><Trans>真实</Trans></Text></Badge>
-          <Badge><Text>STP</Text></Badge>
+          <IconifyNavArrowDown width={16} height={16} className="text-content-1" />
         </View>
-        <IconifyNavArrowDown width={16} height={16} className="text-content-1" />
-      </View>
+      </TouchableHighlight>
 
       {/* 资产信息 */}
       <View className="gap-xl">
@@ -83,7 +109,7 @@ function AssetOverviewCard() {
               </TouchableOpacity>
             </View>
             <View className="flex-row items-center gap-medium">
-              <Text className="text-muted-foreground text-sm">0x862D...B22A</Text>
+              <Text className="text-muted-foreground text-sm">{account.address}</Text>
               <IconifyCopy width={16} height={16} color={textColorContent1} />
             </View>
           </View>
@@ -91,9 +117,9 @@ function AssetOverviewCard() {
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-baseline gap-medium">
               <Text className="text-title-h3 text-content-1">
-                {isBalanceHidden ? '******' : '32.58'}
+                {isBalanceHidden ? '******' : account.balance}
               </Text>
-              <Text className="text-paragraph-p2 text-content-1">USDC</Text>
+              <Text className="text-paragraph-p2 text-content-1">{account.currency}</Text>
             </View>
             <Text className="text-paragraph-p2 text-market-rise">+0.00</Text>
           </View>
@@ -108,19 +134,19 @@ function AssetOverviewCard() {
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : '32.58 USDC'}
+            {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`}
           </Text>
         </View>
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>可用</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : '32.58 USDC'}
+            {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`}
           </Text>
         </View>
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>占用</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : '0.00 USDC'}
+            {isBalanceHidden ? '******' : `0.00 ${account.currency}`}
           </Text>
         </View>
       </View>
@@ -177,10 +203,10 @@ function AccountList () {
       <View className='justify-between items-center flex-row mb-medium'>
         <TabsList variant="underline" size="md">
           <TabsTrigger value="real">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans> ({REAL_ACCOUNTS.length})</Text>
+              <Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
           </TabsTrigger>
           <TabsTrigger value="mock">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans> ({MOCK_ACCOUNTS.length})</Text>
+              <Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
           </TabsTrigger>
         </TabsList>
 
