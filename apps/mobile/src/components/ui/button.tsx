@@ -1,110 +1,200 @@
 import { TextClassContext } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import * as Slot from '@rn-primitives/slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, Pressable } from 'react-native';
-
-// NOTE: group-* is not supported yet by Uniwind
+import * as React from 'react';
+import { ActivityIndicator, Platform, Pressable, View } from 'react-native';
 
 const buttonVariants = cva(
   cn(
-    'group shrink-0 flex-row items-center justify-center gap-2 rounded-md shadow-none',
+    'group flex-row items-center justify-center gap-1 rounded-[8px] transition-all active:opacity-80 active:scale-[0.98]',
     Platform.select({
-      web: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive whitespace-nowrap outline-none transition-all focus-visible:ring-[3px] disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+      web: "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap select-none",
     })
   ),
   {
     variants: {
+      color: {
+        default: '',
+        primary: '',
+      },
       variant: {
-        default: cn(
-          'bg-primary active:bg-primary/90 shadow-sm shadow-black/5',
-          Platform.select({ web: 'hover:bg-primary/90' })
-        ),
-        destructive: cn(
-          'bg-destructive active:bg-destructive/90 dark:bg-destructive/60 shadow-sm shadow-black/5',
-          Platform.select({
-            web: 'hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
-          })
-        ),
-        outline: cn(
-          'border-border bg-background active:bg-accent dark:bg-input/30 dark:border-input dark:active:bg-input/50 border shadow-sm shadow-black/5',
-          Platform.select({
-            web: 'hover:bg-accent dark:hover:bg-input/50',
-          })
-        ),
-        secondary: cn(
-          'bg-secondary active:bg-secondary/80 shadow-sm shadow-black/5',
-          Platform.select({ web: 'hover:bg-secondary/80' })
-        ),
-        ghost: cn(
-          'active:bg-accent dark:active:bg-accent/50',
-          Platform.select({ web: 'hover:bg-accent dark:hover:bg-accent/50' })
-        ),
-        link: '',
+        none: '',
+        primary: '',
+        destructive: 'bg-destructive enabled:hover:bg-destructive/90',
+        outline: 'border border-[#3B3D52] bg-transparent',
+        secondary: 'bg-[#0A0C27]',
+        ghost: 'bg-transparent',
+        link: 'text-[#EED94C] web:font-semibold web:leading-none text-xs',
       },
       size: {
-        default: cn('h-10 px-4 py-2 sm:h-9', Platform.select({ web: 'has-[>svg]:px-3' })),
-        sm: cn('h-9 gap-1.5 rounded-md px-3 sm:h-8', Platform.select({ web: 'has-[>svg]:px-2.5' })),
-        lg: cn('h-11 rounded-md px-6 sm:h-10', Platform.select({ web: 'has-[>svg]:px-4' })),
-        icon: 'h-10 w-10 sm:h-9 sm:w-9',
+        sm: 'py-1.5 px-4 rounded-1',
+        md: 'py-2 px-6 rounded-2',
+        lg: 'py-xl px-[29px] rounded-2',
+        icon: 'p-small rounded-[8px]',
       },
     },
+    compoundVariants: [
+      {
+        variant: 'primary',
+        color: 'default',
+        className: cn(
+          'bg-zinc-300/20',
+          Platform.select({ web: 'enabled:hover:bg-zinc-300/40 enabled:hover:shadow-base' })
+        ),
+      },
+      {
+        variant: 'outline',
+        color: 'default',
+        className: cn(
+          'border-zinc-300/20',
+          Platform.select({
+            web: 'enabled:hover:bg-zinc-300/0 enabled:hover:border-zinc-base enabled:hover:shadow-base'
+          })
+        ),
+      },
+      {
+        variant: 'primary',
+        color: 'primary',
+        className: cn(
+          'bg-brand-primary',
+          Platform.select({ web: 'enabled:hover:bg-yellow-400 enabled:hover:shadow-base' })
+        ),
+      },
+      {
+        variant: 'secondary',
+        className: Platform.select({
+          web: 'enabled:hover:bg-[#FDFF84] enabled:hover:ring-[#FDFF84]'
+        })
+      },
+      {
+        variant: 'ghost',
+        className: Platform.select({
+          web: 'enabled:hover:bg-[#FDFF84]'
+        })
+      }
+    ],
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'primary',
+      size: 'sm',
+      color: 'default',
     },
   }
 );
 
 const buttonTextVariants = cva(
   cn(
-    'text-foreground text-sm font-medium',
+    'text-sm font-medium text-foreground',
     Platform.select({ web: 'pointer-events-none transition-colors' })
   ),
   {
     variants: {
+      color: {
+        default: '',
+        primary: '',
+      },
       variant: {
-        default: 'text-primary-foreground',
-        destructive: 'text-white',
-        outline: cn(
-          'group-active:text-accent-foreground',
-          Platform.select({ web: 'group-hover:text-accent-foreground' })
-        ),
-        secondary: 'text-secondary-foreground',
-        ghost: 'group-active:text-accent-foreground',
-        link: cn(
-          'text-primary group-active:underline',
-          Platform.select({ web: 'underline-offset-4 hover:underline group-hover:underline' })
-        ),
+        none: 'text-content-4',
+        primary: '',
+        destructive: 'text-destructive-foreground',
+        outline: 'text-white',
+        secondary: 'text-white',
+        ghost: 'text-white',
+        link: 'text-[#EED94C]',
       },
       size: {
-        default: '',
-        sm: '',
-        lg: '',
-        icon: '',
+        sm: 'text-button-1',
+        md: 'text-button-2',
+        lg: 'text-button-2',
+        icon: ''
       },
     },
+    compoundVariants: [
+      {
+        variant: 'primary',
+        color: 'default',
+        className: 'text-content-1',
+      },
+      {
+        variant: 'outline',
+        color: 'default',
+        className: 'text-content-1'
+      },
+      {
+        variant: 'primary',
+        color: 'primary',
+        className: 'text-content-foreground' // snippet: text-content-foreground
+      },
+      // Interaction states for text (hover etc) are hard in RN without state, 
+      // but we can add conditional classes if needed or rely on parent group-hover
+      {
+        variant: 'ghost',
+        className: 'group-hover:text-[#0A0C27]'
+      },
+      {
+        variant: 'secondary',
+        className: 'group-hover:text-[#0A0C27]'
+      }
+    ],
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'primary',
+      size: 'sm',
+      color: 'default',
     },
   }
 );
 
-type ButtonProps = React.ComponentProps<typeof Pressable> &
+type ButtonProps = Omit<React.ComponentProps<typeof Pressable>, 'children'> &
   React.RefAttributes<typeof Pressable> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants> & {
+    children?: React.ReactNode;
+    asChild?: boolean;
+    loading?: boolean;
+    block?: boolean;
+    LeftIcon?: React.ReactNode;
+    RightIcon?: React.ReactNode;
+  };
 
-function Button({ className, variant, size, ...props }: ButtonProps) {
+function Button({
+  className,
+  variant,
+  size,
+  color,
+  asChild = false,
+  loading = false,
+  block = false,
+  LeftIcon,
+  RightIcon,
+  children,
+  ...props
+}: ButtonProps) {
+  const Comp = asChild ? Slot.Pressable : Pressable;
+
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
-      <Pressable
-        className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
+    <TextClassContext.Provider value={buttonTextVariants({ variant, size, color })}>
+      <Comp
+        className={cn(
+          props.disabled && 'opacity-50',
+          block && 'w-full flex-1',
+          buttonVariants({ variant, size, color }),
+          className
+        )}
         role="button"
+        disabled={props.disabled || loading}
         {...props}
-      />
+      >
+        {loading && <ActivityIndicator size="small" className="mr-2" color="currentColor" />}
+        {!loading && LeftIcon && <View className="mr-1">{LeftIcon}</View>}
+        {children}
+        {RightIcon && <View className="ml-1">{RightIcon}</View>}
+      </Comp>
     </TextClassContext.Provider>
   );
 }
 
-export { Button, buttonTextVariants, buttonVariants };
+const IconButton = ({ className, variant = 'outline', size = 'icon', ...props }: ButtonProps) => {
+  return <Button className={className} variant={variant} size={size} {...props} />
+}
+
+export { Button, buttonVariants, buttonTextVariants, IconButton };
 export type { ButtonProps };

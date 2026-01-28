@@ -14,6 +14,8 @@ export function useThemeColors() {
     colorBrandPrimary,
     colorBrandDefault,
     colorBrandSecondary1,
+    colorBrandSecondary2,
+    colorBrandSecondary3,
     
     colorStatusSuccess,
     colorStatusWarning,
@@ -34,6 +36,8 @@ export function useThemeColors() {
     '--color-brand-primary',
     '--color-brand-default',
     '--color-brand-secondary-1',
+    '--color-brand-secondary-2',
+    '--color-brand-secondary-3',
     
     '--color-status-success',
     '--color-status-warning',
@@ -56,6 +60,8 @@ export function useThemeColors() {
     colorBrandPrimary,
     colorBrandDefault,
     colorBrandSecondary1,
+    colorBrandSecondary2,
+    colorBrandSecondary3,
     
     colorStatusSuccess,
     colorStatusWarning,

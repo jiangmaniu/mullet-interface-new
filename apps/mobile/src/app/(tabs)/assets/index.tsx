@@ -1,17 +1,18 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { IconDepthTB, IconifyBell, IconifyCoinsSwap, IconifyCopy, IconifyEye, IconifyEyeClosed, IconifyNavArrowDown, IconifyPlusCircle, IconifySettings, IconifyUserCircle, IconPayment, IconRecord, IconWithdrawFunds } from '@/components/ui/icons';
-import { ScreenHeader } from '@/components/ui/screen-header';
+import { IconifyBell, IconifyCoinsSwap, IconifyCopy, IconifyEye, IconifyEyeClosed, IconifyNavArrowDown, IconifyPlusCircle, IconifySettings, IconifyUserCircle, IconPayment, IconRecord, IconWithdrawFunds } from '@/components/ui/icons';
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
 import { Trans } from '@lingui/react/macro';
-import { useRouter, router } from 'expo-router';
+import { Tabs } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, View, TouchableOpacity, TouchableHighlight, Pressable } from 'react-native';
+import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView } from '@/components/ui/collapsible-tab';
 import { AccountSwitcherModal } from './_comps/account-switcher-modal';
+import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
+import { t } from '@/locales/i18n';
+import { useResolveClassNames } from 'uniwind';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -23,55 +24,163 @@ const MOCK_ACCOUNTS = [
 ]
 
 export default function AssetsScreen() {
-  const router = useRouter();
   const [currentAccount, setCurrentAccount] = useState<typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0]>(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
+  const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
+  const { textColorContent1, backgroundColorPrimary } = useThemeColors();
 
-  const handleLogin = () => {
-    router.push("/(login)");
-  };
-
-
-  return (
-    <View className="flex-1">
-      <ScreenHeader
-        showBackButton={false}
-        content={<Text className='text-content-1 text-important-1'><Trans>资产</Trans></Text>}
-        right={
-          <View className="flex-row items-center gap-4">
-            <TouchableOpacity onPress={() => { }}>
-              <IconifyBell width={22} height={22} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <IconifySettings width={22} height={22} />
-            </TouchableOpacity>
-          </View>
-        } />
-
-      <ScrollView className="flex-1 px-xl py-2xl" showsVerticalScrollIndicator={false}>
+  // Render the sticky header content that collapses
+  const renderHeader = React.useCallback(() => {
+    return (
+      <View className="px-xl pt-2xl pb-xl gap-xl pointer-events-box-none">
         <AssetOverviewCard
           account={currentAccount}
           onPressSwitch={() => setIsSwitcherVisible(true)}
         />
-        <AssetActions />
-        <AccountList />
-        <Pressable
-          onPress={handleLogin}
-          className="bg-primary px-8 py-4 rounded-lg active:opacity-80"
-        >
-          <Text className="text-primary-foreground text-lg font-semibold">
-            登录
-          </Text>
-        </Pressable>
+        <AssetActions onPressTransfer={() => setIsTransferHintVisible(true)} />
+      </View>
+    );
+  }, [currentAccount, setIsSwitcherVisible]);
 
-      </ScrollView>
+  const headerStyle = useResolveClassNames('bg-secondary')
+  const titleStyle = useResolveClassNames('text-important-1 text-content-1')
+  return (
+    <View className="flex-1">
+      <Tabs.Screen
+        options={{
+          headerShown: true,
+          title: t`资产`,
+          headerStyle: headerStyle,
+          headerTitleStyle: titleStyle,
+          headerTitleAlign: 'left',
+          headerShadowVisible: false,
+          headerTitleContainerStyle: { paddingLeft: 0, left: -2, bottom: -2 },
+          headerRightContainerStyle: { paddingRight: 12 },
+          headerRight: () => (
+            <View className="flex-row items-center gap-4">
+              <TouchableOpacity onPress={() => { }}>
+                <IconifyBell width={22} height={22} color={textColorContent1} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <IconifySettings width={22} height={22} color={textColorContent1} />
+              </TouchableOpacity>
+            </View>
+          ),
+        }}
+      />
+
+      <CollapsibleTab
+        renderHeader={renderHeader}
+        initialTabName="real"
+        size='md'
+        variant='underline'
+        renderTabBarRight={() => (
+          <TouchableOpacity hitSlop={10} className="items-center justify-center h-full" onPress={() => setIsSwitcherVisible(true)}>
+            <IconifyPlusCircle width={20} height={20} className="text-content-1" />
+          </TouchableOpacity>
+        )}
+      >
+        <CollapsibleTabScene name="real" label={t`真实账户`}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+            <View className='gap-medium py-xl'>
+              {REAL_ACCOUNTS.map(account => (
+                <AccountRow isReal key={account.id} {...account} onPress={() => { }} />
+              ))}
+            </View>
+          </CollapsibleScrollView>
+        </CollapsibleTabScene>
+        <CollapsibleTabScene name="mock" label={t`模拟账户`}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+            <View className='gap-medium py-xl'>
+              {MOCK_ACCOUNTS.map(account => (
+                <AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
+              ))}
+            </View>
+          </CollapsibleScrollView>
+        </CollapsibleTabScene>
+      </CollapsibleTab>
 
       <AccountSwitcherModal
         visible={isSwitcherVisible}
         onClose={() => setIsSwitcherVisible(false)}
       />
+
+      <TransferHintModal
+        open={isTransferHintVisible}
+        onClose={() => setIsTransferHintVisible(false)}
+        onCreateAccount={() => setIsTransferHintVisible(false)}
+      />
     </View>
   );
+}
+
+interface AccountRowProps {
+  id: string
+  type: 'STP' | '热门'
+  balance: string
+  currency: string
+  isReal?: boolean
+  address?: string
+  onPress?: () => void
+}
+
+export function AccountRow({
+  id,
+  type,
+  balance,
+  currency,
+  isReal = true,
+  address = '0x0000...0000',
+  onPress
+}: AccountRowProps) {
+  const { textColorContent1, colorBrandPrimary, colorBrandSecondary1 } = useThemeColors()
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+      <Card>
+        <CardContent className='gap-xs'>
+          {/* Header: User & Badges */}
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-medium">
+              <IconifyUserCircle width={20} height={20} color={textColorContent1} />
+              <Text className="text-paragraph-p1 text-content-1">{id}</Text>
+            </View>
+
+            <View className="flex-row items-center gap-medium">
+              <Badge color={isReal ? 'rise' : 'secondary'} >
+                <Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
+              </Badge>
+              <Badge color='default'>
+                <Text>{type.toUpperCase()}</Text>
+              </Badge>
+            </View>
+          </View>
+
+          {/* Balance */}
+          <View className="flex-row items-center justify-between min-h-[24px]">
+            <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
+            <View className="flex-row items-center gap-xs">
+              <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
+              <TouchableOpacity>
+                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Address */}
+          {isReal && <View className="flex-row items-center justify-between min-h-[24px]">
+            <Text className="text-paragraph-p3 text-content-4"><Trans>地址</Trans></Text>
+            <View className="flex-row items-center gap-xs">
+              <Text className="text-paragraph-p3 text-content-1">{address}</Text>
+              <TouchableOpacity>
+                <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
+              </TouchableOpacity>
+            </View>
+          </View>}
+        </CardContent>
+      </Card>
+    </TouchableOpacity>
+  )
 }
 
 interface AssetOverviewCardProps {
@@ -169,7 +278,7 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
 }
 
 
-function AssetActions() {
+function AssetActions({ onPressTransfer }: { onPressTransfer?: () => void }) {
 
   return (
     <View className='flex-row items-center justify-between px-xl py-xl'>
@@ -189,7 +298,7 @@ function AssetActions() {
           <Text className="text-paragraph-p3 text-content-1"><Trans>存款</Trans></Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onPressTransfer}>
         <View className="flex-col items-center">
           <View className='p-medium'>
             <IconifyCoinsSwap width={24} height={24} />
@@ -206,111 +315,5 @@ function AssetActions() {
         </View>
       </TouchableOpacity>
     </View>
-  )
-}
-
-function AccountList() {
-  const [activeTab, setActiveTab] = useState('real')
-
-  return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 border-none">
-      <View className='justify-between items-center flex-row mb-medium'>
-        <TabsList variant="underline" size="md">
-          <TabsTrigger value="real">
-            <Text className={cn('text-button-2 text-content-4', activeTab === 'real' && 'text-content-1')}><Trans>真实账户</Trans></Text>
-          </TabsTrigger>
-          <TabsTrigger value="mock">
-            <Text className={cn('text-button-2 text-content-4', activeTab === 'mock' && 'text-content-1')}><Trans>模拟账户</Trans></Text>
-          </TabsTrigger>
-        </TabsList>
-
-        <TouchableOpacity>
-          <IconifyPlusCircle width={20} height={20} className="text-content-1" />
-        </TouchableOpacity>
-      </View>
-
-      <TabsContent value="real" className='gap-medium'>
-        {REAL_ACCOUNTS.map(account => (
-          <AccountRow isReal key={account.id} {...account} onPress={() => { }} />
-        ))}
-      </TabsContent>
-
-      <TabsContent value="mock" className='gap-medium'>
-        {MOCK_ACCOUNTS.map(account => (
-          <AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
-        ))}
-      </TabsContent>
-    </Tabs>
-  )
-}
-
-interface AccountRowProps {
-  id: string
-  type: 'STP' | '热门'
-  balance: string
-  currency: string
-  isReal?: boolean
-  address?: string
-  onPress?: () => void
-}
-
-export function AccountRow({
-  id,
-  type,
-  balance,
-  currency,
-  isReal = true,
-  address = '0x0000...0000',
-  onPress
-}: AccountRowProps) {
-  const { textColorContent1, colorBrandPrimary, colorBrandSecondary1 } = useThemeColors()
-
-  return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <Card>
-        <CardContent className='gap-xs'>
-          {/* Header: User & Badges */}
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-medium">
-              <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-              <Text className="text-paragraph-p1 text-content-1">{id}</Text>
-            </View>
-
-            <View className="flex-row items-center gap-medium">
-              <Badge color={isReal ? 'rise' : 'secondary'} >
-                <Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
-              </Badge>
-              <Badge color='default'>
-                <Text>{type.toUpperCase()}</Text>
-              </Badge>
-            </View>
-          </View>
-
-          {/* Balance */}
-          <View className="flex-row items-center justify-between min-h-[24px]">
-            <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
-            <View className="flex-row items-center gap-xs">
-              <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
-              <TouchableOpacity>
-                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Address */}
-          {isReal && <View className="flex-row items-center justify-between min-h-[24px]">
-            <Text className="text-paragraph-p3 text-content-4"><Trans>地址</Trans></Text>
-            <View className="flex-row items-center gap-xs">
-              <Text className="text-paragraph-p3 text-content-1">{address}</Text>
-              <TouchableOpacity>
-                <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
-              </TouchableOpacity>
-            </View>
-          </View>}
-        </CardContent>
-      </Card>
-
-
-    </TouchableOpacity>
   )
 }

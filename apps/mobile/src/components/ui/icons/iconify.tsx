@@ -15,4 +15,6 @@ export {
   PlusCircle as IconifyPlusCircle,
   NavArrowRight as IconifyNavArrowRight,
   Check as IconifyCheck,
+  WarningCircle as IconifyWarningCircle,
+  Xmark as IconifyXmark,
 } from 'iconoir-react-native'
