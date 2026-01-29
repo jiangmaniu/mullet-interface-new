@@ -20,7 +20,7 @@ const tabBarVariants = cva(
     variants: {
       variant: {
         default: '',
-        underline: 'border-b border-brand-default', // We handle indicator separately in MaterialTabBar
+        underline: 'border-b border-brand-default',
       },
       size: {
         default: '',
@@ -42,7 +42,7 @@ const labelVariants = cva(
     variants: {
       variant: {
         default: '',
-        underline: '', // We handle indicator separately in MaterialTabBar
+        underline: '',
       },
       size: {
         default: '',
@@ -64,7 +64,7 @@ const tabVariants = cva(
     variants: {
       variant: {
         default: '',
-        underline: '', // We handle indicator separately in MaterialTabBar
+        underline: '',
       },
       size: {
         default: '',
@@ -83,15 +83,19 @@ const tabVariants = cva(
 type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 'renderTabBar'> &
   VariantProps<typeof tabBarVariants> & {
     tabBarClassName?: string;
+    tabClassName?: string;
     renderTabBarRight?: () => React.ReactNode;
+    scrollEnabled?: boolean;
   };
 
 export function CollapsibleTab({
   variant = 'underline',
   size = 'default',
   tabBarClassName,
+  tabClassName,
   renderTabBarRight,
   containerStyle,
+  scrollEnabled = true, // Default to true to match previous behavior
   ...props
 }: CollapsibleTabProps) {
   const {
@@ -101,17 +105,15 @@ export function CollapsibleTab({
   } = useThemeColors();
 
   const labelStyle = useResolveClassNames(labelVariants({ variant, size }))
-  const tabStyle = useResolveClassNames(tabVariants({ variant, size }))
+  const tabStyle = useResolveClassNames(cn(tabVariants({ variant, size }), tabClassName)) // Merge tabClassName
   const insets = useSafeAreaInsets();
 
-  // Custom TabBar to match our design system
   const renderTabBar = (tabBarProps: MaterialTabBarProps<any>) => {
     return (
       <View className={cn(tabBarVariants({ variant, size }), "px-xl", tabBarClassName)}>
-        {/* <View className="w-full h-full flex-row bg-secondary"> */}
         <MaterialTabBar
           {...tabBarProps}
-          scrollEnabled
+          scrollEnabled={scrollEnabled}
           style={{ height: '100%' }}
           contentContainerStyle={{ alignItems: 'center' }}
           indicatorStyle={{ backgroundColor: colorBrandPrimary, height: 2, bottom: 0 }}
@@ -125,7 +127,6 @@ export function CollapsibleTab({
             {renderTabBarRight()}
           </View>
         )}
-        {/* </View> */}
       </View >
     );
   };
@@ -243,8 +244,8 @@ export function CollapsibleStickyNavBar({
 
     const opacity = interpolate(
       scrollY.value,
-      [bannerHeight, bannerHeight + 25, bannerHeight + 50],
-      [1, 0.3, 0],
+      [bannerHeight, bannerHeight + headerHeight],
+      [1, 0],
       Extrapolation.CLAMP
     );
 
@@ -254,12 +255,26 @@ export function CollapsibleStickyNavBar({
     };
   });
 
+  // 确保 Status Bar 区域始终有背景遮挡，防止内容透过
+  const statusBarAnimatedStyle = useAnimatedStyle(() => {
+    if (bannerHeight === 0) return {};
+    const translateY = interpolate(
+      scrollY.value,
+      [0, bannerHeight],
+      [0, bannerHeight],
+      Extrapolation.CLAMP
+    );
+    return {
+      transform: [{ translateY }],
+    };
+  });
+
   return (
     <>
       {/* 1. 占位块：把内容顶下去，防止被绝对定位的导航栏遮挡 */}
       <View style={{ height: headerHeight }} />
 
-      {/* 2. 动画导航栏 */}
+      {/* 2. 背景层：始终不透明，遮挡 Status Bar 区域 */}
       <Animated.View
         style={[
           {
@@ -268,13 +283,27 @@ export function CollapsibleStickyNavBar({
             left: 0,
             right: 0,
             height: headerHeight,
-            paddingTop: insets.top,
-            zIndex,
+            zIndex: zIndex - 1,
           },
-          style,
-          animatedStyle
+          style, // 继承传入的背景色
+          statusBarAnimatedStyle
         ]}
         className={className || "bg-secondary"}
+      />
+
+      {/* 3. 内容层：包含文字标题等，会渐隐 */}
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: headerHeight,
+            zIndex,
+          },
+          animatedStyle
+        ]}
       >
         {children}
       </Animated.View>

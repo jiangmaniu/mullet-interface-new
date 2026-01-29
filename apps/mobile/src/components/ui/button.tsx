@@ -14,6 +14,9 @@ const buttonVariants = cva(
   ),
   {
     variants: {
+      disabled: {
+        true: '',
+      },
       color: {
         default: '',
         primary: '',
@@ -62,6 +65,12 @@ const buttonVariants = cva(
         ),
       },
       {
+        disabled: true,
+        variant: 'primary',
+        color: 'primary',
+        className: 'bg-button', // Explicit override when disabled=true
+      },
+      {
         variant: 'secondary',
         className: Platform.select({
           web: 'enabled:hover:bg-[#FDFF84] enabled:hover:ring-[#FDFF84]'
@@ -78,6 +87,7 @@ const buttonVariants = cva(
       variant: 'primary',
       size: 'sm',
       color: 'default',
+      disabled: false,
     },
   }
 );
@@ -89,6 +99,9 @@ const buttonTextVariants = cva(
   ),
   {
     variants: {
+      disabled: {
+        true: '',
+      },
       color: {
         default: '',
         primary: '',
@@ -125,6 +138,18 @@ const buttonTextVariants = cva(
         color: 'primary',
         className: 'text-content-foreground' // snippet: text-content-foreground
       },
+      {
+        variant: 'ghost',
+        color: 'primary',
+        size: 'icon',
+        className: 'text-brand-primary' // snippet: text-content-foreground
+      },
+      {
+        variant: 'primary',
+        color: 'primary',
+        disabled: true,
+        className: 'text-content-6' // snippet: text-content-foreground
+      },
       // Interaction states for text (hover etc) are hard in RN without state, 
       // but we can add conditional classes if needed or rely on parent group-hover
       {
@@ -140,6 +165,7 @@ const buttonTextVariants = cva(
       variant: 'primary',
       size: 'sm',
       color: 'default',
+      disabled: false,
     },
   }
 );
@@ -169,14 +195,16 @@ function Button({
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot.Pressable : Pressable;
+  // coerce to boolean to match CVA expectation
+  const isDisabled = !!(props.disabled || loading);
 
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant, size, color })}>
+    <TextClassContext.Provider value={buttonTextVariants({ variant, size, color, disabled: isDisabled })}>
       <Comp
         className={cn(
-          props.disabled && 'opacity-50',
+          // props.disabled && 'opacity-50',
           block && 'w-full flex-1',
-          buttonVariants({ variant, size, color }),
+          buttonVariants({ variant, size, color, disabled: isDisabled }),
           className
         )}
         role="button"
@@ -185,7 +213,17 @@ function Button({
       >
         {loading && <ActivityIndicator size="small" className="mr-2" color="currentColor" />}
         {!loading && LeftIcon && <View className="mr-1">{LeftIcon}</View>}
-        {children}
+        {React.Children.map(children, (child) => {
+          if (React.isValidElement(child)) {
+            return React.cloneElement(child as React.ReactElement<any>, {
+              className: cn(
+                buttonTextVariants({ variant, size, color, disabled: isDisabled }),
+                (child.props as any).className
+              )
+            });
+          }
+          return child;
+        })}
         {RightIcon && <View className="ml-1">{RightIcon}</View>}
       </Comp>
     </TextClassContext.Provider>

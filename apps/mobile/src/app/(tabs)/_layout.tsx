@@ -10,7 +10,7 @@ export default function TabLayout() {
   const { t } = useLingui()
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
   const tabBarLabelStyle = useResolveClassNames('text-paragraph-p3')
-  
+
   return (
     <Tabs
       screenOptions={{
@@ -27,7 +27,7 @@ export default function TabLayout() {
         name="index/index"
         options={{
           title: t`首页`,
-          tabBarIcon: ({ color, focused }) => focused ?  <IconHome primaryColor={colorBrandPrimary} width={24} height={24} color={color} /> :  <IconifyHomeSimple width={24} height={24} color={color} /> ,
+          tabBarIcon: ({ color, focused }) => focused ? <IconHome primaryColor={colorBrandPrimary} width={24} height={24} color={color} /> : <IconifyHomeSimple width={24} height={24} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -41,7 +41,7 @@ export default function TabLayout() {
         name="assets/index"
         options={{
           title: t`资产`,
-          tabBarIcon: ({ color, focused }) =>  focused ? <IconWallet primaryColor={colorBrandPrimary} width={20} height={18} color={color} />: <IconifyWallet width={24} height={24} color={color} />,
+          tabBarIcon: ({ color, focused }) => focused ? <IconWallet primaryColor={colorBrandPrimary} width={20} height={18} color={color} /> : <IconifyWallet width={24} height={24} color={color} />,
         }}
       />
     </Tabs>

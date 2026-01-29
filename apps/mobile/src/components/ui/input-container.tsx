@@ -4,23 +4,19 @@ import {
   View,
   Text,
   Pressable,
-  TextStyle,
-  ViewStyle,
   TextInput,
-  LayoutRectangle,
-  StyleProp
 } from 'react-native'
 import { cva, VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
-import { Button } from './button'
+import { IconButton } from './button'
 import { IconifyXmarkCircleSolid } from './icons'
 
 const InputContainerVariants = cva('bg-transparent relative', {
   variants: {
     size: {
       sm: 'py-medium px-xl rounded-medium',
-      md: 'rounded-medium py-large px-xl'
+      md: 'rounded-small py-large px-xl'
     },
     variant: {
       default: '',
@@ -116,7 +112,7 @@ const InputContainer = <T,>({
   const [isFocused, setIsFocused] = React.useState(false)
   const [leftContentWidth, setLeftContentWidth] = React.useState(0)
   const inputRef = React.useRef<TextInput>(null)
-  
+
   const inputContainerVariantsClassName = InputContainerVariants({ size, variant })
 
   // 测量 LeftContent 的宽度
@@ -161,34 +157,34 @@ const InputContainer = <T,>({
   }, [labelText, value, hasValue, isFocused, placeholder, hideLabel, shouldFloat])
 
   // 注入 ref 和事件处理到 children (Input)
-  const validChildren = React.isValidElement(children) 
+  const validChildren = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement<any>, {
-        ref: (node: any) => {
-          // 保持原有 ref (如果有)
-          const childRef = (children as any).ref
-          if (typeof childRef === 'function') {
-            childRef(node)
-          } else if (childRef) {
-            childRef.current = node
-          }
-          // 本地 ref
-          inputRef.current = node
-        },
-        onFocus: (e: any) => {
-          setIsFocused(true)
-          const props = (children as React.ReactElement<any>).props
-          if (props.onFocus) props.onFocus(e)
-        },
-        onBlur: (e: any) => {
-          setIsFocused(false)
-          const props = (children as React.ReactElement<any>).props
-          if (props.onBlur) props.onBlur(e)
+      ref: (node: any) => {
+        // 保持原有 ref (如果有)
+        const childRef = (children as any).ref
+        if (typeof childRef === 'function') {
+          childRef(node)
+        } else if (childRef) {
+          childRef.current = node
         }
-      })
+        // 本地 ref
+        inputRef.current = node
+      },
+      onFocus: (e: any) => {
+        setIsFocused(true)
+        const props = (children as React.ReactElement<any>).props
+        if (props.onFocus) props.onFocus(e)
+      },
+      onBlur: (e: any) => {
+        setIsFocused(false)
+        const props = (children as React.ReactElement<any>).props
+        if (props.onBlur) props.onBlur(e)
+      }
+    })
     : children
 
   const isFloating = shouldFloat && !(hideLabel && isFocused && !hasValue)
-  
+
   return (
     <View
       className={cn(
@@ -209,8 +205,8 @@ const InputContainer = <T,>({
         style={
           labelBgColor
             ? ({
-                '--input-label-bg': labelBgColor
-              } as any) // React Native uses standard style objects, variable support depends on system
+              '--input-label-bg': labelBgColor
+            } as any) // React Native uses standard style objects, variable support depends on system
             : undefined
         }
         onPress={handleContainerPress}
@@ -230,41 +226,41 @@ const InputContainer = <T,>({
           <View
             className={cn(
               'absolute pointer-events-none',
-               // 基础样式
-              isFloating 
+              // 基础样式
+              isFloating
                 ? 'top-0 -translate-y-1/2 left-xl px-xs bg-secondary' // 浮动状态: 上移，左对齐，背景色遮挡边框
                 : 'top-1/2 -translate-y-1/2', // 占位状态: 垂直居中
-                
-               // 颜色
-               isFocused ? 'text-brand-primary' : 'text-content-5'
+
+              // 颜色
+              isFocused ? 'text-brand-primary' : 'text-content-5'
             )}
             style={{
-               left: isFloating ? 12 : labelInitialLeft, // 浮动时固定左侧 padding，占位时跟随 LeftContent
-               transform: [
-                 { translateY: isFloating ? -9 : 0 } // RN translate logic needs explicit values or style adjustment. 
-                 // actually standard flex centering handles 'top-1/2 -translate-y-1/2' via className if nativewind supports it.
-                 // Manual adjustment for better precision:
-               ]
+              left: isFloating ? 12 : labelInitialLeft, // 浮动时固定左侧 padding，占位时跟随 LeftContent
+              transform: [
+                { translateY: isFloating ? -9 : 0 } // RN translate logic needs explicit values or style adjustment. 
+                // actually standard flex centering handles 'top-1/2 -translate-y-1/2' via className if nativewind supports it.
+                // Manual adjustment for better precision:
+              ]
             }}
           >
-             <Text className={cn(
-               'text-paragraph-p2 transition-all duration-200',
-               isFloating && 'text-xs', // scale-80 approx
-               isFocused && 'text-brand-primary',
-               !isFloating && 'text-content-5',
-               labelClassName
-             )}>
-                {typeof displayLabelText === 'function' ? displayLabelText({ isFocused }) : displayLabelText}
-             </Text>
+            <Text className={cn(
+              'text-paragraph-p2 transition-all duration-200',
+              isFloating && 'text-xs', // scale-80 approx
+              isFocused && 'text-brand-primary',
+              !isFloating && 'text-content-5',
+              labelClassName
+            )}>
+              {typeof displayLabelText === 'function' ? displayLabelText({ isFocused }) : displayLabelText}
+            </Text>
           </View>
         )}
 
         {/* Clean Button */}
         {!!clean && !!value && (
           <View className="z-10 order-3 ml-auto">
-             <Button className="rounded-full bg-[#3B3D52] p-0.5 h-auto min-h-0 min-w-0" variant="ghost" size={'icon'} onPress={onClean}>
-              <IconifyXmarkCircleSolid width={10} height={10} color="#fff" />
-            </Button>
+            <IconButton className="rounded-full" variant="ghost" onPress={onClean}>
+              <IconifyXmarkCircleSolid width={12} height={12} color='#ffffff' />
+            </IconButton>
           </View>
         )}
 

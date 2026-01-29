@@ -13,6 +13,8 @@ import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-moda
 import { t } from '@/locales/i18n';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { MockAccountDepositModal } from './_comps/mock-account-deposit-modal';
+import { router } from 'expo-router';
+import { IconButton } from '@/components/ui/button';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -30,11 +32,22 @@ export default function AssetsScreen() {
   const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const { textColorContent1 } = useThemeColors();
 
+  const handlePressTransfer = () => {
+    if (false) {
+      // 如果账户只有1个，无法划转，弹窗提示
+      setIsTransferHintVisible(true);
+      return
+    }
+    // 跳转到划转页面
+    router.push('/transfer')
+  }
+
   const renderHeader = React.useCallback(() => {
     return (
       <CollapsibleStickyHeader className="bg-secondary" >
         <CollapsibleStickyNavBar>
           <ScreenHeader
+            showBackButton={false}
             content={<Trans>资产</Trans>}
             right={
               <View className="flex-row items-center gap-4">
@@ -57,7 +70,7 @@ export default function AssetsScreen() {
           />
           {/* 操作 */}
           <AssetActions
-            onPressTransfer={() => setIsTransferHintVisible(true)}
+            onPressTransfer={() => handlePressTransfer()}
             onPressDeposit={() => {
               const isMock = MOCK_ACCOUNTS.some(a => a.id === currentAccount.id);
               if (isMock) {
@@ -70,6 +83,10 @@ export default function AssetsScreen() {
     );
   }, [currentAccount, setIsSwitcherVisible, textColorContent1]);
 
+  const handleAccountManage = () => {
+    router.push('/account')
+  }
+
   return (
     <View className="flex-1 bg-secondary">
       <CollapsibleTab
@@ -78,9 +95,12 @@ export default function AssetsScreen() {
         size='md'
         variant='underline'
         renderTabBarRight={() => (
-          <TouchableOpacity hitSlop={10} className="items-center justify-center h-full" onPress={() => setIsSwitcherVisible(true)}>
-            <IconifyPlusCircle width={20} height={20} className="text-content-1" />
-          </TouchableOpacity>
+          <IconButton
+            variant='ghost'
+            onPress={() => handleAccountManage()}
+          >
+            <IconifyPlusCircle width={20} height={20} />
+          </IconButton>
         )}
       >
         <CollapsibleTabScene name="real" label={t`真实账户`}>
@@ -360,7 +380,7 @@ function AssetActions({ onPressTransfer, onPressDeposit }: { onPressTransfer?: (
       <TouchableOpacity onPress={onPressTransfer}>
         <View className="flex-col items-center">
           <View className='p-medium'>
-            <IconifyCoinsSwap width={24} height={24} />
+            <IconifyCoinsSwap width={24} height={24} className='text-content-1' />
           </View>
           <Text className="text-paragraph-p3 text-content-1"><Trans>划转</Trans></Text>
         </View>

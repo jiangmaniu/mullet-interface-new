@@ -354,6 +354,10 @@
   --text-paragraph-p3--line-height: var(--leading-xs);
   --text-paragraph-p2--font-weight: var(--font-weight-regular);
 
+  --text-paragraph-p4: 10px;
+  --text-paragraph-p4--line-height: var(--leading-xs);
+  --text-paragraph-p4--font-weight: var(--font-weight-regular);
+
   --text-important-1: var(--font-size-medium);
   --text-important-1--line-height: var(--leading-xs);
   --text-important-1--font-weight: var(--font-weight-semibold);

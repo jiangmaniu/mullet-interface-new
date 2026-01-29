@@ -15,6 +15,7 @@ export default function RootLayout() {
     <Providers>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(assets)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>

@@ -29,6 +29,7 @@ export const cn = createCn({
         'paragraph-p1',
         'paragraph-p2',
         'paragraph-p3',
+        'paragraph-p4',
         'important-1',
         'important-2',
         'button-1',
