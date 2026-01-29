@@ -1,15 +1,13 @@
 import { Button } from '@/components/ui/button';
 import {
   Modal,
-  ModalClose,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalTitle,
 } from '@/components/ui/modal';
-import { IconifyWarningCircle, IconRemind } from '@/components/ui/icons';
+import { IconRemind } from '@/components/ui/icons';
 import { Text } from '@/components/ui/text';
-import { t } from '@lingui/macro';
 import * as React from 'react';
 import { View } from 'react-native';
 import { Trans } from '@lingui/react/macro';
@@ -37,11 +35,10 @@ export function TransferHintModal({
       onClose={onClose}
       animationType="fade"
     >
-      <ModalHeader>
-        <ModalTitle className="text-white text-xl font-bold">{t`划转`}</ModalTitle>
-      </ModalHeader>
-
       <ModalContent>
+        <ModalHeader>
+          <ModalTitle><Trans>划转</Trans></ModalTitle>
+        </ModalHeader>
         {/* Header Section */}
 
         {/* Content Section */}
@@ -49,16 +46,14 @@ export function TransferHintModal({
           <IconRemind width={32} height={32} />
           {/* Text */}
           <Text className="text-content-1 text-paragraph-p2">
-            {t`创建多个账户后可进行资金划转`}
+            <Trans>创建多个账户后可进行资金划转</Trans>
           </Text>
         </View>
-      </ModalContent>
 
-      {/* Footer Buttons */}
-      <ModalFooter>
+        {/* Footer Buttons */}
         <ModalFooter>
           <Button
-            className="flex-1 "
+            className="flex-1"
             variant="secondary"
             size="lg"
             onPress={onClose}
@@ -75,7 +70,7 @@ export function TransferHintModal({
             <Text><Trans>创建账户</Trans></Text>
           </Button>
         </ModalFooter>
-      </ModalFooter>
+      </ModalContent>
     </Modal>
   );
 }

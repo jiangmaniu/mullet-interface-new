@@ -10,6 +10,7 @@ export {
   Settings as IconifySettings,
   EyeClosed as IconifyEyeClosed,
   Eye as IconifyEye,
+  Dollar as IconifyDollar,
   Copy as IconifyCopy,
   CoinsSwap as IconifyCoinsSwap,
   PlusCircle as IconifyPlusCircle,

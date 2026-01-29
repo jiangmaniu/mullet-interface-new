@@ -31,7 +31,7 @@ const buttonVariants = cva(
         sm: 'py-1.5 px-4 rounded-1',
         md: 'py-2 px-6 rounded-2',
         lg: 'py-xl px-[29px] rounded-2',
-        icon: 'p-small rounded-[8px]',
+        icon: 'rounded-[8px]',
       },
     },
     compoundVariants: [

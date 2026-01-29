@@ -16,6 +16,9 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated'
 import { cn } from '@/lib/utils'
+import { IconButton } from './button'
+import { IconifyXmark } from './icons'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 
 const { height: screenHeight } = Dimensions.get('window')
 
@@ -205,7 +208,7 @@ function DrawerContent({ className, children, ref, ...props }: DrawerContentProp
       <View
         ref={ref}
         className={cn(
-          'bg-zinc-900 rounded-t-3xl px-6 pt-6 pb-10',
+          'bg-special rounded-t-large gap-3xl',
           className
         )}
         {...props}
@@ -223,15 +226,19 @@ DrawerContent.displayName = 'DrawerContent'
 
 interface DrawerHeaderProps extends ViewProps {
   ref?: React.Ref<View>
+  showClose?: boolean
 }
 
-function DrawerHeader({ className, ref, ...props }: DrawerHeaderProps) {
+function DrawerHeader({ className, ref, showClose = true, children, ...props }: DrawerHeaderProps) {
   return (
     <View
       ref={ref}
-      className={cn('flex-row items-center justify-between mb-2', className)}
+      className={cn('pt-xl px-5 relative', className, { 'pr-11': showClose })}
       {...props}
-    />
+    >
+      {children}
+      {showClose && <DrawerClose />}
+    </View>
   )
 }
 DrawerHeader.displayName = 'DrawerHeader'
@@ -246,11 +253,13 @@ interface DrawerTitleProps extends TextProps {
 
 function DrawerTitle({ className, ref, ...props }: DrawerTitleProps) {
   return (
-    <Text
-      ref={ref}
-      className={cn('text-white text-xl font-bold', className)}
-      {...props}
-    />
+    <View className='justify-center min-h-6'>
+      <Text
+        ref={ref}
+        className={cn('text-important-1 text-content-1', className)}
+        {...props}
+      />
+    </View>
   )
 }
 DrawerTitle.displayName = 'DrawerTitle'
@@ -267,7 +276,7 @@ function DrawerDescription({ className, ref, ...props }: DrawerDescriptionProps)
   return (
     <Text
       ref={ref}
-      className={cn('text-content-4 text-paragraph-p2 mb-8', className)}
+      className={cn('text-content-4 text-paragraph-p3 mt-medium', className)}
       {...props}
     />
   )
@@ -286,7 +295,7 @@ function DrawerFooter({ className, ref, ...props }: DrawerFooterProps) {
   return (
     <View
       ref={ref}
-      className={cn('mt-auto', className)}
+      className={cn('px-5 mb-3xl', className)}
       {...props}
     />
   )
@@ -303,19 +312,17 @@ interface DrawerCloseProps extends PressableProps {
 
 function DrawerClose({ onPress, className, children, ref, ...props }: DrawerCloseProps) {
   const { onOpenChange } = useDrawerContext()
+  const { colorBrandSecondary3 } = useThemeColors()
 
   return (
-    <Pressable
-      ref={ref}
-      onPress={(e) => {
-        onOpenChange(false)
-        onPress?.(e)
-      }}
-      className={cn('w-8 h-8 items-center justify-center', className)}
+    <IconButton
+      variant='none'
+      onPress={() => onOpenChange(false)}
+      className='absolute right-5 top-xl'
       {...props}
     >
-      {children ?? <Text className="text-content-4 text-3xl leading-7">×</Text>}
-    </Pressable>
+      <IconifyXmark width={24} height={24} color={colorBrandSecondary3} />
+    </IconButton>
   )
 }
 DrawerClose.displayName = 'DrawerClose'

@@ -68,10 +68,7 @@ function Modal({
 						)}
 					>
 						<TouchableWithoutFeedback>
-							{/* 这里必须要用 View 包裹 children，否则点击内容区域也会触发 onClose */}
-							<View className="w-[281px] shrink-0 flex items-center justify-center p-2xl pointer-events-box-none bg-special rounded-large border border-brand-default">
-								{children}
-							</View>
+							{children}
 						</TouchableWithoutFeedback>
 					</View>
 				</TouchableWithoutFeedback>
@@ -84,10 +81,7 @@ const ModalContent = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
 	({ className, children, ...props }, ref) => (
 		<View
 			ref={ref}
-			className={cn(
-				'py-3xl',
-				className
-			)}
+			className={cn('w-[281px] shrink-0 bg-special rounded-large border border-brand-default pointer-events-box-none gap-3xl', className)}
 			{...props}
 		>
 			{children}
@@ -100,7 +94,7 @@ const ModalHeader = React.forwardRef<React.ElementRef<typeof View>, ViewProps & 
 	({ className, children, showClose = true, ...props }, ref) => (
 		<View
 			ref={ref}
-			className={cn('w-full flex-row items-center justify-between', className)}
+			className={cn('px-2xl pt-2xl relative', className, { 'pr-10': showClose })}
 			{...props}
 		>
 			{children}
@@ -114,11 +108,14 @@ const ModalTitle = React.forwardRef<
 	React.ElementRef<typeof Text>,
 	React.ComponentPropsWithoutRef<typeof Text>
 >(({ className, ...props }, ref) => (
-	<Text
-		ref={ref}
-		className={cn('text-important-1 text-content-1', className)}
-		{...props}
-	/>
+	<View className='justify-center min-h-6'>
+		<Text
+			ref={ref}
+			className={cn('text-important-1 text-content-1', className)}
+			{...props}
+		/>
+
+	</View>
 ));
 ModalTitle.displayName = 'ModalTitle';
 
@@ -128,7 +125,7 @@ const ModalDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
 	<Text
 		ref={ref}
-		className={cn('text-sm text-muted-foreground', className)}
+		className={cn('text-content-4 text-paragraph-p3 mt-medium', className)}
 		{...props}
 	/>
 ));
@@ -138,7 +135,7 @@ const ModalFooter = React.forwardRef<React.ElementRef<typeof View>, ViewProps>(
 	({ className, ...props }, ref) => (
 		<View
 			ref={ref}
-			className={cn('flex-row justify-end gap-4 w-full', className)}
+			className={cn('flex-row justify-end gap-4 w-full px-2xl pb-2xl', className)}
 			{...props}
 		/>
 	)
@@ -159,6 +156,8 @@ const ModalClose = React.forwardRef<
 		<IconButton
 			variant="none"
 			onPress={onClose}
+			className='absolute top-2xl right-2xl'
+			{...props}
 		>
 			<IconifyXmark width={24} height={24} color={colorBrandSecondary3} />
 		</IconButton>

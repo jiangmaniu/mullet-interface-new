@@ -12,6 +12,7 @@ import { AccountSwitcherModal } from './_comps/account-switcher-modal';
 import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
 import { t } from '@/locales/i18n';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { MockAccountDepositModal } from './_comps/mock-account-deposit-modal';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -26,6 +27,7 @@ export default function AssetsScreen() {
   const [currentAccount, setCurrentAccount] = useState(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
   const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
+  const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const { textColorContent1 } = useThemeColors();
 
   const renderHeader = React.useCallback(() => {
@@ -54,7 +56,15 @@ export default function AssetsScreen() {
             onPressSwitch={() => setIsSwitcherVisible(true)}
           />
           {/* 操作 */}
-          <AssetActions onPressTransfer={() => setIsTransferHintVisible(true)} />
+          <AssetActions
+            onPressTransfer={() => setIsTransferHintVisible(true)}
+            onPressDeposit={() => {
+              const isMock = MOCK_ACCOUNTS.some(a => a.id === currentAccount.id);
+              if (isMock) {
+                setIsDepositModalVisible(true);
+              }
+            }}
+          />
         </CollapsibleStickyContent>
       </CollapsibleStickyHeader>
     );
@@ -77,7 +87,7 @@ export default function AssetsScreen() {
           <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {REAL_ACCOUNTS.map(account => (
-                <AccountRow isReal key={account.id} {...account} onPress={() => { }} />
+                <RealAccountRow key={account.id} {...account} onPress={() => { }} />
               ))}
             </View>
           </CollapsibleScrollView>
@@ -87,7 +97,12 @@ export default function AssetsScreen() {
           <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {MOCK_ACCOUNTS.map(account => (
-                <AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
+                <MockAccountRow
+                  key={account.id}
+                  {...account}
+                  onPress={() => { }}
+                  onPressDeposit={() => setIsDepositModalVisible(true)}
+                />
               ))}
             </View>
           </CollapsibleScrollView>
@@ -104,30 +119,44 @@ export default function AssetsScreen() {
         onClose={() => setIsTransferHintVisible(false)}
         onCreateAccount={() => setIsTransferHintVisible(false)}
       />
+
+      <MockAccountDepositModal
+        open={isDepositModalVisible}
+        onClose={() => setIsDepositModalVisible(false)}
+        onConfirm={() => {
+          setIsDepositModalVisible(false);
+          // TODO: Implement deposit logic
+        }}
+      />
     </View>
   );
 }
 
-interface AccountRowProps {
+interface BaseAccountRowProps {
   id: string
   type: 'STP' | '热门'
   balance: string
   currency: string
-  isReal?: boolean
-  address?: string
   onPress?: () => void
 }
 
-export function AccountRow({
+interface MockAccountRowProps extends BaseAccountRowProps {
+  onPressDeposit?: () => void
+}
+
+interface RealAccountRowProps extends BaseAccountRowProps {
+  address?: string
+}
+
+export function RealAccountRow({
   id,
   type,
   balance,
   currency,
-  isReal = true,
   address = '0x0000...0000',
-  onPress
-}: AccountRowProps) {
-  const { textColorContent1, colorBrandPrimary, colorBrandSecondary1 } = useThemeColors()
+  onPress,
+}: RealAccountRowProps) {
+  const { textColorContent1, colorBrandSecondary1 } = useThemeColors()
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
@@ -141,8 +170,8 @@ export function AccountRow({
             </View>
 
             <View className="flex-row items-center gap-medium">
-              <Badge color={isReal ? 'rise' : 'secondary'} >
-                <Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
+              <Badge color='rise'>
+                <Text><Trans>真实</Trans></Text>
               </Badge>
               <Badge color='default'>
                 <Text>{type.toUpperCase()}</Text>
@@ -155,14 +184,11 @@ export function AccountRow({
             <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
-              <TouchableOpacity>
-                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-              </TouchableOpacity>
             </View>
           </View>
 
           {/* Address */}
-          {isReal && <View className="flex-row items-center justify-between min-h-[24px]">
+          <View className="flex-row items-center justify-between min-h-[24px]">
             <Text className="text-paragraph-p3 text-content-4"><Trans>地址</Trans></Text>
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">{address}</Text>
@@ -170,7 +196,54 @@ export function AccountRow({
                 <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
               </TouchableOpacity>
             </View>
-          </View>}
+          </View>
+        </CardContent>
+      </Card>
+    </TouchableOpacity>
+  )
+}
+
+export function MockAccountRow({
+  id,
+  type,
+  balance,
+  currency,
+  onPress,
+  onPressDeposit
+}: MockAccountRowProps) {
+  const { textColorContent1, colorBrandPrimary } = useThemeColors()
+
+  return (
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+      <Card>
+        <CardContent className='gap-xs'>
+          {/* Header: User & Badges */}
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-medium">
+              <IconifyUserCircle width={20} height={20} color={textColorContent1} />
+              <Text className="text-paragraph-p1 text-content-1">{id}</Text>
+            </View>
+
+            <View className="flex-row items-center gap-medium">
+              <Badge color='secondary'>
+                <Text><Trans>模拟</Trans></Text>
+              </Badge>
+              <Badge color='default'>
+                <Text>{type.toUpperCase()}</Text>
+              </Badge>
+            </View>
+          </View>
+
+          {/* Balance */}
+          <View className="flex-row items-center justify-between min-h-[24px]">
+            <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
+            <View className="flex-row items-center gap-xs">
+              <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
+              <TouchableOpacity onPress={onPressDeposit}>
+                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
+              </TouchableOpacity>
+            </View>
+          </View>
         </CardContent>
       </Card>
     </TouchableOpacity>
@@ -265,7 +338,7 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
 }
 
 
-function AssetActions({ onPressTransfer }: { onPressTransfer?: () => void }) {
+function AssetActions({ onPressTransfer, onPressDeposit }: { onPressTransfer?: () => void, onPressDeposit?: () => void }) {
   return (
     <View className='flex-row items-center justify-between px-xl py-xl'>
       <TouchableOpacity>
@@ -276,7 +349,7 @@ function AssetActions({ onPressTransfer }: { onPressTransfer?: () => void }) {
           <Text className="text-paragraph-p3 text-content-1"><Trans>取现</Trans></Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onPressDeposit}>
         <View className="flex-col items-center">
           <View className='p-medium'>
             <IconPayment width={24} height={24} />

@@ -34,7 +34,6 @@ export function AccountSwitcherModal({
 	const [activeTab, setActiveTab] = useState('real');
 
 	return (
-
 		<Drawer open={visible} onOpenChange={onClose}>
 			<DrawerContent className='p-0'>
 				<View className="h-[292px]">
