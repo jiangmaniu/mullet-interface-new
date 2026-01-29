@@ -4,15 +4,14 @@ import { IconifyBell, IconifyCoinsSwap, IconifyCopy, IconifyEye, IconifyEyeClose
 import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
-import { Tabs } from 'expo-router';
 import React, { useState } from 'react';
 import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
-import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView } from '@/components/ui/collapsible-tab';
+import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
 import { AccountSwitcherModal } from './_comps/account-switcher-modal';
 import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
 import { t } from '@/locales/i18n';
-import { useResolveClassNames } from 'uniwind';
+import { ScreenHeader } from '@/components/ui/screen-header';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -24,51 +23,45 @@ const MOCK_ACCOUNTS = [
 ]
 
 export default function AssetsScreen() {
-  const [currentAccount, setCurrentAccount] = useState<typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0]>(REAL_ACCOUNTS[0]);
+  const [currentAccount, setCurrentAccount] = useState(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
   const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
-  const { textColorContent1, backgroundColorPrimary } = useThemeColors();
+  const { textColorContent1 } = useThemeColors();
 
-  // Render the sticky header content that collapses
   const renderHeader = React.useCallback(() => {
     return (
-      <View className="px-xl pt-2xl pb-xl gap-xl pointer-events-box-none">
-        <AssetOverviewCard
-          account={currentAccount}
-          onPressSwitch={() => setIsSwitcherVisible(true)}
-        />
-        <AssetActions onPressTransfer={() => setIsTransferHintVisible(true)} />
-      </View>
+      <CollapsibleStickyHeader className="bg-secondary" >
+        <CollapsibleStickyNavBar>
+          <ScreenHeader
+            content={<Trans>资产</Trans>}
+            right={
+              <View className="flex-row items-center gap-4">
+                <TouchableOpacity onPress={() => { }}>
+                  <IconifyBell width={22} height={22} color={textColorContent1} />
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <IconifySettings width={22} height={22} color={textColorContent1} />
+                </TouchableOpacity>
+              </View>
+            }
+          />
+        </CollapsibleStickyNavBar>
+
+        <CollapsibleStickyContent className="px-xl pt-4 pb-xl gap-xl">
+          {/* 资产概览 */}
+          <AssetOverviewCard
+            account={currentAccount}
+            onPressSwitch={() => setIsSwitcherVisible(true)}
+          />
+          {/* 操作 */}
+          <AssetActions onPressTransfer={() => setIsTransferHintVisible(true)} />
+        </CollapsibleStickyContent>
+      </CollapsibleStickyHeader>
     );
-  }, [currentAccount, setIsSwitcherVisible]);
+  }, [currentAccount, setIsSwitcherVisible, textColorContent1]);
 
-  const headerStyle = useResolveClassNames('bg-secondary')
-  const titleStyle = useResolveClassNames('text-important-1 text-content-1')
   return (
-    <View className="flex-1">
-      <Tabs.Screen
-        options={{
-          headerShown: true,
-          title: t`资产`,
-          headerStyle: headerStyle,
-          headerTitleStyle: titleStyle,
-          headerTitleAlign: 'left',
-          headerShadowVisible: false,
-          headerTitleContainerStyle: { paddingLeft: 0, left: -2, bottom: -2 },
-          headerRightContainerStyle: { paddingRight: 12 },
-          headerRight: () => (
-            <View className="flex-row items-center gap-4">
-              <TouchableOpacity onPress={() => { }}>
-                <IconifyBell width={22} height={22} color={textColorContent1} />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <IconifySettings width={22} height={22} color={textColorContent1} />
-              </TouchableOpacity>
-            </View>
-          ),
-        }}
-      />
-
+    <View className="flex-1 bg-secondary">
       <CollapsibleTab
         renderHeader={renderHeader}
         initialTabName="real"
@@ -81,7 +74,7 @@ export default function AssetsScreen() {
         )}
       >
         <CollapsibleTabScene name="real" label={t`真实账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {REAL_ACCOUNTS.map(account => (
                 <AccountRow isReal key={account.id} {...account} onPress={() => { }} />
@@ -89,8 +82,9 @@ export default function AssetsScreen() {
             </View>
           </CollapsibleScrollView>
         </CollapsibleTabScene>
+
         <CollapsibleTabScene name="mock" label={t`模拟账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {MOCK_ACCOUNTS.map(account => (
                 <AccountRow isReal={false} key={account.id} {...account} onPress={() => { }} />
@@ -191,13 +185,6 @@ interface AssetOverviewCardProps {
 function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const { textColorContent4, textColorContent1 } = useThemeColors();
-
-  // Determine if it is a real account based on the list it comes from or a property.
-  // The mock data doesn't explicitly say "isReal" but we can infer or pass it.
-  // For now checking if it's in REAL_ACCOUNTS by ID or we can add a helper.
-  // Actually the account object has `type` which might help, or we can just assume based on tab context.
-  // But wait, `currentAccount` comes from the switcher which mixes them.
-  // Let's add a helper or just check id existence in REAL_ACCOUNTS.
   const isReal = REAL_ACCOUNTS.some(a => a.id === account.id);
 
   return (
@@ -279,7 +266,6 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
 
 
 function AssetActions({ onPressTransfer }: { onPressTransfer?: () => void }) {
-
   return (
     <View className='flex-row items-center justify-between px-xl py-xl'>
       <TouchableOpacity>
