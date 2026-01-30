@@ -19,6 +19,7 @@ import {
   Check,
   WarningCircle,
   Xmark,
+  Filter,
 } from 'iconoir-react-native';
 import { SvgProps } from 'react-native-svg';
 
@@ -61,3 +62,4 @@ export const IconifyNavArrowRight = withUniwind(NavArrowRight);
 export const IconifyCheck = withUniwind(Check);
 export const IconifyWarningCircle = withUniwind(WarningCircle);
 export const IconifyXmark = withUniwind(Xmark);
+export const IconifyFilter = withUniwind(Filter);

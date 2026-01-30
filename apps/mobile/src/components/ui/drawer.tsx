@@ -295,7 +295,7 @@ function DrawerFooter({ className, ref, ...props }: DrawerFooterProps) {
   return (
     <View
       ref={ref}
-      className={cn('px-5 mb-3xl', className)}
+      className={cn('px-5 mb-3xl flex-row', className)}
       {...props}
     />
   )

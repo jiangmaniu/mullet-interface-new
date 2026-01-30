@@ -1,4 +1,4 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext, ComponentProps } from 'react';
 import { LayoutChangeEvent, View, ViewStyle } from 'react-native';
 import {
   Tabs,
@@ -148,7 +148,7 @@ export function CollapsibleTab({
 // Export sub-components for direct usage
 export const CollapsibleTabScene = Tabs.Tab;
 export const CollapsibleFlatList = Tabs.FlatList;
-export const CollapsibleScrollView = Tabs.ScrollView;
+export const CollapsibleScrollView = ({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.ScrollView>) => <Tabs.ScrollView showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
 export const CollapsibleSectionList = Tabs.SectionList;
 
 type CollapsibleStickyContextType = {

@@ -13,8 +13,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountSelectionDrawer, Account } from './_comps/account-selection-drawer';
 
 const INITIAL_ACCOUNTS: Account[] = [
-	{ id: '88234911', type: 'STP', balance: '10,234.50', currency: 'USD' },
-	{ id: '88234912', type: 'STP', balance: '5,000.00', currency: 'USD' },
+	{ id: '88234911', type: 'STP', balance: '10,234.50', currency: 'USDC' },
+	{ id: '88234912', type: 'STP', balance: '5,000.00', currency: 'USDC' },
 ];
 
 export default function TransferScreen() {

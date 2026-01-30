@@ -5,6 +5,7 @@ export default function AssetsLayout() {
 		<Stack>
 			<Stack.Screen name="transfer/index" options={{ headerShown: false }} />
 			<Stack.Screen name="account/index" options={{ headerShown: false }} />
+			<Stack.Screen name="bills/index" options={{ headerShown: false }} />
 		</Stack>
 	);
 }

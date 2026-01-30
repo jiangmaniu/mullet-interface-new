@@ -8,39 +8,29 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
-import { AccountSwitcherModal } from './_comps/account-switcher-modal';
+import { AccountSelectionDrawer, type Account } from './_comps/account-selection-drawer';
 import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
 import { t } from '@/locales/i18n';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { MockAccountDepositModal } from './_comps/mock-account-deposit-modal';
-import { router } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import { IconButton } from '@/components/ui/button';
 
 const REAL_ACCOUNTS = [
-  { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
-  { id: '88234913', type: 'STP' as const, balance: '5,000.00', currency: 'USD', leverage: '100', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x1A2B...C3D4' },
+  { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USDC', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
+  { id: '88234913', type: 'STP' as const, balance: '5,000.00', currency: 'USDC', leverage: '100', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x1A2B...C3D4' },
 ]
 
 const MOCK_ACCOUNTS = [
-  { id: '10023491', type: '热门' as const, balance: '100,000.00', currency: 'USD', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Demo', address: '0x0000...0000' },
+  { id: '10023491', type: '热门' as const, balance: '100,000.00', currency: 'USDC', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Demo', address: '0x0000...0000' },
 ]
 
 export default function AssetsScreen() {
   const [currentAccount, setCurrentAccount] = useState(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
-  const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
   const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const { textColorContent1 } = useThemeColors();
 
-  const handlePressTransfer = () => {
-    if (false) {
-      // 如果账户只有1个，无法划转，弹窗提示
-      setIsTransferHintVisible(true);
-      return
-    }
-    // 跳转到划转页面
-    router.push('/transfer')
-  }
 
   const renderHeader = React.useCallback(() => {
     return (
@@ -69,15 +59,7 @@ export default function AssetsScreen() {
             onPressSwitch={() => setIsSwitcherVisible(true)}
           />
           {/* 操作 */}
-          <AssetActions
-            onPressTransfer={() => handlePressTransfer()}
-            onPressDeposit={() => {
-              const isMock = MOCK_ACCOUNTS.some(a => a.id === currentAccount.id);
-              if (isMock) {
-                setIsDepositModalVisible(true);
-              }
-            }}
-          />
+          <AssetActions />
         </CollapsibleStickyContent>
       </CollapsibleStickyHeader>
     );
@@ -104,7 +86,7 @@ export default function AssetsScreen() {
         )}
       >
         <CollapsibleTabScene name="real" label={t`真实账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }}>
             <View className='gap-medium py-xl'>
               {REAL_ACCOUNTS.map(account => (
                 <RealAccountRow key={account.id} {...account} onPress={() => { }} />
@@ -114,7 +96,7 @@ export default function AssetsScreen() {
         </CollapsibleTabScene>
 
         <CollapsibleTabScene name="mock" label={t`模拟账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }}>
             <View className='gap-medium py-xl'>
               {MOCK_ACCOUNTS.map(account => (
                 <MockAccountRow
@@ -129,16 +111,20 @@ export default function AssetsScreen() {
         </CollapsibleTabScene>
       </CollapsibleTab>
 
-      <AccountSwitcherModal
+      <AccountSelectionDrawer
+        selectedAccountId={currentAccount.id}
+        onSelect={(account: Account) => {
+          // Force cast or ensure compatibility. 
+          // The Account type in Switcher is compatible now.
+          setCurrentAccount(account as typeof REAL_ACCOUNTS[0])
+        }}
         visible={isSwitcherVisible}
         onClose={() => setIsSwitcherVisible(false)}
+        realAccounts={REAL_ACCOUNTS}
+        mockAccounts={MOCK_ACCOUNTS}
       />
 
-      <TransferHintModal
-        open={isTransferHintVisible}
-        onClose={() => setIsTransferHintVisible(false)}
-        onCreateAccount={() => setIsTransferHintVisible(false)}
-      />
+
 
       <MockAccountDepositModal
         open={isDepositModalVisible}
@@ -179,7 +165,7 @@ export function RealAccountRow({
   const { textColorContent1, colorBrandSecondary1 } = useThemeColors()
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity onPress={onPress}>
       <Card>
         <CardContent className='gap-xs'>
           {/* Header: User & Badges */}
@@ -234,7 +220,7 @@ export function MockAccountRow({
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity onPress={onPress}>
       <Card>
         <CardContent className='gap-xs'>
           {/* Header: User & Badges */}
@@ -358,41 +344,69 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
 }
 
 
-function AssetActions({ onPressTransfer, onPressDeposit }: { onPressTransfer?: () => void, onPressDeposit?: () => void }) {
+function AssetActions() {
+  const router = useRouter();
+  const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
+
+  const handlePressDeposit = () => {
+  }
+
+  const handlePressTransfer = () => {
+    if (false) {
+      // 如果账户只有1个，无法划转，弹窗提示
+      setIsTransferHintVisible(true);
+      return
+    }
+    // 跳转到划转页面
+    router.push('/transfer')
+  }
+
+  const handlePressBill = () => {
+    router.push('/(assets)/bills');
+  }
+
   return (
-    <View className='flex-row items-center justify-between px-xl py-xl'>
-      <TouchableOpacity>
-        <View className="flex-col items-center">
-          <View className='p-medium'>
-            <IconWithdrawFunds width={24} height={24} />
+    <>
+      <View className='flex-row items-center justify-between px-xl py-xl'>
+        <TouchableOpacity>
+          <View className="flex-col items-center">
+            <View className='p-medium'>
+              <IconWithdrawFunds width={24} height={24} />
+            </View>
+            <Text className="text-paragraph-p3 text-content-1"><Trans>取现</Trans></Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-1"><Trans>取现</Trans></Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onPressDeposit}>
-        <View className="flex-col items-center">
-          <View className='p-medium'>
-            <IconPayment width={24} height={24} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePressDeposit}>
+          <View className="flex-col items-center">
+            <View className='p-medium'>
+              <IconPayment width={24} height={24} />
+            </View>
+            <Text className="text-paragraph-p3 text-content-1"><Trans>存款</Trans></Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-1"><Trans>存款</Trans></Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onPressTransfer}>
-        <View className="flex-col items-center">
-          <View className='p-medium'>
-            <IconifyCoinsSwap width={24} height={24} className='text-content-1' />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePressTransfer}>
+          <View className="flex-col items-center">
+            <View className='p-medium'>
+              <IconifyCoinsSwap width={24} height={24} className='text-content-1' />
+            </View>
+            <Text className="text-paragraph-p3 text-content-1"><Trans>划转</Trans></Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-1"><Trans>划转</Trans></Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <View className="flex-col items-center">
-          <View className='p-medium'>
-            <IconRecord width={24} height={24} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handlePressBill}>
+          <View className="flex-col items-center">
+            <View className='p-medium'>
+              <IconRecord width={24} height={24} />
+            </View>
+            <Text className="text-paragraph-p3 text-content-1"><Trans>账单</Trans></Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-1"><Trans>账单</Trans></Text>
-        </View>
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+
+      <TransferHintModal
+        open={isTransferHintVisible}
+        onClose={() => setIsTransferHintVisible(false)}
+        onCreateAccount={() => setIsTransferHintVisible(false)}
+      />
+    </>
   )
 }

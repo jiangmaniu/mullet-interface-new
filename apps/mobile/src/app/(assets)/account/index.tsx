@@ -100,7 +100,7 @@ function AccountTypeCard({ data, isSelected, onPress }: AccountTypeCardProps) {
 	const isMock = data.type === 'mock';
 
 	return (
-		<TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+		<TouchableOpacity onPress={onPress}>
 			<Card className={isSelected ? 'border-brand-primary' : ''}>
 				<CardContent className='gap-xs p-xl'>
 					{/* Header */}
@@ -180,13 +180,11 @@ export default function AccountScreen() {
 				initialTabName="real"
 				size='md'
 				variant='underline'
-				tabBarClassName={''}
 				scrollEnabled={false} // Disable scroll to make tabs fill width (flex-1)
 				onIndexChange={() => setSelectedAccount(null)}
-				snapThreshold={0.5} // 启用 snap 吸附效果，滚动超过 50% 时自动吸附
 			>
 				<CollapsibleTabScene name="real" label={t`真实账户`}>
-					<CollapsibleScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
+					<CollapsibleScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 80 }}>
 						<View className='gap-medium p-xl'>
 							{REAL_Account_TYPES.map(account => (
 								<AccountTypeCard
@@ -201,7 +199,7 @@ export default function AccountScreen() {
 				</CollapsibleTabScene>
 
 				<CollapsibleTabScene name="mock" label={t`模拟账户`}>
-					<CollapsibleScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>
+					<CollapsibleScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 80 }}>
 						<View className='gap-medium p-xl'>
 							{MOCK_ACCOUNT_TYPES.map(account => (
 								<AccountTypeCard

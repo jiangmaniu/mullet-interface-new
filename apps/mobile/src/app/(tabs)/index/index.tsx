@@ -8,7 +8,7 @@ import { MarketOverview } from './_comps/market-overview'
 export default function Index() {
   return (
     <SafeAreaView className="flex-1" edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView>
         <HomeHeader />
         <ScrollView showsHorizontalScrollIndicator={false} horizontal>
           <MarketOverview />
