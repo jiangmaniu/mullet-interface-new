@@ -243,7 +243,7 @@ export function CollapsibleStickyNavBar({
     );
 
     const opacity = interpolate(
-      scrollY.value,
+      scrollY.value + insets.top,
       [bannerHeight, bannerHeight + headerHeight],
       [1, 0],
       Extrapolation.CLAMP

@@ -153,7 +153,7 @@ export default function AccountScreen() {
 			<CollapsibleStickyHeader className="bg-secondary">
 				<CollapsibleStickyNavBar>
 					<ScreenHeader
-						content={<Trans>账户管理</Trans>}
+						content={<Trans>创建账户</Trans>}
 					/>
 				</CollapsibleStickyNavBar>
 
@@ -183,6 +183,7 @@ export default function AccountScreen() {
 				tabBarClassName={''}
 				scrollEnabled={false} // Disable scroll to make tabs fill width (flex-1)
 				onIndexChange={() => setSelectedAccount(null)}
+				snapThreshold={0.5} // 启用 snap 吸附效果，滚动超过 50% 时自动吸附
 			>
 				<CollapsibleTabScene name="real" label={t`真实账户`}>
 					<CollapsibleScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false}>

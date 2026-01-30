@@ -104,7 +104,7 @@ export default function AssetsScreen() {
         )}
       >
         <CollapsibleTabScene name="real" label={t`真实账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {REAL_ACCOUNTS.map(account => (
                 <RealAccountRow key={account.id} {...account} onPress={() => { }} />
@@ -114,7 +114,7 @@ export default function AssetsScreen() {
         </CollapsibleTabScene>
 
         <CollapsibleTabScene name="mock" label={t`模拟账户`}>
-          <CollapsibleScrollView contentContainerStyle={{ padding: 12, minHeight: 800 }} showsVerticalScrollIndicator={false}>
+          <CollapsibleScrollView contentContainerStyle={{ padding: 12 }} showsVerticalScrollIndicator={false}>
             <View className='gap-medium py-xl'>
               {MOCK_ACCOUNTS.map(account => (
                 <MockAccountRow
