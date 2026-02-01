@@ -81,9 +81,9 @@ export default ({ config }: { config: ConfigContext }) => {
           image: './public/images/splash-icon.png',
           imageWidth: 200,
           resizeMode: 'contain',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#060717',
           dark: {
-            backgroundColor: '#000000',
+            backgroundColor: '#060717',
           },
         },
       ],
