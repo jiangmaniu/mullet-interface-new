@@ -268,8 +268,8 @@
   --color-market-rise: var(--color-trade-buy);
   --color-market-fall: var(--color-trade-sell);
 
-  --shadow-base: 0px 4px 4px 0px color-mix(in srgb, rgb(var(--color-black)) 10%, transparent);
-  --inset-shadow-base: inset 0px 2px 4px 0px color-mix(in srgb, rgb(var(--color-black)) 50%, transparent);
+  --shadow-base: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
+  --inset-shadow-base: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
   --blur-base: calc(var(--size) * 3);
 }
 

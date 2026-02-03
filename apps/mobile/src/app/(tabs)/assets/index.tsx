@@ -8,11 +8,11 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
-import { AccountSelectionDrawer, type Account } from './_comps/account-selection-drawer';
+import { AccountSelectionDrawer, type Account } from '@/app/(tabs)/assets/_comps/account-selection-drawer';
 import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
 import { t } from '@/locales/i18n';
 import { ScreenHeader } from '@/components/ui/screen-header';
-import { MockAccountDepositModal } from './_comps/mock-account-deposit-modal';
+import { MockAccountDepositModal } from '@/app/(tabs)/assets/_comps/mock-account-deposit-modal';
 import { router, useRouter } from 'expo-router';
 import { IconButton } from '@/components/ui/button';
 

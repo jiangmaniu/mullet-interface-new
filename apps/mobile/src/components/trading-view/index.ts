@@ -1,3 +1,5 @@
 export * from './area-chart'
+export * from './candlestick-chart'
 export * from './chart-base'
+export * from './macd-chart'
 export * from './types'

@@ -1,4 +1,5 @@
-import { useResolveClassNames } from 'uniwind';
+import { withUniwind } from 'uniwind'
+
 import {
   Activity,
   Wallet,
@@ -20,28 +21,12 @@ import {
   WarningCircle,
   Xmark,
   Filter,
+  NavArrowDownSolid,
+  CandlestickChart,
+  MoreHoriz,
+  Page,
+  PageDown
 } from 'iconoir-react-native';
-import { SvgProps } from 'react-native-svg';
-
-function withUniwind(Icon: React.ComponentType<SvgProps>) {
-  const WithUniwind = (props: SvgProps & { className?: string }) => {
-    const style = useResolveClassNames(props.className || '');
-    const { color, width, height } = (style || {}) as any;
-
-    return (
-      <Icon
-        {...props}
-        color={color || props.color}
-        width={width || props.width}
-        height={height || props.height}
-      />
-    );
-  };
-
-  WithUniwind.displayName = ` Iconify(${Icon.displayName || Icon.name || 'Icon'})`;
-
-  return WithUniwind;
-}
 
 export const IconifyActivity = withUniwind(Activity);
 export const IconifyWallet = withUniwind(Wallet);
@@ -63,3 +48,8 @@ export const IconifyCheck = withUniwind(Check);
 export const IconifyWarningCircle = withUniwind(WarningCircle);
 export const IconifyXmark = withUniwind(Xmark);
 export const IconifyFilter = withUniwind(Filter);
+export const IconifyNavArrowDownSolid = withUniwind(NavArrowDownSolid)
+export const IconifyCandlestickChart = withUniwind(CandlestickChart)
+export const IconifyMoreHoriz = withUniwind(MoreHoriz)
+export const IconifyPage = withUniwind(Page)
+export const IconifyPageDown = withUniwind(PageDown)

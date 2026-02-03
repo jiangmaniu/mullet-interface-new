@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Pressable } from 'react-native';
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { ScreenHeader } from '@/components/ui/screen-header';
@@ -100,7 +100,7 @@ function AccountTypeCard({ data, isSelected, onPress }: AccountTypeCardProps) {
 	const isMock = data.type === 'mock';
 
 	return (
-		<TouchableOpacity onPress={onPress}>
+		<Pressable onPress={onPress}>
 			<Card className={isSelected ? 'border-brand-primary' : ''}>
 				<CardContent className='gap-xs p-xl'>
 					{/* Header */}
@@ -139,7 +139,7 @@ function AccountTypeCard({ data, isSelected, onPress }: AccountTypeCardProps) {
 					</View>
 				</CardContent>
 			</Card>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }
 

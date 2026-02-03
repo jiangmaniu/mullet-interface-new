@@ -1,5 +1,5 @@
 import React, { useState, createContext, useContext, ComponentProps } from 'react';
-import { LayoutChangeEvent, View, ViewStyle } from 'react-native';
+import { LayoutChangeEvent, Pressable, View, ViewStyle } from 'react-native';
 import {
   Tabs,
   MaterialTabBar,
@@ -11,74 +11,158 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useResolveClassNames } from 'uniwind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle, interpolate, Extrapolation } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import { Text } from '@/components/ui/text';
 
+type TabVariant = 'solid' | 'outline' | 'underline' | 'text';
+type TabSize = 'sm' | 'md' | 'lg';
 
 const tabBarVariants = cva(
   'w-full flex-row items-center',
   {
     variants: {
       variant: {
-        default: '',
+        solid: 'gap-medium',
+        outline: 'gap-medium',
         underline: 'border-b border-brand-default',
+        text: '',
       },
       size: {
-        default: '',
         sm: '',
         md: 'h-10',
         lg: '',
       },
     },
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'underline',
+      size: 'sm',
     },
   }
 );
 
-const labelVariants = cva(
-  'text-content-1 m-0 h-auto',
+const tabItemVariants = cva(
+  'items-center justify-center',
   {
     variants: {
       variant: {
-        default: '',
+        solid: 'rounded-small',
+        outline: 'rounded-small',
         underline: '',
+        text: '',
       },
       size: {
-        default: '',
-        sm: '',
+        sm: 'px-2xl py-small',
+        md: 'px-3xl py-medium',
+        lg: 'px-3xl py-xl',
+      },
+      selected: {
+        true: '',
+        false: '',
+      },
+    },
+    compoundVariants: [
+      // solid
+      { variant: 'solid', selected: false, className: 'bg-button' },
+      { variant: 'solid', selected: true, className: 'bg-brand-primary' },
+      // outline
+      { variant: 'outline', selected: false, className: '' },
+      { variant: 'outline', selected: true, className: 'border border-brand-secondary-2' },
+      // underline
+      { variant: 'underline', selected: false, className: '' },
+      { variant: 'underline', selected: true, className: 'border-b-2 border-brand-primary' },
+      // text
+      { variant: 'text', selected: false, className: '' },
+      { variant: 'text', selected: true, className: '' },
+    ],
+    defaultVariants: {
+      variant: 'underline',
+      size: 'sm',
+      selected: false,
+    },
+  }
+);
+
+const tabTextVariants = cva(
+  'font-medium',
+  {
+    variants: {
+      variant: {
+        solid: '',
+        outline: '',
+        underline: '',
+        text: '',
+      },
+      size: {
+        sm: 'text-button-1',
         md: 'text-button-2',
-        lg: '',
+        lg: 'text-button-2',
+      },
+      selected: {
+        true: '',
+        false: '',
       },
     },
+    compoundVariants: [
+      // solid selected uses dark text
+      { variant: 'solid', selected: true, className: 'text-content-foreground' },
+      { variant: 'solid', selected: false, className: 'text-content-4' },
+      // others use white when selected, gray when not
+      { variant: 'outline', selected: true, className: 'text-content-1' },
+      { variant: 'outline', selected: false, className: 'text-content-4' },
+      { variant: 'underline', selected: true, className: 'text-content-1' },
+      { variant: 'underline', selected: false, className: 'text-content-4' },
+      { variant: 'text', selected: true, className: 'text-content-1' },
+      { variant: 'text', selected: false, className: 'text-content-4' },
+    ],
     defaultVariants: {
-      variant: 'default',
-      size: 'default',
+      variant: 'underline',
+      size: 'sm',
+      selected: false,
     },
   }
 );
 
-const tabVariants = cva(
-  '',
-  {
-    variants: {
-      variant: {
-        default: '',
-        underline: '',
-      },
-      size: {
-        default: '',
-        sm: '',
-        md: 'p-xl',
-        lg: '',
-      },
+// Custom TabItem component props
+interface CustomTabItemProps {
+  index: number;
+  indexDecimal: SharedValue<number>;
+  label: string;
+  onPress: () => void;
+  variant: TabVariant;
+  size: TabSize;
+}
+
+// Custom TabItem component
+function CustomTabItem({
+  index,
+  indexDecimal,
+  label,
+  onPress,
+  variant,
+  size,
+}: CustomTabItemProps) {
+  const [isSelected, setIsSelected] = useState(false);
+
+  // Use useAnimatedReaction to properly read SharedValue without triggering render warnings
+  useAnimatedReaction(
+    () => Math.abs(index - indexDecimal.value) < 0.5,
+    (selected) => {
+      runOnJS(setIsSelected)(selected);
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  }
-);
+    [index]
+  );
+
+  return (
+    <Pressable
+      onPress={onPress}
+      className={cn(tabItemVariants({ variant, size, selected: isSelected }))}
+    >
+      <Text className={cn(tabTextVariants({ variant, size, selected: isSelected }))}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 'renderTabBar'> &
   VariantProps<typeof tabBarVariants> & {
@@ -90,12 +174,12 @@ type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 're
 
 export function CollapsibleTab({
   variant = 'underline',
-  size = 'default',
+  size = 'sm',
   tabBarClassName,
   tabClassName,
   renderTabBarRight,
   containerStyle,
-  scrollEnabled = true, // Default to true to match previous behavior
+  scrollEnabled = true,
   ...props
 }: CollapsibleTabProps) {
   const {
@@ -104,30 +188,51 @@ export function CollapsibleTab({
     textColorContent4,
   } = useThemeColors();
 
-  const labelStyle = useResolveClassNames(labelVariants({ variant, size }))
-  const tabStyle = useResolveClassNames(cn(tabVariants({ variant, size }), tabClassName)) // Merge tabClassName
   const insets = useSafeAreaInsets();
 
+  const currentVariant = variant || 'underline';
+  const currentSize = size || 'sm';
+
   const renderTabBar = (tabBarProps: MaterialTabBarProps<any>) => {
+    // For underline variant, use default MaterialTabBar with indicator
+    // For other variants, use custom TabItemComponent
+    const useCustomTabItem = currentVariant !== 'underline';
+
     return (
-      <View className={cn(tabBarVariants({ variant, size }), "px-xl", tabBarClassName)}>
+      <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), "px-xl", tabBarClassName)}>
         <MaterialTabBar
           {...tabBarProps}
           scrollEnabled={scrollEnabled}
           style={{ height: '100%' }}
           contentContainerStyle={{ alignItems: 'center' }}
-          indicatorStyle={{ backgroundColor: colorBrandPrimary, height: 2, bottom: 0 }}
-          labelStyle={labelStyle}
+          indicatorStyle={
+            currentVariant === 'underline'
+              ? { backgroundColor: colorBrandPrimary, height: 2, bottom: 0 }
+              : { backgroundColor: 'transparent', height: 0 }
+          }
           activeColor={textColorContent1}
           inactiveColor={textColorContent4}
-          tabStyle={tabStyle}
+          TabItemComponent={
+            useCustomTabItem
+              ? (itemProps) => (
+                <CustomTabItem
+                  index={itemProps.index}
+                  indexDecimal={itemProps.indexDecimal}
+                  label={typeof itemProps.label === 'string' ? itemProps.label : ''}
+                  onPress={() => itemProps.onPress(itemProps.name)}
+                  variant={currentVariant}
+                  size={currentSize}
+                />
+              )
+              : undefined
+          }
         />
         {renderTabBarRight && (
           <View className='flex-shrink-0'>
             {renderTabBarRight()}
           </View>
         )}
-      </View >
+      </View>
     );
   };
 
@@ -310,3 +415,7 @@ export function CollapsibleStickyNavBar({
     </>
   );
 }
+
+// Export variants for external use
+export { tabBarVariants, tabItemVariants, tabTextVariants };
+export type { TabVariant, TabSize };

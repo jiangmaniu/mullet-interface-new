@@ -244,7 +244,7 @@ const InputContainer = <T,>({
             }}
           >
             <Text className={cn(
-              'text-paragraph-p2 transition-all duration-200',
+              'text-paragraph-p2 transition-all duration-200 text-content-4',
               isFloating && 'text-xs', // scale-80 approx
               isFocused && 'text-brand-primary',
               !isFloating && 'text-content-5',

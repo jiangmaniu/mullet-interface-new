@@ -2,7 +2,7 @@ import Svg, { Rect, SvgProps } from "react-native-svg"
 
 export const IconDepth = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
   <Svg width={width ?? 12} height={height ?? 12} viewBox={viewBox ?? "0 0 12 12"} fill="none" {...props}>
-   <Rect
+    <Rect
       width={5.455}
       height={5.455}
       fill={props.color ?? "#FF445D"}

@@ -18,8 +18,8 @@ import { Trans } from '@lingui/react/macro';
 import React, { useState } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 import Svg, { Path, Rect } from 'react-native-svg';
-import { Account, AccountSelectDrawer } from './_comps/account-select-drawer';
-import { DateFilterDrawer, DateRange } from './_comps/date-filter-drawer';
+import { Account, AccountSelectDrawer } from '@/app/(assets)/bills/_comps/account-select-drawer';
+import { DateFilterDrawer, DateRange } from '@/app/(assets)/bills/_comps/date-filter-drawer';
 
 // Mock data types
 interface WithdrawalRecord {

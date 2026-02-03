@@ -10,7 +10,7 @@ import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AccountSelectionDrawer, Account } from './_comps/account-selection-drawer';
+import { AccountSelectionDrawer, Account } from '@/app/(assets)/transfer/_comps/account-selection-drawer';
 
 const INITIAL_ACCOUNTS: Account[] = [
 	{ id: '88234911', type: 'STP', balance: '10,234.50', currency: 'USDC' },
