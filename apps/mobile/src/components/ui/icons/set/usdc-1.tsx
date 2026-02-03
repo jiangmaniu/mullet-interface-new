@@ -1,7 +1,8 @@
-import Svg, { G, Path, SvgProps, Defs, ClipPath } from "react-native-svg"
+import { G, Path, Defs, ClipPath } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../svg-icon"
 
-export const IconUSDC1 = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
-  <Svg width={width ?? 24} height={height ?? 24} viewBox={viewBox ?? "0 0 24 24"} fill="none" {...props}>
+export const IconUSDC1 = (props: SvgIconProps) => (
+  <SvgIcon width='24' height='24' viewBox='0 0 24 24' fill="none" {...props}>
     <G clipPath="url(#a)">
       <Path
         fill="#2775CA"
@@ -25,5 +26,5 @@ export const IconUSDC1 = ({ width, height, viewBox, primaryColor, ...props }: Sv
         <Path fill="#fff" d="M0 0h24v24H0z" />
       </ClipPath>
     </Defs>
-  </Svg>
+  </SvgIcon>
 )

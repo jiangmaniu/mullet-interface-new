@@ -1,7 +1,8 @@
-import Svg, { Rect, SvgProps } from "react-native-svg"
+import { Rect } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../svg-icon"
 
-export const IconDepth = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
-  <Svg width={width ?? 12} height={height ?? 12} viewBox={viewBox ?? "0 0 12 12"} fill="none" {...props}>
+export const IconDepth = ({ primaryColor, ...props }: SvgIconProps & { primaryColor?: string }) => (
+  <SvgIcon width='12' height='12' viewBox='0 0 12 12' fill="none" {...props}>
     <Rect
       width={5.455}
       height={5.455}
@@ -23,6 +24,6 @@ export const IconDepth = ({ width, height, viewBox, primaryColor, ...props }: Sv
       rx={1}
       transform="matrix(-1 0 0 1 5.455 0)"
     />
-  </Svg>
+  </SvgIcon>
 )
 

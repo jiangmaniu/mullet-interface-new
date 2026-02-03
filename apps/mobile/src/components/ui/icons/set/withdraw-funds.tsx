@@ -1,8 +1,9 @@
-import Svg, { Path, SvgProps } from "react-native-svg"
+import { Path } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../svg-icon"
 
-export const IconWithdrawFunds = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
-  <Svg width={width ?? 24} height={height ?? 24} viewBox={viewBox ?? "0 0 24 24"} fill="none" {...props}>
-   <Path
+export const IconWithdrawFunds = (props: SvgIconProps) => (
+  <SvgIcon width='24' height='24' viewBox='0 0 24 24' fill="none" {...props}>
+    <Path
       fill={props.color ?? "#fff"}
       fillRule="evenodd"
       d="M3.93 6.244a10.312 10.312 0 0 0-1.73 5.744 10.255 10.255 0 0 0 2.93 7.223A9.83 9.83 0 0 0 12.2 22.2a9.835 9.835 0 0 0 7.072-2.992 10.265 10.265 0 0 0 2.928-7.223c.004-1.901-.516-3.754-1.485-5.359l-.869.868a9.122 9.122 0 0 1 1.178 4.49c.032 4.937-3.915 8.97-8.824 9.013-4.908-.044-8.856-4.075-8.824-9.013a9.121 9.121 0 0 1 1.412-4.883l-.857-.857Z"
@@ -20,5 +21,5 @@ export const IconWithdrawFunds = ({ width, height, viewBox, primaryColor, ...pro
       d="M7 6.396a.76.76 0 0 1 .218-.546l4.445-4.62A.714.714 0 0 1 12.2 1c.21 0 .388.077.536.23l4.445 4.62a.758.758 0 0 1 .219.546.759.759 0 0 1-.219.547.717.717 0 0 1-.536.23.716.716 0 0 1-.537-.23l-3.153-3.278v11.959a.76.76 0 0 1-.219.546.717.717 0 0 1-.536.23.717.717 0 0 1-.536-.23.76.76 0 0 1-.218-.546V3.665L8.292 6.942a.718.718 0 0 1-.537.23.718.718 0 0 1-.537-.23A.76.76 0 0 1 7 6.396Z"
       clipRule="evenodd"
     />
-  </Svg>
+  </SvgIcon>
 )

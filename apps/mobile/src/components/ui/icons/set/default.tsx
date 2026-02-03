@@ -1,7 +1,8 @@
-import Svg, { Path, SvgProps } from "react-native-svg"
+import { Path } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../svg-icon"
 
-export const IconDefault = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
-	<Svg width={width ?? 67} height={height ?? 48} viewBox={viewBox ?? "0 0 67 48"} fill="none" {...props}>
+export const IconDefault = (props: SvgIconProps) => (
+	<SvgIcon width='67' height='48' viewBox='0 0 67 48' fill="none" {...props}>
 		<Path
 			fill="#393D60"
 			d="M30.288 1.094c-.912.1-2.938.504-3.647.706C21.07 3.515 10.434 8.255 9.522 21.67c0 0 .304 8.17 9.117 10.49 0 0-5.47-9.48 4.153-16.037 0 0 .608 5.75 3.748 7.161 0 0 .101-8.17 3.85-11.095 0 0-1.115 4.74 2.734 5.649 3.85.907 11.852-.908 15.296-7.465 3.242-5.95-11.143-10.187-18.132-9.28Z"
@@ -17,5 +18,5 @@ export const IconDefault = ({ width, height, viewBox, primaryColor, ...props }: 
 			strokeWidth={3}
 			d="m59.417 40.417 4.333 4.333m-19.5-10.833a8.667 8.667 0 1 0 17.333 0 8.667 8.667 0 0 0-17.333 0Z"
 		/>
-	</Svg>
+	</SvgIcon>
 )

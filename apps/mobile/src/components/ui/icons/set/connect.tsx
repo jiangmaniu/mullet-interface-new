@@ -1,7 +1,8 @@
-import Svg, { Path, SvgProps } from "react-native-svg"
+import { Path } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../svg-icon"
 
-export const IconConnect = ({ width, height, viewBox, primaryColor, ...props }: SvgProps & { primaryColor?: string }) => (
-  <Svg width={width ?? 67} height={height ?? 48} viewBox={viewBox ?? "0 0 67 48"} fill="none" {...props}>
+export const IconConnect = (props: SvgIconProps) => (
+  <SvgIcon width='67' height='48' viewBox='0 0 67 48' fill="none" {...props}>
     <Path
       fill="#393D60"
       d="M30.288 1.094c-.912.1-2.938.504-3.647.706C21.07 3.515 10.434 8.255 9.522 21.67c0 0 .304 8.17 9.117 10.49 0 0-5.47-9.48 4.153-16.037 0 0 .608 5.75 3.748 7.161 0 0 .101-8.17 3.85-11.095 0 0-1.115 4.74 2.734 5.649 3.85.907 11.852-.908 15.296-7.465 3.242-5.95-11.143-10.187-18.132-9.28Z"
@@ -14,5 +15,5 @@ export const IconConnect = ({ width, height, viewBox, primaryColor, ...props }: 
       fill="#393D60"
       d="M43.675 24.675a.812.812 0 0 1 1.15 0l14.9 14.9c2.429-.225 4.296-2.206 4.296-4.577 0-2.172-1.564-4.017-3.696-4.487h-.002a4.926 4.926 0 0 0-1.063-.115.812.812 0 0 1 .003-1.625c.483 0 .955.051 1.414.153h-.001c2.83.625 4.97 3.092 4.97 6.074 0 2.828-1.924 5.19-4.54 5.96l3.218 3.218a.812.812 0 1 1-1.148 1.148l-4.101-4.1h-1.67c-3.405 0-6.204-2.894-6.376-5.932l-.008-.294v-.076l.01-.164c.01-.134.032-.32.073-.528.042-.206.112-.472.234-.743l-7.663-7.663a.812.812 0 0 1 0-1.149Zm8.97 10.323.007.212c.129 2.186 2.226 4.389 4.752 4.389h.046l-4.79-4.79-.008.074a2.151 2.151 0 0 0-.005.096l-.001.019Z"
     />
-  </Svg>
+  </SvgIcon>
 )
