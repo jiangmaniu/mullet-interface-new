@@ -299,9 +299,15 @@ export default function BillsScreen() {
 						</CollapsibleScrollView>
 					</CollapsibleTabScene>
 
-					<CollapsibleTabScene name="transfer" label={t`划`}>
+					<CollapsibleTabScene name="transfer" label={t`划转`}>
 						<CollapsibleScrollView className='flex-1' contentContainerStyle={{ paddingBottom: 24 }}>
 							<View className="gap-xl px-xl pt-xl">
+								<AccountSelector
+									accountId={selectedAccount.id}
+									accountType={selectedAccount.type}
+									isReal={selectedAccount.isReal}
+									onPress={() => setAccountSelectVisible(true)}
+								/>
 								{MOCK_TRANSFERS.map((record) => (
 									<TransferCard key={record.id} record={record} />
 								))}
