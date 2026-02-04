@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider, onlineManager, focusManager } from '@
 import NetInfo from '@react-native-community/netinfo'
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { AppState, AppStateStatus, Platform } from 'react-native'
+import { useReactQueryDevTools } from '@dev-plugins/react-query';
 
 // 配置 onlineManager 以使用 NetInfo 检测网络状态
 onlineManager.setEventListener((setOnline) => {
@@ -45,6 +46,8 @@ export function QueryProvider({ children }: PropsWithChildren) {
 
     return () => subscription.remove()
   }, [])
+
+  useReactQueryDevTools(queryClient);
 
   return (
     <QueryClientProvider client={queryClient}>
