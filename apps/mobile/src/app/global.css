@@ -222,9 +222,9 @@
   --color-orange-900: var(--color-orange-900);
 
   /* Fonts */
-  --font-weight-regular: regular;
-  --font-weight-medium: medium;
-  --font-weight-semibold: semibold;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
 
   --font-size-xs: 12px;
   --font-size-small: 14px;
