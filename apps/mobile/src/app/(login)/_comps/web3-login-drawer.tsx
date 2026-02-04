@@ -29,7 +29,6 @@ interface Web3LoginDrawerProps {
 }
 
 export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDrawerProps) {
-  const { user: privyUser } = usePrivy()
   const { open } = useAppKit()
   const { address, isConnected } = useAccount()
   const { isOpen: isAppKitOpen } = useAppKitState()
@@ -109,6 +108,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
 
       // 登录后端
       const backendSuccess = await loginToBackend()
+
+
       if (backendSuccess) {
         setStep2({ status: 'completed' })
       } else {
@@ -304,11 +305,11 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
           <Pressable
             onPress={buttonConfig.onPress}
             disabled={buttonConfig.disabled}
-            className={`py-2 rounded-full w-full items-center justify-center ${buttonConfig.disabled ? 'bg-zinc-700' : 'bg-white active:opacity-80'
+            className={`py-2 h-10 rounded-full w-full items-center justify-center ${buttonConfig.disabled ? 'bg-zinc-700' : 'bg-white active:opacity-80'
               }`}
           >
             {buttonConfig.loading ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" className='text-paragraph-p1' color="#fff" />
             ) : (
               <Text
                 className={`text-paragraph-p1 font-semibold ${buttonConfig.disabled ? 'text-zinc-500' : 'text-black'

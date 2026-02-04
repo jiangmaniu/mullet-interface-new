@@ -30,7 +30,6 @@ export type UserInfo = User.LoginResult
  */
 export async function loginWithPrivyToken(privyToken: string): Promise<LoginResponse> {
   const rs = await login({grant_type: 'privy_token'})
-  
   // // 保存 token
   if (rs.access_token) {
     await tokenStorage.setToken(rs.access_token)

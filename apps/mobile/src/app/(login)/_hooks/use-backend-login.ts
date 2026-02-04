@@ -1,9 +1,11 @@
-import { useCallback, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { usePrivy } from '@privy-io/expo'
 import { router } from 'expo-router'
 import { Alert } from 'react-native'
 
 import { useAuthStore } from '@/stores/auth'
+import { setLocalUserInfo } from '@/v1/utils/storage'
+import { stores } from '@/v1/provider/mobxProvider'
 
 interface UseBackendLoginOptions {
   onSuccess?: () => void
@@ -11,11 +13,16 @@ interface UseBackendLoginOptions {
   redirectOnSuccess?: boolean
 }
 
-interface UseBackendLoginReturn {
-  loginToBackend: () => Promise<boolean>
-  isLoading: boolean
-  error: string | null
-  clearError: () => void
+/**
+ * 登录成功后导航
+ * 如果有上一页则返回，否则跳转首页
+ */
+const navigateAfterLogin = () => {
+  if (router.canGoBack()) {
+    router.back()
+  } else {
+    router.replace('/' as '/')
+  }
 }
 
 /**
@@ -23,69 +30,64 @@ interface UseBackendLoginReturn {
  * 使用 Privy token 登录后端
  * 可用于 Web3 钱包登录和 Privy 邮箱登录
  */
-export function useBackendLogin(options: UseBackendLoginOptions = {}): UseBackendLoginReturn {
+export function useBackendLogin(options: UseBackendLoginOptions = {}) {
   const { onSuccess, onError, redirectOnSuccess = true } = options
 
   const { getAccessToken: getPrivyAccessToken } = usePrivy()
   const { loginWithPrivy: loginBackend } = useAuthStore()
 
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const clearError = useCallback(() => {
-    setError(null)
-  }, [])
-
-  const loginToBackend = useCallback(async (): Promise<boolean> => {
-    setIsLoading(true)
-    setError(null)
-
-    try {
+  const mutation = useMutation({
+    mutationKey: ['auth', 'login'],
+    mutationFn: async () => {
       // 获取 Privy token
       const privyToken = await getPrivyAccessToken()
-      if (privyToken) {
-        console.log('Privy token obtained for backend login')
+      if (!privyToken) {
+        throw new Error('Failed to get Privy token')
       }
 
-      // 登录后端
-      const success = await loginBackend()
+      console.log('Privy token obtained for backend login')
 
-      if (success) {
-        console.log('Backend login successful')
-        onSuccess?.()
+      // 登录后端（传入 token）
+      const userinfo = await loginBackend(privyToken)
 
-        if (redirectOnSuccess) {
-          Alert.alert('成功', '登录成功！', [
-            {
-              text: '确定',
-              onPress: () => {
-                router.replace('/' as '/')
-              },
+      // 缓存用户信息
+      await setLocalUserInfo(userinfo)
+
+      // 重新获取用户信息
+      await stores.user.handleLoginSuccess(userinfo)
+
+      console.log('Backend login successful')
+
+      return userinfo
+    },
+    onSuccess: () => {
+      onSuccess?.()
+
+      if (redirectOnSuccess) {
+        Alert.alert('成功', '登录成功！', [
+          {
+            text: '确定',
+            onPress: () => {
+              navigateAfterLogin()
             },
-          ])
-        }
-        return true
-      } else {
-        const errorMsg = '登录失败，请重试'
-        setError(errorMsg)
-        onError?.(errorMsg)
-        return false
+          },
+        ])
       }
-    } catch (err: any) {
+    },
+    onError: (err: Error) => {
       console.error('Backend login failed:', err)
-      const errorMsg = err.message || '登录失败'
-      setError(errorMsg)
-      onError?.(errorMsg)
-      return false
-    } finally {
-      setIsLoading(false)
-    }
-  }, [getPrivyAccessToken, loginBackend, onSuccess, onError, redirectOnSuccess])
+      onError?.(err.message || '登录失败')
+    },
+  })
 
   return {
-    loginToBackend,
-    isLoading,
-    error,
-    clearError,
+    loginToBackend: mutation.mutateAsync,
+    isLoading: mutation.isPending,
+    error: mutation.error?.message || null,
+    clearError: mutation.reset,
+    // 额外暴露 mutation 状态
+    isSuccess: mutation.isSuccess,
+    isError: mutation.isError,
+    data: mutation.data,
   }
 }

@@ -2,15 +2,26 @@ import { useEffect, useRef, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useLogin } from '@privy-io/expo/ui'
 import { usePrivy } from '@privy-io/expo'
-import { router } from 'expo-router'
+import { router, useNavigation } from 'expo-router'
 
 import { useAuthStore } from '@/stores/auth'
 import { Web3LoginDrawer } from './_comps/web3-login-drawer'
-import { useLogout } from '@/hooks/use-logout'
+
+/**
+ * 登录成功后导航
+ * 如果有上一页则返回，否则跳转首页
+ */
+const navigateAfterLogin = () => {
+  if (router.canGoBack()) {
+    router.back()
+  } else {
+    router.replace('/' as '/')
+  }
+}
 
 const Login = () => {
   const { login: privyLogin } = useLogin()
-  const { isReady: privyReady, user: privyUser } = usePrivy()
+  const { isReady: privyReady, user: privyUser, getAccessToken } = usePrivy()
 
   // 后端认证状态
   const {
@@ -25,34 +36,48 @@ const Login = () => {
   // 用于防止后端登录重复触发（自动登录场景）
   const backendLoginAttemptedRef = useRef(false)
 
+  // 如果已登录后端，直接返回或跳转首页
+  useEffect(() => {
+    if (isBackendAuthenticated) {
+      navigateAfterLogin()
+    }
+  }, [isBackendAuthenticated])
+
   // 自动登录：当钱包已连接、Privy 已登录但后端未认证时，自动登录后端
   useEffect(() => {
-    if (
-      privyReady &&
-      privyUser &&
-      !isBackendAuthenticated &&
-      !isBackendLoading &&
-      !backendLoginAttemptedRef.current &&
-      !isDrawerVisible // 不在抽屉流程中
-    ) {
-      backendLoginAttemptedRef.current = true
-      console.log('Auto backend login: Privy authenticated, logging into backend...')
-      debugger
-      loginBackend().then((success) => {
-        if (success) {
+    const autoLogin = async () => {
+      if (
+        privyReady &&
+        privyUser &&
+        !isBackendAuthenticated &&
+        !isBackendLoading &&
+        !backendLoginAttemptedRef.current &&
+        !isDrawerVisible // 不在抽屉流程中
+      ) {
+        backendLoginAttemptedRef.current = true
+        console.log('Auto backend login: Privy authenticated, logging into backend...')
+
+        try {
+          const privyToken = await getAccessToken()
+          if (!privyToken) {
+            throw new Error('Failed to get Privy token')
+          }
+          await loginBackend(privyToken)
           console.log('Backend login successful')
-          router.replace('/' as '/')
-        } else {
-          console.log('Backend login failed')
+          navigateAfterLogin()
+        } catch (error) {
+          console.log('Backend login failed:', error)
           backendLoginAttemptedRef.current = false
         }
-      })
+      }
     }
+
+    autoLogin()
 
     if (!privyUser) {
       backendLoginAttemptedRef.current = false
     }
-  }, [privyReady, privyUser, isBackendAuthenticated, isBackendLoading, loginBackend, isDrawerVisible])
+  }, [privyReady, privyUser, isBackendAuthenticated, isBackendLoading, loginBackend, isDrawerVisible, getAccessToken])
 
   // Web2 登录（Email/Google 等）
   const handleWeb2Login = () => {
@@ -68,7 +93,6 @@ const Login = () => {
 
   return (
     <View className="flex-1 items-center justify-center bg-background gap-6 px-6">
-
 
       {/* Web2 登录 */}
       <View className="w-full">
