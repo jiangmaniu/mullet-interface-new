@@ -13,18 +13,22 @@ if (fs.existsSync(envFile)) {
 
 export default ({ config }: { config: ConfigContext }) => {
   const extra: ExpoConfigExtra = {
-    PRIVY_APP_ID: process.env.EXPO_PUBLIC_PRIVY_APP_ID,
-    PRIVY_CLIENT_ID: process.env.EXPO_PUBLIC_PRIVY_CLIENT_ID,
-    PRIVY_SESSION_SIGNER_ID: process.env.EXPO_PUBLIC_PRIVY_SESSION_SIGNER_ID,
-    API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
-    IMAGE_DOMAIN: process.env.EXPO_PUBLIC_IMAGE_DOMAIN,
-    WS_URL: process.env.EXPO_PUBLIC_WS_URL,
-    REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID,
+    // Privy 配置
+    PRIVY_APP_ID: process.env.EXPO_PUBLIC_PRIVY_APP_ID!,
+    PRIVY_CLIENT_ID: process.env.EXPO_PUBLIC_PRIVY_CLIENT_ID!,
+    PRIVY_SESSION_SIGNER_ID: process.env.EXPO_PUBLIC_PRIVY_SESSION_SIGNER_ID!,
+    // API 配置
+    API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL!,
+    WS_URL: process.env.EXPO_PUBLIC_WS_URL!,
+    IMG_DOMAIN: process.env.EXPO_PUBLIC_IMG_DOMAIN!,
+    WEBSITE_URL: process.env.EXPO_PUBLIC_WEBSITE_URL!,
+    // Reown 配置
+    REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID!,
   }
 
   const result: ExpoConfig = {
     ...config,
-    name: `mullet (${env})`,
+    name: `Mullet (${env})`,
     slug: 'mullet',
     version: '1.0.0',
     orientation: 'portrait',
@@ -93,6 +97,11 @@ export default ({ config }: { config: ConfigContext }) => {
       // Android 钱包检测插件
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
       './plugins/queries.js',
+      // Android 网络安全配置 - 解决 SSL 证书验证问题
+      './plugins/withNetworkSecurityConfig.js',
+      // Android SSL 信任所有证书 - 已删除，使用 HTTP 临时过渡
+      // iOS 禁用代码签名 - 解决开发环境无证书问题
+      // './plugins/withDisableCodeSigning.js',
     ],
     experiments: {
       typedRoutes: true,

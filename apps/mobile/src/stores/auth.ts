@@ -8,6 +8,8 @@ import {
   setOnTokenExpired,
   type UserInfo,
 } from '@/lib/api'
+import { setLocalUserInfo } from '@/v1/utils/storage'
+import { stores } from '@/v1/provider/mobxProvider'
 
 interface AuthState {
   // 状态
@@ -21,7 +23,7 @@ interface AuthState {
 
   // Actions
   setGetPrivyAccessToken: (fn: () => Promise<string | null>) => void
-  loginWithPrivy: () => Promise<boolean>
+  loginWithPrivy: () => Promise<boolean | UserInfo>
   logout: () => Promise<void>
   checkAuth: () => Promise<boolean>
   clearError: () => void
@@ -46,9 +48,13 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => {
 
       // 使用 Privy token 重新登录后端
       const response = await loginWithPrivyToken(privyToken)
+
+      await setLocalUserInfo(response)
+      await stores.user.handleLoginSuccess(response as User.UserInfo)
+
       set({
         isAuthenticated: true,
-        user: response.user || null,
+        user: response || null,
       })
       return true
     } catch (error) {
@@ -91,11 +97,12 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => {
         const response = await loginWithPrivyToken(privyToken)
         set({
           isAuthenticated: true,
-          user: response.user || null,
+          user: response || null,
           isLoading: false,
         })
-        return true
+        return response
       } catch (error) {
+        debugger
         const message = error instanceof Error ? error.message : 'Login failed'
         set({
           isLoading: false,
@@ -149,7 +156,7 @@ const authStoreCreator: StateCreator<AuthState> = (set, get) => {
               const response = await loginWithPrivyToken(privyToken)
               set({
                 isAuthenticated: true,
-                user: response.user || null,
+                user: response || null,
                 isLoading: false,
               })
               return true

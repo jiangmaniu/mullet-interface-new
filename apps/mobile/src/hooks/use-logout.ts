@@ -13,7 +13,7 @@ interface UseLogoutReturn {
 
 /**
  * 统一退出登录 hook
- * 清除后端 token、Privy 登录状态、Reown 钱包连接，并重定向到登录页面
+ * 并行清除后端 token、Privy 登录状态、Reown 钱包连接，然后重定向到登录页面
  */
 export function useLogout(): UseLogoutReturn {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -27,29 +27,27 @@ export function useLogout(): UseLogoutReturn {
     setIsLoggingOut(true)
 
     try {
-      // 1. 清除后端 API token（调用后端登出接口 + 清除本地存储）
-      await authLogout()
+      // 并行执行所有退出操作
+      const results = await Promise.allSettled([
+        // 1. 清除后端 API token（调用后端登出接口 + 清除本地存储）
+        authLogout(),
+        // 2. 清除本地 token
+        tokenStorage.clearAll(),
+        // 3. 断开 Reown 钱包连接
+        disconnectWallet(),
+        // 4. 登出 Privy
+        privyLogout(),
+      ])
 
-      // 2. 确保本地 token 已清除
-      await tokenStorage.clearAll()
+      // 记录失败的操作（仅用于调试）
+      results.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          const operations = ['authLogout', 'tokenStorage.clearAll', 'disconnectWallet', 'privyLogout']
+          console.warn(`Logout operation "${operations[index]}" failed:`, result.reason)
+        }
+      })
 
-      // 3. 断开 Reown 钱包连接
-      try {
-        await disconnectWallet()
-      } catch (error) {
-        console.warn('Failed to disconnect wallet:', error)
-        // 继续执行，不阻塞退出流程
-      }
-
-      // 4. 登出 Privy
-      try {
-        await privyLogout()
-      } catch (error) {
-        console.warn('Failed to logout from Privy:', error)
-        // 继续执行，不阻塞退出流程
-      }
-
-      // 5. 重定向到登录页面
+      // 重定向到登录页面
       router.replace('/(login)')
     } catch (error) {
       console.error('Logout failed:', error)

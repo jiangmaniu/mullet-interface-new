@@ -6,15 +6,16 @@ import { View } from 'react-native'
 import { useUniwind, Uniwind } from 'uniwind'
 import { PrivyElements } from '@privy-io/expo/ui'
 import { AppKit, appKit } from '@/lib/appkit'
-import { AuthInitializer } from './auth-initializer'
 import { I18nProvider } from '@lingui/react'
-import { EXPO_CONFIG_EXTRA } from '@/constants/expo'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { dynamicActivate, i18n, initialLocale } from '@/locales/i18n'
 import { PrivyProvider } from '@privy-io/expo'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { IconoirProvider } from 'iconoir-react-native'
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { useFonts } from 'expo-font';
+import { V1Provider } from '@/v1/provider'
+import { InitializerProvider } from './initializer'
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
@@ -67,12 +68,13 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
         <IconoirProvider iconProps={{ color: textColorContent1 }}>
           {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
           <AppKitProvider instance={appKit}>
-            <PrivyProvider appId={EXPO_CONFIG_EXTRA.PRIVY_APP_ID} clientId={EXPO_CONFIG_EXTRA.PRIVY_CLIENT_ID}>
+            <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
 
-              {/* 认证状态初始化：将 Privy token 同步到后端 */}
-              <AuthInitializer>
-                {children}
-              </AuthInitializer>
+              <InitializerProvider>
+                <V1Provider>
+                  {children}
+                </V1Provider>
+              </InitializerProvider>
 
               {/* Privy UI Elements */}
               <PrivyElements

@@ -1,8 +1,8 @@
 import * as SecureStore from 'expo-secure-store'
 
-import { EXPO_CONFIG_EXTRA } from '@/constants/expo'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
 
-const BASE_URL = EXPO_CONFIG_EXTRA.API_BASE_URL
+const BASE_URL = EXPO_ENV_CONFIG.API_BASE_URL
 
 // Token 存储 keys
 export const TOKEN_KEY = 'auth_token'

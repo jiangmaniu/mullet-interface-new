@@ -1,22 +1,27 @@
+import { getCaptcha, login  } from '@/v1/services/user'
 import { apiClient, tokenStorage } from './client'
 
 // 登录响应类型
-export interface LoginResponse {
-  token: string
-  refreshToken?: string
-  user?: {
-    id: string
-    address?: string
-    [key: string]: unknown
-  }
-}
+// export interface LoginResponse {
+//   token: string
+//   refreshToken?: string
+//   user?: {
+//     id: string
+//     address?: string
+//     [key: string]: unknown
+//   }
+//   data: User.LoginResult
+// }
+export type LoginResponse = User.LoginResult
 
 // 用户信息类型
-export interface UserInfo {
-  id: string
-  address?: string
-  [key: string]: unknown
-}
+// export interface UserInfo {
+//   id: string
+//   address?: string
+//   [key: string]: unknown
+// }
+
+export type UserInfo = User.LoginResult
 
 /**
  * 使用 Privy token 登录后端
@@ -24,21 +29,18 @@ export interface UserInfo {
  * @returns 登录响应
  */
 export async function loginWithPrivyToken(privyToken: string): Promise<LoginResponse> {
-  const response = await apiClient.post<LoginResponse>(
-    '/api/auth/login',
-    { privyToken },
-    { skipAuth: true }
-  )
-
-  // 保存 token
-  if (response.token) {
-    await tokenStorage.setToken(response.token)
+  const rs = await login({grant_type: 'privy_token'})
+  
+  // // 保存 token
+  if (rs.access_token) {
+    await tokenStorage.setToken(rs.access_token)
   }
-  if (response.refreshToken) {
-    await tokenStorage.setRefreshToken(response.refreshToken)
+  if (rs.refresh_token) {
+    await tokenStorage.setRefreshToken(rs.refresh_token)
   }
 
-  return response
+
+  return rs
 }
 
 /**

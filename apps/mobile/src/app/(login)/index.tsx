@@ -5,7 +5,7 @@ import { usePrivy } from '@privy-io/expo'
 import { router } from 'expo-router'
 
 import { useAuthStore } from '@/stores/auth'
-import { Web3LoginDrawer } from '@/components/web3-login-drawer'
+import { Web3LoginDrawer } from './_comps/web3-login-drawer'
 import { useLogout } from '@/hooks/use-logout'
 
 const Login = () => {
@@ -37,8 +37,8 @@ const Login = () => {
     ) {
       backendLoginAttemptedRef.current = true
       console.log('Auto backend login: Privy authenticated, logging into backend...')
-
-      loginBackend().then((success: boolean) => {
+      debugger
+      loginBackend().then((success) => {
         if (success) {
           console.log('Backend login successful')
           router.replace('/' as '/')
@@ -65,15 +65,10 @@ const Login = () => {
   }
 
 
-  const { logout, isLoggingOut } = useLogout()
-
 
   return (
     <View className="flex-1 items-center justify-center bg-background gap-6 px-6">
 
-      <Pressable onPress={logout} disabled={isLoggingOut}>
-        <Text>{isLoggingOut ? '退出中...' : '退出登录'}</Text>
-      </Pressable>
 
       {/* Web2 登录 */}
       <View className="w-full">

@@ -44,7 +44,7 @@ export default function AssetsScreen() {
                 <TouchableOpacity onPress={() => { }}>
                   <IconifyBell width={22} height={22} color={textColorContent1} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/setting')}>
                   <IconifySettings width={22} height={22} color={textColorContent1} />
                 </TouchableOpacity>
               </View>

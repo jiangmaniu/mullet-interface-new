@@ -30,12 +30,16 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       NODE_ENV: 'development' | 'production' | 'test'
+      // Privy 配置
       EXPO_PUBLIC_PRIVY_APP_ID: string
       EXPO_PUBLIC_PRIVY_CLIENT_ID: string
       EXPO_PUBLIC_PRIVY_SESSION_SIGNER_ID: string
+      // API 配置
       EXPO_PUBLIC_API_BASE_URL: string
-      EXPO_PUBLIC_IMAGE_DOMAIN: string
       EXPO_PUBLIC_WS_URL: string
+      EXPO_PUBLIC_IMG_DOMAIN: string
+      EXPO_PUBLIC_WEBSITE_URL: string
+      // Reown 配置
       EXPO_PUBLIC_REOWN_PROJECT_ID: string
     }
   }

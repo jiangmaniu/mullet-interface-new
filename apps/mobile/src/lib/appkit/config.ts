@@ -6,9 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { createAppKit, solana, solanaDevnet, type Storage } from '@reown/appkit-react-native'
 import { SolanaAdapter, PhantomConnector, SolflareConnector } from '@reown/appkit-solana-react-native'
 
-import { EXPO_CONFIG_EXTRA } from '@/constants/expo'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
 
-const projectId = EXPO_CONFIG_EXTRA.REOWN_PROJECT_ID
+const projectId = EXPO_ENV_CONFIG.REOWN_PROJECT_ID
 
 // Solana adapter
 const solanaAdapter = new SolanaAdapter()
@@ -48,7 +48,7 @@ export const appKit = createAppKit({
     name: 'Mullet',
     description: 'Mullet - Trade Smarter',
     url: 'https://mullet.top',
-    icons: ['https://mullet.top/icons/logo/mullet-tag.svg'],
+    icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-tag.svg`],
     redirect: {
       native: 'mullet://',
       universal: 'https://mullet.top',
