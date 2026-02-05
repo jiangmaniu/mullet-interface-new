@@ -74,7 +74,6 @@ export function Slider({
           bubbleTextColor: '#EED94C',
           heartbeatColor: '#EED94C',
         }}
-        style={{ paddingHorizontal: 5 }}
         containerStyle={useResolveClassNames('h-[2px] rounded-0')}
         thumbWidth={10}
         renderThumb={() => (
@@ -84,7 +83,7 @@ export function Slider({
         )}
         // 刻度配置
         steps={numberOfMarks - 1}
-        markWidth={11}
+        markWidth={6}
         renderMark={({ index }) => {
           const markValue = min + index * markInterval
           const active = markValue <= (controlledValue ?? defaultValue)
