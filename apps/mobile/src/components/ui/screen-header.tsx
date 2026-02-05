@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button, IconButton } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'expo-router';
 import { NavArrowLeft } from 'iconoir-react-native';
@@ -40,14 +40,13 @@ export function ScreenHeader({
     if (left) return left;
     if (showBackButton && router.canGoBack()) {
       return (
-        <Button
-          variant="ghost"
-          size="icon"
+        <IconButton
+          variant="icon"
           className="-ml-2 h-10 w-10 rounded-full"
           onPress={handleBack}
         >
           <NavArrowLeft width={24} height={24} className="text-foreground" />
-        </Button>
+        </IconButton>
       );
     }
     return null;
