@@ -25,6 +25,7 @@ export default function RootLayout() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(assets)" options={{ headerShown: false }} />
+        <Stack.Screen name="(trade)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>

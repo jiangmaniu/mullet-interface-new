@@ -5,13 +5,9 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { ActivityIndicator, Platform, Pressable, View } from 'react-native';
 
+
 const buttonVariants = cva(
-  cn(
-    'group flex-row items-center justify-center gap-1 rounded-[8px] transition-all active:opacity-80 active:scale-[0.98]',
-    Platform.select({
-      web: "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 whitespace-nowrap select-none",
-    })
-  ),
+  'group flex-row items-center justify-center gap-medium transition-all',
   {
     variants: {
       disabled: {
@@ -22,69 +18,52 @@ const buttonVariants = cva(
         primary: '',
       },
       variant: {
-        none: '',
-        primary: '',
-        destructive: 'bg-destructive enabled:hover:bg-destructive/90',
-        outline: 'border border-[#3B3D52] bg-transparent',
-        secondary: 'bg-[#0A0C27]',
-        ghost: 'bg-transparent',
-        link: 'text-[#EED94C] web:font-semibold web:leading-none text-xs',
+        solid: '',
+        outline: 'border',
+        none: 'underline',
+        icon: ''
       },
       size: {
-        sm: 'py-1.5 px-4 rounded-1',
-        md: 'py-2 px-6 rounded-2',
-        lg: 'py-xl px-[29px] rounded-2',
-        icon: 'rounded-[8px]',
+        sm: 'rounded-xs',
+        md: 'rounded-small',
+        lg: 'rounded-small',
       },
     },
     compoundVariants: [
-      {
-        variant: 'primary',
-        color: 'default',
-        className: cn(
-          'bg-zinc-300/20',
-          Platform.select({ web: 'enabled:hover:bg-zinc-300/40 enabled:hover:shadow-base' })
-        ),
-      },
-      {
-        variant: 'outline',
-        color: 'default',
-        className: cn(
-          'border-zinc-300/20',
-          Platform.select({
-            web: 'enabled:hover:bg-zinc-300/0 enabled:hover:border-zinc-base enabled:hover:shadow-base'
-          })
-        ),
-      },
-      {
-        variant: 'primary',
-        color: 'primary',
-        className: cn(
-          'bg-brand-primary',
-          Platform.select({ web: 'enabled:hover:bg-yellow-400 enabled:hover:shadow-base' })
-        ),
-      },
-      {
-        disabled: true,
-        variant: 'primary',
-        color: 'primary',
-        className: 'bg-button', // Explicit override when disabled=true
-      },
-      {
-        variant: 'secondary',
-        className: Platform.select({
-          web: 'enabled:hover:bg-[#FDFF84] enabled:hover:ring-[#FDFF84]'
-        })
-      },
-      {
-        variant: 'ghost',
-        className: Platform.select({
-          web: 'enabled:hover:bg-[#FDFF84]'
-        })
-      }
+      { variant: 'solid', size: 'sm', className: 'py-small px-2xl' },
+      { variant: 'solid', size: 'md', className: 'py-medium px-3xl' },
+      { variant: 'solid', size: 'lg', className: 'py-xl px-4xl' },
+      { variant: 'solid', color: 'default', className: 'bg-button active:inset-shadow-base' },
+      { variant: 'solid', color: 'primary', className: 'bg-brand-primary active:inset-shadow-base' },
+      { variant: 'solid', color: 'default', disabled: true, className: 'bg-button pointer-events-none' },
+      { variant: 'solid', color: 'primary', disabled: true, className: 'bg-button pointer-events-none' },
+
+      { variant: 'outline', size: 'sm', className: 'py-small px-2xl' },
+      { variant: 'outline', size: 'md', className: 'py-medium px-3xl' },
+      { variant: 'outline', size: 'lg', className: 'py-medium px-4xl' },
+      { variant: 'outline', color: 'default', className: 'border-brand-default active:border-brand-important' },
+      { variant: 'outline', color: 'primary', className: '' },
+      { variant: 'outline', color: 'default', disabled: true, className: 'border-brand-default pointer-events-none' },
+      { variant: 'outline', color: 'primary', disabled: true, className: 'pointer-events-none' },
+
+      { variant: 'none', size: 'sm', className: 'py-small' },
+      { variant: 'none', size: 'md', className: 'py-medium' },
+      { variant: 'none', size: 'lg', className: 'py-medium' },
+      { variant: 'none', color: 'default', className: '' },
+      { variant: 'none', color: 'primary', className: '' },
+      { variant: 'none', color: 'default', disabled: true, className: 'pointer-events-none' },
+      { variant: 'none', color: 'primary', disabled: true, className: 'pointer-events-none' },
+
+      { variant: 'icon', size: 'sm', className: 'py-medium' },
+      { variant: 'icon', size: 'md', className: '' },
+      { variant: 'icon', size: 'lg', className: '' },
+      { variant: 'icon', color: 'default', className: '' },
+      { variant: 'icon', color: 'primary', className: '' },
+      { variant: 'icon', color: 'default', disabled: true, className: 'pointer-events-none' },
+      { variant: 'icon', color: 'primary', disabled: true, className: 'pointer-events-none' },
     ],
     defaultVariants: {
-      variant: 'primary',
+      variant: 'solid',
       size: 'sm',
       color: 'default',
       disabled: false,
@@ -93,10 +72,7 @@ const buttonVariants = cva(
 );
 
 const buttonTextVariants = cva(
-  cn(
-    'text-sm font-medium text-foreground',
-    Platform.select({ web: 'pointer-events-none transition-colors' })
-  ),
+  '',
   {
     variants: {
       disabled: {
@@ -107,62 +83,52 @@ const buttonTextVariants = cva(
         primary: '',
       },
       variant: {
-        none: 'text-content-4',
-        primary: '',
-        destructive: 'text-destructive-foreground',
-        outline: 'text-white',
-        secondary: 'text-white',
-        ghost: 'text-white',
-        link: 'text-[#EED94C]',
+        solid: '',
+        outline: '',
+        none: '',
+        icon: ''
       },
       size: {
         sm: 'text-button-1',
         md: 'text-button-2',
         lg: 'text-button-2',
-        icon: ''
       },
     },
     compoundVariants: [
-      {
-        variant: 'primary',
-        color: 'default',
-        className: 'text-content-1',
-      },
-      {
-        variant: 'outline',
-        color: 'default',
-        className: 'text-content-1'
-      },
-      {
-        variant: 'primary',
-        color: 'primary',
-        className: 'text-content-foreground' // snippet: text-content-foreground
-      },
-      {
-        variant: 'ghost',
-        color: 'primary',
-        size: 'icon',
-        className: 'text-brand-primary' // snippet: text-content-foreground
-      },
-      {
-        variant: 'primary',
-        color: 'primary',
-        disabled: true,
-        className: 'text-content-6' // snippet: text-content-foreground
-      },
-      // Interaction states for text (hover etc) are hard in RN without state, 
-      // but we can add conditional classes if needed or rely on parent group-hover
-      {
-        variant: 'ghost',
-        className: 'group-hover:text-[#0A0C27]'
-      },
-      {
-        variant: 'secondary',
-        className: 'group-hover:text-[#0A0C27]'
-      }
+      { variant: 'solid', size: 'sm', className: '' },
+      { variant: 'solid', size: 'md', className: '' },
+      { variant: 'solid', size: 'lg', className: '' },
+      { variant: 'solid', color: 'default', className: 'text-content-1' },
+      { variant: 'solid', color: 'primary', className: 'text-content-foreground' },
+      { variant: 'solid', color: 'default', disabled: true, className: 'text-content-6' },
+      { variant: 'solid', color: 'primary', disabled: true, className: 'text-content-6' },
+
+      { variant: 'outline', size: 'sm', className: '' },
+      { variant: 'outline', size: 'md', className: '' },
+      { variant: 'outline', size: 'lg', className: '' },
+      { variant: 'outline', color: 'default', className: 'text-content-1' },
+      { variant: 'outline', color: 'primary', className: '' },
+      { variant: 'outline', color: 'default', disabled: true, className: 'text-brand-divider-line' },
+      { variant: 'outline', color: 'primary', disabled: true, className: '' },
+
+      { variant: 'none', size: 'sm', className: '' },
+      { variant: 'none', size: 'md', className: '' },
+      { variant: 'none', size: 'lg', className: '' },
+      { variant: 'none', color: 'default', className: 'text-content-4' },
+      { variant: 'none', color: 'primary', className: 'text-brand-primary' },
+      { variant: 'none', color: 'default', disabled: true, className: 'text-brand-divider-line' },
+      { variant: 'none', color: 'primary', disabled: true, className: 'text-brand-divider-line' },
+
+      { variant: 'icon', size: 'sm', className: '' },
+      { variant: 'icon', size: 'md', className: '' },
+      { variant: 'icon', size: 'lg', className: '' },
+      { variant: 'icon', color: 'default', className: 'text-content-1' },
+      { variant: 'icon', color: 'primary', className: '' },
+      { variant: 'icon', color: 'default', disabled: true, className: 'text-brand-divider-line' },
+      { variant: 'icon', color: 'primary', disabled: true, className: '' },
     ],
     defaultVariants: {
-      variant: 'primary',
+      variant: 'solid',
       size: 'sm',
       color: 'default',
       disabled: false,
@@ -230,8 +196,8 @@ function Button({
   );
 }
 
-const IconButton = ({ className, variant = 'outline', size = 'icon', ...props }: ButtonProps) => {
-  return <Button className={className} variant={variant} size={size} {...props} />
+const IconButton = ({ className, variant = 'icon', ...props }: ButtonProps) => {
+  return <Button className={className} variant={variant} {...props} />
 }
 
 export { Button, buttonVariants, buttonTextVariants, IconButton };

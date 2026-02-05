@@ -83,7 +83,13 @@ export type InputContainerProps<T = string> = Prettify<
      * 或使用任意值：'peer-[:not(:placeholder-shown)]:bg-[#1a1f3a] peer-focus:bg-[#1a1f3a]'
      */
     labelClassName?: string
-
+    /**
+     * 标签浮动时的自定义类名（用于设置背景色等样式）
+     * 注意：需要包含完整的 peer 修饰符
+     * 例如：'peer-[:not(:placeholder-shown)]:bg-zinc-900 peer-focus:bg-zinc-900'
+     * 或使用任意值：'peer-[:not(:placeholder-shown)]:bg-[#1a1f3a] peer-focus:bg-[#1a1f3a]'
+     */
+    displayLabelClassName?: string
     hideLabel?: boolean
   } & VariantProps<typeof InputContainerVariants>
 >
@@ -104,6 +110,7 @@ const InputContainer = <T,>({
   labelText,
   placeholder,
   labelBgColor,
+  displayLabelClassName,
   hideLabel = false,
   labelClassName,
   block = false,
@@ -230,9 +237,9 @@ const InputContainer = <T,>({
               isFloating
                 ? 'top-0 -translate-y-1/2 left-xl px-xs bg-secondary' // 浮动状态: 上移，左对齐，背景色遮挡边框
                 : 'top-1/2 -translate-y-1/2', // 占位状态: 垂直居中
-
               // 颜色
-              isFocused ? 'text-brand-primary' : 'text-content-5'
+              isFocused ? 'text-brand-primary' : 'text-content-5',
+              displayLabelClassName
             )}
             style={{
               left: isFloating ? 12 : labelInitialLeft, // 浮动时固定左侧 padding，占位时跟随 LeftContent
@@ -265,7 +272,7 @@ const InputContainer = <T,>({
         )}
 
         {/* RightContent */}
-        {RightContent && <View className="text-paragraph-p2 text-content-1 z-10 order-4">{RightContent}</View>}
+        {RightContent && <View className="z-10 order-4 flex-shrink-0">{RightContent}</View>}
       </Pressable>
 
       {(hintLabel || hintValue) && (

@@ -34,6 +34,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
       hintValue,
       errorMessage,
       className,
+      displayLabelClassName,
       // input element props
       ...inputProps
     },
@@ -63,15 +64,16 @@ const Input = React.forwardRef<TextInput, InputProps>(
         hintValue={hintValue}
         errorMessage={errorMessage}
         className={className}
+        displayLabelClassName={displayLabelClassName}
       >
         <TextInput
           ref={ref}
-          placeholder="" 
+          placeholder=""
           className={cn(
             'flex-1 text-paragraph-p2 text-content-1 p-0', // Reset default padding
             'h-full w-full bg-transparent outline-none border-none',
             'placeholder:text-transparent', // Hide native placeholder if we are using floating label
-             inputClassName
+            inputClassName
           )}
           value={value}
           onChangeText={(text) => {

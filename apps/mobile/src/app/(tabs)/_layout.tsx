@@ -31,7 +31,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="trade"
+        name="trade/index"
         options={{
           title: t`交易`,
           tabBarIcon: ({ color, focused }) => focused ? <IconTrade primaryColor={colorBrandPrimary} width={24} height={24} color={color} /> : <IconifyActivity width={24} height={24} color={color} />,

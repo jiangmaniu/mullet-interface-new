@@ -1,13 +1,107 @@
 import { useState, useCallback, useMemo } from 'react'
 import { View, ScrollView, TouchableOpacity } from 'react-native'
 import { Route } from 'react-native-tab-view'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 
 import { Text } from '@/components/ui/text'
-import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
-import { IconifyNavArrowDownSolid } from '@/components/ui/icons'
+import {
+  IconifyActivity,
+  IconifyCandlestickChart,
+  IconifyNavArrowDownSolid,
+} from '@/components/ui/icons'
+import { ScreenHeader } from '@/components/ui/screen-header'
+import { cn } from '@/lib/utils'
+import { IconStarFill } from '@/components/ui/icons/set/star-fill'
+import { IconStar } from '@/components/ui/icons/set/star'
 import { Trans } from '@lingui/react/macro'
 import { t } from '@/locales/i18n'
+import { TimePeriodDrawer } from './_comps/time-period-drawer'
+
+// ============ SymbolDepthHeader Component ============
+interface SymbolDepthHeaderProps {
+  symbol: string
+  priceChange: string
+  isPriceUp: boolean
+  onSymbolPress?: () => void
+  isFavorite: boolean
+  onFavoriteToggle?: () => void
+}
+
+function SymbolDepthHeader({
+  symbol,
+  priceChange,
+  isPriceUp,
+  onSymbolPress,
+  isFavorite,
+  onFavoriteToggle,
+}: SymbolDepthHeaderProps) {
+  const router = useRouter()
+
+  const handleViewChange = useCallback((view: 'chart' | 'depth') => {
+    if (view === 'chart') {
+      // Navigate back to trade page
+      router.push('/trade')
+    }
+    // Already on depth view, do nothing
+  }, [router])
+
+  return (
+    <ScreenHeader
+      showBackButton={false}
+      left={
+        <View className="flex-row items-center gap-medium">
+          <TouchableOpacity
+            onPress={onSymbolPress}
+            className="flex-row items-center gap-medium"
+          >
+            <Avatar className="size-[30px]">
+              <AvatarFallback className="bg-[#9945FF]">
+                <Text className="text-white text-xs">S</Text>
+              </AvatarFallback>
+            </Avatar>
+            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbol}</Text>
+            <Text className={isPriceUp ? 'text-market-rise' : 'text-market-fall'}>
+              {priceChange}
+            </Text>
+            <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
+          </TouchableOpacity>
+        </View>
+      }
+      right={
+        <View className="flex-row items-center gap-xl">
+          <View className={cn('flex-row rounded-full border border-brand-default overflow-hidden p-[3px]')}>
+            <TouchableOpacity
+              onPress={() => handleViewChange('chart')}
+              className="w-[36px] h-[24px] rounded-full justify-center items-center"
+            >
+              <IconifyActivity width={22} height={22} className="text-content-4" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleViewChange('depth')}
+              className="w-[36px] h-[24px] rounded-full justify-center items-center bg-button"
+            >
+              <IconifyCandlestickChart
+                width={22}
+                height={22}
+                className="text-content-1"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity onPress={onFavoriteToggle}>
+            {isFavorite ? (
+              <IconStarFill width={22} height={22} className="text-brand-primary" />
+            ) : (
+              <IconStar width={22} height={22} className="text-content-1" />
+            )}
+          </TouchableOpacity>
+        </View>
+      }
+    />
+  )
+}
 
 // ============ Constants ============
 const TIME_PERIODS = [
@@ -17,6 +111,7 @@ const TIME_PERIODS = [
   { label: '天', value: 'D' },
   { label: '周', value: 'W' },
   { label: '月', value: 'M' },
+  { label: '年', value: 'Y' },
 ]
 
 // Mock contract properties data
@@ -117,6 +212,12 @@ function PriceInfo({
 // ============ ChartView Component ============
 function ChartView() {
   const [selectedPeriod, setSelectedPeriod] = useState('15')
+  const [showMoreDrawer, setShowMoreDrawer] = useState(false)
+
+  const handleSelectPeriod = useCallback((value: string) => {
+    setSelectedPeriod(value)
+    setShowMoreDrawer(false)
+  }, [])
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -134,7 +235,7 @@ function ChartView() {
 
       {/* Time Period Selector */}
       <View className="flex-row items-center h-[40px] px-medium">
-        <View className="flex-row items-center gap-2xl">
+        <View className="flex-row items-center">
           <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod}>
             <TabsList variant="text" size="sm" className="gap-2xl">
               {TIME_PERIODS.map((period) => (
@@ -144,12 +245,10 @@ function ChartView() {
               ))}
             </TabsList>
           </Tabs>
-          <Button variant="none" className="p-0 flex-row items-center">
-            <Text className="text-content-4">
-              <Trans>更多</Trans>
-            </Text>
-            <IconifyNavArrowDownSolid width={16} height={16} className="text-content-4" />
-          </Button>
+          <TabsTrigger value="more" className="flex-row" onPress={() => setShowMoreDrawer(true)}>
+            <Text><Trans>更多</Trans></Text>
+            <IconifyNavArrowDownSolid width={12} height={12} className="text-content-4" />
+          </TabsTrigger>
         </View>
       </View>
 
@@ -157,6 +256,14 @@ function ChartView() {
       <View className="h-[530px] bg-brand-primary">
         {/* TODO: K-line chart will be implemented here */}
       </View>
+
+      {/* More Time Periods Drawer */}
+      <TimePeriodDrawer
+        open={showMoreDrawer}
+        onOpenChange={setShowMoreDrawer}
+        selectedPeriod={selectedPeriod}
+        onSelectPeriod={handleSelectPeriod}
+      />
     </ScrollView>
   )
 }
@@ -235,14 +342,17 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
             <Trans>卖出 / 做空</Trans>
           </Text>
         </TouchableOpacity>
-
       </View>
     </View>
   )
 }
 
-// ============ Main Depth Component ============
-export default function Depth() {
+// ============ Main SymbolDepth Component ============
+export default function SymbolDepth() {
+  const router = useRouter()
+  const { symbol } = useLocalSearchParams<{ symbol: string }>()
+  const [isFavorite, setIsFavorite] = useState(false)
+
   const routes = useMemo<Route[]>(
     () => [
       { key: 'chart', title: t`图表` },
@@ -263,15 +373,26 @@ export default function Depth() {
   }, [])
 
   const handleBuy = useCallback(() => {
-    console.log('Buy order placed')
-  }, [])
+    router.push('/trade?side=buy')
+  }, [router])
 
   const handleSell = useCallback(() => {
-    console.log('Sell order placed')
+    router.push('/trade?side=sell')
+  }, [router])
+
+  const handleFavoriteToggle = useCallback(() => {
+    setIsFavorite((prev) => !prev)
   }, [])
 
   return (
     <View className="flex-1">
+      <SymbolDepthHeader
+        symbol={symbol || 'SOL-USDC'}
+        priceChange="+1.54%"
+        isPriceUp={true}
+        isFavorite={isFavorite}
+        onFavoriteToggle={handleFavoriteToggle}
+      />
       <SwipeableTabs
         routes={routes}
         renderScene={renderScene}

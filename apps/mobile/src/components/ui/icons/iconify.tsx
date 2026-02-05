@@ -25,7 +25,7 @@ import {
   CandlestickChart,
   MoreHoriz,
   Page,
-  PageDown
+  PageDown,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);

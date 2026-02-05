@@ -3,6 +3,7 @@ import { AppKitProvider } from '@reown/appkit-react-native'
 import { ThemeController } from '@reown/appkit-core-react-native'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useUniwind, Uniwind } from 'uniwind'
 import { PrivyElements } from '@privy-io/expo/ui'
 import { AppKit, appKit } from '@/lib/appkit'
@@ -65,42 +66,44 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <InspectorProvider>
-      <QueryProvider>
-        <I18nProvider i18n={i18n}>
-          <ThemeProvider value={UniwindDarkTheme}>
-            <IconoirProvider iconProps={{ color: textColorContent1 }}>
-              {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
-              <AppKitProvider instance={appKit}>
-                <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <InspectorProvider>
+        <QueryProvider>
+          <I18nProvider i18n={i18n}>
+            <ThemeProvider value={UniwindDarkTheme}>
+              <IconoirProvider iconProps={{ color: textColorContent1 }}>
+                {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
+                <AppKitProvider instance={appKit}>
+                  <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
 
-                  <InitializerProvider>
-                    <V1Provider>
-                      {children}
-                    </V1Provider>
-                  </InitializerProvider>
+                    <InitializerProvider>
+                      <V1Provider>
+                        {children}
+                      </V1Provider>
+                    </InitializerProvider>
 
-                  {/* Privy UI Elements */}
-                  <PrivyElements
-                    config={{
-                      appearance: {
-                        colorScheme: theme === 'dark' ? 'dark' : 'light',
-                      },
-                    }}
-                  />
+                    {/* Privy UI Elements */}
+                    <PrivyElements
+                      config={{
+                        appearance: {
+                          colorScheme: theme === 'dark' ? 'dark' : 'light',
+                        },
+                      }}
+                    />
 
-                  {/* AppKit Modal for wallet connection */}
-                  {/* Expo Router Android workaround: https://docs.reown.com/appkit/react-native/core/installation#4-render-appkit-ui */}
-                  <View style={{ position: 'absolute', height: '100%', width: '100%', pointerEvents: 'box-none' }}>
-                    <AppKit />
-                  </View>
-                </PrivyProvider>
+                    {/* AppKit Modal for wallet connection */}
+                    {/* Expo Router Android workaround: https://docs.reown.com/appkit/react-native/core/installation#4-render-appkit-ui */}
+                    <View style={{ position: 'absolute', height: '100%', width: '100%', pointerEvents: 'box-none' }}>
+                      <AppKit />
+                    </View>
+                  </PrivyProvider>
 
-              </AppKitProvider>
-            </IconoirProvider>
-          </ThemeProvider>
-        </I18nProvider>
-      </QueryProvider>
-    </InspectorProvider>
+                </AppKitProvider>
+              </IconoirProvider>
+            </ThemeProvider>
+          </I18nProvider>
+        </QueryProvider>
+      </InspectorProvider>
+    </GestureHandlerRootView>
   )
 }

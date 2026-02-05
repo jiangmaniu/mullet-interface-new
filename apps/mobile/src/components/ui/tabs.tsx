@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Pressable, useWindowDimensions, View } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { TabView, Route } from 'react-native-tab-view';
 import Animated, {
   useAnimatedStyle,
@@ -321,12 +321,16 @@ interface TabsListProps {
   size?: TabSize;
   children: React.ReactNode;
   className?: string;
+  scrollable?: boolean;
+  centerActiveTab?: boolean;
 }
 
-function TabsList({ variant = 'underline', size = 'sm', children, className }: TabsListProps) {
+function TabsList({ variant = 'underline', size = 'sm', children, className, scrollable = false, centerActiveTab = true }: TabsListProps) {
   const [layouts, setLayouts] = React.useState<Record<string, { x: number; width: number }>>({});
   const indicatorPosition = useSharedValue(0);
   const indicatorWidth = useSharedValue(0);
+  const scrollViewRef = React.useRef<ScrollView>(null);
+  const { width: screenWidth } = useWindowDimensions();
 
   // Get parent Tabs context
   const parentContext = React.useContext(SimpleTabsContext);
@@ -349,25 +353,50 @@ function TabsList({ variant = 'underline', size = 'sm', children, className }: T
       const layout = layouts[value];
       indicatorPosition.value = withTiming(layout.x, { duration: 250, easing: Easing.out(Easing.cubic) });
       indicatorWidth.value = withTiming(layout.width, { duration: 250, easing: Easing.out(Easing.cubic) });
+
+      // Auto-center active tab when scrollable
+      if (scrollable && centerActiveTab && scrollViewRef.current) {
+        const scrollX = layout.x - (screenWidth / 2) + (layout.width / 2);
+        scrollViewRef.current.scrollTo({ x: Math.max(0, scrollX), animated: true });
+      }
     }
-  }, [value, layouts, indicatorPosition, indicatorWidth]);
+  }, [value, layouts, indicatorPosition, indicatorWidth, scrollable, centerActiveTab, screenWidth]);
 
   const indicatorStyle = useAnimatedStyle(() => ({
     width: indicatorWidth.value,
     transform: [{ translateX: indicatorPosition.value }],
   }));
 
+  const content = (
+    <View className={cn(tabsListVariants({ variant, size }), scrollable && 'w-auto', className)}>
+      {children}
+      {variant === 'underline' && (
+        <Animated.View
+          className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
+          style={indicatorStyle}
+        />
+      )}
+    </View>
+  );
+
+  if (scrollable) {
+    return (
+      <TabsListContext.Provider value={{ variant, size, onTriggerLayout }}>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          {content}
+        </ScrollView>
+      </TabsListContext.Provider>
+    );
+  }
+
   return (
     <TabsListContext.Provider value={{ variant, size, onTriggerLayout }}>
-      <View className={cn(tabsListVariants({ variant, size }), className)}>
-        {children}
-        {variant === 'underline' && (
-          <Animated.View
-            className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
-            style={indicatorStyle}
-          />
-        )}
-      </View>
+      {content}
     </TabsListContext.Provider>
   );
 }
@@ -406,9 +435,10 @@ interface TabsTriggerProps {
   value: string;
   children: React.ReactNode;
   className?: string;
+  onPress?: () => void;
 }
 
-function TabsTrigger({ value, children, className }: TabsTriggerProps) {
+function TabsTrigger({ value, children, className, onPress }: TabsTriggerProps) {
   const parentContext = React.useContext(SimpleTabsContext);
   const { variant, size, onTriggerLayout } = React.useContext(TabsListContext);
   const isActive = parentContext?.value === value;
@@ -418,7 +448,10 @@ function TabsTrigger({ value, children, className }: TabsTriggerProps) {
   return (
     <Pressable
       onLayout={(e) => onTriggerLayout(value, e.nativeEvent.layout)}
-      onPress={() => parentContext?.onValueChange(value)}
+      onPress={() => {
+        parentContext?.onValueChange(value)
+        onPress?.()
+      }}
       className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }), className)}
     >
       <TextClassContext.Provider value={textClassName}>
