@@ -1,6 +1,6 @@
 import { Button, IconButton } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { IconGroup5, IconifyCoinsSwap, IconifyNavArrowRight, IconifyPlusCircle } from '@/components/ui/icons';
+import { IconGroup5, IconifyNavArrowRight, IconifyPlusCircle } from '@/components/ui/icons';
 import { IconRecord } from '@/components/ui/icons/set/record';
 import { Input } from '@/components/ui/input';
 import { ScreenHeader } from '@/components/ui/screen-header';
@@ -8,8 +8,7 @@ import { Text } from '@/components/ui/text';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableOpacity, View } from "react-native";
 import { AccountSelectionDrawer, Account } from '@/app/(assets)/transfer/_comps/account-selection-drawer';
 
 const INITIAL_ACCOUNTS: Account[] = [
@@ -18,7 +17,6 @@ const INITIAL_ACCOUNTS: Account[] = [
 ];
 
 export default function TransferScreen() {
-	const insets = useSafeAreaInsets();
 	const { textColorContent1 } = useThemeColors();
 
 	const [fromAccount, setFromAccount] = useState<Account>(INITIAL_ACCOUNTS[0]);
@@ -50,85 +48,79 @@ export default function TransferScreen() {
 				}
 			/>
 
-			<KeyboardAvoidingView
-				behavior={Platform.OS === "ios" ? "padding" : "height"}
-				className="flex-1"
-			>
-				<View className="flex-1 px-xl">
-					{/* Account Selection Area */}
-					<View className="relative mt-4">
-						{/* From Account */}
-						<AccountSelector
-							label={<Trans>从</Trans>}
-							account={fromAccount}
-							onPress={() => setIsFromDrawerOpen(true)}
-						/>
+			<View className="flex-1 px-xl">
+				{/* Account Selection Area */}
+				<View className="relative mt-4">
+					{/* From Account */}
+					<AccountSelector
+						label={<Trans>从</Trans>}
+						account={fromAccount}
+						onPress={() => setIsFromDrawerOpen(true)}
+					/>
 
-						{/* Swap Button */}
-						<View className="absolute left-1/2 top-1/2 -ml-[20px] -mt-[20px] z-10">
-							<IconButton variant='ghost' onPress={handleSwap}>
-								<IconGroup5 width={24} height={24} />
+					{/* Swap Button */}
+					<View className="absolute left-1/2 top-1/2 -ml-[20px] -mt-[20px] z-10">
+						<IconButton variant='ghost' onPress={handleSwap}>
+							<IconGroup5 width={24} height={24} />
+						</IconButton>
+					</View>
+
+					{/* To Account */}
+					<View className="mt-2">
+						<AccountSelector
+							label={<Trans>到</Trans>}
+							account={toAccount}
+							onPress={() => setIsToDrawerOpen(true)}
+						/>
+					</View>
+				</View>
+
+				{/* Amount Input */}
+				<View className="mt-6 gap-medium">
+					<Input
+						placeholder="请输入金额"
+						value={amount}
+						onChangeText={setAmount}
+						keyboardType="numeric"
+						size='md'
+						RightContent={
+							<View className="flex-row items-center gap-xs ml-2">
+								<Text className="text-paragraph-p2 text-content-1">USDC</Text>
+								<TouchableOpacity onPress={handleMax}>
+									<Text className="text-paragraph-p2 text-brand-primary"><Trans>最大</Trans></Text>
+								</TouchableOpacity>
+							</View>
+						}
+					/>
+
+					<View className="w-full flex-row justify-between items-center gap-1">
+						<Text className="text-paragraph-p3 text-content-4"><Trans>可用余额</Trans></Text>
+						<View className="flex-row items-center gap-xs">
+							<Text className="text-paragraph-p3 text-content-1">
+								{fromAccount.balance} {fromAccount.currency}
+							</Text>
+							<IconButton variant='ghost' color='primary'>
+								<IconifyPlusCircle width={14} height={14} />
 							</IconButton>
 						</View>
-
-						{/* To Account */}
-						<View className="mt-2">
-							<AccountSelector
-								label={<Trans>到</Trans>}
-								account={toAccount}
-								onPress={() => setIsToDrawerOpen(true)}
-							/>
-						</View>
-					</View>
-
-					{/* Amount Input */}
-					<View className="mt-6 gap-medium">
-						<Input
-							placeholder="请输入金额"
-							value={amount}
-							onChangeText={setAmount}
-							keyboardType="numeric"
-							size='md'
-							RightContent={
-								<View className="flex-row items-center gap-xs ml-2">
-									<Text className="text-paragraph-p2 text-content-1">USDC</Text>
-									<TouchableOpacity onPress={handleMax}>
-										<Text className="text-paragraph-p2 text-brand-primary"><Trans>最大</Trans></Text>
-									</TouchableOpacity>
-								</View>
-							}
-						/>
-
-						<View className="w-full flex-row justify-between items-center gap-1">
-							<Text className="text-paragraph-p3 text-content-4"><Trans>可用余额</Trans></Text>
-							<View className="flex-row items-center gap-xs">
-								<Text className="text-paragraph-p3 text-content-1">
-									{fromAccount.balance} {fromAccount.currency}
-								</Text>
-								<IconButton variant='ghost' color='primary'>
-									<IconifyPlusCircle width={14} height={14} />
-								</IconButton>
-							</View>
-						</View>
 					</View>
 				</View>
+			</View>
 
 
-				{/* Footer Button */}
-				<View
-					className="px-4 pt-4"
-					style={{ paddingBottom: Math.max(insets.bottom, 20) }}
+			{/* Footer Button */}
+			<View
+				className="p-4"
+			>
+				<Button
+					size="lg"
+					color='primary'
+					disabled={amount === ''}
+					onPress={() => { }}
 				>
-					<Button
-						size="lg"
-						color='primary'
-						disabled={amount === ''}
-						onPress={() => { }}
-					>
-						<Text><Trans>确定</Trans></Text>
-					</Button>
-				</View>
-			</KeyboardAvoidingView >
+					<Text><Trans>确定</Trans></Text>
+				</Button>
+			</View>
 
 			<AccountSelectionDrawer
 				visible={isFromDrawerOpen}

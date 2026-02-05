@@ -23,6 +23,7 @@ export function ScreenHeader({
   right,
   showBackButton = true,
   onBack,
+  center,
   className,
 }: ScreenHeaderProps) {
   const router = useRouter();
@@ -70,7 +71,7 @@ export function ScreenHeader({
           <View
             className={cn(
               'absolute left-0 right-0 top-0 bottom-0 justify-center pointer-events-none px-xl',
-              hasLeft && 'items-center'
+              (hasLeft || center) && 'items-center'
             )}
           >
             <Text className={cn('text-content-1 text-important-1')}>

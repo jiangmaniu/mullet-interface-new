@@ -21,7 +21,7 @@ const buttonVariants = cva(
         solid: '',
         outline: 'border',
         none: 'underline',
-        icon: ''
+        icon: 'p-[6px]'
       },
       size: {
         sm: 'rounded-xs',
@@ -54,7 +54,7 @@ const buttonVariants = cva(
       { variant: 'none', color: 'default', disabled: true, className: 'pointer-events-none' },
       { variant: 'none', color: 'primary', disabled: true, className: 'pointer-events-none' },
 
-      { variant: 'icon', size: 'sm', className: 'py-medium' },
+      { variant: 'icon', size: 'sm', className: '' },
       { variant: 'icon', size: 'md', className: '' },
       { variant: 'icon', size: 'lg', className: '' },
       { variant: 'icon', color: 'default', className: '' },

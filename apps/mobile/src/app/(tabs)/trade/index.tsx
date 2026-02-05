@@ -42,12 +42,15 @@ import {
 } from './_comps/trade-account-selection-drawer'
 import { OrderConfirmationDrawer } from './_comps/order-confirmation-drawer'
 import { ClosePositionDrawer } from './_comps/close-position-drawer'
+import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
+import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
 // ============ TradeHeader Component ============
 interface TradeHeaderProps {
   symbol: string
   priceChange: string
   isPriceUp: boolean
   onSymbolPress?: () => void
+  onMorePress?: () => void
 }
 
 function TradeHeader({
@@ -55,6 +58,7 @@ function TradeHeader({
   priceChange,
   isPriceUp,
   onSymbolPress,
+  onMorePress,
 }: TradeHeaderProps) {
   const router = useRouter()
 
@@ -111,7 +115,7 @@ function TradeHeader({
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity>
+          <TouchableOpacity onPress={onMorePress}>
             <IconifyMoreHoriz width={22} height={22} className="text-content-1" />
           </TouchableOpacity>
         </View>
@@ -174,7 +178,7 @@ function AccountCard({ account, onPress, onDeposit }: AccountCardProps) {
               <Text className="text-paragraph-p3 text-content-1">
                 {account.balance} {account.currency}
               </Text>
-              <IconButton variant='outline' color='primary'>
+              <IconButton color='primary'>
                 <IconifyPlusCircle width={14} height={14} />
               </IconButton>
             </View>
@@ -696,7 +700,7 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
             className="flex-1"
             onPress={onStopLoss}
           >
-            <Text className="text-button-2 text-content-1">
+            <Text>
               <Trans>止盈止损</Trans>
             </Text>
           </Button>
@@ -706,7 +710,7 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
             className="flex-1"
             onPress={onClosePosition}
           >
-            <Text className="text-button-2 text-content-1">
+            <Text>
               <Trans>平仓</Trans>
             </Text>
           </Button>
@@ -977,6 +981,8 @@ export default function Trade() {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const [isOrderConfirmDrawerOpen, setIsOrderConfirmDrawerOpen] = useState(false)
   const [isClosePositionDrawerOpen, setIsClosePositionDrawerOpen] = useState(false)
+  const [isStopProfitLossDrawerOpen, setIsStopProfitLossDrawerOpen] = useState(false)
+  const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
   const [selectedPosition, setSelectedPosition] = useState<Position | null>(null)
   const [pendingOrder, setPendingOrder] = useState<{
     side: 'buy' | 'sell'
@@ -1050,12 +1056,27 @@ export default function Trade() {
     }
   }, [selectedPosition])
 
+  const handleStopProfitLoss = useCallback((takeProfitPrice: string, takeProfitPercent: string, stopLossPrice: string, stopLossPercent: string) => {
+    if (selectedPosition) {
+      console.log('Stop profit/loss:', {
+        position: selectedPosition,
+        takeProfitPrice,
+        takeProfitPercent,
+        stopLossPrice,
+        stopLossPercent,
+      })
+      // TODO: 实际止盈止损逻辑
+      setSelectedPosition(null)
+    }
+  }, [selectedPosition])
+
   return (
     <View className="flex-1">
       <TradeHeader
         symbol="SOL-USDC"
         priceChange="+1.54%"
         isPriceUp={true}
+        onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
       />
       <ScrollView
         className="flex-1"
@@ -1094,7 +1115,10 @@ export default function Trade() {
           <PositionList
             positions={MOCK_POSITIONS}
             pendingOrders={MOCK_PENDING_ORDERS}
-            onStopLoss={(position) => console.log('Stop loss:', position.id)}
+            onStopLoss={(position) => {
+              setSelectedPosition(position)
+              setIsStopProfitLossDrawerOpen(true)
+            }}
             onClosePosition={handleClosePosition}
             onCancelOrder={(order) => console.log('Cancel order:', order.id)}
             onHistoryPress={() => console.log('History pressed')}
@@ -1139,6 +1163,45 @@ export default function Trade() {
           onConfirm={handleConfirmClosePosition}
         />
       )}
+
+      {/* Stop Profit Loss Drawer */}
+      {selectedPosition && (
+        <StopProfitLossDrawer
+          open={isStopProfitLossDrawerOpen}
+          onOpenChange={setIsStopProfitLossDrawerOpen}
+          symbol={selectedPosition.symbol}
+          direction={selectedPosition.direction}
+          openPrice={selectedPosition.openPrice.toFixed(2)}
+          markPrice={selectedPosition.markPrice.toFixed(2)}
+          onConfirm={handleStopProfitLoss}
+        />
+      )}
+
+      {/* Common Features Drawer */}
+      <CommonFeaturesDrawer
+        open={isCommonFeaturesDrawerOpen}
+        onOpenChange={setIsCommonFeaturesDrawerOpen}
+        onTradingSettings={() => {
+          console.log('Trading settings pressed')
+          setIsCommonFeaturesDrawerOpen(false)
+        }}
+        onDeposit={() => {
+          console.log('Deposit pressed')
+          setIsCommonFeaturesDrawerOpen(false)
+        }}
+        onTransfer={() => {
+          console.log('Transfer pressed')
+          setIsCommonFeaturesDrawerOpen(false)
+        }}
+        onBill={() => {
+          console.log('Bill pressed')
+          setIsCommonFeaturesDrawerOpen(false)
+        }}
+        onFavorites={() => {
+          console.log('Favorites pressed')
+          setIsCommonFeaturesDrawerOpen(false)
+        }}
+      />
     </View>
   )
 }

@@ -5,6 +5,8 @@ import {
   Pressable,
   Modal,
   Dimensions,
+  Keyboard,
+  Platform,
   type ViewProps,
   type TextProps,
   type PressableProps,
@@ -26,6 +28,8 @@ const { height: screenHeight } = Dimensions.get('window')
 interface DrawerContextValue {
   open: boolean
   onOpenChange: (open: boolean) => void
+  focusedInputY: number | null
+  setFocusedInputY: (y: number | null) => void
 }
 
 const DrawerContext = React.createContext<DrawerContextValue | null>(null)
@@ -57,8 +61,10 @@ interface DrawerProps {
 }
 
 function Drawer({ open, onOpenChange, children }: DrawerProps) {
+  const [focusedInputY, setFocusedInputY] = React.useState<number | null>(null)
+
   return (
-    <DrawerContext.Provider value={{ open, onOpenChange }}>
+    <DrawerContext.Provider value={{ open, onOpenChange, focusedInputY, setFocusedInputY }}>
       {children}
     </DrawerContext.Provider>
   )
@@ -99,19 +105,65 @@ interface DrawerPortalProps {
 }
 
 function DrawerPortal({ children }: DrawerPortalProps) {
-  const { open, onOpenChange } = useDrawerContext()
+  const { open, onOpenChange, focusedInputY, setFocusedInputY } = useDrawerContext()
   const [modalVisible, setModalVisible] = React.useState(false)
+  const [keyboardHeight, setKeyboardHeight] = React.useState(0)
 
   // Reanimated shared values
   const overlayOpacity = useSharedValue(0)
   const drawerTranslateY = useSharedValue(screenHeight)
+
+  // Keyboard event listeners
+  React.useEffect(() => {
+    const keyboardWillShow = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height)
+      }
+    )
+
+    const keyboardWillHide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0)
+        setFocusedInputY(null)
+      }
+    )
+
+    return () => {
+      keyboardWillShow.remove()
+      keyboardWillHide.remove()
+    }
+  }, [setFocusedInputY])
+
+  // Calculate smart offset based on focused input position
+  const calculateSmartOffset = React.useCallback(() => {
+    if (!keyboardHeight || focusedInputY === null) return 0
+
+    // Input height estimate (with some padding)
+    const inputHeight = 60
+    const padding = 20
+
+    // Calculate how much the input would be covered by keyboard
+    const inputBottom = focusedInputY + inputHeight
+    const keyboardTop = screenHeight - keyboardHeight
+
+    // Only move if input would be covered
+    if (inputBottom > keyboardTop) {
+      // Move just enough to expose the input above keyboard with padding
+      return inputBottom - keyboardTop + padding
+    }
+
+    return 0
+  }, [keyboardHeight, focusedInputY])
 
   // Animation effects
   React.useEffect(() => {
     if (open) {
       setModalVisible(true)
       overlayOpacity.value = withTiming(1, animConfig)
-      drawerTranslateY.value = withTiming(0, animConfig)
+      const smartOffset = calculateSmartOffset()
+      drawerTranslateY.value = withTiming(-smartOffset, animConfig)
     } else if (modalVisible) {
       overlayOpacity.value = withTiming(0, { ...animConfig, duration: closeDuration })
       drawerTranslateY.value = withTiming(screenHeight, { ...animConfig, duration: closeDuration })
@@ -122,6 +174,15 @@ function DrawerPortal({ children }: DrawerPortalProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, modalVisible])
+
+  // Update drawer position when keyboard or focused input changes
+  React.useEffect(() => {
+    if (open && modalVisible) {
+      const smartOffset = calculateSmartOffset()
+      drawerTranslateY.value = withTiming(-smartOffset, animConfig)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyboardHeight, focusedInputY, open, modalVisible])
 
   // Animated styles
   const overlayAnimatedStyle = useAnimatedStyle(() => ({
@@ -233,10 +294,12 @@ function DrawerHeader({ className, ref, showClose = true, children, ...props }: 
   return (
     <View
       ref={ref}
-      className={cn('pt-xl px-5 relative', className, { 'pr-11': showClose })}
+      className={cn('mt-3xl px-5 flex-row items-center justify-between')}
       {...props}
     >
-      {children}
+      <View>
+        {children}
+      </View>
       {showClose && <DrawerClose />}
     </View>
   )
@@ -318,7 +381,7 @@ function DrawerClose({ onPress, className, children, ref, ...props }: DrawerClos
     <IconButton
       variant='none'
       onPress={() => onOpenChange(false)}
-      className='absolute right-5 top-xl'
+      // className='absolute right-5 top-1/2 -translate-y-1/2'
       {...props}
     >
       <IconifyXmark width={24} height={24} color={colorBrandSecondary3} />
@@ -338,4 +401,5 @@ export {
   DrawerDescription,
   DrawerFooter,
   DrawerClose,
+  useDrawerContext,
 }

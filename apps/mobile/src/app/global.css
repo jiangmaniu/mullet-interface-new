@@ -111,7 +111,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-  
 }
 
 .dark {
@@ -151,7 +150,7 @@
 
 @theme {
   --color-*: initial;
-  
+
   --color-black: var(--color-black);
   --color-white: var(--color-white);
 
@@ -317,7 +316,7 @@
   --border-color-special: var(--color-zinc-300);
 
   --color-status-success: var(--color-green-500);
-  --color-status-warning: var(--color-yellow-500);
+  --color-status-warning: var(--color-orange-500);
   --color-status-danger: var(--color-red-500);
 
   --color-brand-primary: var(--color-yellow-500);
@@ -456,11 +455,18 @@
   .font-sans {
     font-family: var(--font-inter), 'PingFang SC', 'Microsoft YaHei', var(--font-sans);
   }
-  
+
   @keyframes dot-blink {
-    0%, 100% { content: "."; }
-    33% { content: ".."; }
-    66% { content: "..."; }
+    0%,
+    100% {
+      content: '.';
+    }
+    33% {
+      content: '..';
+    }
+    66% {
+      content: '...';
+    }
   }
 
   .ellipsis-blink {
@@ -469,7 +475,7 @@
   }
 
   .ellipsis-blink::after {
-    content: ".";
+    content: '.';
     position: absolute;
     display: inline-block;
     margin-left: 1px;
