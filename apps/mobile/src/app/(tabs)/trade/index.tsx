@@ -44,6 +44,7 @@ import { OrderConfirmationDrawer } from './_comps/order-confirmation-drawer'
 import { ClosePositionDrawer } from './_comps/close-position-drawer'
 import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
 import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
+import { useToast } from '@/components/ui/toast'
 // ============ TradeHeader Component ============
 interface TradeHeaderProps {
   symbol: string
@@ -976,6 +977,12 @@ export default function Trade() {
   const { side } = useLocalSearchParams<{ side?: 'buy' | 'sell' }>()
   const defaultSide = side === 'sell' ? 'sell' : 'buy'
 
+  // Router
+  const router = useRouter()
+
+  // Toast
+  const { show: showToast } = useToast()
+
   // State
   const [isChartVisible, setIsChartVisible] = useState(true)
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
@@ -1121,7 +1128,7 @@ export default function Trade() {
             }}
             onClosePosition={handleClosePosition}
             onCancelOrder={(order) => console.log('Cancel order:', order.id)}
-            onHistoryPress={() => console.log('History pressed')}
+            onHistoryPress={() => router.push('/(trade)/records')}
           />
         </View>
       </ScrollView>
@@ -1194,12 +1201,16 @@ export default function Trade() {
           setIsCommonFeaturesDrawerOpen(false)
         }}
         onBill={() => {
-          console.log('Bill pressed')
           setIsCommonFeaturesDrawerOpen(false)
+          router.push('/(trade)/records')
         }}
         onFavorites={() => {
-          console.log('Favorites pressed')
           setIsCommonFeaturesDrawerOpen(false)
+          showToast({
+            type: 'success',
+            message: '订单提交成功',
+            duration: 2000,
+          })
         }}
       />
     </View>

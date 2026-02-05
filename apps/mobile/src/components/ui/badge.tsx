@@ -26,26 +26,26 @@ const badgeVariants = cva(
 );
 
 const badgeTextVariants = cva('', {
-    variants: {
-      variant: {
-        default: 'text-paragraph-p3',
-      },
-      color: {
-        default: 'text-content-1',
-        rise: 'text-content-foreground',
-        fall: 'text-content-1',
-        secondary: 'text-content-1',
-      },
+  variants: {
+    variant: {
+      default: 'text-paragraph-p3',
     },
-    defaultVariants: {
-      variant: 'default',
-      color: 'default',
+    color: {
+      default: 'text-content-1',
+      rise: 'text-content-foreground',
+      fall: 'text-content-1',
+      secondary: 'text-content-1',
     },
+  },
+  defaultVariants: {
+    variant: 'default',
+    color: 'default',
+  },
 });
 
 export interface BadgeProps
   extends React.ComponentPropsWithoutRef<typeof View>,
-    VariantProps<typeof badgeVariants> {}
+  VariantProps<typeof badgeVariants> { }
 
 function Badge({ className, variant, color, ...props }: BadgeProps) {
   return (

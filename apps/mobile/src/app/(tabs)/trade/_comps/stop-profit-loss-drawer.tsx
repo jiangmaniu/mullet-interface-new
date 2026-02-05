@@ -1,4 +1,4 @@
-import { View, ScrollView } from 'react-native'
+import { View } from 'react-native'
 import { Trans } from '@lingui/react/macro'
 import { Text } from '@/components/ui/text'
 import { Badge } from '@/components/ui/badge'
@@ -39,7 +39,6 @@ function StopProfitLossDrawerContent({
   const [stopLossPrice, setStopLossPrice] = useState('')
   const [stopLossPercent, setStopLossPercent] = useState('')
 
-  const scrollViewRef = useRef<ScrollView>(null)
   const inputRefs = useRef<{ [key: string]: View | null }>({})
 
   const handleConfirm = () => {
@@ -124,148 +123,141 @@ function StopProfitLossDrawerContent({
         </DrawerTitle>
       </DrawerHeader>
 
-      <ScrollView
-        ref={scrollViewRef}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="interactive"
-      >
-        <View className="px-5 gap-xl pb-medium">
-          {/* Symbol and Direction */}
-          <View className="flex-row items-center gap-medium">
-            <View className="size-[24px] rounded-full bg-button items-center justify-center">
-              <Text className="text-paragraph-p3 text-content-1">S</Text>
-            </View>
-            <Text className="text-paragraph-p1 text-content-1">{symbol}</Text>
-            <Badge color={direction === 'long' ? 'rise' : 'fall'}>
-              <Text>{direction === 'long' ? <Trans>做空</Trans> : <Trans>做空</Trans>}</Text>
-            </Badge>
+      <View className="px-5 gap-xl pb-medium">
+        {/* Symbol and Direction */}
+        <View className="flex-row items-center gap-medium">
+          <View className="size-[24px] rounded-full bg-button items-center justify-center">
+            <Text className="text-paragraph-p3 text-content-1">S</Text>
           </View>
+          <Text className="text-paragraph-p1 text-content-1">{symbol}</Text>
+          <Badge color={direction === 'long' ? 'rise' : 'fall'}>
+            <Text>{direction === 'long' ? <Trans>做空</Trans> : <Trans>做空</Trans>}</Text>
+          </Badge>
+        </View>
 
-          {/* Price Info */}
-          <View className="gap-medium">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-paragraph-p2 text-content-4">
-                <Trans>开仓价</Trans>
-              </Text>
-              <Text className="text-paragraph-p2 text-content-1">{openPrice} USDC</Text>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <Text className="text-paragraph-p2 text-content-4">
-                <Trans>标记价格</Trans>
-              </Text>
-              <Text className="text-paragraph-p2 text-market-rise">{markPrice} USDC</Text>
-            </View>
+        {/* Price Info */}
+        <View className="gap-medium">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-paragraph-p2 text-content-4">
+              <Trans>开仓价</Trans>
+            </Text>
+            <Text className="text-paragraph-p2 text-content-1">{openPrice} USDC</Text>
           </View>
+          <View className="flex-row items-center justify-between">
+            <Text className="text-paragraph-p2 text-content-4">
+              <Trans>标记价格</Trans>
+            </Text>
+            <Text className="text-paragraph-p2 text-market-rise">{markPrice} USDC</Text>
+          </View>
+        </View>
 
-          {/* Take Profit Section */}
-          <View className="gap-xs">
-            <View className="flex-row gap-xl">
-              <View
-                ref={ref => { inputRefs.current['takeProfitPrice'] = ref }}
-                className="flex-1"
-              >
-                <Input
-                  labelText={t`止盈触发价`}
-                  displayLabelClassName='bg-special'
-                  value={takeProfitPrice}
-                  onValueChange={setTakeProfitPrice}
-                  onFocus={() => handleInputFocus('takeProfitPrice')}
-                  onBlur={handleInputBlur}
-                  keyboardType="decimal-pad"
-                  placeholder={t`输入价格`}
-                  variant="outlined"
-                  size="md"
-                />
-              </View>
-              <View
-                ref={ref => { inputRefs.current['takeProfitPercent'] = ref }}
-                className="w-[90px]"
-              >
-                <Input
-                  labelText={t`百分比`}
-                  displayLabelClassName='bg-special'
-                  value={takeProfitPercent}
-                  onValueChange={handleTakeProfitPercentChange}
-                  onFocus={() => handleInputFocus('takeProfitPercent')}
-                  onBlur={handleInputBlur}
-                  keyboardType="decimal-pad"
-                  placeholder="0.00"
-                  clean={false}
-                  RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
-                  variant="outlined"
-                  size="md"
-                />
-              </View>
+        {/* Take Profit Section */}
+        <View className="gap-xs">
+          <View className="flex-row gap-xl">
+            <View
+              ref={ref => { inputRefs.current['takeProfitPrice'] = ref }}
+              className="flex-1"
+            >
+              <Input
+                labelText={t`止盈触发价`}
+                displayLabelClassName='bg-special'
+                value={takeProfitPrice}
+                onValueChange={setTakeProfitPrice}
+                onFocus={() => handleInputFocus('takeProfitPrice')}
+                onBlur={handleInputBlur}
+                keyboardType="decimal-pad"
+                placeholder={t`输入价格`}
+                variant="outlined"
+                size="md"
+              />
             </View>
-            <View className="flex-row justify-between">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">{calculateTakeProfitPL()} USDC</Text>
-              </Text>
+            <View
+              ref={ref => { inputRefs.current['takeProfitPercent'] = ref }}
+              className="w-[90px]"
+            >
+              <Input
+                labelText={t`百分比`}
+                displayLabelClassName='bg-special'
+                value={takeProfitPercent}
+                onValueChange={handleTakeProfitPercentChange}
+                onFocus={() => handleInputFocus('takeProfitPercent')}
+                onBlur={handleInputBlur}
+                keyboardType="decimal-pad"
+                placeholder="0.00"
+                clean={false}
+                RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
+                variant="outlined"
+                size="md"
+              />
             </View>
           </View>
-
-          {/* Stop Loss Section */}
-          <View className="gap-xs">
-            <View className="flex-row gap-xl">
-              <View
-                ref={ref => { inputRefs.current['stopLossPrice'] = ref }}
-                className="flex-1"
-              >
-                <Input
-                  labelText={t`止损触发价`}
-                  displayLabelClassName='bg-special'
-                  value={stopLossPrice}
-                  onValueChange={setStopLossPrice}
-                  onFocus={() => handleInputFocus('stopLossPrice')}
-                  onBlur={handleInputBlur}
-                  keyboardType="decimal-pad"
-                  placeholder={t`输入价格`}
-                  variant="outlined"
-                  size="md"
-                />
-              </View>
-              <View
-                ref={ref => { inputRefs.current['stopLossPercent'] = ref }}
-                className="w-[90px]"
-              >
-                <Input
-                  labelText={t`百分比`}
-                  displayLabelClassName='bg-special'
-                  value={stopLossPercent}
-                  onValueChange={handleStopLossPercentChange}
-                  onFocus={() => handleInputFocus('stopLossPercent')}
-                  onBlur={handleInputBlur}
-                  keyboardType="decimal-pad"
-                  placeholder="0.00"
-                  clean={false}
-                  RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
-                  variant="outlined"
-                  size="md"
-                />
-              </View>
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">{calculateStopLossPL()} USDC</Text>
-              </Text>
-            </View>
-          </View>
-
-          {/* Warning */}
-          <View className="">
-            <Text className="text-paragraph-p4 text-status-warning">
-              <Trans>由于行情变动快，止损触发价不宜离预估强平价过近，避免触发失败</Trans>
+          <View className="flex-row justify-between">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">{calculateTakeProfitPL()} USDC</Text>
             </Text>
           </View>
         </View>
-      </ScrollView>
+
+        {/* Stop Loss Section */}
+        <View className="gap-xs">
+          <View className="flex-row gap-xl">
+            <View
+              ref={ref => { inputRefs.current['stopLossPrice'] = ref }}
+              className="flex-1"
+            >
+              <Input
+                labelText={t`止损触发价`}
+                displayLabelClassName='bg-special'
+                value={stopLossPrice}
+                onValueChange={setStopLossPrice}
+                onFocus={() => handleInputFocus('stopLossPrice')}
+                onBlur={handleInputBlur}
+                keyboardType="decimal-pad"
+                placeholder={t`输入价格`}
+                variant="outlined"
+                size="md"
+              />
+            </View>
+            <View
+              ref={ref => { inputRefs.current['stopLossPercent'] = ref }}
+              className="w-[90px]"
+            >
+              <Input
+                labelText={t`百分比`}
+                displayLabelClassName='bg-special'
+                value={stopLossPercent}
+                onValueChange={handleStopLossPercentChange}
+                onFocus={() => handleInputFocus('stopLossPercent')}
+                onBlur={handleInputBlur}
+                keyboardType="decimal-pad"
+                placeholder="0.00"
+                clean={false}
+                RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
+                variant="outlined"
+                size="md"
+              />
+            </View>
+          </View>
+          <View className="flex-row justify-between">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">{calculateStopLossPL()} USDC</Text>
+            </Text>
+          </View>
+        </View>
+
+        {/* Warning */}
+        <View className="">
+          <Text className="text-paragraph-p4 text-status-warning">
+            <Trans>由于行情变动快，止损触发价不宜离预估强平价过近，避免触发失败</Trans>
+          </Text>
+        </View>
+      </View>
 
       <DrawerFooter>
         <Button

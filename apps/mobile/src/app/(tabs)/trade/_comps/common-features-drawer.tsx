@@ -1,5 +1,6 @@
 import { View, TouchableOpacity } from 'react-native'
 import { Trans } from '@lingui/react/macro'
+import { useState } from 'react'
 import { Text } from '@/components/ui/text'
 import { IconButton } from '@/components/ui/button'
 import {
@@ -13,10 +14,10 @@ import {
   IconifyWallet,
   IconifyCoinsSwap,
   IconifyXmark,
-  IconifyStar,
 } from '@/components/ui/icons'
-import { useThemeColors } from '@/hooks/use-theme-colors'
 import { IconRecord } from '@/components/ui/icons/set/record'
+import { IconStar } from '@/components/ui/icons/set/star'
+import { IconStarFill } from '@/components/ui/icons/set/star-fill'
 
 interface CommonFeaturesDrawerProps {
   open: boolean
@@ -59,6 +60,12 @@ export function CommonFeaturesDrawer({
   onBill,
   onFavorites,
 }: CommonFeaturesDrawerProps) {
+  const [isFavorited, setIsFavorited] = useState(false)
+
+  const handleFavoritesPress = () => {
+    setIsFavorited(!isFavorited)
+    // onFavorites?.()
+  }
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
@@ -98,9 +105,9 @@ export function CommonFeaturesDrawer({
           {/* Row 2 - 1 item aligned to start */}
           <View className="flex-row">
             <FeatureItem
-              icon={<IconifyStar width={28} height={28} />}
+              icon={isFavorited ? <IconStarFill width={28} height={28} className='text-brand-primary' /> : <IconStar width={28} height={28} className='text-content-1' />}
               label={<Trans>收藏</Trans>}
-              onPress={onFavorites}
+              onPress={handleFavoritesPress}
             />
           </View>
         </View>
