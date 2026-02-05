@@ -19,6 +19,7 @@ import { V1Provider } from '@/v1/provider'
 import { InitializerProvider } from './initializer'
 import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
+import { WalletStateInjector } from './wallet-state-injector'
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
@@ -75,12 +76,14 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                 {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
                 <AppKitProvider instance={appKit}>
                   <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
-
-                    <InitializerProvider>
-                      <V1Provider>
-                        {children}
-                      </V1Provider>
-                    </InitializerProvider>
+                    {/* 注入钱包状态到 auth-handler */}
+                    <WalletStateInjector>
+                      <InitializerProvider>
+                        <V1Provider>
+                          {children}
+                        </V1Provider>
+                      </InitializerProvider>
+                    </WalletStateInjector>
 
                     {/* Privy UI Elements */}
                     <PrivyElements

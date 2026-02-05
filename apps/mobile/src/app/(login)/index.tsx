@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useLogin } from '@privy-io/expo/ui'
 import { usePrivy } from '@privy-io/expo'
-import { router, useNavigation } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 
 import { useAuthStore } from '@/stores/auth'
 import { Web3LoginDrawer } from './_comps/web3-login-drawer'
+import { useAccount } from '@/lib/appkit'
 
 /**
  * 登录成功后导航
@@ -22,6 +23,10 @@ const navigateAfterLogin = () => {
 const Login = () => {
   const { login: privyLogin } = useLogin()
   const { isReady: privyReady, user: privyUser, getAccessToken } = usePrivy()
+  const { isConnected: isWalletConnected } = useAccount()
+
+  // 获取 URL 参数（用于 401 重定向时的自动授权）
+  const { autoAuth } = useLocalSearchParams<{ autoAuth?: string }>()
 
   // 后端认证状态
   const {
@@ -32,6 +37,8 @@ const Login = () => {
 
   // Web3 登录抽屉状态
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)
+  // 是否需要自动授权（钱包已连接，需要重新签名）
+  const [needAutoAuth, setNeedAutoAuth] = useState(false)
 
   // 用于防止后端登录重复触发（自动登录场景）
   const backendLoginAttemptedRef = useRef(false)
@@ -42,6 +49,15 @@ const Login = () => {
       navigateAfterLogin()
     }
   }, [isBackendAuthenticated])
+
+  // 处理 autoAuth 参数 - 当 401 重定向且钱包已连接时自动打开抽屉
+  useEffect(() => {
+    if (autoAuth === 'true' && isWalletConnected && !isBackendAuthenticated) {
+      console.log('Auto auth mode: wallet connected, opening drawer for re-authorization...')
+      setNeedAutoAuth(true)
+      setIsDrawerVisible(true)
+    }
+  }, [autoAuth, isWalletConnected, isBackendAuthenticated])
 
   // 自动登录：当钱包已连接、Privy 已登录但后端未认证时，自动登录后端
   useEffect(() => {
@@ -79,17 +95,15 @@ const Login = () => {
     }
   }, [privyReady, privyUser, isBackendAuthenticated, isBackendLoading, loginBackend, isDrawerVisible, getAccessToken])
 
-  // Web2 登录（Email/Google 等）
+  // Web2 登录（Email 等）
   const handleWeb2Login = () => {
-    privyLogin({ loginMethods: ['email', 'sms', 'google'] })
+    privyLogin({ loginMethods: ['email'] })
   }
 
   // 打开 Web3 登录抽屉
   const handleOpenWeb3Login = () => {
     setIsDrawerVisible(true)
   }
-
-
 
   return (
     <View className="flex-1 items-center justify-center bg-background gap-6 px-6">
@@ -102,7 +116,7 @@ const Login = () => {
           className="bg-primary px-8 py-4 rounded-lg active:opacity-80 w-full"
         >
           <Text className="text-primary-foreground text-lg font-semibold text-center">
-            Email / Google 登录
+            Email
           </Text>
         </Pressable>
       </View>
@@ -130,7 +144,11 @@ const Login = () => {
       {/* Web3 登录抽屉 */}
       <Web3LoginDrawer
         visible={isDrawerVisible}
-        onClose={() => setIsDrawerVisible(false)}
+        onClose={() => {
+          setIsDrawerVisible(false)
+          setNeedAutoAuth(false)
+        }}
+        autoStartAuth={needAutoAuth}
       />
     </View>
   )

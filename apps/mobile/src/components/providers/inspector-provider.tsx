@@ -7,6 +7,11 @@ interface InspectorProviderProps extends PropsWithChildren {
    * @default 'bottom-left'
    */
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+  /**
+   * 编辑器命令
+   * @default 'cursor'
+   */
+  editor?: string
 }
 
 /**
@@ -28,14 +33,18 @@ interface InspectorProviderProps extends PropsWithChildren {
  * - 摇晃设备或按 Cmd+D (iOS) / Cmd+M (Android)
  * - 选择 "Toggle Dev Inspector"
  */
-export function InspectorProvider({ children, position = 'bottom-left' }: InspectorProviderProps) {
+export function InspectorProvider({
+  children,
+  position = 'bottom-left',
+  editor = 'cursor'
+}: InspectorProviderProps) {
   // 生产环境直接返回 children，不包裹 Inspector
   if (!__DEV__) {
     return <>{children}</>
   }
 
   return (
-    <Inspector>
+    <Inspector editor={editor}>
       {children}
       {/* 浮动按钮 - 仅开发模式 */}
       <InspectorDevMenu position={position} />

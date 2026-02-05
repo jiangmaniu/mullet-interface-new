@@ -15,6 +15,10 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { MockAccountDepositModal } from '@/app/(tabs)/assets/_comps/mock-account-deposit-modal';
 import { router, useRouter } from 'expo-router';
 import { IconButton } from '@/components/ui/button';
+import { observer } from 'mobx-react-lite';
+import { useStores } from '@/v1/provider/mobxProvider';
+import { getAccountSynopsisByLng } from '@/v1/utils/business';
+// import { getAccountSynopsisByLng } from '@/v1/utils/business';
 
 const REAL_ACCOUNTS = [
   { id: '88234912', type: 'STP' as const, balance: '10,234.50', currency: 'USDC', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -25,12 +29,16 @@ const MOCK_ACCOUNTS = [
   { id: '10023491', type: '热门' as const, balance: '100,000.00', currency: 'USDC', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Demo', address: '0x0000...0000' },
 ]
 
-export default function AssetsScreen() {
+export default observer(function AssetsScreen() {
+  const { trade } = useStores()
+  const currentAccountInfo = trade.currentAccountInfo
+
+  console.log(currentAccountInfo)
+
   const [currentAccount, setCurrentAccount] = useState(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);
   const [isDepositModalVisible, setIsDepositModalVisible] = useState(false);
   const { textColorContent1 } = useThemeColors();
-
 
   const renderHeader = React.useCallback(() => {
     return (
@@ -55,7 +63,7 @@ export default function AssetsScreen() {
         <CollapsibleStickyContent className="px-xl pt-4 pb-xl gap-xl">
           {/* 资产概览 */}
           <AssetOverviewCard
-            account={currentAccount}
+            account={currentAccountInfo}
             onPressSwitch={() => setIsSwitcherVisible(true)}
           />
           {/* 操作 */}
@@ -63,7 +71,7 @@ export default function AssetsScreen() {
         </CollapsibleStickyContent>
       </CollapsibleStickyHeader>
     );
-  }, [currentAccount, setIsSwitcherVisible, textColorContent1]);
+  }, [currentAccountInfo, setIsSwitcherVisible, textColorContent1]);
 
   const handleAccountManage = () => {
     router.push('/account')
@@ -136,7 +144,7 @@ export default function AssetsScreen() {
       />
     </View>
   );
-}
+})
 
 interface BaseAccountRowProps {
   id: string
@@ -257,7 +265,7 @@ export function MockAccountRow({
 }
 
 interface AssetOverviewCardProps {
-  account: typeof REAL_ACCOUNTS[0] | typeof MOCK_ACCOUNTS[0];
+  account: User.AccountItem
   onPressSwitch: () => void;
 }
 
@@ -265,6 +273,8 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false);
   const { textColorContent4, textColorContent1 } = useThemeColors();
   const isReal = REAL_ACCOUNTS.some(a => a.id === account.id);
+
+  const synopsis = getAccountSynopsisByLng(account.synopsis)
 
   return (
     <Card className="px-xl py-2xl gap-xl">
@@ -274,10 +284,10 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
           <View className="flex-row items-center gap-medium">
             <View className="flex-row items-center gap-xs">
               <IconifyUserCircle width={20} height={20} className="text-content-1" />
-              <Text className="text-content-1 text-paragraph-p2">{account.id}</Text>
+              <Text className="text-content-1 text-paragraph-p2">{account.name}</Text>
             </View>
             <Badge color={isReal ? "rise" : "secondary"}><Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text></Badge>
-            <Badge><Text>{account.type.toUpperCase()}</Text></Badge>
+            <Badge><Text>{synopsis.abbr}</Text></Badge>
           </View>
           <IconifyNavArrowDown width={16} height={16} className="text-content-1" />
         </View>
@@ -298,7 +308,7 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
               </TouchableOpacity>
             </View>
             <View className="flex-row items-center gap-medium">
-              <Text className="text-muted-foreground text-sm">{account.address}</Text>
+              {/* <Text className="text-muted-foreground text-sm">{account.address}</Text> */}
               <IconifyCopy width={16} height={16} color={textColorContent1} />
             </View>
           </View>
@@ -306,9 +316,9 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
           <View className="flex-row items-end justify-between">
             <View className="flex-row items-baseline gap-medium">
               <Text className="text-title-h3 text-content-1">
-                {isBalanceHidden ? '******' : account.balance}
+                {/* {isBalanceHidden ? '******' : account.balance} */}
               </Text>
-              <Text className="text-paragraph-p2 text-content-1">{account.currency}</Text>
+              {/* <Text className="text-paragraph-p2 text-content-1">{account.currency}</Text> */}
             </View>
             <Text className="text-paragraph-p2 text-market-rise">+0.00</Text>
           </View>
@@ -323,19 +333,19 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`}
+            {/* {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`} */}
           </Text>
         </View>
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>可用</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`}
+            {/* {isBalanceHidden ? '******' : `${account.balance} ${account.currency}`} */}
           </Text>
         </View>
         <View className="flex-row justify-between items-center">
           <Text className="text-paragraph-p3 text-content-4"><Trans>占用</Trans></Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : `0.00 ${account.currency}`}
+            {/* {isBalanceHidden ? '******' : `0.00 ${account.currency}`} */}
           </Text>
         </View>
       </View>

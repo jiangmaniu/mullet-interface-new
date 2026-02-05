@@ -11,7 +11,6 @@ import userStore from '../stores/user'
 import wsStore from '../stores/ws'
 import toastStore from '../stores/toast'
 import searchStore from '../stores/search'
-import versionStore from '../stores/version'
 import screenAStore from '../stores/screena'
 
 class Stores {
@@ -23,7 +22,6 @@ class Stores {
   user = userStore
   toast = toastStore
   search = searchStore
-  version = versionStore
   screenA = screenAStore
 }
 export const stores = new Stores()

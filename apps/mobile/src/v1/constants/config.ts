@@ -5,9 +5,7 @@ export const NAMESPACE = Config.NAMESPACE
 export const SOURCE_CURRENCY = 'USD' // 源货币
 export const DEFAULT_CURRENCY_DECIMAL = 2 // 默认货币精度
 export const FIXED_ZERO_VALUE = '0.00' // 固定 0 值
-export const DEFAULT_LOCALE = 'zh-TW' // 默认语言
 export const DEFAULT_AREA_CODE = '86' // 默认区域码
-export const DEFAULT_REGISTER_WAY = 'PHONE' // 默认注册方式
 export const DEFAULT_LEVERAGE_MULTIPLE = 1 // 默认杠杆倍数
 
 // 接口防重放appKey

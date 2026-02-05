@@ -7,6 +7,7 @@ import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
+import { handle401Error } from '@/lib/auth-handler'
 
 interface IRequestConfig extends RequestInit {
   /** 接口是否需要客户端鉴权 */
@@ -297,6 +298,28 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
 
       // 处理非成功状态码
       if (!ok) {
+        // 处理 401 错误 - 自动重新认证
+        if (status === 401 && !config?.skipAllErrorHandler) {
+          console.log('401 error detected, attempting auto re-auth...')
+          const shouldRetry = await handle401Error()
+          if (shouldRetry) {
+            // 重新认证成功，重试请求
+            console.log('Re-auth successful, retrying request...')
+            try {
+              const retryResult = await request<T>(url, config)
+              resolve(retryResult)
+              return
+            } catch (retryError) {
+              reject(retryError)
+              return
+            }
+          } else {
+            // 需要重新登录，不重试请求
+            reject(new Error('Authentication required'))
+            return
+          }
+        }
+
         if (config?.skipAllErrorHandler) {
           reject(new Error('skipAllErrorHandler'))
           return
@@ -326,8 +349,26 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
         }
       }
 
-      if (code === 401) {
-        // onLogout()
+      // 处理响应体中的 401 错误码
+      if (code === 401 && !config?.skipAllErrorHandler) {
+        console.log('401 code in response body, attempting auto re-auth...')
+        const shouldRetry = await handle401Error()
+        if (shouldRetry) {
+          // 重新认证成功，重试请求
+          console.log('Re-auth successful, retrying request...')
+          try {
+            const retryResult = await request<T>(url, config)
+            resolve(retryResult)
+            return
+          } catch (retryError) {
+            reject(retryError)
+            return
+          }
+        } else {
+          // 需要重新登录，不重试请求
+          reject(new Error('Authentication required'))
+          return
+        }
       }
     }
  

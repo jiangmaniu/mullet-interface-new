@@ -196,8 +196,6 @@ declare namespace API {
     /** 护照 */
     | 'PASSPORT'
 
-  //  注册方式
-  type RegisterWay = 'PHONE' | 'EMAIL'
   // KYC授权类型
   type KycAuthType =
     /** 无认证 */

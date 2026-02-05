@@ -18,6 +18,10 @@ export const unstable_settings = {
   anchor: '(tabs)',
 }
 
+// Note: StrictMode is disabled due to findNodeHandle deprecation warnings
+// from react-native-pager-view (used by react-native-collapsible-tab-view)
+// Re-enable when the library is updated to use refs instead of findNodeHandle
+
 export default function RootLayout() {
 
   return (

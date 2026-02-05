@@ -26,9 +26,14 @@ interface StepState {
 interface Web3LoginDrawerProps {
   visible: boolean
   onClose: () => void
+  /**
+   * 自动开始授权流程（用于 401 重定向且钱包已连接的情况）
+   * 当为 true 时，打开抽屉后会自动开始验证授权流程
+   */
+  autoStartAuth?: boolean
 }
 
-export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDrawerProps) {
+export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth = false }: Web3LoginDrawerProps) {
   const { open } = useAppKit()
   const { address, isConnected } = useAccount()
   const { isOpen: isAppKitOpen } = useAppKitState()
@@ -149,6 +154,11 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       // 如果已连接，直接标记第一步完成
       if (isConnected && address) {
         setStep1({ status: 'completed' })
+        // 如果是自动授权模式，直接开始验证
+        if (autoStartAuth) {
+          console.log('Auto start auth: wallet connected, starting verification...')
+          handleVerifyAndLogin()
+        }
       } else {
         // 自动开始连接钱包
         handleConnectWallet()
@@ -157,7 +167,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       // 关闭时重置状态
       resetSteps()
     }
-  }, [visible, isConnected, address, handleConnectWallet, resetSteps])
+  }, [visible, isConnected, address, handleConnectWallet, resetSteps, autoStartAuth, handleVerifyAndLogin])
 
   // 监听钱包连接状态变化
   useEffect(() => {

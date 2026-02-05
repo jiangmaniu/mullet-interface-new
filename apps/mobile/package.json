@@ -6,6 +6,7 @@
     "start": "ENV=dev expo start",
     "start:test": "ENV=test expo start",
     "start:prod": "ENV=prod expo start",
+    "prebuild": "node ./scripts/prebuild.js",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "ENV=dev expo run:android",
     "android:test": "ENV=test expo run:android",
