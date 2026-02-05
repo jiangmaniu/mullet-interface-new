@@ -30,6 +30,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(assets)" options={{ headerShown: false }} />
         <Stack.Screen name="(trade)" options={{ headerShown: false }} />
+        <Stack.Screen name="(login)" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>

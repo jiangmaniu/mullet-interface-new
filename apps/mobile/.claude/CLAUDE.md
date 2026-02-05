@@ -44,3 +44,8 @@
 ### 注意事项
 - 登录前检查 `privyUser` 是否存在，避免重复登录 Privy
 - 后端登录使用 `useAuthStore.loginWithPrivy`
+
+## 扩展规则
+
+./figma.md
+./layout.md

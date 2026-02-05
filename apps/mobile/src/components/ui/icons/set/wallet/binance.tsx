@@ -1,0 +1,9 @@
+import { Path, Circle } from "react-native-svg"
+import { SvgIcon, SvgIconProps } from "../../svg-icon"
+
+export const IconBinance = (props: SvgIconProps) => (
+  <SvgIcon width="24" height="24" viewBox="0 0 24 24" fill="none" {...props}>
+    <Circle cx="12" cy="12" r="12" fill="#0B0E11" />
+    <Path d="M8.63386 10.6169L12 7.25085L15.3679 10.6187L17.3266 8.65997L12 3.33337L6.67516 8.65825L8.63386 10.6169ZM5.29206 10.0412L7.25074 11.9999L5.29196 13.9586L3.33331 12L5.29206 10.0412ZM8.63386 13.3831L12 16.7491L15.3678 13.3814L17.3276 15.3391L17.3266 15.3401L12 20.6667L6.67509 15.3418L6.67236 15.3391L8.63386 13.3831ZM20.6668 12.0002L18.7082 13.9589L16.7495 12.0002L18.7082 10.0415L20.6668 12.0002Z" fill="#F0B90B" />
+  </SvgIcon>
+)
