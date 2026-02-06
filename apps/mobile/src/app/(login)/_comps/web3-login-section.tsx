@@ -12,6 +12,7 @@ import {
   IconGoogleTiplink,
 } from '@/components/ui/icons/set/wallet'
 import { Web3LoginDrawer } from './web3-login-drawer'
+import { useLoginAuthStore } from '@/stores/login-auth'
 
 // 钱包图标组件列表
 const WalletIcons = [
@@ -29,7 +30,7 @@ interface Web3LoginSectionProps {
 
 export function Web3LoginSection({ autoAuth = false }: Web3LoginSectionProps) {
   const { isConnected: isWalletConnected } = useAccount()
-  const isBackendAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const isBackendAuthenticated = useLoginAuthStore((state) => state.accessToken)
 
   // Web3 登录抽屉状态
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)

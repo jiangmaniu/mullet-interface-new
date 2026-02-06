@@ -3,9 +3,10 @@ import { usePrivy } from '@privy-io/expo'
 import { router } from 'expo-router'
 import { Alert } from 'react-native'
 
-import { useAuthStore } from '@/stores/auth'
 import { setLocalUserInfo } from '@/v1/utils/storage'
 import { stores } from '@/v1/provider/mobxProvider'
+import { loginWithPrivyToken } from '@/lib/api'
+import { useLoginAuthStore } from '@/stores/login-auth'
 
 interface UseBackendLoginOptions {
   onSuccess?: () => void
@@ -34,7 +35,6 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
   const { onSuccess, onError, redirectOnSuccess = true } = options
 
   const { getAccessToken: getPrivyAccessToken } = usePrivy()
-  const { loginWithPrivy: loginBackend } = useAuthStore()
 
   const mutation = useMutation({
     mutationKey: ['auth', 'login'],
@@ -48,14 +48,18 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       console.log('Privy token obtained for backend login')
 
       // 登录后端（传入 token）
-      const userinfo = await loginBackend(privyToken)
+      const userinfo = await loginWithPrivyToken(privyToken)
+
+      useLoginAuthStore.setState({
+        accessToken: userinfo.access_token,
+        loginInfo: userinfo,
+      })
 
       // 缓存用户信息
       await setLocalUserInfo(userinfo)
 
       // 重新获取用户信息
       await stores.user.handleLoginSuccess(userinfo)
-
       console.log('Backend login successful')
 
       return userinfo
