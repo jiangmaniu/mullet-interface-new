@@ -11,10 +11,9 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerFooter,
-  useDrawerContext,
 } from '@/components/ui/drawer'
 import { Slider } from '@/components/ui/slider'
-import { useState, useRef, useCallback } from 'react'
+import { useState } from 'react'
 import { t } from '@/locales/i18n'
 
 interface ClosePositionDrawerProps {
@@ -41,28 +40,9 @@ function ClosePositionDrawerContent({
   onConfirm,
   onOpenChange,
 }: Omit<ClosePositionDrawerProps, 'open'>) {
-  const { setFocusedInputY } = useDrawerContext()
   const [closeQuantity, setCloseQuantity] = useState('100.00')
   const [sliderValue, setSliderValue] = useState(100)
   const [dontAskAgain, setDontAskAgain] = useState(false)
-
-  const inputRef = useRef<View>(null)
-
-  // 当输入框获得焦点时，测量位置并通知 Drawer
-  const handleInputFocus = useCallback(() => {
-    if (inputRef.current) {
-      setTimeout(() => {
-        inputRef.current?.measure((_x, _y, _width, _height, _pageX, pageY) => {
-          setFocusedInputY(pageY)
-        })
-      }, 100)
-    }
-  }, [setFocusedInputY])
-
-  // 当输入框失去焦点时，清除位置
-  const handleInputBlur = useCallback(() => {
-    setFocusedInputY(null)
-  }, [setFocusedInputY])
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value)
@@ -130,20 +110,16 @@ function ClosePositionDrawerContent({
 
         {/* Close Quantity Input */}
         <View className="gap-3xl">
-          <View ref={inputRef}>
-            <Input
-              labelText={t`平仓数量`}
-              displayLabelClassName='bg-special'
-              value={closeQuantity}
-              onValueChange={handleQuantityChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              keyboardType="decimal-pad"
-              RightContent={<Text className="text-content-1"><Trans>手</Trans></Text>}
-              variant="outlined"
-              size="md"
-            />
-          </View>
+          <Input
+            labelText={t`平仓数量`}
+            displayLabelClassName='bg-special'
+            value={closeQuantity}
+            onValueChange={handleQuantityChange}
+            keyboardType="decimal-pad"
+            RightContent={<Text className="text-content-1"><Trans>手</Trans></Text>}
+            variant="outlined"
+            size="md"
+          />
 
           {/* Slider with percentage labels */}
           <View className="gap-xs">

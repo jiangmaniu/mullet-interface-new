@@ -42,7 +42,7 @@ function SymbolDepthHeader({
   const handleViewChange = useCallback((view: 'chart' | 'depth') => {
     if (view === 'chart') {
       // Navigate back to trade page
-      router.push('/trade')
+      router.back()
     }
     // Already on depth view, do nothing
   }, [router])

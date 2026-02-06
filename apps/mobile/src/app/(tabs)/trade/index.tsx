@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { View, ScrollView, TouchableOpacity, Pressable } from 'react-native'
+import { View, TouchableOpacity, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
 import {
@@ -45,6 +45,7 @@ import { ClosePositionDrawer } from './_comps/close-position-drawer'
 import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
 import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
 import { useToast } from '@/components/ui/toast'
+import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
 // ============ TradeHeader Component ============
 interface TradeHeaderProps {
   symbol: string
@@ -1085,7 +1086,8 @@ export default function Trade() {
         isPriceUp={true}
         onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
       />
-      <ScrollView
+
+      <KeyboardAwareContainer
         className="flex-1"
         showsVerticalScrollIndicator={false}
       >
@@ -1131,7 +1133,7 @@ export default function Trade() {
             onHistoryPress={() => router.push('/(trade)/records')}
           />
         </View>
-      </ScrollView>
+      </KeyboardAwareContainer>
 
       {/* Account Selection Drawer */}
       <TradeAccountSelectionDrawer

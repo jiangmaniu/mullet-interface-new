@@ -10,9 +10,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerFooter,
-  useDrawerContext,
 } from '@/components/ui/drawer'
-import { useState, useRef, useCallback } from 'react'
+import { useState } from 'react'
 import { t } from '@/locales/i18n'
 
 interface StopProfitLossDrawerProps {
@@ -33,36 +32,15 @@ function StopProfitLossDrawerContent({
   onConfirm,
   onOpenChange,
 }: Omit<StopProfitLossDrawerProps, 'open'>) {
-  const { setFocusedInputY } = useDrawerContext()
   const [takeProfitPrice, setTakeProfitPrice] = useState('')
   const [takeProfitPercent, setTakeProfitPercent] = useState('')
   const [stopLossPrice, setStopLossPrice] = useState('')
   const [stopLossPercent, setStopLossPercent] = useState('')
 
-  const inputRefs = useRef<{ [key: string]: View | null }>({})
-
   const handleConfirm = () => {
     onConfirm(takeProfitPrice, takeProfitPercent, stopLossPrice, stopLossPercent)
     onOpenChange(false)
   }
-
-  // 当输入框获得焦点时，测量位置并通知 Drawer
-  const handleInputFocus = useCallback((key: string) => {
-    const input = inputRefs.current[key]
-    if (input) {
-      setTimeout(() => {
-        input.measure((_x, _y, _width, _height, _pageX, pageY) => {
-          // pageY 是相对于屏幕顶部的位置
-          setFocusedInputY(pageY)
-        })
-      }, 100)
-    }
-  }, [setFocusedInputY])
-
-  // 当输入框失去焦点时，清除位置
-  const handleInputBlur = useCallback(() => {
-    setFocusedInputY(null)
-  }, [setFocusedInputY])
 
   // 计算止盈预计盈亏
   const calculateTakeProfitPL = () => {
@@ -154,34 +132,24 @@ function StopProfitLossDrawerContent({
         {/* Take Profit Section */}
         <View className="gap-xs">
           <View className="flex-row gap-xl">
-            <View
-              ref={ref => { inputRefs.current['takeProfitPrice'] = ref }}
-              className="flex-1"
-            >
+            <View className="flex-1">
               <Input
                 labelText={t`止盈触发价`}
                 displayLabelClassName='bg-special'
                 value={takeProfitPrice}
                 onValueChange={setTakeProfitPrice}
-                onFocus={() => handleInputFocus('takeProfitPrice')}
-                onBlur={handleInputBlur}
                 keyboardType="decimal-pad"
                 placeholder={t`输入价格`}
                 variant="outlined"
                 size="md"
               />
             </View>
-            <View
-              ref={ref => { inputRefs.current['takeProfitPercent'] = ref }}
-              className="w-[90px]"
-            >
+            <View className="w-[90px]">
               <Input
                 labelText={t`百分比`}
                 displayLabelClassName='bg-special'
                 value={takeProfitPercent}
                 onValueChange={handleTakeProfitPercentChange}
-                onFocus={() => handleInputFocus('takeProfitPercent')}
-                onBlur={handleInputBlur}
                 keyboardType="decimal-pad"
                 placeholder="0.00"
                 clean={false}
@@ -204,34 +172,24 @@ function StopProfitLossDrawerContent({
         {/* Stop Loss Section */}
         <View className="gap-xs">
           <View className="flex-row gap-xl">
-            <View
-              ref={ref => { inputRefs.current['stopLossPrice'] = ref }}
-              className="flex-1"
-            >
+            <View className="flex-1">
               <Input
                 labelText={t`止损触发价`}
                 displayLabelClassName='bg-special'
                 value={stopLossPrice}
                 onValueChange={setStopLossPrice}
-                onFocus={() => handleInputFocus('stopLossPrice')}
-                onBlur={handleInputBlur}
                 keyboardType="decimal-pad"
                 placeholder={t`输入价格`}
                 variant="outlined"
                 size="md"
               />
             </View>
-            <View
-              ref={ref => { inputRefs.current['stopLossPercent'] = ref }}
-              className="w-[90px]"
-            >
+            <View className="w-[90px]">
               <Input
                 labelText={t`百分比`}
                 displayLabelClassName='bg-special'
                 value={stopLossPercent}
                 onValueChange={handleStopLossPercentChange}
-                onFocus={() => handleInputFocus('stopLossPercent')}
-                onBlur={handleInputBlur}
                 keyboardType="decimal-pad"
                 placeholder="0.00"
                 clean={false}
@@ -288,7 +246,7 @@ export function StopProfitLossDrawer({
 }: StopProfitLossDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className='max-h-[85vh]'>
+      <DrawerContent>
         <StopProfitLossDrawerContent
           symbol={symbol}
           direction={direction}

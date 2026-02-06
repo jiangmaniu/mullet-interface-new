@@ -28,8 +28,6 @@ const { height: screenHeight } = Dimensions.get('window')
 interface DrawerContextValue {
   open: boolean
   onOpenChange: (open: boolean) => void
-  focusedInputY: number | null
-  setFocusedInputY: (y: number | null) => void
 }
 
 const DrawerContext = React.createContext<DrawerContextValue | null>(null)
@@ -61,10 +59,8 @@ interface DrawerProps {
 }
 
 function Drawer({ open, onOpenChange, children }: DrawerProps) {
-  const [focusedInputY, setFocusedInputY] = React.useState<number | null>(null)
-
   return (
-    <DrawerContext.Provider value={{ open, onOpenChange, focusedInputY, setFocusedInputY }}>
+    <DrawerContext.Provider value={{ open, onOpenChange }}>
       {children}
     </DrawerContext.Provider>
   )
@@ -105,7 +101,7 @@ interface DrawerPortalProps {
 }
 
 function DrawerPortal({ children }: DrawerPortalProps) {
-  const { open, onOpenChange, focusedInputY, setFocusedInputY } = useDrawerContext()
+  const { open, onOpenChange } = useDrawerContext()
   const [modalVisible, setModalVisible] = React.useState(false)
   const [keyboardHeight, setKeyboardHeight] = React.useState(0)
 
@@ -113,7 +109,7 @@ function DrawerPortal({ children }: DrawerPortalProps) {
   const overlayOpacity = useSharedValue(0)
   const drawerTranslateY = useSharedValue(screenHeight)
 
-  // Keyboard event listeners
+  // 监听键盘事件
   React.useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
@@ -126,7 +122,6 @@ function DrawerPortal({ children }: DrawerPortalProps) {
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
         setKeyboardHeight(0)
-        setFocusedInputY(null)
       }
     )
 
@@ -134,36 +129,14 @@ function DrawerPortal({ children }: DrawerPortalProps) {
       keyboardWillShow.remove()
       keyboardWillHide.remove()
     }
-  }, [setFocusedInputY])
-
-  // Calculate smart offset based on focused input position
-  const calculateSmartOffset = React.useCallback(() => {
-    if (!keyboardHeight || focusedInputY === null) return 0
-
-    // Input height estimate (with some padding)
-    const inputHeight = 60
-    const padding = 20
-
-    // Calculate how much the input would be covered by keyboard
-    const inputBottom = focusedInputY + inputHeight
-    const keyboardTop = screenHeight - keyboardHeight
-
-    // Only move if input would be covered
-    if (inputBottom > keyboardTop) {
-      // Move just enough to expose the input above keyboard with padding
-      return inputBottom - keyboardTop + padding
-    }
-
-    return 0
-  }, [keyboardHeight, focusedInputY])
+  }, [])
 
   // Animation effects
   React.useEffect(() => {
     if (open) {
       setModalVisible(true)
       overlayOpacity.value = withTiming(1, animConfig)
-      const smartOffset = calculateSmartOffset()
-      drawerTranslateY.value = withTiming(-smartOffset, animConfig)
+      drawerTranslateY.value = withTiming(-keyboardHeight, animConfig)
     } else if (modalVisible) {
       overlayOpacity.value = withTiming(0, { ...animConfig, duration: closeDuration })
       drawerTranslateY.value = withTiming(screenHeight, { ...animConfig, duration: closeDuration })
@@ -175,14 +148,13 @@ function DrawerPortal({ children }: DrawerPortalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, modalVisible])
 
-  // Update drawer position when keyboard or focused input changes
+  // 键盘高度变化时，更新 Drawer 位置
   React.useEffect(() => {
     if (open && modalVisible) {
-      const smartOffset = calculateSmartOffset()
-      drawerTranslateY.value = withTiming(-smartOffset, animConfig)
+      drawerTranslateY.value = withTiming(-keyboardHeight, animConfig)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyboardHeight, focusedInputY, open, modalVisible])
+  }, [keyboardHeight, open, modalVisible])
 
   // Animated styles
   const overlayAnimatedStyle = useAnimatedStyle(() => ({
@@ -381,7 +353,6 @@ function DrawerClose({ onPress, className, children, ref, ...props }: DrawerClos
     <IconButton
       variant='none'
       onPress={() => onOpenChange(false)}
-      // className='absolute right-5 top-1/2 -translate-y-1/2'
       {...props}
     >
       <IconifyXmark width={24} height={24} color={colorBrandSecondary3} />
