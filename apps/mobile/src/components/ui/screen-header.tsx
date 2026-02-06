@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@/components/ui/button';
+import { IconButton } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'expo-router';
 import { NavArrowLeft } from 'iconoir-react-native';

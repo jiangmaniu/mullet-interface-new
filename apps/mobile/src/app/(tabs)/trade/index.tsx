@@ -11,12 +11,12 @@ import {
   IconifyNavArrowDown,
   IconifyUserCircle,
   IconifyPlusCircle,
-  IconDefault,
   IconifyPage,
   IconNavArrowSuperior,
   IconNavArrowDown,
   IconifyNavArrowRight,
 } from '@/components/ui/icons'
+import { EmptyState } from '@/components/ui/empty-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { cn } from '@/lib/utils'
@@ -554,17 +554,6 @@ interface PositionListProps {
   onHistoryPress?: () => void
 }
 
-function EmptyState() {
-  return (
-    <View className="flex-1 items-center justify-center gap-medium">
-      <IconDefault width={67} height={48} />
-      <Text className="text-paragraph-p2 text-content-6">
-        <Trans>暂无资产</Trans>
-      </Text>
-    </View>
-  )
-}
-
 // ============ PositionItem ============
 interface PositionItemProps {
   position: Position
@@ -823,7 +812,7 @@ function PositionList({
       case 'positions':
         return positions.length === 0 ? (
           <View className="flex-1">
-            <EmptyState />
+            <EmptyState message={<Trans>暂无资产</Trans>} />
           </View>
         ) : (
           <View>
@@ -840,7 +829,7 @@ function PositionList({
       case 'orders':
         return pendingOrders.length === 0 ? (
           <View className="flex-1">
-            <EmptyState />
+            <EmptyState message={<Trans>暂无订单</Trans>} />
           </View>
         ) : (
           <View>
@@ -1084,6 +1073,7 @@ export default function Trade() {
         symbol="SOL-USDC"
         priceChange="+1.54%"
         isPriceUp={true}
+        onSymbolPress={() => router.push('/symbol-selector')}
         onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
       />
 

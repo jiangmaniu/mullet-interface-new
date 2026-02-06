@@ -234,9 +234,7 @@ const InputContainer = <T,>({
             className={cn(
               'absolute pointer-events-none',
               // 基础样式
-              isFloating
-                ? 'top-0 -translate-y-1/2 left-xl px-xs bg-secondary' // 浮动状态: 上移，左对齐，背景色遮挡边框
-                : 'top-1/2 -translate-y-1/2', // 占位状态: 垂直居中
+              isFloating && 'top-0 -translate-y-1/2 left-xl px-xs bg-secondary', // 浮动状态: 上移，左对齐，背景色遮挡边框
               // 颜色
               isFocused ? 'text-brand-primary' : 'text-content-5',
               displayLabelClassName
@@ -244,7 +242,7 @@ const InputContainer = <T,>({
             style={{
               left: isFloating ? 12 : labelInitialLeft, // 浮动时固定左侧 padding，占位时跟随 LeftContent
               transform: [
-                { translateY: isFloating ? -9 : 0 } // RN translate logic needs explicit values or style adjustment. 
+                { translateY: isFloating ? -9 : 0 } // RN translate logic needs explicit values or style adjustment.
                 // actually standard flex centering handles 'top-1/2 -translate-y-1/2' via className if nativewind supports it.
                 // Manual adjustment for better precision:
               ]

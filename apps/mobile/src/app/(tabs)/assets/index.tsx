@@ -86,7 +86,6 @@ export default observer(function AssetsScreen() {
         variant='underline'
         renderTabBarRight={() => (
           <IconButton
-            variant='ghost'
             onPress={() => handleAccountManage()}
           >
             <IconifyPlusCircle width={20} height={20} />

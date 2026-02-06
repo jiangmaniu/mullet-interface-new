@@ -26,7 +26,6 @@ import {
   MoreHoriz,
   Page,
   PageDown,
-  Star,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -54,4 +53,3 @@ export const IconifyCandlestickChart = withUniwind(CandlestickChart)
 export const IconifyMoreHoriz = withUniwind(MoreHoriz)
 export const IconifyPage = withUniwind(Page)
 export const IconifyPageDown = withUniwind(PageDown)
-export const IconifyStar = withUniwind(Star)

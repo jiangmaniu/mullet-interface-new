@@ -186,6 +186,7 @@ export function CollapsibleTab({
     colorBrandPrimary,
     textColorContent1,
     textColorContent4,
+    backgroundColorSecondary,
   } = useThemeColors();
 
   const insets = useSafeAreaInsets();
@@ -237,16 +238,32 @@ export function CollapsibleTab({
   };
 
   const headerContainerStyle = useResolveClassNames('shadow-none elevation-0 bg-secondary')
+
   return (
-    <Tabs.Container
-      renderTabBar={renderTabBar}
-      containerStyle={containerStyle}
-      headerContainerStyle={headerContainerStyle}
-      minHeaderHeight={insets.top}
-      {...props}
-    >
-      {props.children}
-    </Tabs.Container>
+    <>
+      {/* 状态栏遮挡层 - 固定在顶部，防止 header 内容透出 */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: insets.top,
+          zIndex: 1000,
+          backgroundColor: backgroundColorSecondary,
+        }}
+      />
+
+      <Tabs.Container
+        renderTabBar={renderTabBar}
+        containerStyle={containerStyle}
+        headerContainerStyle={headerContainerStyle}
+        minHeaderHeight={insets.top}
+        {...props}
+      >
+        {props.children}
+      </Tabs.Container>
+    </>
   );
 }
 

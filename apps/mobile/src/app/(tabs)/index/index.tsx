@@ -4,11 +4,12 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import React, { useState } from 'react'
 
 import { AreaChart, ChartData } from '@/components/trading-view'
-import { Button } from '@/components/ui/button'
+import { Button, IconButton } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconifyBell, IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView } from '@/components/ui/collapsible-tab'
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
@@ -26,9 +27,9 @@ function HomeHeader() {
         <Input placeholder={t`查询`} className="w-full h-8" LeftContent={<IconifySearch width={20} height={20} style={searchIconStyle} />} />
       </View>
 
-      <Button variant="ghost" size="icon">
-        <IconifyBell width={24} height={24} />
-      </Button>
+      <IconButton>
+        <IconifyBell width={22} height={22} />
+      </IconButton>
     </View>
   )
 }
@@ -138,7 +139,7 @@ function AssetRow({ symbol, name, price, change, chartData = [] }: AssetRowProps
         </View>
       </View>
 
-      <View className='flex-row flex-shrink-0 gap-xl w-[180px]'>
+      <View className='flex-row flex-shrink-0 gap-xl w-[192px]'>
         <View className="w-[60px] h-8 items-center justify-center overflow-hidden">
           <AreaChart data={chartData} lineColor={isPositive ? colorMarketRise : colorMarketFall} />
         </View>
@@ -211,7 +212,7 @@ function AssetTradeRow({ symbol, name, buyPrice, sellPrice, highPrice, lowPrice 
         </View>
       </View>
 
-      <View className='flex-row flex-shrink-0 gap-xl w-[180px]'>
+      <View className='flex-row flex-shrink-0 gap-xl w-[192px]'>
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border border-market-rise rounded-small flex-col items-center justify-center h-[24px]">
             <Text className="text-paragraph-p2 text-market-rise">{buyPrice}</Text>
@@ -250,34 +251,31 @@ function AssetTradeView() {
   )
 }
 
-// ============ AssetList ============
-function AssetList() {
+// ============ Main Index ============
+export default function Index() {
   const [viewMode, setViewMode] = useState('list')
-  const [activeTab, setActiveTab] = useState('all')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
 
-  return (
-    <View className="flex-col gap-xl">
-      <View className="flex-row items-center border-b border-brand-default">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 border-none px-xl">
-          <TabsList variant="underline" size="md">
-            <TabsTrigger value="watchlist">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'watchlist' && 'text-content-1')}><Trans>自选</Trans></Text>
-            </TabsTrigger>
-            <TabsTrigger value="all">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'all' && 'text-content-1')}><Trans>全部</Trans></Text>
-            </TabsTrigger>
-            <TabsTrigger value="hot">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'hot' && 'text-content-1')}><Trans>热门</Trans></Text>
-            </TabsTrigger>
-            <TabsTrigger value="gainers">
-              <Text className={cn('text-button-2 text-content-4', activeTab === 'gainers' && 'text-content-1')}><Trans>涨跌幅</Trans></Text>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+  const Header = () => (
+    <SafeAreaView edges={['top']}>
+      <HomeHeader />
+      <ScrollView showsHorizontalScrollIndicator={false} horizontal>
+        <MarketOverview />
+      </ScrollView>
+    </SafeAreaView>
+  )
 
+  return (
+    // <SafeAreaView className="flex-1" edges={['top']}>
+    <CollapsibleTab
+      headerHeight={200}
+      renderHeader={Header}
+      variant="underline"
+      size="md"
+      tabBarClassName="border-b border-brand-default"
+      renderTabBarRight={() => (
         <Tabs value={viewMode} onValueChange={setViewMode} className='flex-shrink-0'>
-          <TabsList variant='icon' size='sm' className='pr-xl'>
+          <TabsList variant='icon' size='sm'>
             <TabsTrigger value="list" className='size-5'>
               <IconDepthTB width={12} height={12} color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1} />
             </TabsTrigger>
@@ -286,24 +284,32 @@ function AssetList() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
-      </View>
+      )}
+    >
+      <CollapsibleTabScene name="watchlist" label="自选">
+        <CollapsibleScrollView>
+          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
+        </CollapsibleScrollView>
+      </CollapsibleTabScene>
 
-      {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-    </View>
-  )
-}
+      <CollapsibleTabScene name="all" label="全部">
+        <CollapsibleScrollView>
+          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
+        </CollapsibleScrollView>
+      </CollapsibleTabScene>
 
-// ============ Main Index ============
-export default function Index() {
-  return (
-    <SafeAreaView className="flex-1" edges={['top']}>
-      <ScrollView>
-        <HomeHeader />
-        <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-          <MarketOverview />
-        </ScrollView>
-        <AssetList />
-      </ScrollView>
-    </SafeAreaView>
+      <CollapsibleTabScene name="hot" label="热门">
+        <CollapsibleScrollView>
+          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
+        </CollapsibleScrollView>
+      </CollapsibleTabScene>
+
+      <CollapsibleTabScene name="gainers" label="涨跌幅">
+        <CollapsibleScrollView>
+          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
+        </CollapsibleScrollView>
+      </CollapsibleTabScene>
+    </CollapsibleTab>
+    // </SafeAreaView>
   )
 }
