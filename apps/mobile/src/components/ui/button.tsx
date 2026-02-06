@@ -3,13 +3,17 @@ import { cn } from '@/lib/utils';
 import * as Slot from '@rn-primitives/slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { ActivityIndicator, Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Spinning } from './spinning';
 
 
 const buttonVariants = cva(
-  'group flex-row items-center justify-center gap-medium transition-all',
+  'group flex-row items-center justify-center gap-xs transition-all',
   {
     variants: {
+      loading: {
+        true: 'pointer-events-none',
+      },
       disabled: {
         true: '',
       },
@@ -67,6 +71,7 @@ const buttonVariants = cva(
       size: 'sm',
       color: 'default',
       disabled: false,
+      loading: false
     },
   }
 );
@@ -76,6 +81,9 @@ const buttonTextVariants = cva(
   {
     variants: {
       disabled: {
+        true: '',
+      },
+      loading: {
         true: '',
       },
       color: {
@@ -132,6 +140,7 @@ const buttonTextVariants = cva(
       size: 'sm',
       color: 'default',
       disabled: false,
+      loading: false
     },
   }
 );
@@ -161,24 +170,24 @@ function Button({
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot.Pressable : Pressable;
-  // coerce to boolean to match CVA expectation
-  const isDisabled = !!(props.disabled || loading);
+  const isDisabled = props.disabled
+
 
   return (
-    <TextClassContext.Provider value={buttonTextVariants({ variant, size, color, disabled: isDisabled })}>
+    <TextClassContext.Provider value={buttonTextVariants({ variant, size, color, disabled: isDisabled, loading })}>
       <Comp
         className={cn(
           // props.disabled && 'opacity-50',
           block && 'w-full flex-1',
-          buttonVariants({ variant, size, color, disabled: isDisabled }),
+          buttonVariants({ variant, size, color, disabled: isDisabled, loading }),
           className
         )}
         role="button"
-        disabled={props.disabled || loading}
+        disabled={props.disabled}
         {...props}
       >
-        {loading && <ActivityIndicator size="small" className="mr-2" color="currentColor" />}
-        {!loading && LeftIcon && <View className="mr-1">{LeftIcon}</View>}
+        {loading && <View className=""><Spinning className="text-brand-support" /></View>}
+        {!loading && LeftIcon && <View className="">{LeftIcon}</View>}
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
             return React.cloneElement(child as React.ReactElement<any>, {

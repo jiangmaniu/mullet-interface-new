@@ -92,6 +92,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                       config={{
                         appearance: {
                           colorScheme: theme === 'dark' ? 'dark' : 'light',
+                          accentColor: '#EED94C'
                         },
                       }}
                     />

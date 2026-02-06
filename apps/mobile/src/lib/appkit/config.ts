@@ -43,12 +43,13 @@ export const appKit = createAppKit({
   defaultNetwork: solana,
   adapters: [solanaAdapter],
   storage,
+  // debug: true,
   // themeMode 由 Providers 中的 useUniwind 动态控制
   metadata: {
     name: 'Mullet',
     description: 'Mullet - Trade Smarter',
     url: 'https://mullet.top',
-    icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-tag.svg`],
+    icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-appkit.png`],
     redirect: {
       native: 'mullet://',
       universal: 'https://mullet.top',

@@ -266,10 +266,10 @@ function DrawerHeader({ className, ref, showClose = true, children, ...props }: 
   return (
     <View
       ref={ref}
-      className={cn('mt-3xl px-5 flex-row items-center justify-between')}
+      className={cn('flex-row items-center justify-between', className)}
       {...props}
     >
-      <View>
+      <View className='flex-1'>
         {children}
       </View>
       {showClose && <DrawerClose />}
@@ -311,7 +311,7 @@ function DrawerDescription({ className, ref, ...props }: DrawerDescriptionProps)
   return (
     <Text
       ref={ref}
-      className={cn('text-content-4 text-paragraph-p3 mt-medium', className)}
+      className={cn('text-content-4 text-paragraph-p3', className)}
       {...props}
     />
   )
@@ -330,7 +330,7 @@ function DrawerFooter({ className, ref, ...props }: DrawerFooterProps) {
   return (
     <View
       ref={ref}
-      className={cn('px-5 mb-3xl flex-row', className)}
+      className={cn('flex-row', className)}
       {...props}
     />
   )
