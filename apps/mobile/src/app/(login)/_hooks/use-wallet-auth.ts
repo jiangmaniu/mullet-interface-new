@@ -9,6 +9,15 @@ interface UseWalletAuthOptions {
   onError?: (error: string) => void
 }
 
+export class WalletAuthError extends Error {
+  public type: 'UserRejected' | 'WalletNotConnected' | 'SignatureFailed' | 'UnknownSignatureError'
+  constructor(message: string, type: 'UserRejected' | 'WalletNotConnected' | 'SignatureFailed' | 'UnknownSignatureError') {
+    super(message)
+    this.name = 'WalletAuthError'
+    this.type = type
+  }
+}
+
 /**
  * Base58 转 Base64
  */
@@ -27,14 +36,15 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
 
   const { generateMessage, login: loginWithSiws } = useLoginWithSiws()
   const { user: privyUser } = usePrivy()
-  const { address } = useAccount()
+  const { address ,chainId} = useAccount()
   const { provider } = useProvider()
 
   const mutation = useMutation({
     mutationKey: ['auth', 'wallet-sign'],
+    retry: 0, // 失败后不自动重试
     mutationFn: async () => {
       if (!address || !provider) {
-        throw new Error('钱包未连接')
+        throw new WalletAuthError('请先连接钱包', 'WalletNotConnected')
       }
 
       // 如果已登录 Privy，直接返回成功
@@ -61,7 +71,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
           message: messageBytes,
           pubkey: address,
         },
-      })
+      }, `solana:${chainId}`)
 
       console.log('Signature result:', signatureResult)
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useLogin } from '@privy-io/expo/ui'
 import { usePrivy } from '@privy-io/expo'
@@ -25,6 +25,12 @@ export function Web2LoginSection() {
     redirectOnSuccess: true,
   })
 
+  // 重置登录状态
+  const resetLoginState = useCallback(() => {
+    setIsLoggingIn(false)
+    loginTriggeredRef.current = false
+  }, [])
+
   // 监听 Privy 登录成功后，自动登录后端
   useEffect(() => {
     const handlePrivyLoginSuccess = async () => {
@@ -40,14 +46,13 @@ export function Web2LoginSection() {
         } catch (error) {
           console.error('Backend login failed:', error)
         } finally {
-          setIsLoggingIn(false)
-          loginTriggeredRef.current = false
+          resetLoginState()
         }
       }
     }
 
     handlePrivyLoginSuccess()
-  }, [privyReady, privyUser, isBackendLoading, loginToBackend])
+  }, [privyReady, privyUser, isBackendLoading, loginToBackend, resetLoginState])
 
   // Web2 登录（Email 等）
   const handleWeb2Login = async () => {
@@ -58,8 +63,7 @@ export function Web2LoginSection() {
       await privyLogin({ loginMethods: ['email'] })
     } catch (error) {
       console.error('Privy login failed:', error)
-      setIsLoggingIn(false)
-      loginTriggeredRef.current = false
+      resetLoginState()
     }
   }
 
