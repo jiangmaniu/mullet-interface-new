@@ -70,7 +70,7 @@ export function CommonFeaturesDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className='gap-xl pb-3xl'>
-        <DrawerHeader>
+        <DrawerHeader className="px-5 pt-3xl">
           <DrawerTitle>
             <Trans>常用功能</Trans>
           </DrawerTitle>

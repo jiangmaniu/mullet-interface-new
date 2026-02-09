@@ -12,6 +12,7 @@ import {
   DrawerFooter,
 } from '@/components/ui/drawer'
 import { useState } from 'react'
+import { useTradeSettingsStore } from '@/stores/trade-settings'
 
 interface OrderConfirmationDrawerProps {
   open: boolean
@@ -39,8 +40,12 @@ export function OrderConfirmationDrawer({
   onConfirm,
 }: OrderConfirmationDrawerProps) {
   const [dontAskAgain, setDontAskAgain] = useState(false)
+  const setOrderConfirmation = useTradeSettingsStore((s) => s.setOrderConfirmation)
 
   const handleConfirm = () => {
+    if (dontAskAgain) {
+      setOrderConfirmation(false)
+    }
     onConfirm()
     onOpenChange(false)
   }
@@ -48,7 +53,7 @@ export function OrderConfirmationDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader>
+        <DrawerHeader className="px-5 pt-3xl">
           <DrawerTitle>
             <Trans>订单确认</Trans>
           </DrawerTitle>

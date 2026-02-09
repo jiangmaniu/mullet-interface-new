@@ -46,6 +46,7 @@ import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
 import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
 import { useToast } from '@/components/ui/toast'
 import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
+import { useTradeSettingsStore } from '@/stores/trade-settings'
 // ============ TradeHeader Component ============
 interface TradeHeaderProps {
   symbol: string
@@ -973,6 +974,9 @@ export default function Trade() {
   // Toast
   const { show: showToast } = useToast()
 
+  // Trade Settings
+  const { orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore()
+
   // State
   const [isChartVisible, setIsChartVisible] = useState(true)
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
@@ -1015,8 +1019,14 @@ export default function Trade() {
       price: '184.00',
       quantity: '0.01',
     })
-    setIsOrderConfirmDrawerOpen(true)
-  }, [])
+    if (orderConfirmation) {
+      setIsOrderConfirmDrawerOpen(true)
+    } else {
+      // 跳过确认，直接下单
+      console.log('Order confirmed (skip confirmation):', { side: 'buy', price: '184.00', quantity: '0.01' })
+      // TODO: 实际下单逻辑
+    }
+  }, [orderConfirmation])
 
   const handleSell = useCallback(() => {
     setPendingOrder({
@@ -1024,8 +1034,14 @@ export default function Trade() {
       price: '184.00',
       quantity: '0.01',
     })
-    setIsOrderConfirmDrawerOpen(true)
-  }, [])
+    if (orderConfirmation) {
+      setIsOrderConfirmDrawerOpen(true)
+    } else {
+      // 跳过确认，直接下单
+      console.log('Order confirmed (skip confirmation):', { side: 'sell', price: '184.00', quantity: '0.01' })
+      // TODO: 实际下单逻辑
+    }
+  }, [orderConfirmation])
 
   const handleConfirmOrder = useCallback(() => {
     if (pendingOrder) {
@@ -1037,8 +1053,14 @@ export default function Trade() {
 
   const handleClosePosition = useCallback((position: Position) => {
     setSelectedPosition(position)
-    setIsClosePositionDrawerOpen(true)
-  }, [])
+    if (closeConfirmation) {
+      setIsClosePositionDrawerOpen(true)
+    } else {
+      // 跳过确认，直接平仓
+      console.log('Close position (skip confirmation):', position)
+      // TODO: 实际平仓逻辑
+    }
+  }, [closeConfirmation])
 
   const handleConfirmClosePosition = useCallback((quantity: number, orderType: 'market' | 'limit', limitPrice?: string) => {
     if (selectedPosition) {
@@ -1081,12 +1103,14 @@ export default function Trade() {
         className="flex-1"
         showsVerticalScrollIndicator={false}
       >
-        {/* K-Line Chart */}
-        <KLineChart
-          isVisible={isChartVisible}
-          onToggle={handleChartToggle}
-          symbol="SOL-USDC"
-        />
+        {/* K-Line Chart - 顶部位置 */}
+        {chartPosition === 'top' && (
+          <KLineChart
+            isVisible={isChartVisible}
+            onToggle={handleChartToggle}
+            symbol="SOL-USDC"
+          />
+        )}
 
         {/* Account Card */}
         <View className="pt-xl">
@@ -1108,6 +1132,15 @@ export default function Trade() {
           onSell={handleSell}
           defaultSide={defaultSide}
         />
+
+        {/* K-Line Chart - 底部位置 */}
+        {chartPosition === 'bottom' && (
+          <KLineChart
+            isVisible={isChartVisible}
+            onToggle={handleChartToggle}
+            symbol="SOL-USDC"
+          />
+        )}
 
         {/* Position List */}
         <View className="mt-xl" style={{ minHeight: 400 }}>
@@ -1181,16 +1214,17 @@ export default function Trade() {
         open={isCommonFeaturesDrawerOpen}
         onOpenChange={setIsCommonFeaturesDrawerOpen}
         onTradingSettings={() => {
-          console.log('Trading settings pressed')
           setIsCommonFeaturesDrawerOpen(false)
+          router.push('/(trade)/settings')
         }}
         onDeposit={() => {
-          console.log('Deposit pressed')
           setIsCommonFeaturesDrawerOpen(false)
+          // TODO: 实现入金功能
+          console.log('Deposit pressed')
         }}
         onTransfer={() => {
-          console.log('Transfer pressed')
           setIsCommonFeaturesDrawerOpen(false)
+          router.push('/(assets)/transfer')
         }}
         onBill={() => {
           setIsCommonFeaturesDrawerOpen(false)

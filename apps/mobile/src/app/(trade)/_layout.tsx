@@ -5,6 +5,7 @@ export default function TradeLayout() {
     <Stack>
       <Stack.Screen name="[symbol]" options={{ headerShown: false }} />
       <Stack.Screen name="records/index" options={{ headerShown: false }} />
+      <Stack.Screen name="settings" options={{ headerShown: false }} />
     </Stack>
   );
 }

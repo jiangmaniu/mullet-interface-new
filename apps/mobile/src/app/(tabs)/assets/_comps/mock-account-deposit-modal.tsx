@@ -16,7 +16,7 @@ export function MockAccountDepositModal({ open, onClose, onConfirm }: MockAccoun
 	return (
 		<Drawer open={open} onOpenChange={onClose}>
 			<DrawerContent>
-				<DrawerHeader>
+				<DrawerHeader className="px-5 pt-xl">
 					<DrawerTitle><Trans>模拟账户存款</Trans></DrawerTitle>
 					<DrawerDescription>
 						<Trans>每日可存款10000.00 USDC</Trans>

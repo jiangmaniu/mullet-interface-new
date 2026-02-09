@@ -50,7 +50,7 @@ export function TimePeriodDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <DrawerHeader>
+        <DrawerHeader className="px-5 pt-3xl">
           <DrawerTitle>
             <Trans>全部周期</Trans>
           </DrawerTitle>

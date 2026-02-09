@@ -15,6 +15,7 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { useState } from 'react'
 import { t } from '@/locales/i18n'
+import { useTradeSettingsStore } from '@/stores/trade-settings'
 
 interface ClosePositionDrawerProps {
   open: boolean
@@ -43,6 +44,7 @@ function ClosePositionDrawerContent({
   const [closeQuantity, setCloseQuantity] = useState('100.00')
   const [sliderValue, setSliderValue] = useState(100)
   const [dontAskAgain, setDontAskAgain] = useState(false)
+  const setCloseConfirmation = useTradeSettingsStore((s) => s.setCloseConfirmation)
 
   const handleSliderChange = (value: number) => {
     setSliderValue(value)
@@ -62,6 +64,9 @@ function ClosePositionDrawerContent({
   const handleConfirm = () => {
     const qty = parseFloat(closeQuantity)
     if (qty > 0 && qty <= quantity) {
+      if (dontAskAgain) {
+        setCloseConfirmation(false)
+      }
       onConfirm(qty, 'market')
       onOpenChange(false)
     }
@@ -69,7 +74,7 @@ function ClosePositionDrawerContent({
 
   return (
     <>
-      <DrawerHeader>
+      <DrawerHeader className="px-5 pt-3xl">
         <DrawerTitle>
           <Trans>平仓</Trans>
         </DrawerTitle>

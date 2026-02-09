@@ -95,7 +95,7 @@ function StopProfitLossDrawerContent({
 
   return (
     <>
-      <DrawerHeader>
+      <DrawerHeader className="px-5 pt-3xl">
         <DrawerTitle>
           <Trans>止盈止损</Trans>
         </DrawerTitle>

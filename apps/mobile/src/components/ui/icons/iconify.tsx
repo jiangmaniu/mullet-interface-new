@@ -26,6 +26,8 @@ import {
   MoreHoriz,
   Page,
   PageDown,
+  ArrowUpCircleSolid,
+  ArrowDownCircleSolid
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -53,3 +55,5 @@ export const IconifyCandlestickChart = withUniwind(CandlestickChart)
 export const IconifyMoreHoriz = withUniwind(MoreHoriz)
 export const IconifyPage = withUniwind(Page)
 export const IconifyPageDown = withUniwind(PageDown)
+export const IconifyArrowUpCircleSolid = withUniwind(ArrowUpCircleSolid)
+export const IconifyArrowDownCircleSolid = withUniwind(ArrowDownCircleSolid)
