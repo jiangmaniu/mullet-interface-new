@@ -1,15 +1,14 @@
-import { ScrollView, View } from 'react-native'
+import { ScrollView, View, Pressable } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Trans, useLingui } from '@lingui/react/macro'
-import React, { useState } from 'react'
+import React, { useState, useMemo, useCallback } from 'react'
+import { useRouter } from 'expo-router'
+import { Route } from 'react-native-tab-view'
 
 import { AreaChart, ChartData } from '@/components/trading-view'
-import { Button, IconButton } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconifyBell, IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView } from '@/components/ui/collapsible-tab'
+import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
@@ -20,16 +19,20 @@ import { useResolveClassNames } from 'uniwind'
 function HomeHeader() {
   const { t } = useLingui()
   const searchIconStyle = useResolveClassNames('text-content-4')
+  const router = useRouter()
 
   return (
-    <View className="flex-row items-center justify-between gap-medium px-xl py-1.5">
-      <View className="relative flex-1 items-center justify-center">
-        <Input placeholder={t`查询`} className="w-full h-8" LeftContent={<IconifySearch width={20} height={20} style={searchIconStyle} />} />
-      </View>
-
-      <IconButton>
+    <View className="flex-row items-center gap-[10px] px-xl py-1.5">
+      <Pressable
+        className="flex-1 flex-row items-center gap-medium h-8 px-xl border border-brand-default rounded-medium"
+        onPress={() => router.push('/search')}
+      >
+        <IconifySearch width={20} height={20} style={searchIconStyle} />
+        <Text className="text-paragraph-p2 text-content-5">{t`查询`}</Text>
+      </Pressable>
+      <Pressable className="size-[22px] items-center justify-center" onPress={() => router.push('/notifications')}>
         <IconifyBell width={22} height={22} />
-      </IconButton>
+      </Pressable>
     </View>
   )
 }
@@ -256,60 +259,46 @@ export default function Index() {
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
 
-  const Header = () => (
-    <SafeAreaView edges={['top']}>
-      <HomeHeader />
-      <ScrollView showsHorizontalScrollIndicator={false} horizontal>
-        <MarketOverview />
+  const routes = useMemo<Route[]>(() => [
+    { key: 'watchlist', title: '自选' },
+    { key: 'all', title: '全部' },
+    { key: 'hot', title: '热门' },
+    { key: 'gainers', title: '涨跌幅' },
+  ], [])
+
+  const renderScene = useCallback(({ route }: { route: Route }) => {
+    return (
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
       </ScrollView>
-    </SafeAreaView>
-  )
+    )
+  }, [viewMode])
 
   return (
-    // <SafeAreaView className="flex-1" edges={['top']}>
-    <CollapsibleTab
-      headerHeight={200}
-      renderHeader={Header}
-      variant="underline"
-      size="md"
-      tabBarClassName="border-b border-brand-default"
-      renderTabBarRight={() => (
-        <Tabs value={viewMode} onValueChange={setViewMode} className='flex-shrink-0'>
-          <TabsList variant='icon' size='sm'>
-            <TabsTrigger value="list" className='size-5'>
-              <IconDepthTB width={12} height={12} color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1} />
-            </TabsTrigger>
-            <TabsTrigger value="trade" className='size-5'>
-              <IconDepth width={12} height={12} color={viewMode === 'trade' ? colorMarketFall : colorBrandSecondary1} primaryColor={viewMode === 'trade' ? colorMarketRise : colorBrandSecondary1} />
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      )}
-    >
-      <CollapsibleTabScene name="watchlist" label="自选">
-        <CollapsibleScrollView>
-          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-        </CollapsibleScrollView>
-      </CollapsibleTabScene>
-
-      <CollapsibleTabScene name="all" label="全部">
-        <CollapsibleScrollView>
-          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-        </CollapsibleScrollView>
-      </CollapsibleTabScene>
-
-      <CollapsibleTabScene name="hot" label="热门">
-        <CollapsibleScrollView>
-          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-        </CollapsibleScrollView>
-      </CollapsibleTabScene>
-
-      <CollapsibleTabScene name="gainers" label="涨跌幅">
-        <CollapsibleScrollView>
-          {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-        </CollapsibleScrollView>
-      </CollapsibleTabScene>
-    </CollapsibleTab>
-    // </SafeAreaView>
+    <View className="flex-1 bg-secondary">
+      <SafeAreaView edges={['top']}>
+        <HomeHeader />
+        <MarketOverview />
+      </SafeAreaView>
+      <SwipeableTabs
+        routes={routes}
+        renderScene={renderScene}
+        variant="underline"
+        size="md"
+        tabBarClassName="border-b border-brand-default px-xl"
+        renderTabBarRight={() => (
+          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
+            <TabsList variant="icon" size="sm">
+              <TabsTrigger value="list" className="size-5">
+                <IconDepthTB width={12} height={12} color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1} />
+              </TabsTrigger>
+              <TabsTrigger value="trade" className="size-5">
+                <IconDepth width={12} height={12} color={viewMode === 'trade' ? colorMarketFall : colorBrandSecondary1} primaryColor={viewMode === 'trade' ? colorMarketRise : colorBrandSecondary1} />
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
+      />
+    </View>
   )
 }

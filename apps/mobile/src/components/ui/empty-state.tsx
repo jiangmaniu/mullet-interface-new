@@ -21,11 +21,23 @@ interface EmptyStateProps {
   /**
    * 自定义图标容器样式类名
    */
+  iconContainerClassName?: string
+  /**
+   * 自定义图标样式类名
+   */
   iconClassName?: string
   /**
    * 自定义文本样式类名
    */
   textClassName?: string
+  /**
+   * 自定义图标宽度
+   */
+  iconWidth?: number
+  /**
+   * 自定义图标高度
+   */
+  iconHeight?: number
 }
 
 export function EmptyState({
@@ -33,12 +45,15 @@ export function EmptyState({
   message,
   className,
   iconClassName,
+  iconContainerClassName,
   textClassName,
+  iconWidth = 67,
+  iconHeight = 48,
 }: EmptyStateProps) {
   return (
-    <View className={cn('flex-1 items-center justify-center gap-medium', className)}>
-      <View className={iconClassName}>
-        {icon ?? <IconDefault width={67} height={48} />}
+    <View className={cn('items-center justify-center gap-medium', className)}>
+      <View className={iconContainerClassName}>
+        {icon ?? <IconDefault width={iconWidth} height={iconHeight} className={iconClassName} />}
       </View>
       <Text className={cn('text-paragraph-p2 text-content-6', textClassName)}>
         {message}

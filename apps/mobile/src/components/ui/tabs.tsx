@@ -210,6 +210,7 @@ interface SwipeableTabsProps {
   swipeEnabled?: boolean;
   lazy?: boolean;
   renderTabBarRight?: () => React.ReactNode;
+  tabFlex?: boolean;
 }
 
 function SwipeableTabs({
@@ -224,6 +225,7 @@ function SwipeableTabs({
   swipeEnabled = true,
   lazy = true,
   renderTabBarRight,
+  tabFlex = false,
 }: SwipeableTabsProps) {
   const layout = useWindowDimensions();
   const [index, setIndex] = React.useState(initialIndex);
@@ -272,7 +274,7 @@ function SwipeableTabs({
                 key={route.key}
                 onLayout={(e) => onTabLayout(route.key, { x: e.nativeEvent.layout.x, width: e.nativeEvent.layout.width })}
                 onPress={() => handleIndexChange(routes.findIndex((r) => r.key === route.key))}
-                className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }))}
+                className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }), tabFlex && 'flex-1')}
               >
                 <Text className={textClassName}>{route.title}</Text>
               </Pressable>

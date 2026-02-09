@@ -31,13 +31,8 @@ export default function RootLayout() {
         <Stack.Screen name="(assets)" options={{ headerShown: false }} />
         <Stack.Screen name="(trade)" options={{ headerShown: false }} />
         <Stack.Screen name="(login)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="symbol-selector"
-          options={{
-            headerShown: false,
-            presentation: 'modal',
-          }}
-        />
+        <Stack.Screen name="(home)" options={{ headerShown: false }} />
+        <Stack.Screen name="symbol-selector" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </Providers>

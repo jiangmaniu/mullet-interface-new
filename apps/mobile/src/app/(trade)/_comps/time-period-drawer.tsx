@@ -49,7 +49,7 @@ export function TimePeriodDrawer({
 }: TimePeriodDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent className='gap-xl'>
         <DrawerHeader className="px-5 pt-3xl">
           <DrawerTitle>
             <Trans>全部周期</Trans>

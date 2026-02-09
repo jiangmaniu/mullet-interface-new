@@ -24,7 +24,7 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index/index"
+        name="home/index"
         options={{
           title: t`首页`,
           tabBarIcon: ({ color, focused }) => focused ? <IconHome primaryColor={colorBrandPrimary} width={24} height={24} color={color} /> : <IconifyHomeSimple width={24} height={24} color={color} />,
