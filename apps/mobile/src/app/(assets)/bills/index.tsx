@@ -1,24 +1,21 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-	CollapsibleScrollView,
-	CollapsibleTab,
-	CollapsibleTabScene,
-} from '@/components/ui/collapsible-tab';
-import {
 	IconifyFilter,
 	IconifyNavArrowDown,
 	IconifyUserCircle,
 } from '@/components/ui/icons';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { SwipeableTabs } from '@/components/ui/tabs';
 import { Text } from '@/components/ui/text';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { t } from '@/locales/i18n';
 import { Trans } from '@lingui/react/macro';
-import React, { useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
+import type { Route } from 'react-native-tab-view';
 import Svg, { Path, Rect } from 'react-native-svg';
-import { Account, AccountSelectDrawer } from '@/app/(assets)/bills/_comps/account-select-drawer';
+import { Account, AccountSelectDrawer } from '@/components/drawers/account-select-drawer';
 import { DateFilterDrawer, DateRange } from '@/app/(assets)/bills/_comps/date-filter-drawer';
 
 // Mock data types
@@ -248,6 +245,60 @@ export default function BillsScreen() {
 		// TODO: Filter records based on date range
 	};
 
+	const routes = useMemo<Route[]>(() => [
+		{ key: 'withdrawal', title: t`出金` },
+		{ key: 'deposit', title: t`入金` },
+		{ key: 'transfer', title: t`划转` },
+	], []);
+
+	const renderScene = useCallback(({ route }: { route: Route }) => {
+		const accountSelector = (
+			<AccountSelector
+				accountId={selectedAccount.id}
+				accountType={selectedAccount.type}
+				isReal={!!selectedAccount.isReal}
+				onPress={() => setAccountSelectVisible(true)}
+			/>
+		);
+
+		if (route.key === 'withdrawal') {
+			return (
+				<ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
+					<View className="gap-xl px-xl pt-xl">
+						{accountSelector}
+						{MOCK_WITHDRAWALS.map((record) => (
+							<WithdrawalCard key={record.id} record={record} />
+						))}
+					</View>
+				</ScrollView>
+			);
+		}
+
+		if (route.key === 'deposit') {
+			return (
+				<ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
+					<View className="gap-xl px-xl pt-xl">
+						{accountSelector}
+						{MOCK_DEPOSITS.map((record) => (
+							<DepositCard key={record.id} record={record} />
+						))}
+					</View>
+				</ScrollView>
+			);
+		}
+
+		return (
+			<ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
+				<View className="gap-xl px-xl pt-xl">
+					{accountSelector}
+					{MOCK_TRANSFERS.map((record) => (
+						<TransferCard key={record.id} record={record} />
+					))}
+				</View>
+			</ScrollView>
+		);
+	}, [selectedAccount]);
+
 	return (
 		<>
 			<ScreenHeader
@@ -259,63 +310,14 @@ export default function BillsScreen() {
 					</TouchableOpacity>
 				}
 			/>
-			<View className="flex-1">
-				<CollapsibleTab
-					minHeaderHeight={0}
-					scrollEnabled={false}
-					initialTabName="withdrawal"
-					size="md"
-					variant="underline"
-				>
-					<CollapsibleTabScene name="withdrawal" label={t`出金`}>
-						<CollapsibleScrollView className='flex-1'>
-							<View className="gap-xl px-xl pt-xl">
-								<AccountSelector
-									accountId={selectedAccount.id}
-									accountType={selectedAccount.type}
-									isReal={selectedAccount.isReal}
-									onPress={() => setAccountSelectVisible(true)}
-								/>
-								{MOCK_WITHDRAWALS.map((record) => (
-									<WithdrawalCard key={record.id} record={record} />
-								))}
-							</View>
-						</CollapsibleScrollView>
-					</CollapsibleTabScene>
-
-					<CollapsibleTabScene name="deposit" label={t`入金`}>
-						<CollapsibleScrollView className='flex-1'>
-							<View className="gap-xl px-xl pt-xl">
-								<AccountSelector
-									accountId={selectedAccount.id}
-									accountType={selectedAccount.type}
-									isReal={selectedAccount.isReal}
-									onPress={() => setAccountSelectVisible(true)}
-								/>
-								{MOCK_DEPOSITS.map((record) => (
-									<DepositCard key={record.id} record={record} />
-								))}
-							</View>
-						</CollapsibleScrollView>
-					</CollapsibleTabScene>
-
-					<CollapsibleTabScene name="transfer" label={t`划转`}>
-						<CollapsibleScrollView className='flex-1' contentContainerStyle={{ paddingBottom: 24 }}>
-							<View className="gap-xl px-xl pt-xl">
-								<AccountSelector
-									accountId={selectedAccount.id}
-									accountType={selectedAccount.type}
-									isReal={selectedAccount.isReal}
-									onPress={() => setAccountSelectVisible(true)}
-								/>
-								{MOCK_TRANSFERS.map((record) => (
-									<TransferCard key={record.id} record={record} />
-								))}
-							</View>
-						</CollapsibleScrollView>
-					</CollapsibleTabScene>
-				</CollapsibleTab>
-			</View>
+			<SwipeableTabs
+				routes={routes}
+				renderScene={renderScene}
+				variant="underline"
+				size="md"
+				tabBarClassName="px-xl"
+				tabFlex
+			/>
 
 			<AccountSelectDrawer
 				visible={accountSelectVisible}

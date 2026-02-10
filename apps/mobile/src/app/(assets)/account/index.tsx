@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Pressable } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { ScreenHeader } from '@/components/ui/screen-header';

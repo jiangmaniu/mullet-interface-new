@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
-import { AccountSelectionDrawer, type Account } from '@/app/(tabs)/assets/_comps/account-selection-drawer';
+import { AccountSwitchDrawer, type Account } from '@/components/drawers/account-switch-drawer';
 import { TransferHintModal } from '@/app/(tabs)/assets/_comps/transfer-hint-modal';
 import { t } from '@/locales/i18n';
 import { ScreenHeader } from '@/components/ui/screen-header';
@@ -118,17 +118,13 @@ export default observer(function AssetsScreen() {
         </CollapsibleTabScene>
       </CollapsibleTab>
 
-      <AccountSelectionDrawer
+      <AccountSwitchDrawer
         selectedAccountId={currentAccount.id}
-        onSelect={(account: Account) => {
-          // Force cast or ensure compatibility. 
-          // The Account type in Switcher is compatible now.
+        onSwitch={(account: Account) => {
           setCurrentAccount(account as typeof REAL_ACCOUNTS[0])
         }}
         visible={isSwitcherVisible}
         onClose={() => setIsSwitcherVisible(false)}
-        realAccounts={REAL_ACCOUNTS}
-        mockAccounts={MOCK_ACCOUNTS}
       />
 
 

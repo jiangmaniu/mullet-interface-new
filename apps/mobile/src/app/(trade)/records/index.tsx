@@ -498,9 +498,8 @@ function FundFlowCard({ item }: { item: FundFlowItem }) {
                 <Trans>金额</Trans>
               </Text>
               <Text
-                className={`text-paragraph-p3 ${
-                  item.isIncome ? 'text-market-rise' : 'text-market-fall'
-                }`}
+                className={`text-paragraph-p3 ${item.isIncome ? 'text-market-rise' : 'text-market-fall'
+                  }`}
               >
                 {item.isIncome ? '' : '-'}{item.amount} USDC
               </Text>
@@ -619,6 +618,7 @@ export default function TradeRecordsScreen() {
           renderScene={renderScene}
           variant="underline"
           size="md"
+          tabFlex
           tabBarClassName="border-b border-brand-default px-xl"
         />
       </View>

@@ -37,9 +37,9 @@ import {
 } from '@/components/ui/accordion'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 import {
-  TradeAccountSelectionDrawer,
+  AccountSwitchDrawer,
   type Account,
-} from './_comps/trade-account-selection-drawer'
+} from '@/components/drawers/account-switch-drawer'
 import { OrderConfirmationDrawer } from './_comps/order-confirmation-drawer'
 import { ClosePositionDrawer } from './_comps/close-position-drawer'
 import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
@@ -868,40 +868,6 @@ function PositionList({
 
 // ============ Main Trade Component ============
 
-// Mock data
-const MOCK_REAL_ACCOUNTS: Account[] = [
-  {
-    id: '152365963',
-    type: 'STP',
-    balance: '152,563.00',
-    currency: 'USDC',
-    isReal: true,
-  },
-  {
-    id: '152365964',
-    type: 'STP',
-    balance: '152,563.00',
-    currency: 'USDC',
-    isReal: true,
-  },
-  {
-    id: '152365965',
-    type: 'STP',
-    balance: '152,563.00',
-    currency: 'USDC',
-    isReal: true,
-  },
-]
-
-const MOCK_DEMO_ACCOUNTS: Account[] = [
-  {
-    id: '10023491',
-    type: 'STP',
-    balance: '100,000.00',
-    currency: 'USDC',
-    isReal: false,
-  },
-]
 
 // Mock positions data
 const MOCK_POSITIONS: Position[] = [
@@ -1159,13 +1125,11 @@ export default function Trade() {
       </KeyboardAwareContainer>
 
       {/* Account Selection Drawer */}
-      <TradeAccountSelectionDrawer
+      <AccountSwitchDrawer
         visible={isAccountDrawerOpen}
         onClose={() => setIsAccountDrawerOpen(false)}
         selectedAccountId={selectedAccount.id}
-        onSelect={handleAccountSelect}
-        realAccounts={MOCK_REAL_ACCOUNTS}
-        mockAccounts={MOCK_DEMO_ACCOUNTS}
+        onSwitch={handleAccountSelect}
       />
 
       {/* Order Confirmation Drawer */}
