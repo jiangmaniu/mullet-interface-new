@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { View, Pressable, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
 import {

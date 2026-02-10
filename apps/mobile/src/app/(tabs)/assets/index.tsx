@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
 import React, { useState } from 'react';
-import { View, Pressable, TouchableHighlight, Pressable } from 'react-native';
+import { View, Pressable, TouchableHighlight } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
 import { AccountSwitchDrawer, type Account } from '@/components/drawers/account-switch-drawer';
