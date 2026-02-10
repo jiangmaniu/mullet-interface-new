@@ -179,7 +179,7 @@ export function RealAccountRow({
             </View>
 
             <View className="flex-row items-center gap-medium">
-              <Badge color='rise'>
+              <Badge color='green'>
                 <Text><Trans>真实</Trans></Text>
               </Badge>
               <Badge color='default'>

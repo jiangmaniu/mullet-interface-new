@@ -15,7 +15,9 @@ const badgeVariants = cva(
         default: 'bg-button',
         rise: 'bg-market-rise',
         fall: 'bg-market-fall',
+        red: 'bg-red-500',
         secondary: 'bg-brand-support',
+        green: 'bg-green-500',
       },
     },
     defaultVariants: {

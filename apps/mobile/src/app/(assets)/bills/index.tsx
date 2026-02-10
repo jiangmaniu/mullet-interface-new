@@ -357,7 +357,7 @@ function AccountSelector({
 					<IconifyUserCircle width={20} height={20} color={textColorContent1} />
 					<Text className="text-paragraph-p2 text-content-1">{accountId}</Text>
 					{isReal && (
-						<Badge color="rise">
+						<Badge color="green">
 							<Text><Trans>真实</Trans></Text>
 						</Badge>
 					)}

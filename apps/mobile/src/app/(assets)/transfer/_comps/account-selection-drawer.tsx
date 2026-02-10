@@ -78,7 +78,7 @@ function AccountRow({
 							<Text className="text-paragraph-p2 text-content-1">{id}</Text>
 
 							<View className="flex-row items-center gap-medium">
-								<Badge color='rise'>
+								<Badge color='green'>
 									<Text><Trans>真实</Trans></Text>
 								</Badge>
 								<Badge color='default'>

@@ -111,7 +111,7 @@ function AccountTypeCard({ data, isSelected, onPress }: AccountTypeCardProps) {
 						</View>
 
 						<View className="flex-row items-center gap-xs">
-							<Badge color={isMock ? 'secondary' : 'rise'}>
+							<Badge color={isMock ? 'secondary' : 'green'}>
 								<Text>{isMock ? <Trans>模拟</Trans> : <Trans>真实</Trans>}</Text>
 							</Badge>
 							{data.tags.map(tag => (
