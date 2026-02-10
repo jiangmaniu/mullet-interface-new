@@ -12,7 +12,7 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 import { t } from '@/locales/i18n';
 import { Trans } from '@lingui/react/macro';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Pressable, View } from 'react-native';
 import type { Route } from 'react-native-tab-view';
 import Svg, { Path, Rect } from 'react-native-svg';
 import { Account, AccountSelectDrawer } from '@/components/drawers/account-select-drawer';
@@ -305,9 +305,9 @@ export default function BillsScreen() {
 				showBackButton={true}
 				content={<Trans>账单</Trans>}
 				right={
-					<TouchableOpacity onPress={handleFilterPress}>
+					<Pressable onPress={handleFilterPress}>
 						<IconifyFilter width={22} height={22} className='text-content-1' />
-					</TouchableOpacity>
+					</Pressable>
 				}
 			/>
 			<SwipeableTabs
@@ -351,7 +351,7 @@ function AccountSelector({
 	const { textColorContent1 } = useThemeColors();
 
 	return (
-		<TouchableOpacity onPress={onPress}>
+		<Pressable onPress={onPress}>
 			<View className="flex-row items-center justify-between px-xl py-xl bg-special rounded-small">
 				<View className="flex-row items-center gap-medium">
 					<IconifyUserCircle width={20} height={20} color={textColorContent1} />
@@ -367,7 +367,7 @@ function AccountSelector({
 				</View>
 				<IconifyNavArrowDown width={18} height={18} color={textColorContent1} />
 			</View>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }
 

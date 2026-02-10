@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import * as React from 'react';
 import {
 	Modal as RNModal,
-	TouchableOpacity,
+	Pressable,
 	TouchableWithoutFeedback,
 	View,
 	type ModalProps as RNModalProps,
@@ -147,8 +147,8 @@ ModalFooter.displayName = 'ModalFooter';
  * 默认使用 X 图标，放置在 Header 右侧
  */
 const ModalClose = React.forwardRef<
-	React.ElementRef<typeof TouchableOpacity>,
-	React.ComponentPropsWithoutRef<typeof TouchableOpacity>
+	React.ElementRef<typeof Pressable>,
+	React.ComponentPropsWithoutRef<typeof Pressable>
 >(({ className, onPress, ...props }, ref) => {
 	const { onClose } = React.useContext(ModalContext);
 	const { colorBrandSecondary3 } = useThemeColors()

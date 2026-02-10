@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from 'react'
-import { View, ScrollView, TouchableOpacity } from 'react-native'
+import { View, ScrollView, Pressable } from 'react-native'
 import { Route } from 'react-native-tab-view'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
@@ -52,7 +52,7 @@ function SymbolDepthHeader({
       showBackButton={false}
       left={
         <View className="flex-row items-center gap-medium">
-          <TouchableOpacity
+          <Pressable
             onPress={onSymbolPress}
             className="flex-row items-center gap-medium"
           >
@@ -66,19 +66,19 @@ function SymbolDepthHeader({
               {priceChange}
             </Text>
             <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       }
       right={
         <View className="flex-row items-center gap-xl">
           <View className={cn('flex-row rounded-full border border-brand-default overflow-hidden p-[3px]')}>
-            <TouchableOpacity
+            <Pressable
               onPress={() => handleViewChange('chart')}
               className="w-[36px] h-[24px] rounded-full justify-center items-center"
             >
               <IconifyActivity width={22} height={22} className="text-content-4" />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={() => handleViewChange('depth')}
               className="w-[36px] h-[24px] rounded-full justify-center items-center bg-button"
             >
@@ -87,16 +87,16 @@ function SymbolDepthHeader({
                 height={22}
                 className="text-content-1"
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity onPress={onFavoriteToggle}>
+          <Pressable onPress={onFavoriteToggle}>
             {isFavorite ? (
               <IconStarFill width={22} height={22} className="text-brand-primary" />
             ) : (
               <IconStar width={22} height={22} className="text-content-1" />
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
       }
     />
@@ -318,7 +318,7 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
   return (
     <View className="px-xl mb-xl py-medium">
       <View className='flex-row gap-medium items-center relative'>
-        <TouchableOpacity
+        <Pressable
           onPress={onBuy}
           className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-rise"
         >
@@ -326,14 +326,14 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
           <Text className="text-button-2 ml-xs text-content-foreground">
             <Trans>买入/做多</Trans>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Spread Badge */}
         <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
           <Text className="text-paragraph-p3 text-content-foreground">{spread}</Text>
         </View>
 
-        <TouchableOpacity
+        <Pressable
           onPress={onSell}
           className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-fall"
         >
@@ -341,7 +341,7 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
           <Text className="text-button-2 ml-xs text-content-1">
             <Trans>卖出 / 做空</Trans>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   )

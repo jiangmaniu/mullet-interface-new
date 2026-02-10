@@ -12,7 +12,7 @@ import DateTimePicker, {
 	DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import { useState } from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 
 export interface DateRange {
 	startDate: Date | null;
@@ -171,7 +171,7 @@ export function DateFilterDrawer({
 						</Text>
 						<View className="flex-row flex-wrap gap-small">
 							{QUICK_OPTIONS.map((option, index) => (
-								<TouchableOpacity
+								<Pressable
 									key={index}
 									className={`px-large py-small rounded-small ${selectedQuickOption === index
 										? 'bg-brand-primary'
@@ -187,7 +187,7 @@ export function DateFilterDrawer({
 									>
 										{option.label}
 									</Text>
-								</TouchableOpacity>
+								</Pressable>
 							))}
 						</View>
 					</View>
@@ -200,7 +200,7 @@ export function DateFilterDrawer({
 
 						<View className="flex-row items-center gap-medium">
 							{/* Start Date */}
-							<TouchableOpacity
+							<Pressable
 								className={`flex-1 rounded-small py-medium px-large ${activeField === 'start'
 									? 'bg-brand-primary/10 border border-brand-primary'
 									: 'bg-button'
@@ -210,14 +210,14 @@ export function DateFilterDrawer({
 								<Text className="text-paragraph-p2 text-content-1 text-center">
 									{formatDate(startDate)}
 								</Text>
-							</TouchableOpacity>
+							</Pressable>
 
 							<Text className="text-paragraph-p3 text-content-4">
 								<Trans>至</Trans>
 							</Text>
 
 							{/* End Date */}
-							<TouchableOpacity
+							<Pressable
 								className={`flex-1 rounded-small py-medium px-large ${activeField === 'end'
 									? 'bg-brand-primary/10 border border-brand-primary'
 									: 'bg-button'
@@ -227,7 +227,7 @@ export function DateFilterDrawer({
 								<Text className="text-paragraph-p2 text-content-1 text-center">
 									{formatDate(endDate)}
 								</Text>
-							</TouchableOpacity>
+							</Pressable>
 						</View>
 					</View>
 

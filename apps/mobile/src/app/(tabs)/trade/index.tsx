@@ -1,6 +1,6 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { View, TouchableOpacity, Pressable } from 'react-native'
+import { View, Pressable, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
 import {
@@ -80,7 +80,7 @@ function TradeHeader({
       showBackButton={false}
       left={
         <View className="flex-row items-center gap-medium">
-          <TouchableOpacity
+          <Pressable
             onPress={onSymbolPress}
             className="flex-row items-center gap-medium"
           >
@@ -94,19 +94,19 @@ function TradeHeader({
               {priceChange}
             </Text>
             <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       }
       right={
         <View className="flex-row items-center gap-xl">
           <View className={cn('flex-row rounded-full border border-brand-default overflow-hidden p-[3px]')}>
-            <TouchableOpacity
+            <Pressable
               onPress={() => handleViewChange('chart')}
               className="w-[36px] h-[24px] rounded-full justify-center items-center bg-button"
             >
               <IconifyActivity width={22} height={22} className="text-content-1" />
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={() => handleViewChange('depth')}
               className="w-[36px] h-[24px] rounded-full justify-center items-center"
             >
@@ -115,12 +115,12 @@ function TradeHeader({
                 height={22}
                 className="text-brand-default"
               />
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          <TouchableOpacity onPress={onMorePress}>
+          <Pressable onPress={onMorePress}>
             <IconifyMoreHoriz width={22} height={22} className="text-content-1" />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       }
     />
@@ -145,7 +145,7 @@ interface AccountCardProps {
 
 function AccountCard({ account, onPress, onDeposit }: AccountCardProps) {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <Card className="border-brand-default bg-button">
         <CardContent className="px-xl py-medium gap-xs">
           {/* Header Row: User Icon + Account ID + Badges + Arrow */}
@@ -188,7 +188,7 @@ function AccountCard({ account, onPress, onDeposit }: AccountCardProps) {
           </View>
         </CardContent>
       </Card>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -249,7 +249,7 @@ function OrderPanel({
 
       {/* Buy/Sell Buttons */}
       <View className="flex-row gap-medium items-center relative">
-        <TouchableOpacity
+        <Pressable
           onPress={() => setSelectedSide('buy')}
           className={`flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center ${selectedSide === 'buy' ? 'bg-market-rise' : 'bg-button'
             }`}
@@ -264,14 +264,14 @@ function OrderPanel({
           >
             <Trans>买入/做多</Trans>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Spread Badge - Centered */}
         <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
           <Text className="text-paragraph-p3 text-content-foreground">{spread}</Text>
         </View>
 
-        <TouchableOpacity
+        <Pressable
           onPress={() => setSelectedSide('sell')}
           className={`flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center ${selectedSide === 'sell' ? 'bg-market-fall' : 'bg-button'
             }`}
@@ -286,7 +286,7 @@ function OrderPanel({
           >
             <Trans>卖出/做空</Trans>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Price Input - Different UI for Market vs Limit */}
@@ -306,13 +306,13 @@ function OrderPanel({
           onValueChange={setLimitPrice}
           keyboardType="decimal-pad"
           RightContent={
-            <TouchableOpacity onPress={() => {
+            <Pressable onPress={() => {
               setLimitPrice(selectedSide === 'buy' ? buyPrice : sellPrice)
             }}>
               <Text className="text-paragraph-p2 text-brand-primary">
                 <Trans>最新</Trans>
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           }
           variant="outlined"
           size="md"
@@ -483,12 +483,12 @@ function KLineChart({ isVisible, onToggle }: KLineChartProps) {
             <Trans>K线图表</Trans>
           </Text>
         </View>
-        <TouchableOpacity onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
+        <Pressable onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
           <Text className="text-button-1 text-content-4">
             <Trans>展开</Trans>
           </Text>
           <IconNavArrowDown width={16} height={16} className="text-content-4" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     )
   }
@@ -506,12 +506,12 @@ function KLineChart({ isVisible, onToggle }: KLineChartProps) {
             ))}
           </TabsList>
         </Tabs>
-        <TouchableOpacity onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
+        <Pressable onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
           <Text className="text-button-1 text-content-4">
             <Trans>隐藏</Trans>
           </Text>
           <IconNavArrowSuperior width={16} height={16} className="text-content-4" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <View className='h-[193px] border-b border-brand-default'>
@@ -757,11 +757,11 @@ function PendingOrderItem({ order, onCancel }: PendingOrderItemProps) {
             />
           </View>
         </Pressable>
-        <TouchableOpacity onPress={onCancel}>
+        <Pressable onPress={onCancel}>
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>取消</Trans>
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Data Row: 数量, 挂单价, 标记价 */}

@@ -8,7 +8,7 @@ import { Text } from '@/components/ui/text';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
-import { TouchableOpacity, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { AccountSelectionDrawer, Account } from '@/app/(assets)/transfer/_comps/account-selection-drawer';
 
 const INITIAL_ACCOUNTS: Account[] = [
@@ -42,9 +42,9 @@ export default function TransferScreen() {
 			<ScreenHeader
 				content={<Trans>划转</Trans>}
 				right={
-					<TouchableOpacity>
+					<Pressable>
 						<IconRecord width={24} height={24} color={textColorContent1} />
-					</TouchableOpacity>
+					</Pressable>
 				}
 			/>
 
@@ -86,9 +86,9 @@ export default function TransferScreen() {
 						RightContent={
 							<View className="flex-row items-center gap-xs ml-2">
 								<Text className="text-paragraph-p2 text-content-1">USDC</Text>
-								<TouchableOpacity onPress={handleMax}>
+								<Pressable onPress={handleMax}>
 									<Text className="text-paragraph-p2 text-brand-primary"><Trans>最大</Trans></Text>
-								</TouchableOpacity>
+								</Pressable>
 							</View>
 						}
 					/>
@@ -151,7 +151,7 @@ function AccountSelector({
 	onPress: () => void
 }) {
 	return (
-		<TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+		<Pressable onPress={onPress} >
 			<Card className="bg-special border-0 rounded-small">
 				<CardContent className="p-xl flex-row items-center justify-between">
 					<View className="flex-1 gap-1">
@@ -161,6 +161,6 @@ function AccountSelector({
 					<IconifyNavArrowRight width={18} height={18} className='text-brand-secondary-3' />
 				</CardContent>
 			</Card>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }

@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { View, ScrollView, Pressable } from 'react-native';
 
 const REAL_ACCOUNTS = [
 	{ id: '88234911', type: 'STP' as const, balance: '10,234.50', currency: 'USDC', leverage: '500', platform: 'MT5' as const, server: 'Mullet-Live', address: '0x862D...B22A' },
@@ -69,7 +69,7 @@ function AccountRow({
 }: Account & { isSelected?: boolean, onPress: () => void }) {
 
 	return (
-		<TouchableOpacity onPress={onPress}>
+		<Pressable onPress={onPress}>
 			<Card className='border-0 bg-transparent'>
 				<CardContent className='px-5 py-[14px] flex-row items-center justify-between'>
 					<View className='gap-xs'>
@@ -93,6 +93,6 @@ function AccountRow({
 					<Checkbox checked={!!isSelected} onCheckedChange={() => onPress()} />
 				</CardContent>
 			</Card>
-		</TouchableOpacity>
+		</Pressable>
 	);
 }

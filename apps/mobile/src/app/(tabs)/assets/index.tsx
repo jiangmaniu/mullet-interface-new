@@ -5,7 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
 import React, { useState } from 'react';
-import { View, TouchableOpacity, TouchableHighlight } from 'react-native';
+import { View, Pressable, TouchableHighlight, Pressable } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleScrollView, CollapsibleStickyNavBar, CollapsibleStickyContent, CollapsibleStickyHeader } from '@/components/ui/collapsible-tab';
 import { AccountSwitchDrawer, type Account } from '@/components/drawers/account-switch-drawer';
@@ -49,12 +49,12 @@ export default observer(function AssetsScreen() {
             content={<Trans>资产</Trans>}
             right={
               <View className="flex-row items-center gap-4">
-                <TouchableOpacity onPress={() => { }}>
+                <Pressable onPress={() => { }}>
                   <IconifyBell width={22} height={22} color={textColorContent1} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => router.push('/setting')}>
+                </Pressable>
+                <Pressable onPress={() => router.push('/setting')}>
                   <IconifySettings width={22} height={22} color={textColorContent1} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             }
           />
@@ -168,7 +168,7 @@ export function RealAccountRow({
   const { textColorContent1, colorBrandSecondary1 } = useThemeColors()
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <Card>
         <CardContent className='gap-xs'>
           {/* Header: User & Badges */}
@@ -201,14 +201,14 @@ export function RealAccountRow({
             <Text className="text-paragraph-p3 text-content-4"><Trans>地址</Trans></Text>
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">{address}</Text>
-              <TouchableOpacity>
+              <Pressable>
                 <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </CardContent>
       </Card>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -223,7 +223,7 @@ export function MockAccountRow({
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
 
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <Card>
         <CardContent className='gap-xs'>
           {/* Header: User & Badges */}
@@ -248,14 +248,14 @@ export function MockAccountRow({
             <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">{balance} {currency}</Text>
-              <TouchableOpacity onPress={onPressDeposit}>
+              <Pressable onPress={onPressDeposit}>
                 <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </CardContent>
       </Card>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
@@ -294,13 +294,13 @@ function AssetOverviewCard({ account, onPressSwitch }: AssetOverviewCardProps) {
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Text className="text-paragraph-p2 text-content-4"><Trans>总资产</Trans></Text>
-              <TouchableOpacity onPress={() => setIsBalanceHidden(!isBalanceHidden)}>
+              <Pressable onPress={() => setIsBalanceHidden(!isBalanceHidden)}>
                 {isBalanceHidden ? (
                   <IconifyEyeClosed width={16} height={16} color={textColorContent4} />
                 ) : (
                   <IconifyEye width={16} height={16} color={textColorContent4} />
                 )}
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <View className="flex-row items-center gap-medium">
               {/* <Text className="text-muted-foreground text-sm">{account.address}</Text> */}
@@ -373,38 +373,38 @@ function AssetActions() {
   return (
     <>
       <View className='flex-row items-center justify-between px-xl py-xl'>
-        <TouchableOpacity>
+        <Pressable>
           <View className="flex-col items-center">
             <View className='p-medium'>
               <IconWithdrawFunds width={24} height={24} />
             </View>
             <Text className="text-paragraph-p3 text-content-1"><Trans>取现</Trans></Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handlePressDeposit}>
+        </Pressable>
+        <Pressable onPress={handlePressDeposit}>
           <View className="flex-col items-center">
             <View className='p-medium'>
               <IconPayment width={24} height={24} />
             </View>
             <Text className="text-paragraph-p3 text-content-1"><Trans>存款</Trans></Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handlePressTransfer}>
+        </Pressable>
+        <Pressable onPress={handlePressTransfer}>
           <View className="flex-col items-center">
             <View className='p-medium'>
               <IconifyCoinsSwap width={24} height={24} className='text-content-1' />
             </View>
             <Text className="text-paragraph-p3 text-content-1"><Trans>划转</Trans></Text>
           </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handlePressBill}>
+        </Pressable>
+        <Pressable onPress={handlePressBill}>
           <View className="flex-col items-center">
             <View className='p-medium'>
               <IconRecord width={24} height={24} />
             </View>
             <Text className="text-paragraph-p3 text-content-1"><Trans>账单</Trans></Text>
           </View>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <TransferHintModal

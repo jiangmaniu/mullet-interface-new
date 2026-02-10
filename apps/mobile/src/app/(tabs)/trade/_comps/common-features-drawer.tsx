@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
 import { Text } from '@/components/ui/text'
@@ -37,7 +37,7 @@ interface FeatureItemProps {
 
 function FeatureItem({ icon, label, onPress }: FeatureItemProps) {
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
       className="flex-col items-center gap-xs p-0 w-[68px] h-[48px]"
     >
@@ -47,7 +47,7 @@ function FeatureItem({ icon, label, onPress }: FeatureItemProps) {
       <Text className="text-paragraph-p3 text-content-1">
         {label}
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 
