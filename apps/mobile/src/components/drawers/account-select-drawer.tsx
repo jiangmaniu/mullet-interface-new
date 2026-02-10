@@ -113,7 +113,7 @@ function AccountRow({ account, isSelected, onPress }: AccountRowProps) {
 							</View>
 
 							<View className="flex-row items-center gap-medium">
-								<Badge color={account.isReal ? 'rise' : 'secondary'}>
+								<Badge color={account.isReal ? 'green' : 'secondary'}>
 									<Text>{account.isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
 								</Badge>
 								<Badge color="default">
