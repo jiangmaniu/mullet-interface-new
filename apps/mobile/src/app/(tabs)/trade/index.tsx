@@ -16,7 +16,7 @@ import {
   IconNavArrowDown,
   IconifyNavArrowRight,
 } from '@/components/ui/icons'
-import { EmptyState } from '@/components/ui/empty-state'
+import { EmptyState } from '@/components/states/empty-state'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { cn } from '@/lib/utils'

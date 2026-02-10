@@ -6,7 +6,7 @@ import { Route } from 'react-native-tab-view'
 import { Text } from '@/components/ui/text'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { ScreenHeader } from '@/components/ui/screen-header'
-import { EmptyState } from '@/components/ui/empty-state'
+import { EmptyState } from '@/components/states/empty-state'
 
 // Mock data
 const MOCK_NOTIFICATIONS = [

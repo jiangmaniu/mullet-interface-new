@@ -11,7 +11,7 @@ import { AreaChart, ChartData } from '@/components/trading-view'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { cn } from '@/lib/utils'
-import { EmptyState } from '@/components/ui/empty-state'
+import { EmptyState } from '@/components/states/empty-state'
 import { Input } from '@/components/ui/input'
 
 // Mock data - 币种列表
