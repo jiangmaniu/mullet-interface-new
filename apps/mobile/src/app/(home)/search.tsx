@@ -1,5 +1,5 @@
-import { View, ScrollView, Pressable, TextInput } from 'react-native'
-import { useState, useMemo, useCallback, useRef } from 'react'
+import { View, ScrollView, Pressable } from 'react-native'
+import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -24,6 +24,10 @@ const SYMBOLS = [
     change: 1.45,
     avatar: 'S',
     chartData: generateMockData(20, 140),
+    buyPrice: '186.00',
+    sellPrice: '186.00',
+    highPrice: '180.00',
+    lowPrice: '180.00',
   },
   {
     id: 'XAU-USDC',
@@ -33,6 +37,10 @@ const SYMBOLS = [
     change: -1.45,
     avatar: 'X',
     chartData: generateMockData(20, 148),
+    buyPrice: '486.00',
+    sellPrice: '486.00',
+    highPrice: '480.00',
+    lowPrice: '480.00',
   },
   {
     id: 'BTC-USDC',
@@ -42,6 +50,10 @@ const SYMBOLS = [
     change: 2.15,
     avatar: 'B',
     chartData: generateMockData(20, 43000),
+    buyPrice: '198,652.0',
+    sellPrice: '198,186.00',
+    highPrice: '198,280.0',
+    lowPrice: '198,280.0',
   },
   {
     id: 'ETH-USDC',
@@ -51,6 +63,10 @@ const SYMBOLS = [
     change: -1.23,
     avatar: 'E',
     chartData: generateMockData(20, 2200),
+    buyPrice: '2,285.00',
+    sellPrice: '2,276.00',
+    highPrice: '2,290.00',
+    lowPrice: '2,270.00',
   },
 ]
 
@@ -97,6 +113,40 @@ function SearchAssetRow({ symbol, onSelect }: { symbol: typeof SYMBOLS[0]; onSel
           <Text className={cn('text-paragraph-p2', isPositive ? 'text-market-rise' : 'text-market-fall')}>
             {isPositive ? '+' : ''}{symbol.change.toFixed(2)}%
           </Text>
+        </View>
+      </View>
+    </Pressable>
+  )
+}
+
+// ============ SearchAssetTradeRow ============
+function SearchAssetTradeRow({ symbol, onSelect }: { symbol: typeof SYMBOLS[0]; onSelect: () => void }) {
+  return (
+    <Pressable onPress={onSelect} className="flex-row items-center p-xl gap-xl">
+      <View className="flex-row items-center gap-medium flex-1">
+        <Avatar className="size-6 flex-shrink-0">
+          <AvatarFallback className="bg-brand-default">
+            <Text className="text-content-1">{symbol.avatar}</Text>
+          </AvatarFallback>
+        </Avatar>
+        <View>
+          <Text className="text-paragraph-p2 text-content-1">{symbol.symbol}</Text>
+          <Text className="text-paragraph-p3 text-content-4">{symbol.name}</Text>
+        </View>
+      </View>
+
+      <View className="flex-row flex-shrink-0 gap-xl w-[192px]">
+        <View className="gap-xs flex-1">
+          <View className="bg-market-rise/15 border border-market-rise rounded-small flex-col items-center justify-center h-[24px]">
+            <Text className="text-paragraph-p2 text-market-rise">{symbol.buyPrice}</Text>
+          </View>
+          <Text className="text-paragraph-p3 text-content-4">最高 {symbol.highPrice}</Text>
+        </View>
+        <View className="gap-xs flex-1">
+          <View className="bg-market-fall/15 border border-market-fall rounded-small flex-col items-center justify-center h-[24px]">
+            <Text className="text-paragraph-p2 text-market-fall">{symbol.sellPrice}</Text>
+          </View>
+          <Text className="text-content-4 text-paragraph-p3 text-right">最低 {symbol.lowPrice}</Text>
         </View>
       </View>
     </Pressable>
@@ -183,9 +233,13 @@ export default function SearchPage() {
             <EmptyState message={< Trans > 暂无内容</Trans >} iconWidth={107} iconHeight={76} className='gap-2xl' />
           </View>
         ) : (
-          filteredSymbols.map((item) => (
-            <SearchAssetRow key={item.id} symbol={item} onSelect={handleSelect} />
-          ))
+          filteredSymbols.map((item) =>
+            viewMode === 'trade' ? (
+              <SearchAssetTradeRow key={item.id} symbol={item} onSelect={handleSelect} />
+            ) : (
+              <SearchAssetRow key={item.id} symbol={item} onSelect={handleSelect} />
+            )
+          )
         )}
       </ScrollView>
     </View>
