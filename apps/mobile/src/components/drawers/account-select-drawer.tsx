@@ -84,7 +84,7 @@ export function AccountSelectDrawer({
 					renderScene={renderScene}
 					variant="underline"
 					size="md"
-					tabBarClassName="bg-special py-xl"
+					tabBarClassName="py-xl"
 					tabFlex
 				/>
 			</DrawerContent>
