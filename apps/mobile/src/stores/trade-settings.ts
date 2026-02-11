@@ -10,11 +10,13 @@ export type ColorScheme = 'green-up' | 'red-up'
 // K线位置
 export type ChartPosition = 'top' | 'bottom'
 
-// 颜色参数，由外部组件通过 useCSSVariable 获取后传入
-export interface TradeColors {
-  tradeBuy: string   // --color-trade-buy 的值
-  tradeSell: string  // --color-trade-sell 的值
-}
+// 交易颜色常量（对应 global.css 中的 --color-trade-* 变量）
+const TRADE_COLORS = {
+  buy: '#2ebc84', // --color-green-500
+  sell: '#ff112f', // --color-red-500
+  buyForeground: '#060717', // --color-zinc-800
+  sellForeground: '#fff', // --color-white
+} as const
 
 interface TradeSettingsState {
   // 状态
@@ -25,25 +27,27 @@ interface TradeSettingsState {
   isHydrated: boolean
 
   // Actions
-  setColorScheme: (scheme: ColorScheme, colors: TradeColors) => void
+  setColorScheme: (scheme: ColorScheme) => void
   setOrderConfirmation: (value: boolean) => void
   setCloseConfirmation: (value: boolean) => void
   setChartPosition: (position: ChartPosition) => void
-  applyColorScheme: (colors: TradeColors) => void
+  applyColorScheme: () => void
   hydrate: () => Promise<void>
 }
 
 /**
  * 根据颜色方案应用 CSS 变量
- * 颜色值由外部组件通过 useCSSVariable 获取 --color-trade-buy / --color-trade-sell 后传入
- * - 绿涨红跌：market-rise = trade-buy, market-fall = trade-sell
- * - 红涨绿跌：market-rise = trade-sell, market-fall = trade-buy
+ * - 绿涨红跌：market-rise = buy(绿), market-fall = sell(红)
+ * - 红涨绿跌：market-rise = sell(红), market-fall = buy(绿)
  */
-function applyColorSchemeWithColors(scheme: ColorScheme, colors: TradeColors) {
+function applyColorSchemeWithColors(scheme: ColorScheme) {
   const isGreenUp = scheme === 'green-up'
+
   Uniwind.updateCSSVariables('dark', {
-    '--color-market-rise': isGreenUp ? colors.tradeBuy : colors.tradeSell,
-    '--color-market-fall': isGreenUp ? colors.tradeSell : colors.tradeBuy,
+    '--color-trade-buy': isGreenUp ? TRADE_COLORS.buy : TRADE_COLORS.sell,
+    '--color-trade-sell': isGreenUp ? TRADE_COLORS.sell : TRADE_COLORS.buy,
+    '--color-trade-buy-foreground': isGreenUp ? TRADE_COLORS.buyForeground : TRADE_COLORS.sellForeground,
+    '--color-trade-sell-foreground': isGreenUp ? TRADE_COLORS.sellForeground : TRADE_COLORS.buyForeground,
   })
 }
 
@@ -54,15 +58,15 @@ export const useTradeSettingsStore = create<TradeSettingsState>((set, get) => ({
   chartPosition: 'top',
   isHydrated: false,
 
-  setColorScheme: (scheme, colors) => {
-    applyColorSchemeWithColors(scheme, colors)
+  setColorScheme: (scheme) => {
+    applyColorSchemeWithColors(scheme)
     AsyncStorage.setItem(KEY_DIRECTION, JSON.stringify(scheme))
     set({ colorScheme: scheme })
   },
 
-  applyColorScheme: (colors) => {
+  applyColorScheme: () => {
     const { colorScheme } = get()
-    applyColorSchemeWithColors(colorScheme, colors)
+    applyColorSchemeWithColors(colorScheme)
   },
 
   setOrderConfirmation: (value) => {
@@ -97,8 +101,8 @@ export const useTradeSettingsStore = create<TradeSettingsState>((set, get) => ({
 
       const chartPosition: ChartPosition = chartRaw ? JSON.parse(chartRaw) : 'top'
 
-      // 注意：颜色方案的应用延迟到外部组件调用 applyColorScheme 时
-      // 因为需要通过 useCSSVariable hook 获取颜色值
+      // 直接应用颜色方案
+      applyColorSchemeWithColors(colorScheme)
 
       set({
         colorScheme,

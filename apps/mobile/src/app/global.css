@@ -263,9 +263,13 @@
   /* Semantic Colors from UI */
   --color-trade-buy: var(--color-green-500);
   --color-trade-sell: var(--color-red-500);
+  --color-trade-buy-foreground: var(--color-zinc-800);
+  --color-trade-sell-foreground: var(--color-white);
 
   --color-market-rise: var(--color-trade-buy);
+  --color-market-rise-foreground: var(--color-trade-buy-foreground);
   --color-market-fall: var(--color-trade-sell);
+  --color-market-fall-foreground: var(--color-trade-sell-foreground);
 
   --shadow-base: 0px 4px 4px 0px rgba(0, 0, 0, 0.1);
   --inset-shadow-base: inset 0px 2px 4px 0px rgba(0, 0, 0, 0.5);

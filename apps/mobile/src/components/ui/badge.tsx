@@ -16,8 +16,8 @@ const badgeVariants = cva(
         rise: 'bg-market-rise',
         fall: 'bg-market-fall',
         red: 'bg-red-500',
-        secondary: 'bg-brand-support',
         green: 'bg-green-500',
+        secondary: 'bg-brand-support',
       },
     },
     defaultVariants: {
@@ -34,8 +34,10 @@ const badgeTextVariants = cva('', {
     },
     color: {
       default: 'text-content-1',
-      rise: 'text-content-foreground',
-      fall: 'text-content-1',
+      rise: 'text-market-rise-foreground',
+      fall: 'text-market-fall-foreground',
+      red: 'text-content-foreground',
+      green: 'text-content-1',
       secondary: 'text-content-1',
     },
   },

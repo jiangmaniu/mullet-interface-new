@@ -5,7 +5,6 @@ import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Trans } from '@lingui/react/macro'
 import { cn } from '@/lib/utils'
-import { useCSSVariable } from 'uniwind'
 import { IconifyArrowUpCircleSolid, IconifyArrowDownCircleSolid } from '@/components/ui/icons'
 import { IconCandlestickChart, IconCandlestickBottom } from '@/components/ui/icons/set'
 import { Separator } from '@/components/ui/separator'
@@ -22,11 +21,6 @@ export default function TradeSettingsScreen() {
     setCloseConfirmation,
     setChartPosition,
   } = useTradeSettingsStore()
-
-  const [tradeBuy, tradeSell] = useCSSVariable([
-    '--color-trade-buy',
-    '--color-trade-sell',
-  ]) as [string, string]
 
   return (
     <View className="flex-1 bg-secondary gap-xl">
@@ -69,7 +63,7 @@ export default function TradeSettingsScreen() {
             </View>
             <Checkbox
               checked={colorScheme === 'green-up'}
-              onCheckedChange={() => setColorScheme('green-up', { tradeBuy, tradeSell })}
+              onCheckedChange={() => setColorScheme('green-up')}
             />
           </View>
 
@@ -88,7 +82,7 @@ export default function TradeSettingsScreen() {
             </View>
             <Checkbox
               checked={colorScheme === 'red-up'}
-              onCheckedChange={() => setColorScheme('red-up', { tradeBuy, tradeSell })}
+              onCheckedChange={() => setColorScheme('red-up')}
             />
           </View>
         </View>
