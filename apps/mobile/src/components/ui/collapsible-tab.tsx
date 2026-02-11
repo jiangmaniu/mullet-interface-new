@@ -6,12 +6,24 @@ import {
   MaterialTabBarProps,
   useCurrentTabScrollY,
 } from 'react-native-collapsible-tab-view';
+import { useScroller, useTabsContext } from 'react-native-collapsible-tab-view/src/hooks';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useResolveClassNames } from 'uniwind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Animated, { useAnimatedStyle, interpolate, Extrapolation, SharedValue, useAnimatedReaction, runOnJS } from 'react-native-reanimated';
+import Animated, {
+  useAnimatedStyle,
+  interpolate,
+  Extrapolation,
+  SharedValue,
+  useAnimatedReaction,
+  runOnJS,
+  useSharedValue,
+  cancelAnimation,
+  withDecay,
+} from 'react-native-reanimated';
 import { Text } from '@/components/ui/text';
 
 type TabVariant = 'solid' | 'outline' | 'underline' | 'text';
@@ -291,19 +303,103 @@ function useCollapsibleStickyContext() {
 export function CollapsibleStickyHeader({
   children,
   className,
-  style
+  style,
+  minDistance = 5,
+  minVelocity = 50,
+  deceleration = 0.998,
 }: {
   children: React.ReactNode;
   className?: string;
   style?: ViewStyle;
+  /** 最小滑动距离，默认 5 */
+  minDistance?: number;
+  /** 触发惯性滚动的最小速度，默认 50 */
+  minVelocity?: number;
+  /** 惯性滚动阻尼系数，默认 0.998（越大惯性越强，范围 0.95-0.999） */
+  deceleration?: number;
 }) {
   const [bannerHeight, setBannerHeight] = useState(0);
 
+  const { refMap, focusedTab } = useTabsContext();
+  const scrollTo = useScroller();
+  const scrollY = useCurrentTabScrollY();
+  const initialScrollY = useSharedValue(0);
+  const isGestureActive = useSharedValue(false);
+  const targetScrollY = useSharedValue(0);
+
+  // 监听 targetScrollY 变化，执行惯性滚动
+  useAnimatedReaction(
+    () => targetScrollY.value,
+    (targetY) => {
+      'worklet';
+      if (!isGestureActive.value) {
+        const currentTab = focusedTab.value;
+        const ref = refMap[currentTab];
+        if (ref) {
+          scrollTo(ref, 0, Math.max(0, targetY), false, 'momentumScroll');
+        }
+      }
+    },
+    [refMap, focusedTab, scrollTo],
+  );
+
+  // 创建手势处理器，让 header 区域可以控制列表滚动
+  const headerPanGesture = Gesture.Pan()
+    .minDistance(minDistance)
+    .onStart(() => {
+      'worklet';
+      cancelAnimation(targetScrollY);
+      initialScrollY.value = scrollY.value;
+      targetScrollY.value = scrollY.value;
+      isGestureActive.value = true;
+    })
+    .onUpdate((e) => {
+      'worklet';
+      if (Math.abs(e.translationY) > Math.abs(e.translationX) || Math.abs(e.translationY) > 10) {
+        const currentTab = focusedTab.value;
+        const ref = refMap[currentTab];
+        if (ref) {
+          const delta = -e.translationY;
+          const newTargetScrollY = Math.max(0, initialScrollY.value + delta);
+          targetScrollY.value = newTargetScrollY;
+          scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture');
+        }
+      }
+    })
+    .onEnd((e) => {
+      'worklet';
+      isGestureActive.value = false;
+      if (Math.abs(e.velocityY) > minVelocity) {
+        const velocity = -e.velocityY;
+        targetScrollY.value = withDecay(
+          {
+            velocity,
+            deceleration,
+            clamp: [0, Infinity],
+          },
+          (finished) => {
+            'worklet';
+            if (finished) {
+              targetScrollY.value = Math.max(0, targetScrollY.value);
+            }
+          },
+        );
+      } else {
+        targetScrollY.value = Math.max(0, scrollY.value);
+      }
+    })
+    .onFinalize(() => {
+      'worklet';
+      isGestureActive.value = false;
+    });
+
   return (
     <CollapsibleStickyContext.Provider value={{ bannerHeight, setBannerHeight }}>
-      <View className={cn("relative", className)} style={style}>
-        {children}
-      </View>
+      <GestureDetector gesture={headerPanGesture}>
+        <View className={cn("relative", className)} style={style}>
+          {children}
+        </View>
+      </GestureDetector>
     </CollapsibleStickyContext.Provider>
   );
 }
