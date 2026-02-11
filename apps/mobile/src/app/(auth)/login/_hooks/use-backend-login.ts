@@ -71,3 +71,5 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
     data: mutation.data,
   }
 }
+
+export default useBackendLogin;

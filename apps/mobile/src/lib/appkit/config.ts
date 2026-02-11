@@ -2,7 +2,7 @@
 import 'text-encoding' // needed for @solana/web3.js to work
 import '@walletconnect/react-native-compat'
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkv } from '@/lib/storage/mmkv'
 import { createAppKit, solana, solanaDevnet, type Storage } from '@reown/appkit-react-native'
 import { SolanaAdapter, PhantomConnector, SolflareConnector } from '@reown/appkit-solana-react-native'
 
@@ -13,26 +13,28 @@ const projectId = EXPO_ENV_CONFIG.REOWN_PROJECT_ID
 // Solana adapter
 const solanaAdapter = new SolanaAdapter()
 
-// AsyncStorage 适配器
+// MMKV 适配器（AppKit 需要 async 接口）
+const APPKIT_PREFIX = 'appkit:'
 const storage: Storage = {
   getKeys: async () => {
-    const keys = await AsyncStorage.getAllKeys()
-    return [...keys]
+    return mmkv.getAllKeys().filter(k => k.startsWith(APPKIT_PREFIX))
   },
   getEntries: async <T = unknown>(): Promise<[string, T][]> => {
-    const keys = await AsyncStorage.getAllKeys()
-    const entries = await AsyncStorage.multiGet(keys)
-    return entries.map(([key, value]) => [key, value ? JSON.parse(value) : undefined])
+    const keys = mmkv.getAllKeys().filter(k => k.startsWith(APPKIT_PREFIX))
+    return keys.map(key => {
+      const raw = mmkv.getString(key)
+      return [key, raw ? JSON.parse(raw) : undefined]
+    })
   },
   getItem: async <T = unknown>(key: string): Promise<T | undefined> => {
-    const value = await AsyncStorage.getItem(key)
+    const value = mmkv.getString(key)
     return value ? JSON.parse(value) : undefined
   },
   setItem: async <T = unknown>(key: string, value: T): Promise<void> => {
-    await AsyncStorage.setItem(key, JSON.stringify(value))
+    mmkv.set(key, JSON.stringify(value))
   },
   removeItem: async (key: string): Promise<void> => {
-    await AsyncStorage.removeItem(key)
+    mmkv.remove(key)
   },
 }
 

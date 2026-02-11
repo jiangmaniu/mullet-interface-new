@@ -497,3 +497,5 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     </Drawer>
   )
 }
+
+export default Web3LoginDrawer;

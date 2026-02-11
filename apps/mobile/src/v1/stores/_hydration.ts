@@ -1,19 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkv } from '@/lib/storage/mmkv'
 import { configurePersistable } from 'mobx-persist-store'
 
 configurePersistable({
   debugMode: false, // __DEV__,
   storage: {
     setItem: async (key, value) => {
-      await AsyncStorage.setItem(key, value)
+      mmkv.set(key, value)
       return Promise.resolve()
     },
     getItem: async (key) => {
-      const value = await AsyncStorage.getItem(key)
-      return Promise.resolve(value)
+      const value = mmkv.getString(key)
+      return Promise.resolve(value ?? null)
     },
     removeItem: async (key) => {
-      await AsyncStorage.removeItem(key)
+      mmkv.remove(key)
       return Promise.resolve()
     }
   }

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkv } from '@/lib/storage/mmkv'
 import lodashGet from 'lodash-es/get'
 import lodashSet from 'lodash-es/set'
 
@@ -194,15 +194,16 @@ export function genStorageSet(key: string) {
  */
 
 // 本地存储-删除
-async function storageDelete(key: string) {
+function storageDelete(key: string) {
   try {
-    await AsyncStorage.removeItem(key)
+    mmkv.remove(key)
   } catch (e) {}
 }
 
 // 本地存储-获取
-async function storageGetting(key: string) {
-  const storage: any = await AsyncStorage.getItem(key)
+function storageGetting(key: string) {
+  const storage: string | undefined = mmkv.getString(key)
+  if (storage === undefined) return undefined
 
   let result: any
   try {
@@ -226,7 +227,7 @@ function storageSetting(key: string, value: any) {
   }
 
   if (valuetype(result, 'string')) {
-    AsyncStorage.setItem(key, result)
+    mmkv.set(key, result)
   } else {
     console.log({
       msg: '本地存储失败',
@@ -238,7 +239,7 @@ function storageSetting(key: string, value: any) {
 export function storageRemove(key: string) {
   return () => {
     try {
-      AsyncStorage.removeItem(key)
+      mmkv.remove(key)
     } catch (e) {}
   }
 }

@@ -37,3 +37,5 @@ export function MockAccountDepositModal({ open, onClose, onConfirm }: MockAccoun
 		</Drawer>
 	);
 }
+
+export default MockAccountDepositModal;

@@ -74,3 +74,5 @@ export function TransferHintModal({
     </Modal>
   );
 }
+
+export default TransferHintModal;

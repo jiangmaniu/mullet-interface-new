@@ -33,7 +33,7 @@ export default observer(function AssetsScreen() {
   const { trade } = useStores()
   const currentAccountInfo = trade.currentAccountInfo
 
-  console.log(currentAccountInfo)
+  console.log('currentAccountInfo', currentAccountInfo)
 
   const [currentAccount, setCurrentAccount] = useState(REAL_ACCOUNTS[0]);
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false);

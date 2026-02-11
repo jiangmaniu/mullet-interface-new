@@ -99,3 +99,5 @@ export function Web2LoginSection() {
     </View>
   )
 }
+
+export default Web2LoginSection;

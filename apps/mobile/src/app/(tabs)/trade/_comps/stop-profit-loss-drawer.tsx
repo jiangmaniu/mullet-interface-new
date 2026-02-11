@@ -259,3 +259,5 @@ export function StopProfitLossDrawer({
     </Drawer>
   )
 }
+
+export default StopProfitLossDrawer;

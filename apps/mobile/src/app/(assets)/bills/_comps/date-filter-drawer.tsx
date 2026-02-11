@@ -291,3 +291,5 @@ export function DateFilterDrawer({
 		</Drawer>
 	);
 }
+
+export default DateFilterDrawer;

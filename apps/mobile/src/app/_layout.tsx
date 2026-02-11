@@ -1,12 +1,15 @@
 import './global.css'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
+import { LogBox } from 'react-native'
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated'
 
 import { Providers } from '@/components/providers'
 import { LoginGuard } from '@/components/router-guard/login-guard'
 import { Initializer } from '@/components/initializer'
 
+// Suppress Expo Router warnings for files in _ prefixed directories (_comps, _hooks, etc.)
+LogBox.ignoreLogs([/missing the required default export/])
 
 // Disable strict mode warnings from Reanimated
 // These warnings are triggered by third-party libraries (react-native-collapsible-tab-view)

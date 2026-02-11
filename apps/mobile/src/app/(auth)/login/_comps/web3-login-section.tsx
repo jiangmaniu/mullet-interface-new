@@ -95,3 +95,5 @@ export function Web3LoginSection({ autoAuth = false }: Web3LoginSectionProps) {
     </View>
   )
 }
+
+export default Web3LoginSection;

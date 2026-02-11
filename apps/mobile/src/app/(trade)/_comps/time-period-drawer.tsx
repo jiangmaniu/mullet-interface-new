@@ -79,3 +79,5 @@ export function TimePeriodDrawer({
     </Drawer>
   )
 }
+
+export default TimePeriodDrawer;

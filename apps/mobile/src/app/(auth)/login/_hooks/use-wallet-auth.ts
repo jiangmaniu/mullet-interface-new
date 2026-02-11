@@ -115,3 +115,5 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
     isError: mutation.isError,
   }
 }
+
+export default useWalletAuth;

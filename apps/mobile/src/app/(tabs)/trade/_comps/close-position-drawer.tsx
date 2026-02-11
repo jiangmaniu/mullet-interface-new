@@ -209,3 +209,5 @@ export function ClosePositionDrawer({
     </Drawer>
   )
 }
+
+export default ClosePositionDrawer;

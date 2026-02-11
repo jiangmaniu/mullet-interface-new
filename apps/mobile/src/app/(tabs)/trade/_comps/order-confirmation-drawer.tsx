@@ -151,3 +151,5 @@ export function OrderConfirmationDrawer({
     </Drawer>
   )
 }
+
+export default OrderConfirmationDrawer;

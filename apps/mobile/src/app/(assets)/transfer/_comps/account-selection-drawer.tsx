@@ -96,3 +96,5 @@ function AccountRow({
 		</Pressable>
 	);
 }
+
+export default AccountSelectionDrawer;

@@ -115,3 +115,5 @@ export function CommonFeaturesDrawer({
     </Drawer>
   )
 }
+
+export default CommonFeaturesDrawer;

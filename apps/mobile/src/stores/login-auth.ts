@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { mmkvStorage } from '@/lib/storage/mmkv'
 
 interface LoginAuthState {
   // 状态
@@ -29,7 +29,7 @@ export const useLoginAuthStore = create<LoginAuthState>()(
     }),
     {
       name: 'login-auth-storage',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({
         accessToken: state.accessToken,
         loginInfo: state.loginInfo,

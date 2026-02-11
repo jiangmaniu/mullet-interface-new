@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { mmkv } from '@/lib/storage/mmkv'
 import { Uniwind } from 'uniwind'
 import { create } from 'zustand'
 
@@ -60,7 +60,7 @@ export const useTradeSettingsStore = create<TradeSettingsState>((set, get) => ({
 
   setColorScheme: (scheme) => {
     applyColorSchemeWithColors(scheme)
-    AsyncStorage.setItem(KEY_DIRECTION, JSON.stringify(scheme))
+    mmkv.set(KEY_DIRECTION, JSON.stringify(scheme))
     set({ colorScheme: scheme })
   },
 
@@ -70,35 +70,30 @@ export const useTradeSettingsStore = create<TradeSettingsState>((set, get) => ({
   },
 
   setOrderConfirmation: (value) => {
-    AsyncStorage.setItem(KEY_ORDER_CONFIRM_CHECKED, JSON.stringify(value))
+    mmkv.set(KEY_ORDER_CONFIRM_CHECKED, JSON.stringify(value))
     set({ orderConfirmation: value })
   },
 
   setCloseConfirmation: (value) => {
-    AsyncStorage.setItem(KEY_POSITION_CONFIRM_CHECKED, JSON.stringify(value))
+    mmkv.set(KEY_POSITION_CONFIRM_CHECKED, JSON.stringify(value))
     set({ closeConfirmation: value })
   },
 
   setChartPosition: (position) => {
-    AsyncStorage.setItem('trade_chart_position', JSON.stringify(position))
+    mmkv.set('trade_chart_position', JSON.stringify(position))
     set({ chartPosition: position })
   },
 
   hydrate: async () => {
     try {
-      const [directionRaw, orderRaw, closeRaw, chartRaw] = await Promise.all([
-        AsyncStorage.getItem(KEY_DIRECTION),
-        AsyncStorage.getItem(KEY_ORDER_CONFIRM_CHECKED),
-        AsyncStorage.getItem(KEY_POSITION_CONFIRM_CHECKED),
-        AsyncStorage.getItem('trade_chart_position'),
-      ])
+      const directionRaw = mmkv.getString(KEY_DIRECTION)
+      const orderRaw = mmkv.getString(KEY_ORDER_CONFIRM_CHECKED)
+      const closeRaw = mmkv.getString(KEY_POSITION_CONFIRM_CHECKED)
+      const chartRaw = mmkv.getString('trade_chart_position')
 
       const colorScheme: ColorScheme = directionRaw ? JSON.parse(directionRaw) : 'green-up'
-
-      const orderConfirmation = orderRaw !== null ? JSON.parse(orderRaw) : true
-
-      const closeConfirmation = closeRaw !== null ? JSON.parse(closeRaw) : true
-
+      const orderConfirmation = orderRaw != null ? JSON.parse(orderRaw) : true
+      const closeConfirmation = closeRaw != null ? JSON.parse(closeRaw) : true
       const chartPosition: ChartPosition = chartRaw ? JSON.parse(chartRaw) : 'top'
 
       // 直接应用颜色方案
