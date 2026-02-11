@@ -21,9 +21,7 @@ export function Web2LoginSection() {
     loginToBackend,
     isLoading: isBackendLoading,
     error: backendError,
-  } = useBackendLogin({
-    redirectOnSuccess: true,
-  })
+  } = useBackendLogin({})
 
   // 重置登录状态
   const resetLoginState = useCallback(() => {

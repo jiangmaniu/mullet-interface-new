@@ -91,7 +91,6 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     error: backendError,
   } = useBackendLogin({
     onSuccess: handleClose,
-    redirectOnSuccess: true,
   })
 
   // 钱包授权 hook
@@ -246,6 +245,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
   // 用 ref 保存最新的 handleSign，避免 useEffect 因函数重建而无限循环
   const handleSignRef = useRef(handleSign)
   handleSignRef.current = handleSign
+  const handleConnectWalletRef = useRef(handleConnectWallet)
+  handleConnectWalletRef.current = handleConnectWallet
 
   // 当抽屉打开时，自动开始第一步
   useEffect(() => {
@@ -258,6 +259,9 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
           console.log('Auto start auth: wallet connected, starting verification...')
           handleSignRef.current()
         }
+      } else {
+        // 未连接时自动调用连接钱包
+        // handleConnectWalletRef.current()
       }
     }
   }, [visible, isConnected, address, autoStartAuth])

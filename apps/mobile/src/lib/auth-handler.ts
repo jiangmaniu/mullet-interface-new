@@ -3,12 +3,12 @@
  * 处理 API 返回 401 时的自动重新认证逻辑
  */
 import { router } from 'expo-router'
-import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
 
-import { tokenStorage } from '@/lib/api'
-import { loginWithPrivyToken } from '@/lib/api/auth'
-import { STORAGE_REMOVE_TOKEN, STORAGE_REMOVE_USER_INFO, setLocalUserInfo } from '@/v1/utils/storage'
+import { useLoginAuthStore } from '@/stores/login-auth'
 import { stores } from '@/v1/provider/mobxProvider'
+import { login } from '@/v1/services/user'
+import { setLocalUserInfo, STORAGE_REMOVE_TOKEN, STORAGE_REMOVE_USER_INFO } from '@/v1/utils/storage'
+import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
 
 // 防止并发重复处理
 let isHandling401 = false
@@ -25,10 +25,7 @@ let getWalletAddress: (() => string | null) | null = null
  * 设置钱包状态检查函数
  * 在 Provider 中调用此函数注入钱包状态
  */
-export function setWalletStateCheckers(
-  isConnected: () => boolean,
-  getAddress: () => string | null
-) {
+export function setWalletStateCheckers(isConnected: () => boolean, getAddress: () => string | null) {
   checkWalletConnected = isConnected
   getWalletAddress = getAddress
 }
@@ -53,9 +50,9 @@ async function isPrivyTokenValid(): Promise<boolean> {
 async function clearAllAuthData(): Promise<void> {
   try {
     await Promise.allSettled([
-      tokenStorage.clearAll(),
       STORAGE_REMOVE_TOKEN(),
       STORAGE_REMOVE_USER_INFO(),
+      useLoginAuthStore.getState().logout(),
     ])
   } catch (error) {
     console.error('Clear auth data failed:', error)
@@ -74,7 +71,9 @@ async function tryAutoLogin(): Promise<boolean> {
     }
 
     console.log('Attempting auto login with Privy token...')
-    const userInfo = await loginWithPrivyToken(privyToken)
+    const userInfo = await login({
+      grant_type: 'privy_token',
+    })
 
     // 保存用户信息
     await setLocalUserInfo(userInfo)
@@ -96,8 +95,8 @@ function navigateToLogin(withWalletConnected: boolean = false): void {
   if (withWalletConnected) {
     // 钱包已连接，跳转到登录页面并标记需要自动授权
     router.replace({
-      pathname: '/(login)',
-      params: { autoAuth: 'true' }
+      pathname: '/(auth)/login',
+      params: { autoAuth: 'true' },
     })
   } else {
     // 完全未登录，跳转到登录页面

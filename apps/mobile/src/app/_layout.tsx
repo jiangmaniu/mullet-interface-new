@@ -1,10 +1,12 @@
 import './global.css'
-import React from 'react'
 import { Stack } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated'
 
 import { Providers } from '@/components/providers'
+import { LoginGuard } from '@/components/router-guard/login-guard'
+import { Initializer } from '@/components/initializer'
+
 
 // Disable strict mode warnings from Reanimated
 // These warnings are triggered by third-party libraries (react-native-collapsible-tab-view)
@@ -23,18 +25,33 @@ export const unstable_settings = {
 // Re-enable when the library is updated to use refs instead of findNodeHandle
 
 export default function RootLayout() {
-
   return (
     <Providers>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(assets)" options={{ headerShown: false }} />
-        <Stack.Screen name="(trade)" options={{ headerShown: false }} />
-        <Stack.Screen name="(login)" options={{ headerShown: false }} />
-        <Stack.Screen name="(home)" options={{ headerShown: false }} />
-        <Stack.Screen name="symbol-selector" options={{ headerShown: false, presentation: 'modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </Providers>
+      <LoginGuard>
+        <Initializer>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(assets)" options={{ headerShown: false }} />
+            <Stack.Screen name="(trade)" options={{ headerShown: false }} />
+            <Stack.Screen name="(home)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="(auth)"
+              options={{
+                headerShown: false,
+
+              }}
+            />
+            <Stack.Screen
+              name="symbol-selector"
+              options={{
+                headerShown: false,
+                presentation: 'modal',
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+        </Initializer>
+      </LoginGuard>
+    </Providers >
   )
 }

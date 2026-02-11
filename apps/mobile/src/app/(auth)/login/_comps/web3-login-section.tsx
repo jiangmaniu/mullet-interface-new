@@ -3,7 +3,6 @@ import { View, Text, Pressable } from 'react-native'
 
 import { cn } from '@/lib/utils'
 import { useAccount } from '@/lib/appkit'
-import { useAuthStore } from '@/stores/auth'
 import {
   IconOkxWallet,
   IconMetamask,
@@ -83,7 +82,7 @@ export function Web3LoginSection({ autoAuth = false }: Web3LoginSectionProps) {
         </View>
         {/* 连接钱包文字 */}
         <Text className={cn('text-content-4', 'text-paragraph-p2')}>
-          连接钱包
+          钱包登录/注册
         </Text>
       </Pressable>
 

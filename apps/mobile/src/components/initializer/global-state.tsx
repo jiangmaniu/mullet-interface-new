@@ -9,7 +9,6 @@ export const GlobalStateInitializer = ({ children }: { children: React.ReactNode
 
   const startApp = async () => {
     await stores.global.onStartApp()
-
   }
 
   const initApp = useCallback(async () => {

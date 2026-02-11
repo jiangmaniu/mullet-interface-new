@@ -16,7 +16,6 @@ import { IconoirProvider } from 'iconoir-react-native'
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
 import { useFonts } from 'expo-font';
 import { V1Provider } from '@/v1/provider'
-import { InitializerProvider } from './initializer'
 import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
 import { WalletStateInjector } from './wallet-state-injector'
@@ -80,11 +79,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
                       <ToastProvider>
-                        <InitializerProvider>
-                          <V1Provider>
-                            {children}
-                          </V1Provider>
-                        </InitializerProvider>
+                        <V1Provider>
+                          {children}
+                        </V1Provider>
                       </ToastProvider>
                     </WalletStateInjector>
                     {/* Privy UI Elements */}

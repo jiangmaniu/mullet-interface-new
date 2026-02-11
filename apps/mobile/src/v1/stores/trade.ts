@@ -13,7 +13,7 @@ import {
   getOrderMargin,
   getOrderPage,
   modifyPendingOrder,
-  modifyStopProfitLoss
+  modifyStopProfitLoss,
 } from '@/v1/services/tradeCore/order'
 import { getAllSymbols } from '@/v1/services/tradeCore/symbol'
 import { toFixed, uniqueObjectArray } from '@/v1/utils'
@@ -32,9 +32,14 @@ import {
   STORAGE_SET_HISTORY_SEARCH,
   STORAGE_SET_ORDER_CONFIRM_CHECKED,
   STORAGE_SET_POSITION_CONFIRM_CHECKED,
-  STORAGE_SET_QUICK_PLACE_ORDER_CHECKED
+  STORAGE_SET_QUICK_PLACE_ORDER_CHECKED,
 } from '@/v1/utils/storage'
-import { subscribePendingSymbol, subscribePositionSymbol, useCovertProfitCallback, useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
+import {
+  subscribePendingSymbol,
+  subscribePositionSymbol,
+  useCovertProfitCallback,
+  useGetAccountBalanceCallback,
+} from '@/v1/utils/wsUtil'
 
 import klineStore from './kline'
 import { getSymbolIsHoliday } from '@/v1/services/tradeCore/holiday'
@@ -169,7 +174,8 @@ class TradeStore {
     const localOrderQuickPlaceOrderChecked = await STORAGE_GET_QUICK_PLACE_ORDER_CHECKED()
     const localOrderConfirmChecked = await STORAGE_GET_ORDER_CONFIRM_CHECKED()
     const localPositionConfirmChecked = await STORAGE_GET_POSITION_CONFIRM_CHECKED()
-    this.orderQuickPlaceOrderChecked = localOrderQuickPlaceOrderChecked !== null ? localOrderQuickPlaceOrderChecked : false
+    this.orderQuickPlaceOrderChecked =
+      localOrderQuickPlaceOrderChecked !== null ? localOrderQuickPlaceOrderChecked : false
     this.orderConfirmChecked = localOrderConfirmChecked !== null ? localOrderConfirmChecked : true
     this.positionConfirmChecked = localPositionConfirmChecked !== null ? localPositionConfirmChecked : true
     this.historySearchList = (await STORAGE_GET_HISTORY_SEARCH()) || []
@@ -264,29 +270,29 @@ class TradeStore {
   }
 
   // 设置手数标签快速选择
-  setOrderVolumeTag = (tag) => {
+  setOrderVolumeTag = (tag: string) => {
     this.orderVolumeTag = tag
   }
 
   // 止盈价格输入框
   @action
-  setSp = (value) => {
+  setSp = (value: string) => {
     this.spValue = value
   }
   // 止损价格输入框
   @action
-  setSl = (value) => {
+  setSl = (value: string) => {
     this.slValue = value
   }
 
   // 止盈金额输入框
   @action
-  setSpAmount = (value) => {
+  setSpAmount = (value: string) => {
     this.spAmount = value
   }
   // 止损价格输入框
   @action
-  setSlAmount = (value) => {
+  setSlAmount = (value: string) => {
     this.slAmount = value
   }
 
@@ -352,7 +358,7 @@ class TradeStore {
       spPriceOrAmountType = 'PRICE',
       slPriceOrAmountType = 'PRICE',
       recordModalItem = {} as RecordModalItem,
-      isPosition = false
+      isPosition = false,
     } = params || {}
 
     this.orderVolume = orderVolume
@@ -493,7 +499,9 @@ class TradeStore {
       }
     })
     // 逐仓净值=账户余额（单笔或多笔交易保证金）+ 库存费 + 手续费+浮动盈亏
-    const isolatedBalance = Number(orderMargin + Number(interestFees || 0) + Number(handlingFees || 0) + Number(profit || 0))
+    const isolatedBalance = Number(
+      orderMargin + Number(interestFees || 0) + Number(handlingFees || 0) + Number(profit || 0),
+    )
     // 逐仓保证金率：当前逐仓净值 / 当前逐仓订单占用 = 保证金率
     // const marginRate = orderMargin && isolatedBalance ? toFixed((isolatedBalance / orderMargin) * 100) : 0
     // // 新公式：逐仓保证金率 = 订单净值(订单保证金+浮动盈亏) / 基础保证金。
@@ -504,7 +512,7 @@ class TradeStore {
     return {
       marginRate,
       margin,
-      balance
+      balance,
     }
   }
 
@@ -525,7 +533,8 @@ class TradeStore {
     // const quote = getCurrentQuote()
     // const conf = item?.conf || quote?.symbolConf // 品种配置信息
     // const buySell = this.buySell
-    const isCrossMargin = item?.marginType === 'CROSS_MARGIN' || (!item && currentLiquidationSelectBgaId === 'CROSS_MARGIN') // 全仓
+    const isCrossMargin =
+      item?.marginType === 'CROSS_MARGIN' || (!item && currentLiquidationSelectBgaId === 'CROSS_MARGIN') // 全仓
     // 全仓保证金率：全仓净值/占用 = 保证金率
     // 全仓净值 = 全仓净值 - 逐仓单净值(单笔或多笔)
     // 逐仓保证金率：当前逐仓净值 / 当前逐仓订单占用 = 保证金率
@@ -545,7 +554,9 @@ class TradeStore {
       const hasCrossMarginOrder = positionList.some((item) => item.marginType === 'CROSS_MARGIN')
       if (hasCrossMarginOrder) {
         // 逐仓保证金信息
-        const marginInfo = this.calcIsolatedMarginRateInfo(this.positionList.filter((item) => item.marginType === 'ISOLATED_MARGIN'))
+        const marginInfo = this.calcIsolatedMarginRateInfo(
+          this.positionList.filter((item) => item.marginType === 'ISOLATED_MARGIN'),
+        )
         // 全仓净值：全仓净值 - 逐仓净值
         const crossBalance = Number(toFixed(balance - marginInfo.balance, 2))
         balance = crossBalance
@@ -567,7 +578,7 @@ class TradeStore {
     return {
       marginRate,
       margin,
-      balance
+      balance,
     }
   }
 
@@ -621,7 +632,9 @@ class TradeStore {
     const currentAccountConf = accountId ? userConfInfo?.[accountId] : {}
 
     this.userConfInfo = userConfInfo
-    this.openSymbolNameList = (currentAccountConf?.openSymbolNameList || []).filter((v) => v) as Account.TradeSymbolListItem[]
+    this.openSymbolNameList = (currentAccountConf?.openSymbolNameList || []).filter(
+      (v) => v,
+    ) as Account.TradeSymbolListItem[]
     console.log('切换accountId后请求的品种列表可能不一致，设置第一个默认的品种名称')
     this.activeSymbolName = currentAccountConf?.activeSymbolName as string
   }
@@ -699,7 +712,7 @@ class TradeStore {
     // STORAGE_SET_SYMBOL_NAME_LIST(this.openSymbolNameList)
     STORAGE_SET_CONF_INFO(
       this.openSymbolNameList.filter((v) => v),
-      `${this.currentAccountInfo?.id}.openSymbolNameList`
+      `${this.currentAccountInfo?.id}.openSymbolNameList`,
     )
   }
 
@@ -877,7 +890,10 @@ class TradeStore {
     }
     const cacheSymbolList = (await STORAGE_GET_CONF_INFO(`${this.currentAccountInfo?.id}.symbolList`)) || []
     // 如果缓存有优先取一次缓存的展示
-    if (cacheSymbolList?.length && (!this.symbolListAll.length || this.symbolListAll.length !== cacheSymbolList.length)) {
+    if (
+      cacheSymbolList?.length &&
+      (!this.symbolListAll.length || this.symbolListAll.length !== cacheSymbolList.length)
+    ) {
       runInAction(() => {
         this.symbolListAll = cacheSymbolList
         this.symbolMapAll = keyBy(cacheSymbolList, 'symbol') // 存一份 map
@@ -928,7 +944,7 @@ class TradeStore {
               // 打开行情订阅
               stores.ws.openSymbol({
                 // 构建参数
-                symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll)
+                symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll),
               })
             })
           }, 400)
@@ -952,7 +968,7 @@ class TradeStore {
     runInAction(() => {
       this.tradeSymbolTickerMap = {
         ...this.tradeSymbolTickerMap,
-        [symbol]: data
+        [symbol]: data,
       }
     })
   }
@@ -1038,7 +1054,7 @@ class TradeStore {
       size: 999,
       status: 'ENTRUST',
       type: 'LIMIT_BUY_ORDER,LIMIT_SELL_ORDER,STOP_LOSS_LIMIT_BUY_ORDER,STOP_LOSS_LIMIT_SELL_ORDER,STOP_LOSS_MARKET_BUY_ORDER,STOP_LOSS_MARKET_SELL_ORDER',
-      accountId: this.currentAccountInfo?.id
+      accountId: this.currentAccountInfo?.id,
     })
 
     runInAction(() => {
@@ -1064,7 +1080,7 @@ class TradeStore {
       size: 999,
       status: 'ENTRUST',
       type: 'STOP_LOSS_ORDER,TAKE_PROFIT_ORDER',
-      accountId: this.currentAccountInfo?.id
+      accountId: this.currentAccountInfo?.id,
     })
     if (res.success) {
       runInAction(() => {
@@ -1112,7 +1128,7 @@ class TradeStore {
           'STOP_LOSS_LIMIT_BUY_ORDER',
           'STOP_LOSS_LIMIT_SELL_ORDER',
           'STOP_LOSS_MARKET_BUY_ORDER',
-          'STOP_LOSS_MARKET_SELL_ORDER'
+          'STOP_LOSS_MARKET_SELL_ORDER',
         ].includes(orderType)
       ) {
         // 更新挂单列表,通过ws推送更新
@@ -1127,7 +1143,7 @@ class TradeStore {
     }
     return {
       ...res,
-      state
+      state,
     }
   }
   // 修改止盈止损

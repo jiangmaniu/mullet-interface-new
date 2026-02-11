@@ -42,7 +42,7 @@ export default ({ config }: { config: ConfigContext }) => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.mullet.app',
-      usesAppleSignIn: false, // 禁用 Sign in with Apple（个人开发者账号不支持）
+      usesAppleSignIn: true,
       // 钱包检测 - LSApplicationQueriesSchemes
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
       infoPlist: {

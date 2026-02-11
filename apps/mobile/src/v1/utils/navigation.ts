@@ -1,8 +1,11 @@
+import { useEffect } from 'react'
+import { BackHandler } from 'react-native'
 import { router, usePathname, useSegments } from 'expo-router'
 import { parse, stringify } from 'qs'
 import type { DependencyList } from 'react'
-import { useEffect } from 'react'
-import { BackHandler } from 'react-native'
+
+import { WEBVIEW_AUTHRORIZATION_URI } from '@/v1/constants'
+import { getEnv } from '@/v1/env'
 
 import {
   STORAGE_GET_AUTHORIZED,
@@ -12,10 +15,8 @@ import {
   STORAGE_REMOVE_CONF_INFO,
   STORAGE_REMOVE_ENV,
   STORAGE_REMOVE_TOKEN,
-  STORAGE_REMOVE_USER_INFO
+  STORAGE_REMOVE_USER_INFO,
 } from './storage'
-import { getEnv } from '@/v1/env'
-import { WEBVIEW_AUTHRORIZATION_URI } from '@/v1/constants'
 
 // v1 路由名称到 expo-router 路径的映射
 const routeMap: Record<string, string> = {
@@ -27,7 +28,7 @@ const routeMap: Record<string, string> = {
   User: '/(tabs)/user',
   Webview: '/webview',
   AccountNew: '/account/new',
-  AccountSelect: '/account/select'
+  AccountSelect: '/account/select',
   // 根据实际路由结构添加更多映射
 }
 
@@ -48,7 +49,7 @@ export const formatUrlParams = async (url: string, params?: any) => {
     user_id: userInfo.user_id,
     token,
     ...parseUrlParams,
-    ...params
+    ...params,
   }
   const retUrl = `${tempUrl.origin}${tempUrl.pathname}?${stringify(defaultParams)}`
   console.log('retUrl', retUrl)
@@ -72,7 +73,7 @@ async function formatUrl(url: string, params?: any) {
   const ORIGIN_WAPURL = ENVS.websiteURL ? new URL(ENVS.websiteURL).origin : ''
   const res = {
     url: (url || '').trim?.(),
-    params
+    params,
   }
   if (res.url.startsWith('http')) {
     res.params = { ...params, uri: res.url }
@@ -94,16 +95,16 @@ async function formatUrl(url: string, params?: any) {
       if (authorized) {
         uri = await formatUrlParams(`${ORIGIN_WAPURL}/${locale}${redirectUrl}`, {
           hideHeader: 1,
-          type: params?.type
+          type: params?.type,
         })
       } else {
         uri = await formatUrlParams(_uri, {
           redirect_url: encodeURIComponent(
             `${redirectUrl}?${stringify({
               hideHeader: 1,
-              type: params?.type
-            })}`
-          )
+              type: params?.type,
+            })}`,
+          ),
         })
       }
 
@@ -117,7 +118,7 @@ async function formatUrl(url: string, params?: any) {
         uri = await formatUrlParams(`${ORIGIN_WAPURL}/${locale}${redirectUrl}`)
       } else {
         uri = await formatUrlParams(_uri, {
-          redirect_url: encodeURIComponent(redirectUrl)
+          redirect_url: encodeURIComponent(redirectUrl),
         })
       }
 
@@ -131,7 +132,7 @@ async function formatUrl(url: string, params?: any) {
         uri = await formatUrlParams(`${ORIGIN_WAPURL}/${locale}${redirectUrl}`)
       } else {
         uri = await formatUrlParams(_uri, {
-          redirect_url: encodeURIComponent(redirectUrl)
+          redirect_url: encodeURIComponent(redirectUrl),
         })
       }
 
@@ -145,7 +146,7 @@ async function formatUrl(url: string, params?: any) {
         uri = await formatUrlParams(`${ORIGIN_WAPURL}/${locale}${redirectUrl}`)
       } else {
         uri = await formatUrlParams(_uri, {
-          redirect_url: encodeURIComponent(redirectUrl)
+          redirect_url: encodeURIComponent(redirectUrl),
         })
       }
 
@@ -159,7 +160,7 @@ async function formatUrl(url: string, params?: any) {
         uri = await formatUrlParams(`${ORIGIN_WAPURL}/${locale}${redirectUrl}`)
       } else {
         uri = await formatUrlParams(_uri, {
-          redirect_url: encodeURIComponent(redirectUrl)
+          redirect_url: encodeURIComponent(redirectUrl),
         })
       }
 
@@ -192,7 +193,7 @@ export function navigate(name: string, params?: any) {
   if (params && Object.keys(params).length > 0) {
     router.navigate({
       pathname: path as any,
-      params
+      params,
     })
   } else {
     router.navigate(path as any)
@@ -223,7 +224,7 @@ export async function replace(url: string, params?: any) {
     if (params && Object.keys(params).length > 0) {
       router.replace({
         pathname: path as any,
-        params: res.params
+        params: res.params,
       })
     } else {
       router.replace(path as any)
@@ -242,7 +243,7 @@ export async function push(url: string, params?: any) {
   if (params && Object.keys(params).length > 0) {
     router.push({
       pathname: path as any,
-      params: res.params
+      params: res.params,
     })
   } else {
     router.push(path as any)
@@ -254,7 +255,7 @@ export function reset(routeName: string, params = {}) {
   const path = getRoutePath(routeName)
   router.replace({
     pathname: path as any,
-    params
+    params,
   })
 }
 

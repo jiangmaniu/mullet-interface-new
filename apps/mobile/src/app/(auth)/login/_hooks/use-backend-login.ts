@@ -1,29 +1,14 @@
 import { useMutation } from '@tanstack/react-query'
-import { usePrivy } from '@privy-io/expo'
-import { router } from 'expo-router'
-import { Alert } from 'react-native'
 
-import { setLocalUserInfo } from '@/v1/utils/storage'
-import { stores } from '@/v1/provider/mobxProvider'
-import { loginWithPrivyToken } from '@/lib/api'
 import { useLoginAuthStore } from '@/stores/login-auth'
+import { stores } from '@/v1/provider/mobxProvider'
+import { login } from '@/v1/services/user'
+import { setLocalUserInfo } from '@/v1/utils/storage'
+import { usePrivy } from '@privy-io/expo'
 
 interface UseBackendLoginOptions {
   onSuccess?: () => void
   onError?: (error: string) => void
-  redirectOnSuccess?: boolean
-}
-
-/**
- * 登录成功后导航
- * 如果有上一页则返回，否则跳转首页
- */
-const navigateAfterLogin = () => {
-  if (router.canGoBack()) {
-    router.back()
-  } else {
-    router.replace('/' as '/')
-  }
 }
 
 /**
@@ -32,7 +17,7 @@ const navigateAfterLogin = () => {
  * 可用于 Web3 钱包登录和 Privy 邮箱登录
  */
 export function useBackendLogin(options: UseBackendLoginOptions = {}) {
-  const { onSuccess, onError, redirectOnSuccess = true } = options
+  const { onSuccess, onError } = options
 
   const { getAccessToken: getPrivyAccessToken } = usePrivy()
 
@@ -48,7 +33,9 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       console.log('Privy token obtained for backend login')
 
       // 登录后端（传入 token）
-      const userinfo = await loginWithPrivyToken(privyToken)
+      const userinfo = await login({
+        grant_type: 'privy_token',
+      })
 
       useLoginAuthStore.setState({
         accessToken: userinfo.access_token,
@@ -66,17 +53,6 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
     },
     onSuccess: () => {
       onSuccess?.()
-
-      if (redirectOnSuccess) {
-        Alert.alert('成功', '登录成功！', [
-          {
-            text: '确定',
-            onPress: () => {
-              navigateAfterLogin()
-            },
-          },
-        ])
-      }
     },
     onError: (err: Error) => {
       console.error('Backend login failed:', err)

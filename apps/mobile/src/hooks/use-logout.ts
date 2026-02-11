@@ -1,10 +1,15 @@
 import { useCallback, useState } from 'react'
-import { usePrivy } from '@privy-io/expo'
-import { router } from 'expo-router'
 
 import { useAppKit } from '@/lib/appkit'
-import { useAuthStore } from '@/stores/auth'
-import { tokenStorage } from '@/lib/api'
+import { useLoginAuthStore } from '@/stores/login-auth'
+import {
+  STORAGE_REMOVE_AUTHORIZED,
+  STORAGE_REMOVE_CONF_INFO,
+  STORAGE_REMOVE_ENV,
+  STORAGE_REMOVE_TOKEN,
+  STORAGE_REMOVE_USER_INFO,
+} from '@/v1/utils/storage'
+import { usePrivy } from '@privy-io/expo'
 
 interface UseLogoutReturn {
   logout: () => Promise<void>
@@ -19,7 +24,7 @@ export function useLogout(): UseLogoutReturn {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const { logout: privyLogout } = usePrivy()
   const { disconnect: disconnectWallet } = useAppKit()
-  const { logout: authLogout } = useAuthStore()
+  const { logout: authLogout } = useLoginAuthStore()
 
   const logout = useCallback(async () => {
     if (isLoggingOut) return
@@ -27,12 +32,16 @@ export function useLogout(): UseLogoutReturn {
     setIsLoggingOut(true)
 
     try {
+      await STORAGE_REMOVE_TOKEN()
+      await STORAGE_REMOVE_USER_INFO()
+      await STORAGE_REMOVE_CONF_INFO()
+      await STORAGE_REMOVE_ENV()
+      await STORAGE_REMOVE_AUTHORIZED()
+
       // 并行执行所有退出操作
       const results = await Promise.allSettled([
         // 1. 清除后端 API token（调用后端登出接口 + 清除本地存储）
         authLogout(),
-        // 2. 清除本地 token
-        tokenStorage.clearAll(),
         // 3. 断开 Reown 钱包连接
         disconnectWallet(),
         // 4. 登出 Privy
@@ -46,13 +55,8 @@ export function useLogout(): UseLogoutReturn {
           console.warn(`Logout operation "${operations[index]}" failed:`, result.reason)
         }
       })
-
-      // 重定向到登录页面
-      router.replace('/(login)')
     } catch (error) {
       console.error('Logout failed:', error)
-      // 即使出错也尝试重定向到登录页面
-      router.replace('/(login)')
     } finally {
       setIsLoggingOut(false)
     }
