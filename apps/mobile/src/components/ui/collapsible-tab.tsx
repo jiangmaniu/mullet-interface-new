@@ -19,12 +19,12 @@ import Animated, {
   Extrapolation,
   SharedValue,
   useAnimatedReaction,
-  runOnJS,
   useSharedValue,
   cancelAnimation,
   withDecay,
+  interpolateColor,
 } from 'react-native-reanimated';
-import { Text } from '@/components/ui/text';
+import * as Haptics from 'expo-haptics';
 
 type TabVariant = 'solid' | 'outline' | 'underline' | 'text';
 type TabSize = 'sm' | 'md' | 'lg';
@@ -73,18 +73,12 @@ const tabItemVariants = cva(
       },
     },
     compoundVariants: [
-      // solid
       { variant: 'solid', selected: false, className: 'bg-button' },
-      { variant: 'solid', selected: true, className: 'bg-brand-primary' },
-      // outline
       { variant: 'outline', selected: false, className: '' },
       { variant: 'outline', selected: true, className: 'border border-brand-secondary-2' },
-      // underline
       { variant: 'underline', selected: false, className: '' },
-      { variant: 'underline', selected: true, className: 'border-b-2 border-brand-primary' },
-      // text
+      { variant: 'underline', selected: true, className: 'border-b-2 border-brand-primary' }, // Fallback style
       { variant: 'text', selected: false, className: '' },
-      { variant: 'text', selected: true, className: '' },
     ],
     defaultVariants: {
       variant: 'underline',
@@ -114,18 +108,6 @@ const tabTextVariants = cva(
         false: '',
       },
     },
-    compoundVariants: [
-      // solid selected uses dark text
-      { variant: 'solid', selected: true, className: 'text-content-foreground' },
-      { variant: 'solid', selected: false, className: 'text-content-4' },
-      // others use white when selected, gray when not
-      { variant: 'outline', selected: true, className: 'text-content-1' },
-      { variant: 'outline', selected: false, className: 'text-content-4' },
-      { variant: 'underline', selected: true, className: 'text-content-1' },
-      { variant: 'underline', selected: false, className: 'text-content-4' },
-      { variant: 'text', selected: true, className: 'text-content-1' },
-      { variant: 'text', selected: false, className: 'text-content-4' },
-    ],
     defaultVariants: {
       variant: 'underline',
       size: 'sm',
@@ -134,47 +116,73 @@ const tabTextVariants = cva(
   }
 );
 
-// Custom TabItem component props
+
 interface CustomTabItemProps {
   index: number;
   indexDecimal: SharedValue<number>;
   label: string;
   onPress: () => void;
+  // 添加 onLayout 定义，以便 MaterialTabBar 计算指示器位置
+  onLayout?: (event: LayoutChangeEvent) => void;
   variant: TabVariant;
   size: TabSize;
+  activeColor: string;
+  inactiveColor: string;
 }
 
-// Custom TabItem component
 function CustomTabItem({
   index,
   indexDecimal,
   label,
   onPress,
+  onLayout,
   variant,
   size,
+  activeColor,
+  inactiveColor,
 }: CustomTabItemProps) {
-  const [isSelected, setIsSelected] = useState(false);
 
-  // Use useAnimatedReaction to properly read SharedValue without triggering render warnings
-  useAnimatedReaction(
-    () => Math.abs(index - indexDecimal.value) < 0.5,
-    (selected) => {
-      runOnJS(setIsSelected)(selected);
-    },
-    [index]
-  );
+  // 文字颜色插值动画
+  const animatedTextStyle = useAnimatedStyle(() => {
+    const distance = Math.abs(index - indexDecimal.value);
+    const progress = Math.min(distance, 1);
+
+    const color = interpolateColor(
+      progress,
+      [0, 1],
+      [activeColor, inactiveColor]
+    );
+
+    return {
+      color,
+    };
+  });
+
+  const handlePress = () => {
+    Haptics.selectionAsync();
+    onPress();
+  }
 
   return (
     <Pressable
-      onPress={onPress}
-      className={cn(tabItemVariants({ variant, size, selected: isSelected }))}
+      onPress={handlePress}
+      // 绑定 onLayout
+      onLayout={onLayout}
+      className={cn(tabItemVariants({ variant, size, selected: false }))}
     >
-      <Text className={cn(tabTextVariants({ variant, size, selected: isSelected }))}>
+      <Animated.Text
+        className={cn(tabTextVariants({ variant, size, selected: false }))}
+        style={animatedTextStyle}
+      >
         {label}
-      </Text>
+      </Animated.Text>
     </Pressable>
   );
 }
+
+// ----------------------------------------------------------------------
+// 3. 主组件 CollapsibleTab
+// ----------------------------------------------------------------------
 
 type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 'renderTabBar'> &
   VariantProps<typeof tabBarVariants> & {
@@ -202,43 +210,49 @@ export function CollapsibleTab({
   } = useThemeColors();
 
   const insets = useSafeAreaInsets();
-
   const currentVariant = variant || 'underline';
   const currentSize = size || 'sm';
 
   const renderTabBar = (tabBarProps: MaterialTabBarProps<any>) => {
-    // For underline variant, use default MaterialTabBar with indicator
-    // For other variants, use custom TabItemComponent
-    const useCustomTabItem = currentVariant !== 'underline';
-
     return (
       <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), "px-xl", tabBarClassName)}>
         <MaterialTabBar
           {...tabBarProps}
           scrollEnabled={scrollEnabled}
-          style={{ height: '100%' }}
+          style={{ height: '100%', backgroundColor: 'transparent' }}
           contentContainerStyle={{ alignItems: 'center' }}
+
+          // 指示器样式配置
           indicatorStyle={
             currentVariant === 'underline'
-              ? { backgroundColor: colorBrandPrimary, height: 2, bottom: 0 }
+              ? {
+                backgroundColor: colorBrandPrimary,
+                height: 2,
+                bottom: 0,
+                borderRadius: 1, // 圆角更现代
+              }
               : { backgroundColor: 'transparent', height: 0 }
           }
+
           activeColor={textColorContent1}
           inactiveColor={textColorContent4}
-          TabItemComponent={
-            useCustomTabItem
-              ? (itemProps) => (
-                <CustomTabItem
-                  index={itemProps.index}
-                  indexDecimal={itemProps.indexDecimal}
-                  label={typeof itemProps.label === 'string' ? itemProps.label : ''}
-                  onPress={() => itemProps.onPress(itemProps.name)}
-                  variant={currentVariant}
-                  size={currentSize}
-                />
-              )
-              : undefined
-          }
+
+          TabItemComponent={(itemProps) => (
+            <CustomTabItem
+              index={itemProps.index}
+              indexDecimal={itemProps.indexDecimal}
+              label={typeof itemProps.label === 'string' ? itemProps.label : ''}
+              onPress={() => itemProps.onPress(itemProps.name)}
+
+              // 透传 onLayout 给 CustomTabItem
+              onLayout={itemProps.onLayout}
+
+              variant={currentVariant}
+              size={currentSize}
+              activeColor={textColorContent1}
+              inactiveColor={textColorContent4}
+            />
+          )}
         />
         {renderTabBarRight && (
           <View className='flex-shrink-0'>
@@ -253,7 +267,6 @@ export function CollapsibleTab({
 
   return (
     <>
-      {/* 状态栏遮挡层 - 固定在顶部，防止 header 内容透出 */}
       <View
         style={{
           position: 'absolute',
@@ -279,7 +292,6 @@ export function CollapsibleTab({
   );
 }
 
-// Export sub-components for direct usage
 export const CollapsibleTabScene = Tabs.Tab;
 export const CollapsibleFlatList = Tabs.FlatList;
 export const CollapsibleScrollView = ({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.ScrollView>) => <Tabs.ScrollView showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
@@ -311,11 +323,8 @@ export function CollapsibleStickyHeader({
   children: React.ReactNode;
   className?: string;
   style?: ViewStyle;
-  /** 最小滑动距离，默认 5 */
   minDistance?: number;
-  /** 触发惯性滚动的最小速度，默认 50 */
   minVelocity?: number;
-  /** 惯性滚动阻尼系数，默认 0.998（越大惯性越强，范围 0.95-0.999） */
   deceleration?: number;
 }) {
   const [bannerHeight, setBannerHeight] = useState(0);
@@ -327,7 +336,6 @@ export function CollapsibleStickyHeader({
   const isGestureActive = useSharedValue(false);
   const targetScrollY = useSharedValue(0);
 
-  // 监听 targetScrollY 变化，执行惯性滚动
   useAnimatedReaction(
     () => targetScrollY.value,
     (targetY) => {
@@ -343,7 +351,6 @@ export function CollapsibleStickyHeader({
     [refMap, focusedTab, scrollTo],
   );
 
-  // 创建手势处理器，让 header 区域可以控制列表滚动
   const headerPanGesture = Gesture.Pan()
     .minDistance(minDistance)
     .onStart(() => {
@@ -433,6 +440,7 @@ export interface CollapsibleStickyNavBarProps {
   style?: ViewStyle;
   children?: React.ReactNode;
   className?: string;
+  fixed?: boolean;
 }
 
 export function CollapsibleStickyNavBar({
@@ -440,25 +448,27 @@ export function CollapsibleStickyNavBar({
   children,
   className,
   zIndex = 100,
+  fixed = false,
 }: CollapsibleStickyNavBarProps) {
   const { bannerHeight } = useCollapsibleStickyContext();
   const insets = useSafeAreaInsets();
   const headerHeight = 44 + insets.top;
 
-  // 获取滚动上下文 (必须在 CollapsibleTab 内部渲染才有效)
   const scrollY = useCurrentTabScrollY();
 
   const animatedStyle = useAnimatedStyle(() => {
-    // 如果 Banner 高度还没算出来，先不动
     if (bannerHeight === 0) return {};
 
-    // 当滚动值在 [0, bannerHeight] 之间时，让导航栏向下偏移 [0, bannerHeight]。
     const translateY = interpolate(
       scrollY.value,
       [0, bannerHeight],
       [0, bannerHeight],
       Extrapolation.CLAMP
     );
+
+    if (fixed) {
+      return { transform: [{ translateY }] };
+    }
 
     const opacity = interpolate(
       scrollY.value + insets.top,
@@ -473,7 +483,6 @@ export function CollapsibleStickyNavBar({
     };
   });
 
-  // 确保 Status Bar 区域始终有背景遮挡，防止内容透过
   const statusBarAnimatedStyle = useAnimatedStyle(() => {
     if (bannerHeight === 0) return {};
     const translateY = interpolate(
@@ -489,10 +498,7 @@ export function CollapsibleStickyNavBar({
 
   return (
     <>
-      {/* 1. 占位块：把内容顶下去，防止被绝对定位的导航栏遮挡 */}
       <View style={{ height: headerHeight }} />
-
-      {/* 2. 背景层：始终不透明，遮挡 Status Bar 区域 */}
       <Animated.View
         style={[
           {
@@ -503,13 +509,11 @@ export function CollapsibleStickyNavBar({
             height: headerHeight,
             zIndex: zIndex - 1,
           },
-          style, // 继承传入的背景色
+          style,
           statusBarAnimatedStyle
         ]}
         className={className || "bg-secondary"}
       />
-
-      {/* 3. 内容层：包含文字标题等，会渐隐 */}
       <Animated.View
         style={[
           {
@@ -529,6 +533,5 @@ export function CollapsibleStickyNavBar({
   );
 }
 
-// Export variants for external use
 export { tabBarVariants, tabItemVariants, tabTextVariants };
 export type { TabVariant, TabSize };
