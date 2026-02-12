@@ -184,6 +184,13 @@ function CustomTabItem({
 // 3. 主组件 CollapsibleTab
 // ----------------------------------------------------------------------
 
+// Context: CollapsibleStickyNavBar fixed 时向 CollapsibleTab 注册额外高度
+type FixedNavBarContextType = {
+  fixedNavBarHeight: number;
+  setFixedNavBarHeight: (h: number) => void;
+};
+const FixedNavBarContext = createContext<FixedNavBarContextType | undefined>(undefined);
+
 type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 'renderTabBar'> &
   VariantProps<typeof tabBarVariants> & {
     tabBarClassName?: string;
@@ -210,6 +217,7 @@ export function CollapsibleTab({
   } = useThemeColors();
 
   const insets = useSafeAreaInsets();
+  const [fixedNavBarHeight, setFixedNavBarHeight] = useState(0);
   const currentVariant = variant || 'underline';
   const currentSize = size || 'sm';
 
@@ -266,7 +274,7 @@ export function CollapsibleTab({
   const headerContainerStyle = useResolveClassNames('shadow-none elevation-0 bg-secondary')
 
   return (
-    <>
+    <FixedNavBarContext.Provider value={{ fixedNavBarHeight, setFixedNavBarHeight }}>
       <View
         style={{
           position: 'absolute',
@@ -283,12 +291,12 @@ export function CollapsibleTab({
         renderTabBar={renderTabBar}
         containerStyle={containerStyle}
         headerContainerStyle={headerContainerStyle}
-        minHeaderHeight={insets.top}
+        minHeaderHeight={insets.top + fixedNavBarHeight}
         {...props}
       >
         {props.children}
       </Tabs.Container>
-    </>
+    </FixedNavBarContext.Provider>
   );
 }
 
@@ -451,8 +459,17 @@ export function CollapsibleStickyNavBar({
   fixed = false,
 }: CollapsibleStickyNavBarProps) {
   const { bannerHeight } = useCollapsibleStickyContext();
+  const setFixedNavBarHeight = useContext(FixedNavBarContext)?.setFixedNavBarHeight;
   const insets = useSafeAreaInsets();
   const headerHeight = 44 + insets.top;
+
+  // fixed 时注册纯导航栏高度（不含 insets）给 CollapsibleTab
+  React.useEffect(() => {
+    if (fixed && setFixedNavBarHeight) {
+      setFixedNavBarHeight(44);
+      return () => setFixedNavBarHeight(0);
+    }
+  }, [fixed, setFixedNavBarHeight]);
 
   const scrollY = useCurrentTabScrollY();
 
