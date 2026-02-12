@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { View, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
@@ -24,11 +24,18 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Trans } from '@lingui/react/macro'
 import { IconButton, Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  CollapsibleTab,
+  CollapsibleTabScene,
+  CollapsibleStickyHeader,
+  CollapsibleStickyNavBar,
+  CollapsibleStickyContent,
+  CollapsibleScrollView,
+} from '@/components/ui/collapsible-tab'
 import { Input } from '@/components/ui/input'
 import { t } from '@/locales/i18n'
 import { Switch } from '@/components/ui/switch'
-import { Route } from 'react-native-tab-view'
 import {
   Accordion,
   AccordionContent,
@@ -45,6 +52,7 @@ import { ClosePositionDrawer } from './_comps/close-position-drawer'
 import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
 import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
 import { useToast } from '@/components/ui/toast'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 // ============ TradeHeader Component ============
@@ -255,12 +263,12 @@ function OrderPanel({
             }`}
         >
           <Text
-            className={`text-button-2 font-medium ${selectedSide === 'buy' ? 'text-content-foreground' : 'text-content-4'}`}
+            className={`text-button-2 font-medium ${selectedSide === 'buy' ? 'text-market-rise-foreground' : 'text-content-4'}`}
           >
             {buyPrice}
           </Text>
           <Text
-            className={`text-button-2 ml-xs ${selectedSide === 'buy' ? 'text-content-foreground' : 'text-content-4'}`}
+            className={`text-button-2 ml-xs ${selectedSide === 'buy' ? 'text-market-rise-foreground' : 'text-content-4'}`}
           >
             <Trans>买入/做多</Trans>
           </Text>
@@ -277,12 +285,12 @@ function OrderPanel({
             }`}
         >
           <Text
-            className={`text-button-2 font-medium ${selectedSide === 'sell' ? 'text-content-1' : 'text-content-4'}`}
+            className={`text-button-2 font-medium ${selectedSide === 'sell' ? 'text-market-fall-foreground' : 'text-content-4'}`}
           >
             {sellPrice}
           </Text>
           <Text
-            className={`text-button-2 ml-xs ${selectedSide === 'sell' ? 'text-content-1' : 'text-content-4'}`}
+            className={`text-button-2 ml-xs ${selectedSide === 'sell' ? 'text-market-fall-foreground' : 'text-content-4'}`}
           >
             <Trans>卖出/做空</Trans>
           </Text>
@@ -546,15 +554,6 @@ interface PendingOrder {
   markPrice: number
 }
 
-interface PositionListProps {
-  positions: Position[]
-  pendingOrders: PendingOrder[]
-  onStopLoss?: (position: Position) => void
-  onClosePosition?: (position: Position) => void
-  onCancelOrder?: (order: PendingOrder) => void
-  onHistoryPress?: () => void
-}
-
 // ============ PositionItem ============
 interface PositionItemProps {
   position: Position
@@ -795,77 +794,6 @@ function PendingOrderItem({ order, onCancel }: PendingOrderItemProps) {
   )
 }
 
-function PositionList({
-  positions,
-  pendingOrders,
-  onStopLoss,
-  onClosePosition,
-  onCancelOrder,
-  onHistoryPress,
-}: PositionListProps) {
-  const routes = useMemo<Route[]>(() => [
-    { key: 'positions', title: `持仓(${positions.length})` },
-    { key: 'orders', title: `挂单(${pendingOrders.length})` },
-  ], [positions.length, pendingOrders.length])
-
-  const renderScene = useCallback(({ route }: { route: Route }) => {
-    switch (route.key) {
-      case 'positions':
-        return positions.length === 0 ? (
-          <View className="flex-1">
-            <EmptyState message={<Trans>暂无资产</Trans>} />
-          </View>
-        ) : (
-          <View>
-            {positions.map((position) => (
-              <PositionItem
-                key={position.id}
-                position={position}
-                onStopLoss={() => onStopLoss?.(position)}
-                onClosePosition={() => onClosePosition?.(position)}
-              />
-            ))}
-          </View>
-        )
-      case 'orders':
-        return pendingOrders.length === 0 ? (
-          <View className="flex-1">
-            <EmptyState message={<Trans>暂无订单</Trans>} />
-          </View>
-        ) : (
-          <View>
-            {pendingOrders.map((order) => (
-              <PendingOrderItem
-                key={order.id}
-                order={order}
-                onCancel={() => onCancelOrder?.(order)}
-              />
-            ))}
-          </View>
-        )
-      default:
-        return null
-    }
-  }, [positions, pendingOrders, onStopLoss, onClosePosition, onCancelOrder])
-
-  const renderTabBarRight = useCallback(() => (
-    <IconButton onPress={onHistoryPress}>
-      <IconifyPage width={22} height={22} />
-    </IconButton>
-  ), [onHistoryPress])
-
-  return (
-    <SwipeableTabs
-      routes={routes}
-      renderScene={renderScene}
-      variant="underline"
-      size="md"
-      tabBarClassName="border-b border-brand-default px-xl"
-      renderTabBarRight={renderTabBarRight}
-    />
-  )
-}
-
 // ============ Main Trade Component ============
 
 
@@ -888,7 +816,7 @@ const MOCK_POSITIONS: Position[] = [
   {
     id: '2',
     symbol: 'SOL-USDC',
-    direction: 'long',
+    direction: 'short',
     quantity: 1.0,
     openPrice: 187.00,
     markPrice: 186.00,
@@ -939,6 +867,9 @@ export default function Trade() {
 
   // Toast
   const { show: showToast } = useToast()
+
+  // Safe Area Insets
+  const insets = useSafeAreaInsets()
 
   // Trade Settings
   const { orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore()
@@ -1057,72 +988,108 @@ export default function Trade() {
 
   return (
     <View className="flex-1">
-      <TradeHeader
-        symbol="SOL-USDC"
-        priceChange="+1.54%"
-        isPriceUp={true}
-        onSymbolPress={() => router.push('/symbol-selector')}
-        onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
-      />
 
-      <KeyboardAwareContainer
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
+      <CollapsibleTab
+        variant="underline"
+        size="md"
+        tabBarClassName="px-xl"
+        minHeaderHeight={44 + insets.top}
+        renderTabBarRight={() => (
+          <IconButton onPress={() => router.push('/(trade)/records')}>
+            <IconifyPage width={22} height={22} />
+          </IconButton>
+        )}
+        renderHeader={() => (
+          <CollapsibleStickyHeader>
+            <CollapsibleStickyNavBar fixed>
+              <TradeHeader
+                symbol="SOL-USDC"
+                priceChange="+1.54%"
+                isPriceUp={true}
+                onSymbolPress={() => router.push('/symbol-selector')}
+                onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
+              />
+            </CollapsibleStickyNavBar>
+
+            <CollapsibleStickyContent>
+              {/* K-Line Chart - 顶部位置 */}
+              {chartPosition === 'top' && (
+                <KLineChart
+                  isVisible={isChartVisible}
+                  onToggle={handleChartToggle}
+                  symbol="SOL-USDC"
+                />
+              )}
+
+              {/* Account Card */}
+              <View className="pt-xl px-xl">
+                <AccountCard
+                  account={selectedAccount}
+                  onPress={() => setIsAccountDrawerOpen(true)}
+                  onDeposit={() => console.log('Deposit pressed')}
+                />
+              </View>
+
+              {/* Order Panel */}
+              <OrderPanel
+                buyPrice="184.00"
+                sellPrice="184.00"
+                spread={12}
+                estimatedMargin="0.00"
+                maxLots="0.00"
+                onBuy={handleBuy}
+                onSell={handleSell}
+                defaultSide={defaultSide}
+              />
+
+              {/* K-Line Chart - 底部位置 */}
+              {chartPosition === 'bottom' && (
+                <KLineChart
+                  isVisible={isChartVisible}
+                  onToggle={handleChartToggle}
+                  symbol="SOL-USDC"
+                />
+              )}
+            </CollapsibleStickyContent>
+          </CollapsibleStickyHeader>
+        )}
       >
-        {/* K-Line Chart - 顶部位置 */}
-        {chartPosition === 'top' && (
-          <KLineChart
-            isVisible={isChartVisible}
-            onToggle={handleChartToggle}
-            symbol="SOL-USDC"
-          />
-        )}
+        <CollapsibleTabScene name="positions" label={`持仓(${MOCK_POSITIONS.length})`}>
+          <CollapsibleScrollView>
+            {MOCK_POSITIONS.length === 0 ? (
+              <EmptyState message={<Trans>暂无资产</Trans>} />
+            ) : (
+              MOCK_POSITIONS.map((position) => (
+                <PositionItem
+                  key={position.id}
+                  position={position}
+                  onStopLoss={() => {
+                    setSelectedPosition(position)
+                    setIsStopProfitLossDrawerOpen(true)
+                  }}
+                  onClosePosition={() => handleClosePosition(position)}
+                />
+              ))
+            )}
+          </CollapsibleScrollView>
+        </CollapsibleTabScene>
 
-        {/* Account Card */}
-        <View className="pt-xl">
-          <AccountCard
-            account={selectedAccount}
-            onPress={() => setIsAccountDrawerOpen(true)}
-            onDeposit={() => console.log('Deposit pressed')}
-          />
-        </View>
-
-        {/* Order Panel */}
-        <OrderPanel
-          buyPrice="184.00"
-          sellPrice="184.00"
-          spread={12}
-          estimatedMargin="0.00"
-          maxLots="0.00"
-          onBuy={handleBuy}
-          onSell={handleSell}
-          defaultSide={defaultSide}
-        />
-
-        {/* K-Line Chart - 底部位置 */}
-        {chartPosition === 'bottom' && (
-          <KLineChart
-            isVisible={isChartVisible}
-            onToggle={handleChartToggle}
-            symbol="SOL-USDC"
-          />
-        )}
-
-        {/* Position List */}
-        <View className="mt-xl" style={{ minHeight: 400 }}>
-          <PositionList
-            positions={MOCK_POSITIONS}
-            pendingOrders={MOCK_PENDING_ORDERS}
-            onStopLoss={(position) => {
-              setSelectedPosition(position)
-              setIsStopProfitLossDrawerOpen(true)
-            }}
-            onClosePosition={handleClosePosition}
-            onCancelOrder={(order) => console.log('Cancel order:', order.id)}
-            onHistoryPress={() => router.push('/(trade)/records')}
-          />
-        </View>
-      </KeyboardAwareContainer>
+        <CollapsibleTabScene name="orders" label={`挂单(${MOCK_PENDING_ORDERS.length})`}>
+          <CollapsibleScrollView>
+            {MOCK_PENDING_ORDERS.length === 0 ? (
+              <EmptyState message={<Trans>暂无订单</Trans>} />
+            ) : (
+              MOCK_PENDING_ORDERS.map((order) => (
+                <PendingOrderItem
+                  key={order.id}
+                  order={order}
+                  onCancel={() => console.log('Cancel order:', order.id)}
+                />
+              ))
+            )}
+          </CollapsibleScrollView>
+        </CollapsibleTabScene>
+      </CollapsibleTab>
 
       {/* Account Selection Drawer */}
       <AccountSwitchDrawer
