@@ -46,6 +46,7 @@ export default ({ config }: { config: ConfigContext }) => {
       // 钱包检测 - LSApplicationQueriesSchemes
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
       infoPlist: {
+        CADisableMinimumFrameDurationOnPhone: true,
         LSApplicationQueriesSchemes: [
           // Solana 钱包
           'phantom',
