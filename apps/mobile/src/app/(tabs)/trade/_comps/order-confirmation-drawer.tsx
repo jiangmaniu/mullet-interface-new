@@ -135,7 +135,7 @@ export function OrderConfirmationDrawer({
           </View>
         </View>
 
-        <DrawerFooter>
+        <DrawerFooter className="px-5 pb-3xl">
           <Button
             color="primary"
             size="lg"

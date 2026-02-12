@@ -217,7 +217,7 @@ function StopProfitLossDrawerContent({
         </View>
       </View>
 
-      <DrawerFooter>
+      <DrawerFooter className="px-5 pb-3xl">
         <Button
           variant="solid"
           color='primary'

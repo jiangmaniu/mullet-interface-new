@@ -263,9 +263,9 @@ export function DateFilterDrawer({
 				</View>
 
 				{/* Action Buttons */}
-				<DrawerFooter>
+				<DrawerFooter className="px-5 pb-3xl gap-medium">
 					<Button
-						variant="secondary"
+						variant="outline"
 						className="flex-1"
 						size="lg"
 						onPress={handleReset}
@@ -275,8 +275,8 @@ export function DateFilterDrawer({
 						</Text>
 					</Button>
 					<Button
+						variant="solid"
 						color="primary"
-						variant="primary"
 						className="flex-1"
 						size="lg"
 						onPress={handleApply}

@@ -28,7 +28,7 @@ export function MockAccountDepositModal({ open, onClose, onConfirm }: MockAccoun
 					<Text className="text-title-h3 text-content-1">10000.00 USDC</Text>
 				</View>
 
-				<DrawerFooter>
+				<DrawerFooter className="px-5 pb-3xl">
 					<Button color='primary' size="lg" block onPress={onConfirm || onClose}>
 						<Text><Trans>确定存款</Trans></Text>
 					</Button>
