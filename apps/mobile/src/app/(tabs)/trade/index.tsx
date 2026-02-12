@@ -55,7 +55,6 @@ import { useToast } from '@/components/ui/toast'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
-import { KLineChartWebView } from '@/components/tradingview-advanced/k-line-char'
 // ============ TradeHeader Component ============
 interface TradeHeaderProps {
   symbol: string
@@ -480,7 +479,7 @@ interface KLineChartProps {
 
 const TIME_PERIODS = ['分时', '1秒', '1分', '3分', '5分', '15分', '30分', '1小时', '2小时', '6小时', '8小时', '12小时', '1天', '3天', '1周', '1月']
 
-function KLineChart({ isVisible, onToggle, symbol }: KLineChartProps) {
+function KLineChart({ isVisible, onToggle }: KLineChartProps) {
   const [selectedPeriod, setSelectedPeriod] = useState('15分')
 
   // Collapsed state - show "K线图表" and "展开" button
@@ -524,7 +523,7 @@ function KLineChart({ isVisible, onToggle, symbol }: KLineChartProps) {
       </View>
 
       <View className='h-[193px] border-b border-brand-default'>
-        <KLineChartWebView symbol={symbol} interval={selectedPeriod} />
+        {/* TODO: K-line chart will be implemented here */}
       </View>
     </View>
   )
