@@ -320,7 +320,7 @@ function SymbolTradeItem({ symbol, onSelect }: SymbolTradeItemProps) {
   return (
     <Pressable
       onPress={onSelect}
-      className="flex-row items-center justify-between p-xl"
+      className="flex-row items-center justify-between px-xl h-[60px]"
     >
       {/* 左侧：头像 + 币种信息 */}
       <View className="flex-row items-center gap-[8px] flex-shrink-0 w-[120px]">
@@ -341,13 +341,13 @@ function SymbolTradeItem({ symbol, onSelect }: SymbolTradeItemProps) {
           <View className="bg-market-rise/15 border border-market-rise rounded-small flex-col items-center justify-center h-[24px]">
             <Text className="text-paragraph-p2 text-market-rise">{symbol.buyPrice}</Text>
           </View>
-          {/* <Text className="text-paragraph-p3 text-content-4">最高 {symbol.highPrice}</Text> */}
+          <Text className="text-paragraph-p3 text-content-4">最高 {symbol.highPrice}</Text>
         </View>
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border border-market-fall rounded-small flex-col items-center justify-center h-[24px]">
             <Text className="text-paragraph-p2 text-market-fall">{symbol.sellPrice}</Text>
           </View>
-          {/* <Text className="text-paragraph-p3 text-content-4 text-right">最低 {symbol.lowPrice}</Text> */}
+          <Text className="text-paragraph-p3 text-content-4 text-right">最低 {symbol.lowPrice}</Text>
         </View>
       </View>
     </Pressable>
