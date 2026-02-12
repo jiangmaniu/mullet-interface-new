@@ -12,24 +12,19 @@ export const LoginGuard = ({ children }: { children: React.ReactNode }) => {
   const segments = useSegments()
   const pathname = usePathname()
 
-  const inAuthGroup = segments[0] === '(auth)'
+  const inPublicGroup = segments[0]?.includes('(public)')
 
   useEffect(() => {
     if (!hasHydrated) return
 
-    if (!accessToken && !inAuthGroup) {
+    if (!accessToken && !inPublicGroup) {
       // 未登录且不在 auth 路由组，保存当前路径并跳转登录页
       setRedirectTo(pathname)
-      router.replace('/(auth)/login')
-    } else if (accessToken && inAuthGroup) {
-      // 已登录且在 auth 路由组，重定向到回跳页面或首页
-      const target = redirectTo || '/(tabs)'
-      setRedirectTo(undefined)
-      router.replace(target as '/')
+      router.replace('/login')
     }
 
     SplashScreen.hideAsync()
-  }, [hasHydrated, accessToken, inAuthGroup, redirectTo, setRedirectTo, pathname])
+  }, [hasHydrated, accessToken, inPublicGroup, redirectTo, setRedirectTo, pathname])
 
   if (!hasHydrated) return null
 
