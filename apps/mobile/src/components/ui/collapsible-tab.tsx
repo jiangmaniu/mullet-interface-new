@@ -128,6 +128,7 @@ interface CustomTabItemProps {
   size: TabSize;
   activeColor: string;
   inactiveColor: string;
+  scrollEnabled: boolean;
 }
 
 function CustomTabItem({
@@ -140,6 +141,7 @@ function CustomTabItem({
   size,
   activeColor,
   inactiveColor,
+  scrollEnabled,
 }: CustomTabItemProps) {
 
   // 文字颜色插值动画
@@ -168,7 +170,7 @@ function CustomTabItem({
       onPress={handlePress}
       // 绑定 onLayout
       onLayout={onLayout}
-      className={cn(tabItemVariants({ variant, size, selected: false }))}
+      className={cn(tabItemVariants({ variant, size, selected: false }), { 'flex-1': !scrollEnabled })}
     >
       <Animated.Text
         className={cn(tabTextVariants({ variant, size, selected: false }))}
@@ -249,6 +251,7 @@ export function CollapsibleTab({
             <CustomTabItem
               index={itemProps.index}
               indexDecimal={itemProps.indexDecimal}
+              scrollEnabled={scrollEnabled}
               label={typeof itemProps.label === 'string' ? itemProps.label : ''}
               onPress={() => itemProps.onPress(itemProps.name)}
 

@@ -4,8 +4,6 @@ import { LogBox } from 'react-native'
 import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-reanimated'
 
 import { Providers } from '@/components/providers'
-import { LoginGuard } from '@/components/router-guard/login-guard'
-import { Initializer } from '@/components/initializer'
 
 // Suppress Expo Router warnings for files in _ prefixed directories (_comps, _hooks, etc.)
 LogBox.ignoreLogs([/missing the required default export/])
@@ -29,15 +27,9 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <Providers>
-      <Stack>
-        <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-
-        <Stack.Screen
-          name="(public)"
-          options={{
-            headerShown: false,
-          }}
-        />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(protected)" />
+        <Stack.Screen name="(public)" />
       </Stack>
       <StatusBar style="auto" />
     </Providers >

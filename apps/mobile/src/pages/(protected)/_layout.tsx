@@ -7,18 +7,12 @@ export default function ProtectedLayout() {
 
     <LoginGuard>
       <Initializer>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(assets)" options={{ headerShown: false }} />
-          <Stack.Screen name="(trade)" options={{ headerShown: false }} />
-          <Stack.Screen name="(home)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="symbol-selector"
-            options={{
-              headerShown: false,
-              presentation: 'modal',
-            }}
-          />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(assets)" />
+          <Stack.Screen name="(trade)" />
+          <Stack.Screen name="(home)" />
+          <Stack.Screen name="symbol-selector" options={{ presentation: 'modal' }} />
         </Stack>
       </Initializer>
     </LoginGuard>

@@ -6,7 +6,7 @@ export default function AssetsLayout() {
 			<Stack.Screen name="transfer/index" />
 			<Stack.Screen name="account/index" />
 			<Stack.Screen name="bills/index" />
-			<Stack.Screen name="settings/index" />
+			<Stack.Screen name="settings" />
 		</Stack>
 	);
 }
