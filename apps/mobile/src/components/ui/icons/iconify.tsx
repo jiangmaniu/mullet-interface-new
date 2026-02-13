@@ -27,7 +27,9 @@ import {
   Page,
   PageDown,
   ArrowUpCircleSolid,
-  ArrowDownCircleSolid
+  ArrowDownCircleSolid,
+  Trash,
+  DownloadCircle,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -57,3 +59,5 @@ export const IconifyPage = withUniwind(Page)
 export const IconifyPageDown = withUniwind(PageDown)
 export const IconifyArrowUpCircleSolid = withUniwind(ArrowUpCircleSolid)
 export const IconifyArrowDownCircleSolid = withUniwind(ArrowDownCircleSolid)
+export const IconifyTrash = withUniwind(Trash)
+export const IconifyDownloadCircle = withUniwind(DownloadCircle)

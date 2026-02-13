@@ -94,7 +94,7 @@ const ModalHeader = React.forwardRef<React.ElementRef<typeof View>, ViewProps & 
 	({ className, children, showClose = true, ...props }, ref) => (
 		<View
 			ref={ref}
-			className={cn('px-2xl pt-2xl relative', className, { 'pr-10': showClose })}
+			className={cn('px-2xl mt-2xl relative', className, { 'pr-10': showClose })}
 			{...props}
 		>
 			{children}
@@ -156,7 +156,7 @@ const ModalClose = React.forwardRef<
 		<IconButton
 			variant="none"
 			onPress={onClose}
-			className='absolute top-2xl right-2xl'
+			className='absolute top-1/2 -translate-y-1/2 right-2xl'
 			{...props}
 		>
 			<IconifyXmark width={24} height={24} color={colorBrandSecondary3} />

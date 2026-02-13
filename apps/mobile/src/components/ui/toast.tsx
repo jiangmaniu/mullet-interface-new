@@ -9,13 +9,14 @@ import Animated, {
 } from 'react-native-reanimated'
 import { Text } from './text'
 import { IconSuccess } from './icons/set/success'
+import { IconRemind } from './icons/set/remind'
 import { cn } from '@/lib/utils'
 
 // Toast 配置
 interface ToastConfig {
   message: string
   duration?: number
-  type?: 'success' | 'error' | 'info'
+  type?: 'success' | 'error' | 'info' | 'remind'
   icon?: React.ReactNode
 }
 
@@ -91,8 +92,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const getIcon = () => {
     if (config.icon) return config.icon
     if (config.type === 'success') return <IconSuccess width={24} height={24} />
+    if (config.type === 'remind') return <IconRemind width={24} height={24} />
     return null
   }
+
+  const borderClass = config.type === 'remind' ? 'border-status-warning' : 'border-brand-default'
 
   return (
     <ToastContext.Provider value={{ show }}>
@@ -102,16 +106,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <Pressable
             style={{
               flex: 1,
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               alignItems: 'center',
-              paddingTop: 60,
             }}
             onPress={hide}
           >
             <Animated.View style={animatedStyle}>
               <View
                 className={cn(
-                  'bg-background-secondary border border-brand-default',
+                  'bg-secondary border',
+                  borderClass,
                   'rounded-xl px-3 py-1.5 flex-row items-center gap-medium'
                 )}
               >
