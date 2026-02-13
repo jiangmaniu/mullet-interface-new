@@ -19,7 +19,7 @@ import { V1Provider } from '@/v1/provider'
 import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
 import { WalletStateInjector } from './wallet-state-injector'
-import { ToastProvider } from '@/components/ui/toast'
+import { Toaster } from '@/components/ui/toast'
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
@@ -78,11 +78,10 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                   <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
-                      <ToastProvider>
-                        <V1Provider>
-                          {children}
-                        </V1Provider>
-                      </ToastProvider>
+                      <V1Provider>
+                        {children}
+                      </V1Provider>
+                      <Toaster position="center" />
                     </WalletStateInjector>
                     {/* Privy UI Elements */}
                     <PrivyElements

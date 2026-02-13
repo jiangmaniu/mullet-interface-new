@@ -1,142 +1,71 @@
-import * as React from 'react'
-import { View, Modal, Pressable } from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  runOnJS,
-} from 'react-native-reanimated'
+import React from 'react'
+import { View } from 'react-native'
+import { Toaster, toast as sonnerToast } from 'sonner-native'
 import { Text } from './text'
 import { IconSuccess } from './icons/set/success'
 import { IconRemind } from './icons/set/remind'
 import { cn } from '@/lib/utils'
 
-// Toast 配置
+export { Toaster }
+
+type ToastType = 'success' | 'error' | 'warning' | 'info'
+
 interface ToastConfig {
-  message: string
+  type?: ToastType
+  message: React.ReactNode
   duration?: number
-  type?: 'success' | 'error' | 'info' | 'remind'
   icon?: React.ReactNode
 }
 
-// Toast 上下文
-interface ToastContextValue {
-  show: (config: ToastConfig) => void
+const iconMap: Record<string, React.ReactNode> = {
+  success: <IconSuccess width={24} height={24} />,
+  warning: <IconRemind width={24} height={24} />,
 }
 
-const ToastContext = React.createContext<ToastContextValue | null>(null)
-
-export function useToast() {
-  const context = React.useContext(ToastContext)
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider')
-  }
-  return context
+const borderMap: Record<string, string> = {
+  warning: 'border-status-warning',
 }
 
-// Toast Provider
-export function ToastProvider({ children }: { children: React.ReactNode }) {
-  const [visible, setVisible] = React.useState(false)
-  const [config, setConfig] = React.useState<ToastConfig>({ message: '' })
-  const opacity = useSharedValue(0)
-  const translateY = useSharedValue(-20)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+function renderToast(config: ToastConfig) {
+  const { type, message, duration, icon } = config
+  const toastIcon = icon ?? (type ? iconMap[type] : undefined)
+  const borderClass = type
+    ? (borderMap[type] ?? 'border-brand-default')
+    : 'border-brand-default'
 
-  const hide = React.useCallback(() => {
-    opacity.value = withTiming(0, { duration: 200 })
-    translateY.value = withTiming(-20, { duration: 200 }, () => {
-      runOnJS(setVisible)(false)
-    })
-  }, [opacity, translateY])
-
-  const show = React.useCallback(
-    (newConfig: ToastConfig) => {
-      // 清除之前的定时器
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-
-      setConfig(newConfig)
-      setVisible(true)
-
-      // 动画显示
-      opacity.value = withTiming(1, { duration: 200 })
-      translateY.value = withSpring(0, {
-        damping: 15,
-        stiffness: 150,
-      })
-
-      // 自动隐藏
-      const duration = newConfig.duration ?? 2000
-      timeoutRef.current = setTimeout(() => {
-        hide()
-      }, duration)
-    },
-    [opacity, translateY, hide]
-  )
-
-  React.useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-  }))
-
-  const getIcon = () => {
-    if (config.icon) return config.icon
-    if (config.type === 'success') return <IconSuccess width={24} height={24} />
-    if (config.type === 'remind') return <IconRemind width={24} height={24} />
-    return null
-  }
-
-  const borderClass = config.type === 'remind' ? 'border-status-warning' : 'border-brand-default'
-
-  return (
-    <ToastContext.Provider value={{ show }}>
-      {children}
-      {visible && (
-        <Modal transparent visible={visible} animationType="none">
-          <Pressable
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onPress={hide}
-          >
-            <Animated.View style={animatedStyle}>
-              <View
-                className={cn(
-                  'bg-secondary border',
-                  borderClass,
-                  'rounded-xl px-3 py-1.5 flex-row items-center gap-medium'
-                )}
-              >
-                {getIcon()}
-                <Text className="text-paragraph-p2 text-content-1">
-                  {config.message}
-                </Text>
-              </View>
-            </Animated.View>
-          </Pressable>
-        </Modal>
+  return sonnerToast.custom(
+    <View
+      className={cn(
+        'bg-secondary border self-center rounded-xl px-3 py-[6px] flex-row items-center gap-medium',
+        borderClass,
       )}
-    </ToastContext.Provider>
+    >
+      {toastIcon}
+      <Text className="text-paragraph-p2 text-content-1">
+        {message}
+      </Text>
+    </View>,
+    { duration: duration ?? 2000 },
   )
 }
 
-// 便捷方法
-export const toast = {
-  success: (message: string, duration?: number) => {
-    // 这个方法需要在 ToastProvider 上下文中使用
-    // 实际使用时应该通过 useToast hook
-    console.warn('toast.success should be called via useToast hook')
+// toast({ type: 'success', message: '...' })
+// toast.success('...')
+// toast.warning('...')
+// toast.error('...')
+// toast.info('...')
+// toast.dismiss(id)
+export const toast = Object.assign(
+  (config: ToastConfig) => renderToast(config),
+  {
+    success: (message: React.ReactNode, duration?: number) =>
+      renderToast({ type: 'success', message, duration }),
+    warning: (message: React.ReactNode, duration?: number) =>
+      renderToast({ type: 'warning', message, duration }),
+    error: (message: React.ReactNode, duration?: number) =>
+      renderToast({ type: 'error', message, duration }),
+    info: (message: React.ReactNode, duration?: number) =>
+      renderToast({ type: 'info', message, duration }),
+    dismiss: sonnerToast.dismiss,
   },
-}
+)

@@ -51,7 +51,7 @@ import { OrderConfirmationDrawer } from './_comps/order-confirmation-drawer'
 import { ClosePositionDrawer } from './_comps/close-position-drawer'
 import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
 import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
-import { useToast } from '@/components/ui/toast'
+import { toast } from '@/components/ui/toast'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
@@ -865,9 +865,6 @@ export default function Trade() {
   // Router
   const router = useRouter()
 
-  // Toast
-  const { show: showToast } = useToast()
-
   // Safe Area Insets
   const insets = useSafeAreaInsets()
 
@@ -1163,11 +1160,7 @@ export default function Trade() {
         }}
         onFavorites={() => {
           setIsCommonFeaturesDrawerOpen(false)
-          showToast({
-            type: 'success',
-            message: '订单提交成功',
-            duration: 2000,
-          })
+          toast.success('订单提交成功')
         }}
       />
     </View>

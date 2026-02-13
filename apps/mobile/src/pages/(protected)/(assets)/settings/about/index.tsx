@@ -6,7 +6,7 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
 import { useThemeColors } from '@/hooks/use-theme-colors'
-import { useToast } from '@/components/ui/toast'
+import { toast } from '@/components/ui/toast'
 import { UpgradeModal } from './_comps/upgrade-modal'
 import { ClearCacheModal } from './_comps/clear-cache-modal'
 
@@ -14,7 +14,6 @@ const APP_VERSION = 'v1.0.0'
 
 export default function AboutScreen() {
   const { textColorContent4 } = useThemeColors()
-  const { show } = useToast()
   const [cacheSize, setCacheSize] = useState('137.97MB')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
@@ -26,9 +25,9 @@ export default function AboutScreen() {
     if (latestVersion !== APP_VERSION) {
       setNewVersion(latestVersion)
     } else {
-      show({ message: '当前已是最新版本', type: 'success' })
+      toast.success('当前已是最新版本')
     }
-  }, [show])
+  }, [])
 
   useEffect(() => {
     handleCheckUpdate()
@@ -37,8 +36,8 @@ export default function AboutScreen() {
   const handleClearCache = useCallback(() => {
     setClearCacheVisible(false)
     setCacheSize('0.00MB')
-    show({ message: '成功清除缓存', type: 'success' })
-  }, [show])
+    toast.success('成功清除缓存')
+  }, [])
 
   const handleConfirmUpdate = useCallback(() => {
     setUpdateVisible(false)
