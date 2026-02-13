@@ -29,7 +29,9 @@ const Login = () => {
   return (
     <View className={cn('flex-1', 'gap-4xl', 'bg-secondary')}>
       {/* Header */}
-      <ScreenHeader center content="登录或注册" />
+      <ScreenHeader
+        // showBackButton={false}
+        center content="登录或注册" />
 
       {/* Logo */}
       <View className={cn('items-center', 'justify-center', 'py-3')}>

@@ -1,32 +1,33 @@
+import { Trans } from '@lingui/react/macro'
+import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 
-import { cn } from '@/lib/utils'
-import { useAppKit, useAccount, useAppKitState, useProvider } from '@/lib/appkit'
+import { Button } from '@/components/ui/button'
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
   DrawerDescription,
   DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
 } from '@/components/ui/drawer'
-import { useWalletAuth, WalletAuthError } from '../_hooks/use-wallet-auth'
-import { useBackendLogin } from '../_hooks/use-backend-login'
 import { IconSpecialFail, IconSpecialSuccess } from '@/components/ui/icons'
-import { Button } from '@/components/ui/button'
 import { Spinning } from '@/components/ui/spinning'
-import { Trans } from '@lingui/react/macro'
-import { useAppKitEventSubscription } from '@reown/appkit-react-native'
+import { useAccount, useAppKit, useAppKitState, useProvider } from '@/lib/appkit'
+import { cn } from '@/lib/utils'
+
+import { useBackendLogin } from '../_hooks/use-backend-login'
+import { useWalletAuth, WalletAuthError } from '../_hooks/use-wallet-auth'
 
 // 登录流程状态
 type LoginFlowState =
-  | 'idle'           // 初始状态
-  | 'connecting'     // 连接钱包中
-  | 'signing'        // 签名中
-  | 'login_backend'  // 后端登录中
-  | 'signature_failed'  // 签名失败
-  | 'login_failed'      // 后端登录失败
+  | 'idle' // 初始状态
+  | 'connecting' // 连接钱包中
+  | 'signing' // 签名中
+  | 'login_backend' // 后端登录中
+  | 'signature_failed' // 签名失败
+  | 'login_failed' // 后端登录失败
 
 // 步骤状态
 type StepStatus = 'pending' | 'loading' | 'completed' | 'error'
@@ -47,9 +48,10 @@ interface Web3LoginDrawerProps {
 }
 
 export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth = false }: Web3LoginDrawerProps) {
-  const { open } = useAppKit()
+  const { open, disconnect: disconnectWallet } = useAppKit()
   const { address, isConnected } = useAccount()
-  const { isOpen: isAppKitOpen } = useAppKitState()
+  const { isOpen: isAppKitOpen, isLoading: isAppKitOpenLoading } = useAppKitState()
+
   // 跟踪 AppKit 对话框状态
   const prevAppKitOpen = useRef(false)
 
@@ -86,113 +88,40 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
   }, [resetSteps, onCloseProp])
 
   // 后端登录 hook
-  const {
-    loginToBackend,
-    error: backendError,
-  } = useBackendLogin({
+  const { loginToBackend, error: backendError } = useBackendLogin({
     onSuccess: handleClose,
   })
 
   // 钱包授权 hook
-  const {
-    signAndLoginPrivy,
-    error: walletAuthError,
-    isPrivyLoggedIn,
-  } = useWalletAuth()
+  const { signAndLoginPrivy, error: walletAuthError, isPrivyLoggedIn } = useWalletAuth()
 
   // 监听 AppKit 对话框关闭事件
   useEffect(() => {
-    // 当 AppKit 对话框从打开变为关闭，且钱包未连接时，重置步骤和按钮连接状态
+    // 当 AppKit 对话框从打开变为关闭
     if (prevAppKitOpen.current && !isAppKitOpen && step1.status === 'loading') {
-      setStep1({ status: 'pending' })
-      setFlowState('idle')
+      if (isConnected) {
+        // setStep1({ status: 'completed' })
+        // handleSignRef.current()
+      } else {
+        // 且钱包未连接时，重置步骤和按钮连接状态
+        setStep1({ status: 'pending' })
+        setFlowState('idle')
+      }
     }
     prevAppKitOpen.current = isAppKitOpen
-  }, [isAppKitOpen, step1.status])
+  }, [isAppKitOpen, step1.status, isConnected])
 
   // Drawer 状态变化处理
-  const handleOpenChange = useCallback(
-    (open: boolean) => {
-      if (!open) {
-        handleClose()
-      }
-    },
-    [handleClose]
-  )
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      handleClose()
+    }
+  }
 
   // 防止重复触发签名流程
   const isSigningRef = useRef(false)
 
-  // 第二步：签名
-  const handleSign = useCallback(async () => {
-    if (isSigningRef.current) return
-    isSigningRef.current = true
-    setErrorMessage('')
-
-    try {
-      // 如果已登录 Privy，跳过签名步骤
-      if (isPrivyLoggedIn) {
-        setStep2({ status: 'completed' })
-        // 直接进行后端登录
-        setFlowState('login_backend')
-        const backendSuccess = await loginToBackend()
-        if (!backendSuccess) {
-          setFlowState('login_failed')
-          setErrorMessage(backendError || '登录失败，请重试')
-        }
-        return
-      }
-
-    } catch (error: any) {
-      console.error('Sign and login failed:', error)
-      const isSignatureError = error.message?.includes('签名') || error.message?.includes('signature')
-      if (isSignatureError) {
-        setFlowState('signature_failed')
-        setStep2({ status: 'error', error: error.message || '签名失败' })
-      } else {
-        setFlowState('login_failed')
-        setErrorMessage(error.message || '登录失败，请重试')
-      }
-    } finally {
-      isSigningRef.current = false
-    }
-
-    try {
-      setFlowState('signing')
-      setStep2({ status: 'loading' })
-      // 签名并登录 Privy
-      const authResult = await signAndLoginPrivy()
-      if (!authResult) {
-        setFlowState('signature_failed')
-        setStep2({ status: 'error', error: walletAuthError })
-        return
-      } else {
-        setStep2({ status: 'completed' })
-      }
-
-      // 保存签名结果
-      if (typeof authResult === 'string') {
-        savedSignatureRef.current = authResult
-      }
-    }
-    catch (error: any) {
-      if (error instanceof WalletAuthError) {
-        if (error.type === 'WalletNotConnected') {
-          resetSteps()
-          setStep1({ status: 'error', error: error.message })
-          return
-        }
-      }
-
-      setFlowState('signature_failed')
-      setStep2({ status: 'error', error: error.message })
-      return
-    }
-    finally {
-      isSigningRef.current = false
-    }
-
-
+  const handleLogin = async () => {
     try {
       // 签名成功，进行后端登录
       setFlowState('login_backend')
@@ -212,35 +141,87 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
         setFlowState('login_failed')
         setErrorMessage(error.message || '登录失败，请重试')
       }
+    }
+  }
+
+  // 第二步：签名
+  const handleSign = async () => {
+    if (isSigningRef.current) return
+    isSigningRef.current = true
+    setErrorMessage('')
+
+    try {
+      // 如果已登录 Privy，跳过签名步骤
+      if (isPrivyLoggedIn) {
+        setStep2({ status: 'completed' })
+        await handleLogin()
+        return
+      }
+
+      try {
+        setFlowState('signing')
+        setStep2({ status: 'loading' })
+        // 签名并登录 Privy
+        const authResult = await signAndLoginPrivy()
+        if (!authResult) {
+          setFlowState('signature_failed')
+          setStep2({ status: 'error', error: walletAuthError })
+          return
+        } else {
+          setStep2({ status: 'completed' })
+        }
+
+        // 保存签名结果
+        if (typeof authResult === 'string') {
+          savedSignatureRef.current = authResult
+        }
+      } catch (error: any) {
+        if (error instanceof WalletAuthError) {
+          if (error.type === 'WalletNotConnected') {
+            resetSteps()
+            setStep1({ status: 'error', error: error.message })
+            return
+          } else if (error.type === 'WalletConnectError') {
+            disconnectWallet()
+            resetSteps()
+            setStep1({ status: 'error', error: error.message })
+            return
+          } else if (error.type === 'UserRejected') {
+            // 使用默认错误处理
+          }
+        }
+
+        setFlowState('signature_failed')
+        setStep2({ status: 'error', error: error.message })
+        return
+      }
+
+      await handleLogin()
     } finally {
       isSigningRef.current = false
     }
-  }, [isPrivyLoggedIn, signAndLoginPrivy, loginToBackend, backendError, walletAuthError, resetSteps])
-
-
+  }
 
   // 第一步：连接钱包
-  const handleConnectWallet = useCallback(
-    async () => {
-      // if (isConnected && address) {
-      //   setStep1({ status: 'completed' })
-      //   // 继续第二步
-      //   handleSign()
-      //   return
-      // }
+  const handleConnectWallet = useCallback(async () => {
+    // if (isConnected && address) {
+    //   setStep1({ status: 'completed' })
+    //   // 继续第二步
+    //   handleSign()
+    //   return
+    // }
 
-      setFlowState('connecting')
-      setStep1({ status: 'loading' })
-      try {
-        open({ view: 'Connect' })
-        // 连接结果会通过 useEffect 监听
-      } catch (error) {
-        console.error('Failed to open wallet modal:', error)
-        setStep1({ status: 'error', error: '打开钱包失败' })
-        setFlowState('idle')
-      }
+    setFlowState('connecting')
+    setStep1({ status: 'loading' })
+    try {
+      open({ view: 'Connect' })
+      // 连接结果会通过 useEffect 监听
+    } catch (error) {
+      console.error('Failed to open wallet modal:', error)
+      setStep1({ status: 'error', error: '打开钱包失败' })
+      setFlowState('idle')
     }
-    , [open])
+  }, [open])
 
   // 用 ref 保存最新的 handleSign，避免 useEffect 因函数重建而无限循环
   const handleSignRef = useRef(handleSign)
@@ -255,29 +236,32 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
       if (isConnected && address) {
         setStep1({ status: 'completed' })
         // 如果是自动授权模式，直接开始验证
-        if (autoStartAuth) {
-          console.log('Auto start auth: wallet connected, starting verification...')
-          handleSignRef.current()
-        }
+        // if (autoStartAuth) {
+        //   console.log('Auto start auth: wallet connected, starting verification...')
+        //   handleSignRef.current()
+        // }
       } else {
         // 未连接时自动调用连接钱包
-        // handleConnectWalletRef.current()
+        handleConnectWalletRef.current()
       }
     }
   }, [visible, isConnected, address, autoStartAuth])
 
-  useAppKitEventSubscription('CONNECT_SUCCESS', useCallback(event => {
-    if (event.data.event === 'CONNECT_SUCCESS') {
-      if (!!event.data.address) {
-        setStep1({ status: 'completed' })
-        handleSignRef.current()
+  useAppKitEventSubscription(
+    'CONNECT_SUCCESS',
+    useCallback((event) => {
+      if (event.data.event === 'CONNECT_SUCCESS') {
+        if (!!event.data.address) {
+          setStep1({ status: 'completed' })
+          handleSignRef.current()
+        }
       }
-    }
-  }, []));
+    }, []),
+  )
 
   useEffect(() => {
     if (!visible) {
-      resetSteps()
+      // resetSteps()
     }
   }, [visible, resetSteps])
 
@@ -302,7 +286,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     // 连接中
     if (flowState === 'connecting') {
       return {
-        text: <Trans>连接中</Trans>,
+        text: isAppKitOpenLoading ? <Trans>正在打开钱包连接</Trans> : <Trans>连接中</Trans>,
         onPress: handleConnectWallet,
         loading: true,
       }
@@ -339,7 +323,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     if (flowState === 'login_failed') {
       return {
         text: errorMessage || <Trans>登录失败，重试</Trans>,
-        onPress: handleSign,
+        onPress: handleLogin,
         loading: false,
       }
     }
@@ -361,16 +345,12 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     const isError = state.status === 'error'
 
     if (isLoading) {
-      return (
-        <Spinning />
-      )
+      return <Spinning />
     }
 
     if (isCompleted) {
       return (
-        <View className={cn(
-
-        )}>
+        <View className={cn()}>
           <IconSpecialSuccess height={20} width={20} />
         </View>
       )
@@ -378,39 +358,34 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
 
     if (isError) {
       return (
-        <View className={cn(
-        )}>
+        <View className={cn()}>
           <IconSpecialFail height={20} width={20} />
         </View>
       )
     }
 
     return (
-      <View className={cn(
-        'items-center', 'justify-center',
-        'size-5',
-        isActive ? "bg-brand-primary" : "bg-button-box",
-        'rounded-full',
-      )}>
-        <Text className={cn(
-          'text-paragraph-p2',
-          isActive ? "" : "text-content-4"
-
-
-        )}>
-          {step}
-        </Text>
+      <View
+        className={cn(
+          'items-center',
+          'justify-center',
+          'size-5',
+          isActive ? 'bg-brand-primary' : 'bg-button-box',
+          'rounded-full',
+        )}
+      >
+        <Text className={cn('text-paragraph-p2', isActive ? '' : 'text-content-4')}>{step}</Text>
       </View>
     )
   }
 
   return (
     <Drawer open={visible} onOpenChange={handleOpenChange}>
-      <DrawerContent className='p-5 gap-4xl pb-8'>
-        <View className='gap-4' >
+      <DrawerContent className="gap-4xl p-5 pb-8">
+        <View className="gap-4">
           {/* 标题栏 */}
           <DrawerHeader>
-            <DrawerTitle className='text-paragraph-p1 w-full text-center'>
+            <DrawerTitle className="text-paragraph-p1 w-full text-center">
               <Trans>登录</Trans>
             </DrawerTitle>
           </DrawerHeader>
@@ -421,13 +396,10 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
           </DrawerDescription>
 
           {/* 步骤列表 */}
-          <View className={cn('p-4 bg-card rounded-[16px] gap-4', '')}>
+          <View className={cn('bg-card gap-4 rounded-[16px] p-4', '')}>
             {/* 第一步：连接 */}
             <View className={cn('flex-row gap-2', 'items-start')}>
-              <View className="h-full">
-                {renderStepIcon(1, step1)}
-
-              </View>
+              <View className="h-full">{renderStepIcon(1, step1)}</View>
               <View className={cn('flex-1 gap-1', '', '')}>
                 <Text className={cn('text-white', 'text-paragraph-p1', '', '')}>
                   <Trans>连接钱包</Trans>
@@ -436,18 +408,14 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
                   <Trans>仅作确认您是此钱包的所有权</Trans>
                 </Text>
                 {step1.status === 'error' && (
-                  <Text className={cn('text-red-500', 'text-paragraph-p4', 'mt-1')}>
-                    {step1.error}
-                  </Text>
+                  <Text className={cn('text-red-500', 'text-paragraph-p4', 'mt-1')}>{step1.error}</Text>
                 )}
               </View>
             </View>
 
             {/* 第二步：签名请求 */}
             <View className={cn('flex-row gap-2', 'items-start')}>
-              <View className="h-full">
-                {renderStepIcon(2, step2)}
-              </View>
+              <View className="h-full">{renderStepIcon(2, step2)}</View>
               <View className={cn('flex-1 gap-1', '', '')}>
                 <Text className={cn('text-white', 'text-paragraph-p2', '', '')}>
                   <Trans>签名请求</Trans>
@@ -456,20 +424,16 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
                   <Trans>您将收到 1 个安全登录签名请求。签名是免费的，不会触发任何交易。</Trans>
                 </Text>
                 {step2.status === 'error' && (
-                  <Text className={cn('text-red-500', 'text-paragraph-p4', 'mt-1')}>
-                    {step2.error}
-                  </Text>
+                  <Text className={cn('text-red-500', 'text-paragraph-p4', 'mt-1')}>{step2.error}</Text>
                 )}
               </View>
             </View>
           </View>
-
         </View>
 
         {/* 操作按钮 */}
         <DrawerFooter>
-          <View className='flex-1 gap-1'>
-
+          <View className="flex-1 gap-1">
             <Button
               variant={'solid'}
               color={'primary'}
@@ -477,19 +441,16 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
               onPress={buttonConfig.onPress}
               loading={buttonConfig.loading}
               className={cn(
-                'flex-row', 'items-center', 'justify-center',
+                'flex-row',
+                'items-center',
+                'justify-center',
                 'w-full',
-                errorMessage ? "bg-market-fall" : ''
+                errorMessage ? 'bg-market-fall' : '',
               )}
             >
-
-              <Text className={cn(
-                'text-paragraph-p1', 'font-semibold',
-                errorMessage ? "text-white" : ''
-              )}>
+              <Text className={cn('text-paragraph-p1', 'font-semibold', errorMessage ? 'text-white' : '')}>
                 {buttonConfig.text}
               </Text>
-
             </Button>
           </View>
         </DrawerFooter>
@@ -497,5 +458,3 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
     </Drawer>
   )
 }
-
-export default Web3LoginDrawer;

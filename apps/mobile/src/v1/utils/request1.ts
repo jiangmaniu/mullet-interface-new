@@ -1,14 +1,15 @@
 // import { Portal } from '@ant-design/react-native'
-import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import axios from 'axios'
 import { Base64 } from 'js-base64'
+import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
+import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
+
 // import { t } from '@lingui/core/macro'
 import { message } from './message'
 import { onLogout } from './navigation'
 import { STORAGE_GET_TOKEN, STORAGE_GET_TRADER_SERVER, STORAGE_GET_USER_INFO } from './storage'
-import { getEnv } from '@/v1/env'
 
 interface IAxiosRequestConfig extends AxiosRequestConfig {
   /** 接口是否需要客户端鉴权 */
@@ -34,8 +35,8 @@ const $axios: AxiosInstance = axios.create({
   responseType: 'json',
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 })
 
 // http request 拦截器
@@ -50,7 +51,7 @@ $axios.interceptors.request.use(
       'Content-Type': 'x-www-form-urlencoded',
       // Language: i18n.locale,
       'Tenant-Id': '000000', // 默认的租户ID
-      ...config.headers
+      ...config.headers,
     }
 
     if (config?.authorization !== false) {
@@ -118,7 +119,7 @@ $axios.interceptors.request.use(
   },
   (err: AxiosError) => {
     return Promise.reject(err)
-  }
+  },
 )
 
 // http response 拦截器
@@ -155,7 +156,7 @@ $axios.interceptors.response.use(
           break
         case 401:
           // 重新去登录
-          onLogout(true)
+          // onLogout(true)
           console.log('====error.response===', error.response)
           statusText = (error.response.data as any)?.msg ?? 'Bad Request'
           break
@@ -194,7 +195,7 @@ $axios.interceptors.response.use(
       // 发送请求时出了点问题
       // message.info('Request error, please retry.')
     }
-  }
+  },
 )
 
 export const request = <T = any>(url: string, config?: IAxiosRequestConfig): Promise<T> => {
@@ -220,7 +221,7 @@ export const request = <T = any>(url: string, config?: IAxiosRequestConfig): Pro
       url,
       // 优先使用传入的，其次使用登录服务商列表的服务，最后没有在使用默认
       baseURL,
-      ...config
+      ...config,
     })
       .then((res: AxiosResponse) => {
         // 如果没有 res，抛出错误 '服务器无响应'
@@ -253,7 +254,7 @@ export const request = <T = any>(url: string, config?: IAxiosRequestConfig): Pro
         // console.log('url', res.config.url)
         resolve({
           success: true,
-          ...res?.data
+          ...res?.data,
         })
       })
       .catch((error: AxiosError) => {

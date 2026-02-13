@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import { router } from 'expo-router'
 
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { stores } from '@/v1/provider/mobxProvider'
@@ -52,6 +53,15 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       return userinfo
     },
     onSuccess: () => {
+      // 登录成功后跳转回原页面
+      const { redirectTo, setRedirectTo } = useLoginAuthStore.getState()
+      if (redirectTo) {
+        setRedirectTo(undefined)
+        router.replace(redirectTo as '/')
+      } else {
+        router.replace('/')
+      }
+
       onSuccess?.()
     },
     onError: (err: Error) => {
@@ -71,5 +81,3 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
     data: mutation.data,
   }
 }
-
-export default useBackendLogin;

@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
-import { useLoginWithSiws, usePrivy } from '@privy-io/expo'
 import bs58 from 'bs58'
 
 import { useAccount, useProvider } from '@/lib/appkit'
+import { useLoginWithSiws, usePrivy } from '@privy-io/expo'
 
 interface UseWalletAuthOptions {
   onSuccess?: () => void
@@ -10,8 +10,16 @@ interface UseWalletAuthOptions {
 }
 
 export class WalletAuthError extends Error {
-  public type: 'UserRejected' | 'WalletNotConnected' | 'SignatureFailed' | 'UnknownSignatureError'
-  constructor(message: string, type: 'UserRejected' | 'WalletNotConnected' | 'SignatureFailed' | 'UnknownSignatureError') {
+  public type:
+    | 'UserRejected'
+    | 'WalletNotConnected'
+    | 'WalletConnectError'
+    | 'SignatureFailed'
+    | 'UnknownSignatureError'
+  constructor(
+    message: string,
+    type: 'UserRejected' | 'WalletNotConnected' | 'WalletConnectError' | 'SignatureFailed' | 'UnknownSignatureError',
+  ) {
     super(message)
     this.name = 'WalletAuthError'
     this.type = type
@@ -36,7 +44,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
 
   const { generateMessage, login: loginWithSiws } = useLoginWithSiws()
   const { user: privyUser } = usePrivy()
-  const { address ,chainId} = useAccount()
+  const { address, chainId } = useAccount()
   const { provider } = useProvider()
 
   const mutation = useMutation({
@@ -65,21 +73,23 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
       // 2. 使用 provider 签名消息
       const messageBytes = bs58.encode(new TextEncoder().encode(message))
 
-      const signatureResult = await provider.request({
-        method: 'solana_signMessage',
-        params: {
-          message: messageBytes,
-          pubkey: address,
+      const signatureResult = await provider.request(
+        {
+          method: 'solana_signMessage',
+          params: {
+            message: messageBytes,
+            pubkey: address,
+          },
         },
-      }, `solana:${chainId}`)
+        `solana:${chainId}`,
+      )
 
       console.log('Signature result:', signatureResult)
 
       // 获取签名
       const signature =
         typeof signatureResult === 'object' && signatureResult !== null
-          ? (signatureResult as { signature?: string }).signature ||
-            JSON.stringify(signatureResult)
+          ? (signatureResult as { signature?: string }).signature || JSON.stringify(signatureResult)
           : String(signatureResult)
 
       // 3. 使用签名登录 Privy
@@ -98,8 +108,21 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
     onSuccess: () => {
       onSuccess?.()
     },
-    onError: (err: Error) => {
+    onError: (err: any) => {
       console.error('Wallet auth failed:', err)
+
+      if (err?.code === 5000) {
+        // okx 错误码
+        const errorMessage = err.message as string
+        if (['请先断开 DApp，再重新连接'].includes(errorMessage)) {
+          // 提示用户需要重新连接（"请先断开 DApp，再重新连接"）
+          throw new WalletAuthError('请重新接钱包', 'WalletConnectError')
+        } else if (['User Reject'].includes(errorMessage)) {
+          // 用户拒绝
+          throw new WalletAuthError('用户拒绝签名', 'UserRejected')
+        }
+      }
+
       onError?.(err.message || '验证失败')
     },
   })
@@ -115,5 +138,3 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
     isError: mutation.isError,
   }
 }
-
-export default useWalletAuth;

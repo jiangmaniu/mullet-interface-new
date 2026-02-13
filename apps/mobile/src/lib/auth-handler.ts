@@ -95,7 +95,7 @@ function navigateToLogin(withWalletConnected: boolean = false): void {
   if (withWalletConnected) {
     // 钱包已连接，跳转到登录页面并标记需要自动授权
     router.replace({
-      pathname: '/(auth)/login',
+      pathname: '/login',
       params: { autoAuth: 'true' },
     })
   } else {
