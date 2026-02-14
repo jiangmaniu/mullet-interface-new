@@ -1,5 +1,6 @@
 export * from './okx-wallet'
 export * from './metamask'
+export * from './metamask-full'
 export * from './solflare'
 export * from './binance'
 export * from './google-tiplink'

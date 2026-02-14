@@ -354,6 +354,7 @@ function AssetActions() {
   const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
 
   const handlePressDeposit = () => {
+    router.push('/(assets)/deposit/wallet')
   }
 
   const handlePressTransfer = () => {

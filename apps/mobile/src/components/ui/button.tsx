@@ -178,7 +178,7 @@ function Button({
       <Comp
         className={cn(
           // props.disabled && 'opacity-50',
-          block && 'w-full flex-1',
+          block && 'w-full',
           buttonVariants({ variant, size, color, disabled: isDisabled, loading }),
           className
         )}
