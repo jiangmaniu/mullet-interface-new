@@ -222,7 +222,7 @@ export default function ConfirmOrderScreen() {
 
 function DetailRow({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
 	return (
-		<View className="flex-row items-center justify-between">
+		<View className="flex-row items-center justify-between h-6">
 			<Text className="text-paragraph-p2 text-content-4">{label}</Text>
 			{value}
 		</View>
