@@ -30,6 +30,8 @@ import {
   ArrowDownCircleSolid,
   Trash,
   DownloadCircle,
+  DataTransferBoth,
+  ArrowRightTagSolid,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -61,3 +63,5 @@ export const IconifyArrowUpCircleSolid = withUniwind(ArrowUpCircleSolid)
 export const IconifyArrowDownCircleSolid = withUniwind(ArrowDownCircleSolid)
 export const IconifyTrash = withUniwind(Trash)
 export const IconifyDownloadCircle = withUniwind(DownloadCircle)
+export const IconifyDataTransferBoth = withUniwind(DataTransferBoth)
+export const IconifyArrowRightTagSolid = withUniwind(ArrowRightTagSolid)
