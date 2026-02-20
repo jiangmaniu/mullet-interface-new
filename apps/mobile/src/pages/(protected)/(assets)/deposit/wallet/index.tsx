@@ -90,7 +90,7 @@ export default function DepositScreen() {
 							<Text className="text-paragraph-p3 text-content-5"><Trans>或者</Trans></Text>
 						</View>
 					</View>
-					<Pressable>
+					<Pressable onPress={() => router.push('/(assets)/deposit/wallet/crypto')}>
 						<Card className="rounded-small">
 							<CardContent className="py-medium px-xl flex-row items-center justify-between">
 								<View className="flex-row items-center gap-medium">
@@ -108,7 +108,7 @@ export default function DepositScreen() {
 							</CardContent>
 						</Card>
 					</Pressable>
-					<Pressable>
+					<Pressable onPress={() => router.push('/(assets)/deposit/wallet/credit-card')}>
 						<Card className="rounded-small">
 							<CardContent className="py-medium px-xl flex-row items-center justify-between">
 								<View className="flex-row items-center gap-medium">

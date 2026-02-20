@@ -32,6 +32,7 @@ import {
   DownloadCircle,
   DataTransferBoth,
   ArrowRightTagSolid,
+  ChatBubbleWarning,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -65,3 +66,4 @@ export const IconifyTrash = withUniwind(Trash)
 export const IconifyDownloadCircle = withUniwind(DownloadCircle)
 export const IconifyDataTransferBoth = withUniwind(DataTransferBoth)
 export const IconifyArrowRightTagSolid = withUniwind(ArrowRightTagSolid)
+export const IconifyChatBubbleWarning = withUniwind(ChatBubbleWarning)
