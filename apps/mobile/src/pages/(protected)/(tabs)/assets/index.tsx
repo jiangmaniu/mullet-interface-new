@@ -354,7 +354,22 @@ function AssetActions() {
   const [isTransferHintVisible, setIsTransferHintVisible] = useState(false);
 
   const handlePressDeposit = () => {
+    const isPrivy = true;
+    if (isPrivy) {
+      router.push('/(assets)/deposit/privy');
+      return;
+    }
     router.push('/(assets)/deposit/wallet')
+  }
+
+
+  const handlePressWithdraw = () => {
+    const isPrivy = true;
+    if (isPrivy) {
+      router.push('/(assets)/withdraw/privy');
+      return;
+    }
+    router.push('/(assets)/withdraw/wallet');
   }
 
   const handlePressTransfer = () => {
@@ -369,10 +384,6 @@ function AssetActions() {
 
   const handlePressBill = () => {
     router.push('/(assets)/bills');
-  }
-
-  const handlePressWithdraw = () => {
-    router.push('/(assets)/withdraw/wallet');
   }
 
   return (
