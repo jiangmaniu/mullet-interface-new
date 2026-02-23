@@ -9,6 +9,7 @@ import { IconMetamaskFull } from '@/components/ui/icons/set/wallet/metamask-full
 import { ScreenHeader } from '@/components/ui/screen-header';
 
 import { Text } from '@/components/ui/text';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { Trans } from '@lingui/react/macro';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -167,9 +168,9 @@ export default function ConfirmOrderScreen() {
 				<View className="px-5">
 					<Card>
 						<CardContent className="py-medium gap-large">
-							<FeeRow label={<Trans>网络费用</Trans>} value="0.00 USDC" />
-							<FeeRow label={<Trans>价格影响</Trans>} value="0.00%" />
-							<FeeRow label={<Trans>预估滑点</Trans>} value="自动 0.00%" />
+							<FeeRow label={<Trans>网络费用</Trans>} value="0.00 USDC" tooltip="链上转账所需的手续费" />
+							<FeeRow label={<Trans>价格影响</Trans>} value="0.00%" tooltip="交易对市场价格的影响程度" />
+							<FeeRow label={<Trans>预估滑点</Trans>} value="自动 0.00%" tooltip="实际成交价与预期价格的偏差" />
 						</CardContent>
 					</Card>
 				</View>
@@ -229,12 +230,13 @@ function DetailRow({ label, value }: { label: React.ReactNode; value: React.Reac
 	);
 }
 
-function FeeRow({ label, value }: { label: React.ReactNode; value: string }) {
+function FeeRow({ label, value, tooltip }: { label: React.ReactNode; value: string; tooltip?: string }) {
 	return (
 		<View className="flex-row items-center justify-between">
-			<Text className="text-paragraph-p3 text-content-4" style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted' }}>
-				{label}
-			</Text>
+			<Tooltip title={label}>
+				<TooltipTrigger>{label}</TooltipTrigger>
+				<TooltipContent>{tooltip}</TooltipContent>
+			</Tooltip>
 			<Text className="text-paragraph-p3 text-content-1">{value}</Text>
 		</View>
 	);

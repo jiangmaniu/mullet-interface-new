@@ -14,6 +14,7 @@ import {
 	type Option,
 } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Trans } from '@lingui/react/macro';
 import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -182,14 +183,17 @@ export default function WalletWithdrawScreen() {
 							<FeeRow
 								label={<Trans>网络费用</Trans>}
 								value="0.00 USDC"
+								tooltip="链上转账所需的手续费"
 							/>
 							<FeeRow
 								label={<Trans>价格影响</Trans>}
 								value="0.00%"
+								tooltip="交易对市场价格的影响程度"
 							/>
 							<FeeRow
 								label={<Trans>预估滑点</Trans>}
 								value="自动 0.00%"
+								tooltip="实际成交价与预期价格的偏差"
 							/>
 						</CardContent>
 					</Card>
@@ -227,21 +231,18 @@ export default function WalletWithdrawScreen() {
 function FeeRow({
 	label,
 	value,
+	tooltip,
 }: {
 	label: React.ReactNode;
 	value: string;
+	tooltip?: string;
 }) {
 	return (
 		<View className="flex-row items-center justify-between">
-			<Text
-				className="text-paragraph-p3 text-content-4"
-				style={{
-					textDecorationLine: 'underline',
-					textDecorationStyle: 'dotted',
-				}}
-			>
-				{label}
-			</Text>
+			<Tooltip title={label}>
+				<TooltipTrigger>{label}</TooltipTrigger>
+				<TooltipContent>{tooltip}</TooltipContent>
+			</Tooltip>
 			<Text className="text-paragraph-p3 text-content-1">{value}</Text>
 		</View>
 	);

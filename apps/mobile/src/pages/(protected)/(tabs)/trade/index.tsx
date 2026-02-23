@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { View, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
   IconifyActivity,
   IconifyCandlestickChart,
@@ -179,12 +180,10 @@ function AccountCard({ account, onPress, onDeposit }: AccountCardProps) {
 
           {/* Balance Row: Available + Balance + Deposit Icon */}
           <View className="flex-row items-center justify-between">
-            <Text
-              className="text-paragraph-p3 text-content-4"
-              style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted' }}
-            >
-              <Trans>可用</Trans>
-            </Text>
+            <Tooltip title={<Trans>可用</Trans>}>
+              <TooltipTrigger><Trans>可用</Trans></TooltipTrigger>
+              <TooltipContent><Trans>当前可用于交易的资金余额</Trans></TooltipContent>
+            </Tooltip>
             <View className="flex-row items-center gap-xs">
               <Text className="text-paragraph-p3 text-content-1">
                 {account.balance} {account.currency}
@@ -447,21 +446,17 @@ function OrderPanel({
 
       {/* Info Footer */}
       <View className="flex-row justify-between">
-        <Text
-          className="text-clickable-1 text-content-4"
-          style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted' }}
-        >
-          <Trans>预估保证金</Trans>
-        </Text>
+        <Tooltip title={<Trans>预估保证金</Trans>}>
+          <TooltipTrigger className="text-clickable-1"><Trans>预估保证金</Trans></TooltipTrigger>
+          <TooltipContent><Trans>开仓所需的预估保证金金额</Trans></TooltipContent>
+        </Tooltip>
         <Text className="text-paragraph-p3 text-content-1">{estimatedMargin} USDC</Text>
       </View>
       <View className="flex-row justify-between">
-        <Text
-          className="text-clickable-1 text-content-4"
-          style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted' }}
-        >
-          <Trans>可开</Trans>
-        </Text>
+        <Tooltip title={<Trans>可开</Trans>}>
+          <TooltipTrigger className="text-clickable-1"><Trans>可开</Trans></TooltipTrigger>
+          <TooltipContent><Trans>当前资金可开仓的最大手数</Trans></TooltipContent>
+        </Tooltip>
         <Text className="text-paragraph-p3 text-content-1">
           {maxLots} <Trans>手</Trans>
         </Text>

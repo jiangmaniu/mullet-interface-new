@@ -6,6 +6,7 @@ import { IconUSDC1 } from '@/components/ui/icons/set/usdc-1';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, type Option } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
+import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Trans } from '@lingui/react/macro';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
@@ -130,9 +131,9 @@ export default function WalletCryptoDepositScreen() {
 					{/* 费用明细 */}
 					<Card>
 						<CardContent className="gap-large px-xl py-medium">
-							<FeeRow label={<Trans>网络费用</Trans>} value="0.00 USDC" />
-							<FeeRow label={<Trans>价格影响</Trans>} value="0.00%" />
-							<FeeRow label={<Trans>预估滑点</Trans>} value="自动 0.00%" />
+							<FeeRow label={<Trans>网络费用</Trans>} tooltip={<Trans>网络费用是您在存款过程中需要支付的手续费</Trans>} value="0.00 USDC" />
+							<FeeRow label={<Trans>价格影响</Trans>} tooltip={<Trans>价格影响是您在存款过程中需要支付的手续费</Trans>} value="0.00%" />
+							<FeeRow label={<Trans>预估滑点</Trans>} tooltip={<Trans>预估滑点是您在存款过程中需要支付的手续费</Trans>} value="自动 0.00%" />
 						</CardContent>
 					</Card>
 				</View>
@@ -160,15 +161,13 @@ export default function WalletCryptoDepositScreen() {
 	);
 }
 
-function FeeRow({ label, value }: { label: React.ReactNode; value: string }) {
+function FeeRow({ label, value, tooltip }: { label: React.ReactNode; value: string; tooltip?: React.ReactNode }) {
 	return (
 		<View className="flex-row items-center justify-between">
-			<Text
-				className="text-paragraph-p3 text-content-4"
-				style={{ textDecorationLine: 'underline', textDecorationStyle: 'dotted' }}
-			>
-				{label}
-			</Text>
+			<Tooltip title={label}>
+				<TooltipTrigger>{label}</TooltipTrigger>
+				<TooltipContent>{tooltip}</TooltipContent>
+			</Tooltip>
 			<Text className="text-paragraph-p3 text-content-1">{value}</Text>
 		</View>
 	);
