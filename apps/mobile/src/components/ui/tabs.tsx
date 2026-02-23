@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 import * as React from 'react';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { TabView, Route } from 'react-native-tab-view';
@@ -311,9 +311,9 @@ function SwipeableTabs({
 }
 
 // Simple Tabs (just tab bar, no page content)
-interface TabsProps {
-  value: string;
-  onValueChange: (value: string) => void;
+interface TabsProps<T extends string = string> {
+  value: T;
+  onValueChange: (value: T) => void;
   children: React.ReactNode;
   className?: string;
 }
@@ -423,9 +423,9 @@ interface SimpleTabsContextValue {
 const SimpleTabsContext = React.createContext<SimpleTabsContextValue | null>(null);
 
 // Simple Tabs Root
-function SimpleTabs({ value, onValueChange, children, className }: TabsProps) {
+function SimpleTabs<T extends string>({ value, onValueChange, children, className }: TabsProps<T>) {
   return (
-    <SimpleTabsContext.Provider value={{ value, onValueChange }}>
+    <SimpleTabsContext.Provider value={{ value, onValueChange: onValueChange as (value: string) => void }}>
       <View className={className}>
         {children}
       </View>
