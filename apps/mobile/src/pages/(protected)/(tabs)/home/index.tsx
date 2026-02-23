@@ -1,39 +1,40 @@
 import { ScrollView, View, Pressable } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Trans, useLingui } from '@lingui/react/macro'
-import React, { useState, useMemo, useCallback } from 'react'
+import { Trans } from '@lingui/react/macro'
+import React, { useState, useCallback } from 'react'
 import { useRouter } from 'expo-router'
-import { Route } from 'react-native-tab-view'
 
 import { AreaChart, ChartData } from '@/components/trading-view'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconifyBell, IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
-import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { CollapsibleTab, CollapsibleTabScene, CollapsibleFlatList, CollapsibleStickyHeader, CollapsibleStickyContent, CollapsibleStickyNavBar } from '@/components/ui/collapsible-tab'
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useResolveClassNames } from 'uniwind'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // ============ HomeHeader ============
 function HomeHeader() {
-  const { t } = useLingui()
   const searchIconStyle = useResolveClassNames('text-content-4')
   const router = useRouter()
 
   return (
-    <View className="flex-row items-center gap-[10px] px-xl py-1.5">
-      <Pressable
-        className="flex-1 flex-row items-center gap-medium h-8 px-xl border border-brand-default rounded-medium"
-        onPress={() => router.push('/search')}
-      >
-        <IconifySearch width={20} height={20} style={searchIconStyle} />
-        <Text className="text-paragraph-p2 text-content-5">{t`查询`}</Text>
-      </Pressable>
-      <Pressable className="size-[22px] items-center justify-center" onPress={() => router.push('/notifications')}>
-        <IconifyBell width={22} height={22} />
-      </Pressable>
-    </View>
+    <SafeAreaView edges={['top']}>
+      <View className="flex-row items-center gap-[10px] px-xl py-1.5">
+        <Pressable
+          className="flex-1 flex-row items-center gap-medium h-8 px-xl border border-brand-default rounded-medium"
+          onPress={() => router.push('/search')}
+        >
+          <IconifySearch width={20} height={20} style={searchIconStyle} />
+          <Text className="text-paragraph-p2 text-content-5"><Trans>查询</Trans></Text>
+        </Pressable>
+        <Pressable className="size-[22px] items-center justify-center" onPress={() => router.push('/notifications')}>
+          <IconifyBell width={22} height={22} />
+        </Pressable>
+      </View>
+    </SafeAreaView>
   )
 }
 
@@ -157,35 +158,53 @@ function AssetRow({ symbol, name, price, change, chartData = [] }: AssetRowProps
   )
 }
 
-// ============ AssetListView ============
-function AssetListView() {
-  const generateMockData = (count: number, startValue: number) => {
-    const data = []
-    let time = 1642425322
-    let value = startValue
-    for (let i = 0; i < count; i++) {
-      data.push({ time, value })
-      time += 86400
-      value += (Math.random() - 0.5) * 5
-    }
-    return data
+// ============ Mock Data ============
+function generateMockData(count: number, startValue: number): ChartData[] {
+  const data: ChartData[] = []
+  let time = 1642425322
+  let value = startValue
+  for (let i = 0; i < count; i++) {
+    data.push({ time, value })
+    time += 86400
+    value += (Math.random() - 0.5) * 5
   }
+  return data
+}
 
+type AssetItem = {
+  id: string
+  symbol: string
+  name: string
+  price: string
+  change: number
+  chartData: ChartData[]
+  buyPrice: string
+  sellPrice: string
+  highPrice: string
+  lowPrice: string
+}
+
+const MOCK_ASSETS: AssetItem[] = [
+  { id: '1', symbol: 'SOL-USDC', name: 'Solana', price: '148.00', change: 1.45, chartData: generateMockData(20, 140), buyPrice: '186.00', sellPrice: '186.00', highPrice: '180.00', lowPrice: '180.00' },
+  { id: '2', symbol: 'XAU-USDC', name: '现货黄金', price: '148.00', change: -1.45, chartData: generateMockData(20, 148), buyPrice: '486.00', sellPrice: '486.00', highPrice: '480.00', lowPrice: '480.00' },
+  { id: '3', symbol: 'BTC-USDC', name: 'Bitcoin', price: '91,988.00', change: 2.13, chartData: generateMockData(20, 91000), buyPrice: '198,652.0', sellPrice: '198,186.00', highPrice: '198,280.0', lowPrice: '198,280.0' },
+  { id: '4', symbol: 'SOL-USDC', name: 'Solana', price: '148.00', change: 1.45, chartData: generateMockData(20, 140), buyPrice: '186.00', sellPrice: '186.00', highPrice: '180.00', lowPrice: '180.00' },
+  { id: '5', symbol: 'XAU-USDC', name: '现货黄金', price: '148.00', change: -1.45, chartData: generateMockData(20, 148), buyPrice: '486.00', sellPrice: '486.00', highPrice: '480.00', lowPrice: '480.00' },
+  { id: '6', symbol: 'BTC-USDC', name: 'Bitcoin', price: '91,988.00', change: -0.85, chartData: generateMockData(20, 91000), buyPrice: '198,652.0', sellPrice: '198,186.00', highPrice: '198,280.0', lowPrice: '198,280.0' },
+]
+
+function AssetTradeHeader({ viewMode }: { viewMode: 'list' | 'trade' }) {
   return (
-    <View>
-      <View className="flex-row items-center justify-between py-medium px-xl">
-        <Text className="text-paragraph-p2 text-content-5 flex-1"><Trans>品类</Trans></Text>
-        <View className='flex-row gap-xl flex-shrink-0'>
-          <Text className="text-paragraph-p2 text-content-5 w-[90px]"><Trans>走势</Trans></Text>
-          <Text className="text-paragraph-p2 text-content-5 w-[90px] text-right"><Trans>价格/涨跌幅</Trans></Text>
-        </View>
+    <View className="flex-row items-center justify-between py-medium px-xl mt-xl">
+      <Text className="text-paragraph-p3 text-content-5 flex-1"><Trans>品类</Trans></Text>
+      <View className='flex-row gap-xl flex-shrink-0'>
+        <Text className="text-paragraph-p3 text-content-5 w-[90px]">
+          {viewMode === 'list' ? <Trans>走势</Trans> : <Trans>买价</Trans>}
+        </Text>
+        <Text className="text-paragraph-p3 text-content-5 w-[90px] text-right">
+          {viewMode === 'list' ? <Trans>价格/涨跌幅</Trans> : <Trans>卖价</Trans>}
+        </Text>
       </View>
-      <AssetRow symbol="SOL-USDC" name="Solana" price="148.00" change={1.45} chartData={generateMockData(20, 140)} />
-      <AssetRow symbol="XAU-USDC" name="现货黄金" price="148.00" change={-1.45} chartData={generateMockData(20, 148)} />
-      <AssetRow symbol="SOL-USDC" name="Solana" price="148.00" change={1.45} chartData={generateMockData(20, 140)} />
-      <AssetRow symbol="XAU-USDC" name="现货黄金" price="148.00" change={-1.45} chartData={generateMockData(20, 148)} />
-      <AssetRow symbol="SOL-USDC" name="Solana" price="148.00" change={1.45} chartData={generateMockData(20, 140)} />
-      <AssetRow symbol="XAU-USDC" name="现货黄金" price="148.00" change={-1.45} chartData={generateMockData(20, 148)} />
     </View>
   )
 }
@@ -233,59 +252,44 @@ function AssetTradeRow({ symbol, name, buyPrice, sellPrice, highPrice, lowPrice 
   )
 }
 
-// ============ AssetTradeView ============
-function AssetTradeView() {
+// ============ Main Index ============
+function AssetTabList({ viewMode }: { viewMode: string }) {
+  const renderListItem = useCallback(({ item }: { item: AssetItem }) => (
+    <AssetRow symbol={item.symbol} name={item.name} price={item.price} change={item.change} chartData={item.chartData} />
+  ), [])
+
+  const renderTradeItem = useCallback(({ item }: { item: AssetItem }) => (
+    <AssetTradeRow symbol={item.symbol} name={item.name} buyPrice={item.buyPrice} sellPrice={item.sellPrice} highPrice={item.highPrice} lowPrice={item.lowPrice} />
+  ), [])
+
   return (
-    <View>
-      <View className="flex-row items-center justify-between py-medium px-xl">
-        <Text className="text-paragraph-p2 text-content-5 flex-1"><Trans>品类</Trans></Text>
-        <View className='flex-row gap-xl flex-shrink-0'>
-          <Text className="text-paragraph-p2 text-content-5 w-[90px]"><Trans>买价</Trans></Text>
-          <Text className="text-paragraph-p2 text-content-5 w-[90px] text-right"><Trans>卖价</Trans></Text>
-        </View>
-      </View>
-      <AssetTradeRow symbol="SOL-USDC" name="Solana" buyPrice="186.00" sellPrice="186.00" highPrice="180.00" lowPrice="180.00" />
-      <AssetTradeRow symbol="XAU-USDC" name="现货黄金" buyPrice="486.00" sellPrice="486.00" highPrice="480.00" lowPrice="480.00" />
-      <AssetTradeRow symbol="BTC-USDC" name="Bitcoin" buyPrice="198,652.0" sellPrice="198,186.00" highPrice="198,280.0" lowPrice="198,280.0" />
-      <AssetTradeRow symbol="SOL-USDC" name="Solana" buyPrice="186.00" sellPrice="186.00" highPrice="180.00" lowPrice="180.00" />
-      <AssetTradeRow symbol="XAU-USDC" name="现货黄金" buyPrice="486.00" sellPrice="486.00" highPrice="480.00" lowPrice="480.00" />
-      <AssetTradeRow symbol="BTC-USDC" name="Bitcoin" buyPrice="198,652.0" sellPrice="198,186.00" highPrice="198,280.0" lowPrice="198,280.0" />
-    </View>
+    <CollapsibleFlatList
+      data={MOCK_ASSETS}
+      keyExtractor={(item) => item.id}
+      renderItem={viewMode === 'list' ? renderListItem : renderTradeItem}
+    />
   )
 }
 
-// ============ Main Index ============
 export default function Index() {
-  const [viewMode, setViewMode] = useState('list')
+  const [viewMode, setViewMode] = useState<'list' | 'trade'>('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
 
-  const routes = useMemo<Route[]>(() => [
-    { key: 'watchlist', title: '自选' },
-    { key: 'all', title: '全部' },
-    { key: 'hot', title: '热门' },
-    { key: 'gainers', title: '涨跌幅' },
-  ], [])
-
-  const renderScene = useCallback(({ route }: { route: Route }) => {
-    return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {viewMode === 'list' ? <AssetListView /> : <AssetTradeView />}
-      </ScrollView>
-    )
-  }, [viewMode])
+  const renderHeader = useCallback(() => (
+    <CollapsibleStickyHeader className="bg-secondary">
+      <CollapsibleStickyContent>
+        <HomeHeader />
+        <MarketOverview />
+      </CollapsibleStickyContent>
+    </CollapsibleStickyHeader>
+  ), [])
 
   return (
     <View className="flex-1 bg-secondary">
-      <SafeAreaView edges={['top']}>
-        <HomeHeader />
-        <MarketOverview />
-      </SafeAreaView>
-      <SwipeableTabs
-        routes={routes}
-        renderScene={renderScene}
+      <CollapsibleTab
         variant="underline"
         size="md"
-        tabBarClassName="border-b border-brand-default px-xl"
+        renderHeader={renderHeader}
         renderTabBarRight={() => (
           <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
             <TabsList variant="icon" size="sm">
@@ -298,7 +302,21 @@ export default function Index() {
             </TabsList>
           </Tabs>
         )}
-      />
+        renderTabBarBottom={() => (<AssetTradeHeader viewMode={viewMode} />)}
+      >
+        <CollapsibleTabScene name="watchlist" label="自选">
+          <AssetTabList viewMode={viewMode} />
+        </CollapsibleTabScene>
+        <CollapsibleTabScene name="all" label="全部">
+          <AssetTabList viewMode={viewMode} />
+        </CollapsibleTabScene>
+        <CollapsibleTabScene name="hot" label="热门">
+          <AssetTabList viewMode={viewMode} />
+        </CollapsibleTabScene>
+        <CollapsibleTabScene name="gainers" label="涨跌幅">
+          <AssetTabList viewMode={viewMode} />
+        </CollapsibleTabScene>
+      </CollapsibleTab>
     </View>
   )
 }
