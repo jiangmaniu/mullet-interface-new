@@ -198,6 +198,7 @@ type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 're
     tabBarClassName?: string;
     tabClassName?: string;
     renderTabBarRight?: () => React.ReactNode;
+    renderTabBarBottom?: () => React.ReactNode;
     scrollEnabled?: boolean;
   };
 
@@ -207,6 +208,7 @@ export function CollapsibleTab({
   tabBarClassName,
   tabClassName,
   renderTabBarRight,
+  renderTabBarBottom,
   containerStyle,
   scrollEnabled = true,
   ...props
@@ -225,51 +227,54 @@ export function CollapsibleTab({
 
   const renderTabBar = (tabBarProps: MaterialTabBarProps<any>) => {
     return (
-      <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), "px-xl", tabBarClassName)}>
-        <MaterialTabBar
-          {...tabBarProps}
-          scrollEnabled={scrollEnabled}
-          style={{ height: '100%', backgroundColor: 'transparent' }}
-          contentContainerStyle={{ alignItems: 'center' }}
+      <View>
+        <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), "px-xl", tabBarClassName)}>
+          <MaterialTabBar
+            {...tabBarProps}
+            scrollEnabled={scrollEnabled}
+            style={{ height: '100%', backgroundColor: 'transparent' }}
+            contentContainerStyle={{ alignItems: 'center' }}
 
-          // 指示器样式配置
-          indicatorStyle={
-            currentVariant === 'underline'
-              ? {
-                backgroundColor: colorBrandPrimary,
-                height: 2,
-                bottom: 0,
-                borderRadius: 1, // 圆角更现代
-              }
-              : { backgroundColor: 'transparent', height: 0 }
-          }
+            // 指示器样式配置
+            indicatorStyle={
+              currentVariant === 'underline'
+                ? {
+                  backgroundColor: colorBrandPrimary,
+                  height: 2,
+                  bottom: 0,
+                  borderRadius: 1, // 圆角更现代
+                }
+                : { backgroundColor: 'transparent', height: 0 }
+            }
 
-          activeColor={textColorContent1}
-          inactiveColor={textColorContent4}
+            activeColor={textColorContent1}
+            inactiveColor={textColorContent4}
 
-          TabItemComponent={(itemProps) => (
-            <CustomTabItem
-              index={itemProps.index}
-              indexDecimal={itemProps.indexDecimal}
-              scrollEnabled={scrollEnabled}
-              label={typeof itemProps.label === 'string' ? itemProps.label : ''}
-              onPress={() => itemProps.onPress(itemProps.name)}
+            TabItemComponent={(itemProps) => (
+              <CustomTabItem
+                index={itemProps.index}
+                indexDecimal={itemProps.indexDecimal}
+                scrollEnabled={scrollEnabled}
+                label={typeof itemProps.label === 'string' ? itemProps.label : ''}
+                onPress={() => itemProps.onPress(itemProps.name)}
 
-              // 透传 onLayout 给 CustomTabItem
-              onLayout={itemProps.onLayout}
+                // 透传 onLayout 给 CustomTabItem
+                onLayout={itemProps.onLayout}
 
-              variant={currentVariant}
-              size={currentSize}
-              activeColor={textColorContent1}
-              inactiveColor={textColorContent4}
-            />
+                variant={currentVariant}
+                size={currentSize}
+                activeColor={textColorContent1}
+                inactiveColor={textColorContent4}
+              />
+            )}
+          />
+          {renderTabBarRight && (
+            <View className='flex-shrink-0'>
+              {renderTabBarRight()}
+            </View>
           )}
-        />
-        {renderTabBarRight && (
-          <View className='flex-shrink-0'>
-            {renderTabBarRight()}
-          </View>
-        )}
+        </View>
+        {renderTabBarBottom?.()}
       </View>
     );
   };
@@ -304,7 +309,7 @@ export function CollapsibleTab({
 }
 
 export const CollapsibleTabScene = Tabs.Tab;
-export const CollapsibleFlatList = Tabs.FlatList;
+export const CollapsibleFlatList = <T,>({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.FlatList<T>>) => <Tabs.FlatList<T> showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
 export const CollapsibleScrollView = ({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.ScrollView>) => <Tabs.ScrollView showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
 export const CollapsibleSectionList = Tabs.SectionList;
 
