@@ -67,10 +67,10 @@ export default function WalletCryptoDepositScreen() {
 						<Trans>钱包余额：</Trans>{MOCK_BALANCE}
 					</Text>
 
-					<View className="gap-2xl pt-xl">
+					<View className="gap-2xl">
 						{/* 代币选择器 */}
 						<Select value={selectedToken} onValueChange={setSelectedToken}>
-							<SelectTrigger LeftContent={tokenIcon}>
+							<SelectTrigger LeftContent={tokenIcon} placeholder="选择币种">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
@@ -85,7 +85,7 @@ export default function WalletCryptoDepositScreen() {
 							value={{ value: 'arbitrum', label: 'Arbitrum' }}
 							onValueChange={() => { }}
 						>
-							<SelectTrigger LeftContent={<IconArbitrum width={16} height={16} />}>
+							<SelectTrigger LeftContent={<IconArbitrum width={16} height={16} />} placeholder="选择网络">
 								<SelectValue />
 							</SelectTrigger>
 							<SelectContent>
