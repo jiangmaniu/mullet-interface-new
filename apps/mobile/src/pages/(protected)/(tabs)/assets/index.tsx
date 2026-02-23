@@ -371,10 +371,14 @@ function AssetActions() {
     router.push('/(assets)/bills');
   }
 
+  const handlePressWithdraw = () => {
+    router.push('/(assets)/withdraw/wallet');
+  }
+
   return (
     <>
       <View className='flex-row items-center justify-between px-xl py-xl'>
-        <Pressable>
+        <Pressable onPress={handlePressWithdraw}>
           <View className="flex-col items-center">
             <View className='p-medium'>
               <IconWithdrawFunds width={24} height={24} />
