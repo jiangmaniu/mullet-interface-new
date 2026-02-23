@@ -195,7 +195,7 @@ const InputContainer = <T,>({
   return (
     <View
       className={cn(
-        'gap-medium flex flex-col',
+        'flex flex-col',
         {
           'w-full flex-1': block
         },
@@ -203,11 +203,11 @@ const InputContainer = <T,>({
       )}
       {...props}
     >
-      {errorMessage && <Text className={cn('text-paragraph-p3 text-status-danger text-right')}>{errorMessage}</Text>}
 
       <Pressable
         className={cn(inputContainerVariantsClassName, 'gap-medium group relative flex flex-row cursor-text items-center transition-colors', {
-          'border-brand-primary': isFocused
+          'border-brand-primary': isFocused,
+          'border-status-danger': errorMessage
         })}
         style={
           labelBgColor
@@ -252,6 +252,7 @@ const InputContainer = <T,>({
               'text-paragraph-p2 transition-all duration-200 text-content-4',
               isFloating && 'text-xs', // scale-80 approx
               isFocused && 'text-brand-primary',
+              errorMessage && 'text-content-4',
               !isFloating && 'text-content-5',
               labelClassName
             )}>
@@ -263,8 +264,8 @@ const InputContainer = <T,>({
         {/* Clean Button */}
         {!!clean && !!value && (
           <View className="z-10 order-3 ml-auto">
-            <IconButton className="rounded-full" variant="ghost" onPress={onClean}>
-              <IconifyXmarkCircleSolid width={12} height={12} color='#ffffff' />
+            <IconButton className="rounded-full p-0" onPress={onClean}>
+              <IconifyXmarkCircleSolid width={16} height={16} className='text-content-5' />
             </IconButton>
           </View>
         )}
@@ -273,8 +274,10 @@ const InputContainer = <T,>({
         {RightContent && <View className="z-10 order-4 flex-shrink-0">{RightContent}</View>}
       </Pressable>
 
+      {errorMessage && <Text className={cn('text-paragraph-p3 text-status-danger mt-[6px]')}>{errorMessage}</Text>}
+
       {(hintLabel || hintValue) && (
-        <View className={cn('text-paragraph-p3 flex flex-row justify-between gap-2')}>
+        <View className={cn('text-paragraph-p3 flex flex-row justify-between gap-2 mt-medium')}>
           {hintLabel && <Text className="text-content-4 self-start"> {hintLabel}</Text>}
           {hintValue && <Text className="text-content-1 self-end">{hintValue}</Text>}
         </View>
