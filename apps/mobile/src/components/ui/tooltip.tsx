@@ -1,64 +1,74 @@
-import { NativeOnlyAnimatedView } from '@/components/ui/native-only-animated-view';
-import { TextClassContext } from '@/components/ui/text';
+import { Button } from '@/components/ui/button';
+import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import * as TooltipPrimitive from '@rn-primitives/tooltip';
+import { Trans } from '@lingui/react/macro';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
-import { FadeInDown, FadeInUp, FadeOut } from 'react-native-reanimated';
-import { FullWindowOverlay as RNFullWindowOverlay } from 'react-native-screens';
+import { Pressable, View } from 'react-native';
 
-const Tooltip = TooltipPrimitive.Root;
+const TooltipContext = React.createContext<{
+  visible: boolean;
+  setVisible: (v: boolean) => void;
+  title?: React.ReactNode;
+}>({ visible: false, setVisible: () => { } });
 
-const TooltipTrigger = TooltipPrimitive.Trigger;
-
-const FullWindowOverlay = Platform.OS === 'ios' ? RNFullWindowOverlay : React.Fragment;
-
-function TooltipContent({
-  className,
-  sideOffset = 4,
-  portalHost,
-  side = 'top',
-  ...props
-}: TooltipPrimitive.ContentProps &
-  React.RefAttributes<TooltipPrimitive.ContentRef> & {
-    portalHost?: string;
-  }) {
+function Tooltip({ children, title }: { children: React.ReactNode; title?: React.ReactNode }) {
+  const [visible, setVisible] = React.useState(false);
   return (
-    <TooltipPrimitive.Portal hostName={portalHost}>
-      <FullWindowOverlay>
-        <TooltipPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
-          <NativeOnlyAnimatedView
-            entering={
-              side === 'top'
-                ? FadeInDown.withInitialValues({ transform: [{ translateY: 3 }] }).duration(150)
-                : FadeInUp.withInitialValues({ transform: [{ translateY: -5 }] })
-            }
-            exiting={FadeOut}>
-            <TextClassContext.Provider value="text-xs text-primary-foreground">
-              <TooltipPrimitive.Content
-                sideOffset={sideOffset}
-                className={cn(
-                  'bg-primary z-50 rounded-md px-3 py-2 sm:py-1.5',
-                  Platform.select({
-                    web: cn(
-                      'animate-in fade-in-0 zoom-in-95 origin-(--radix-tooltip-content-transform-origin) w-fit text-balance',
-                      side === 'bottom' && 'slide-in-from-top-2',
-                      side === 'left' && 'slide-in-from-right-2',
-                      side === 'right' && 'slide-in-from-left-2',
-                      side === 'top' && 'slide-in-from-bottom-2'
-                    ),
-                  }),
-                  className
-                )}
-                side={side}
-                {...props}
-              />
-            </TextClassContext.Provider>
-          </NativeOnlyAnimatedView>
-        </TooltipPrimitive.Overlay>
-      </FullWindowOverlay>
-    </TooltipPrimitive.Portal>
+    <TooltipContext.Provider value={{ visible, setVisible, title }}>
+      {children}
+    </TooltipContext.Provider>
   );
 }
 
-export { Tooltip, TooltipContent, TooltipTrigger };
+function TooltipTrigger({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const { setVisible } = React.useContext(TooltipContext);
+  return (
+    <Pressable onPress={() => setVisible(true)}>
+      <Text
+        className={cn('text-paragraph-p3 text-content-4 underline decoration-dotted', className)}
+      >
+        {children}
+      </Text>
+    </Pressable>
+  );
+}
+
+function TooltipContent({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  const { visible, setVisible, title } = React.useContext(TooltipContext);
+  return (
+    <Modal visible={visible} onClose={() => setVisible(false)}>
+      <ModalContent className={cn(className)}>
+        {title && (
+          <ModalHeader showClose={false}>
+            <ModalTitle>{title}</ModalTitle>
+          </ModalHeader>
+        )}
+
+        <View className="px-2xl">
+          <Text className="text-content-4 text-paragraph-p3">{children}</Text>
+        </View>
+
+        <ModalFooter>
+          <Button block size="sm" color="primary" onPress={() => setVisible(false)}>
+            <Text><Trans>好的</Trans></Text>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
+
+export { Tooltip, TooltipTrigger, TooltipContent };
