@@ -61,11 +61,11 @@ export default function WalletCryptoDepositScreen() {
 		<View className="flex-1 gap-xl">
 			<ScreenHeader content={<Trans>加密货币入金</Trans>} />
 			<ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-				{/* 钱包余额 */}
-				<Text className="text-paragraph-p2 text-content-4 mb-3xl px-5">
-					<Trans>钱包余额：</Trans>{MOCK_BALANCE}
-				</Text>
 				<View className="px-5 gap-xl pb-4xl">
+					{/* 钱包余额 */}
+					<Text className="text-paragraph-p2 text-content-4 mb-2xl">
+						<Trans>钱包余额：</Trans>{MOCK_BALANCE}
+					</Text>
 					<View className="gap-2xl">
 						{/* 代币选择器 */}
 						<Select value={selectedToken} onValueChange={setSelectedToken}>
