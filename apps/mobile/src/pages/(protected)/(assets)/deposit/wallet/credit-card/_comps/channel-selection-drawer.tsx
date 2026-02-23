@@ -53,7 +53,7 @@ export function ChannelSelectionDrawer({
 				<ScrollView
 					className="w-full max-h-[400px]"
 					showsVerticalScrollIndicator={false}
-					contentContainerClassName="items-center gap-xl"
+					contentContainerClassName="items-center gap-xl px-5"
 				>
 					{CHANNELS.map((channel) => {
 						const isSelected = channel.id === selectedId;
@@ -64,7 +64,7 @@ export function ChannelSelectionDrawer({
 									onSelect(channel.id);
 									onClose();
 								}}
-								className={`flex-row items-center justify-between px-xl py-medium rounded-small w-[328px] ${isSelected ? 'border border-white' : ''}`}
+								className={`flex-row items-center justify-between px-xl py-medium rounded-small w-full ${isSelected ? 'border border-white' : ''}`}
 							>
 								<View className="flex-row items-center gap-medium">
 									<Image
