@@ -22,6 +22,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@mullet/utils": "workspace:*",
     "@dev-plugins/react-query": "^0.4.0",
     "@ethersproject/shims": "^5.8.0",
     "@expo-google-fonts/inter": "^0.4.2",

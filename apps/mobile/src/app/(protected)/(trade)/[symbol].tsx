@@ -1,3 +1,5 @@
-import Symbol from '@/pages/(protected)/(trade)/[symbol]'
+import SymbolDepth from '@/pages/(protected)/(trade)/[symbol]'
 
-export default Symbol
+export default function Screen() {
+  return <SymbolDepth />
+}

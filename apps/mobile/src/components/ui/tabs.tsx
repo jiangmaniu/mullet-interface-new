@@ -10,6 +10,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Text, TextClassContext } from '@/components/ui/text';
+import { useState } from 'react';
 
 type TabVariant = 'solid' | 'outline' | 'underline' | 'text' | 'icon' | 'icons-and-text';
 type TabSize = 'sm' | 'md' | 'lg';
@@ -311,7 +312,7 @@ function SwipeableTabs({
 }
 
 // Simple Tabs (just tab bar, no page content)
-interface TabsProps<T extends string = string> {
+interface TabsProps<T> {
   value: T;
   onValueChange: (value: T) => void;
   children: React.ReactNode;
@@ -415,17 +416,17 @@ const TabsListContext = React.createContext<TabsListContextValue>({
   onTriggerLayout: () => { },
 });
 
-interface SimpleTabsContextValue {
-  value: string;
-  onValueChange: (value: string) => void;
+interface SimpleTabsContextValue<T> {
+  value: T;
+  onValueChange: (value: T) => void;
 }
 
-const SimpleTabsContext = React.createContext<SimpleTabsContextValue | null>(null);
+const SimpleTabsContext = React.createContext<SimpleTabsContextValue<string> | null>(null)
 
 // Simple Tabs Root
-function SimpleTabs<T extends string>({ value, onValueChange, children, className }: TabsProps<T>) {
+function SimpleTabs<T>({ value, onValueChange, children, className }: TabsProps<T>) {
   return (
-    <SimpleTabsContext.Provider value={{ value, onValueChange: onValueChange as (value: string) => void }}>
+    <SimpleTabsContext.Provider value={{ value: value as string, onValueChange: onValueChange as (value: string) => void }}>
       <View className={className}>
         {children}
       </View>
@@ -433,14 +434,14 @@ function SimpleTabs<T extends string>({ value, onValueChange, children, classNam
   );
 }
 
-interface TabsTriggerProps {
-  value: string;
+interface TabsTriggerProps<T> {
+  value: T;
   children: React.ReactNode;
   className?: string;
   onPress?: () => void;
 }
 
-function TabsTrigger({ value, children, className, onPress }: TabsTriggerProps) {
+function TabsTrigger<T>({ value, children, className, onPress }: TabsTriggerProps<T>) {
   const parentContext = React.useContext(SimpleTabsContext);
   const { variant, size, onTriggerLayout } = React.useContext(TabsListContext);
   const isActive = parentContext?.value === value;
@@ -449,9 +450,9 @@ function TabsTrigger({ value, children, className, onPress }: TabsTriggerProps) 
 
   return (
     <Pressable
-      onLayout={(e) => onTriggerLayout(value, e.nativeEvent.layout)}
+      onLayout={(e) => onTriggerLayout(value as string, e.nativeEvent.layout)}
       onPress={() => {
-        parentContext?.onValueChange(value)
+        parentContext?.onValueChange(value as string)
         onPress?.()
       }}
       className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }), className)}

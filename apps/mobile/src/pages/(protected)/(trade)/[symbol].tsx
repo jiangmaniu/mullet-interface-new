@@ -4,7 +4,7 @@ import { Route } from 'react-native-tab-view'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 
 import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
 import {
   IconifyActivity,
@@ -15,38 +15,53 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { cn } from '@/lib/utils'
 import { IconStarFill } from '@/components/ui/icons/set/star-fill'
 import { IconStar } from '@/components/ui/icons/set/star'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import { t } from '@/locales/i18n'
 import { TimePeriodDrawer } from './_comps/time-period-drawer'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { observer } from 'mobx-react-lite'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { getImgSource } from '@/utils/img'
+import { BNumber } from '@mullet/utils/number'
+import { parseRiseAndFallInfo } from '@/helpers/market'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { renderFallback } from '@mullet/utils/format'
+import { transferWeekDay } from '@/v1/constants'
+import { formatTimeStr } from '@/v1/utils/business'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
   symbol: string
-  priceChange: string
-  isPriceUp: boolean
   onSymbolPress?: () => void
-  isFavorite: boolean
-  onFavoriteToggle?: () => void
 }
 
-function SymbolDepthHeader({
+const SymbolDepthHeader = observer(({
   symbol,
-  priceChange,
-  isPriceUp,
   onSymbolPress,
-  isFavorite,
-  onFavoriteToggle,
-}: SymbolDepthHeaderProps) {
+}: SymbolDepthHeaderProps) => {
   const router = useRouter()
+  const { trade } = useStores()
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+  // const synopsis = getAccountSynopsisByLng(trade.currentAccountInfo.synopsis) 
 
-  const handleViewChange = useCallback((view: 'chart' | 'depth') => {
+  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
+
+
+  const handleFavoriteToggle = () => {
+    trade.toggleSymbolFavorite(symbolInfo.symbol)
+  }
+
+  const handleViewChange = (view: 'chart' | 'depth') => {
     if (view === 'chart') {
       // Navigate back to trade page
       router.back()
     }
     // Already on depth view, do nothing
-  }, [router])
+  }
 
   return (
     <ScreenHeader
@@ -57,15 +72,12 @@ function SymbolDepthHeader({
             onPress={onSymbolPress}
             className="flex-row items-center gap-medium"
           >
-            <Avatar className="size-[30px]">
-              <AvatarFallback className="bg-[#9945FF]">
-                <Text className="text-white text-xs">S</Text>
-              </AvatarFallback>
-            </Avatar>
-            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbol}</Text>
-            <Text className={isPriceUp ? 'text-market-rise' : 'text-market-fall'}>
-              {priceChange}
+            <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
+            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbolInfo.symbol}</Text>
+            <Text className={percentChangeInfo.isRise ? 'text-market-rise' : percentChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}>
+              {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
             </Text>
+
             <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
           </Pressable>
         </View>
@@ -91,7 +103,7 @@ function SymbolDepthHeader({
             </Pressable>
           </View>
 
-          <Pressable onPress={onFavoriteToggle}>
+          <Pressable onPress={handleFavoriteToggle}>
             {isFavorite ? (
               <IconStarFill width={22} height={22} className="text-brand-primary" />
             ) : (
@@ -102,7 +114,7 @@ function SymbolDepthHeader({
       }
     />
   )
-}
+})
 
 // ============ Constants ============
 const TIME_PERIODS = [
@@ -115,65 +127,48 @@ const TIME_PERIODS = [
   { label: '年', value: 'Y' },
 ]
 
-// Mock contract properties data
-const CONTRACT_PROPERTIES = [
-  { label: '合约单位', value: '10000' },
-  { label: '货币单位', value: 'EUR' },
-  { label: '报价小数位', value: '5' },
-  { label: '单笔交易手数', value: '0.01手-20.00手' },
-  { label: '手数差值', value: '0.01手' },
-  { label: '隔夜利息（多单）', value: '-1.37%' },
-  { label: '隔夜利息（空单）', value: '-1.47%' },
-  { label: '限价和停损距离', value: '1' },
-  { label: '手续费', value: '1.02%' },
-]
-
-// Mock trading hours data
-const TRADING_HOURS = [
-  { day: '周一', hours: '07:00-24:00' },
-  { day: '周二', hours: '07:00-24:00' },
-  { day: '周三', hours: '07:00-24:00' },
-  { day: '周四', hours: '00:00-05:55,07:00-24:00' },
-  { day: '周五', hours: '07:00-24:00' },
-  { day: '周六', hours: '07:00-24:00' },
-  { day: '周日', hours: '07:00-24:00' },
-]
-
 // ============ PriceInfo Component ============
 interface PriceInfoProps {
-  latestPrice: string
-  priceChange: string
-  priceChangePercent: string
-  isUp: boolean
-  high: string
-  low: string
-  open: string
-  close: string
+  symbol: string
 }
 
-function PriceInfo({
-  latestPrice,
-  priceChange,
-  priceChangePercent,
-  isUp,
-  high,
-  low,
-  open,
-  close,
-}: PriceInfoProps) {
+const PriceInfo = observer(({
+  symbol,
+
+}: PriceInfoProps) => {
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const { trade } = useStores()
+  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolMarketInfo = getCurrentQuote(symbol)
+  const latestPrice = symbolMarketInfo?.ask
+  const high = symbolMarketInfo?.high
+  const low = symbolMarketInfo?.low
+  const open = symbolMarketInfo?.open
+  const close = symbolMarketInfo?.close
+  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+
   return (
     <View className="flex-row items-center justify-between p-xl">
       <View className="gap-xs">
         <Text className="text-paragraph-p3 text-content-1">
           <Trans>最新价格</Trans>
         </Text>
-        <View className={isUp ? 'text-market-rise' : 'text-market-fall'}>
-          <Text className={`text-title-h3 ${isUp ? 'text-market-rise' : 'text-market-fall'}`}>
+        <View>
+          <Text className={`text-title-h3 ${askPriceChangeInfo.isRise ? 'text-market-rise' : askPriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}>
             {latestPrice}
           </Text>
-          <Text className={`text-paragraph-p2 ${isUp ? 'text-market-rise' : 'text-market-fall'}`}>
-            {priceChange} {priceChangePercent}
-          </Text>
+
+          <View className={cn('flex-row gap-xs')}>
+            {/* <Text className={`text-paragraph-p2 ${askPriceChangeInfo.isRise ? 'text-market-rise' : askPriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}>
+              +1
+            </Text> */}
+
+            <Text className={`text-paragraph-p2 ${percentChangeInfo.isRise ? 'text-market-rise' : percentChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}>
+              {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
+            </Text>
+          </View>
+
         </View>
       </View>
       <View className="gap-xs">
@@ -182,13 +177,13 @@ function PriceInfo({
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>最高</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">{high}</Text>
+            <Text className="text-paragraph-p4 text-content-1">{BNumber.toFormatNumber(high, { volScale: symbolInfo.symbolDecimal })}</Text>
           </View>
           <View className="items-end">
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>最低</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">{low}</Text>
+            <Text className="text-paragraph-p4 text-content-1">{BNumber.toFormatNumber(low, { volScale: symbolInfo.symbolDecimal })}</Text>
           </View>
         </View>
         <View className="flex-row gap-xl">
@@ -196,22 +191,22 @@ function PriceInfo({
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>开盘价</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">{open}</Text>
+            <Text className="text-paragraph-p4 text-content-1">{BNumber.toFormatNumber(open, { volScale: symbolInfo.symbolDecimal })}</Text>
           </View>
           <View className="items-end">
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>收盘价</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">{close}</Text>
+            <Text className="text-paragraph-p4 text-content-1">{BNumber.toFormatNumber(close, { volScale: symbolInfo.symbolDecimal })}</Text>
           </View>
         </View>
       </View>
     </View>
   )
-}
+})
 
 // ============ ChartView Component ============
-function ChartView() {
+function ChartView({ symbol }: { symbol: string }) {
   const [selectedPeriod, setSelectedPeriod] = useState('15')
   const [showMoreDrawer, setShowMoreDrawer] = useState(false)
 
@@ -224,14 +219,7 @@ function ChartView() {
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
       {/* Price Info */}
       <PriceInfo
-        latestPrice="185.00"
-        priceChange="+232.00"
-        priceChangePercent="+3.64%"
-        isUp={true}
-        high="148.75"
-        low="148.75"
-        open="148.75"
-        close="148.75"
+        symbol={symbol}
       />
 
       {/* Time Period Selector */}
@@ -270,7 +258,63 @@ function ChartView() {
 }
 
 // ============ DetailsView Component ============
-function DetailsView() {
+function DetailsView({ symbol }: { symbol: string }) {
+
+  const { i18n, t } = useLingui()
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbol)
+  const tradeTimeConf = symbolMarketInfo?.tradeTimeConf as any[]
+  const symbolConf = symbolMarketInfo?.symbolConf
+  const holdingCostConf = symbolMarketInfo?.holdingCostConf
+  const transactionFeeConf = symbolMarketInfo?.transactionFeeConf
+  const prepaymentConf = symbolMarketInfo?.prepaymentConf
+  const marginMode = prepaymentConf?.mode // 保证金模式
+  const showPencent = holdingCostConf?.type !== 'pointMode' // 以
+
+
+  const CONTRACT_PROPERTIES = [
+    { label: <Trans>合约单位</Trans>, value: symbolConf?.contractSize },
+    { label: <Trans>货币单位</Trans>, value: symbolConf?.baseCurrency },
+    { label: <Trans>报价小数位</Trans>, value: symbolMarketInfo?.digits },
+    {
+      label: <Trans>单笔交易手数</Trans>, value: <>
+        {BNumber.toFormatNumber(symbolConf?.minTrade, { volScale: 2 })}
+        {i18n._(LOTS_UNIT_LABEL)}-{BNumber.toFormatNumber(symbolConf?.maxTrade, { volScale: 2 })}
+        {i18n._(LOTS_UNIT_LABEL)}
+      </>
+    },
+    { label: <Trans>手数差值</Trans>, value: BNumber.toFormatNumber(symbolConf?.tradeStep, { volScale: 2, unit: i18n._(LOTS_UNIT_LABEL) }) },
+    {
+      label: <Trans>隔夜利息（多单）</Trans>, value: renderFallback(
+        showPencent
+          ? BNumber.toFormatPercent(holdingCostConf?.buyBag, { isRaw: false, positive: false })
+          : BNumber.toFormatNumber(holdingCostConf?.buyBag, {
+            positive: false,
+            unit: `(${t`点模式`})`
+          }),
+        {
+          verify: holdingCostConf?.isEnable
+        }
+      )
+    },
+    {
+      label: <Trans>隔夜利息（空单）</Trans>, value: renderFallback(
+        showPencent
+          ? BNumber.toFormatPercent(holdingCostConf?.sellBag, { isRaw: false, positive: false })
+          : BNumber.toFormatNumber(holdingCostConf?.sellBag, {
+            positive: false,
+            unit: `(${t`点模式`})`
+          }),
+        {
+          verify: holdingCostConf?.isEnable
+        }
+      )
+    },
+    { label: <Trans>限价和停损距离</Trans>, value: symbolConf?.limitStopLevel },
+    { label: <Trans>市价手续费</Trans>, value: BNumber.toFormatPercent(transactionFeeConf?.trade_vol?.[0]?.market_fee, { isRaw: false }) },
+    { label: <Trans>限价手续费</Trans>, value: BNumber.toFormatPercent(transactionFeeConf?.trade_vol?.[0]?.limit_fee, { isRaw: false }) },
+  ]
+
   return (
     <ScrollView className="flex-1 px-xl py-3xl" showsVerticalScrollIndicator={false}>
       {/* Contract Properties */}
@@ -289,33 +333,44 @@ function DetailsView() {
       </View>
 
       {/* Trading Hours */}
-      <View className="gap-xl">
-        <Text className="text-important-1 text-content-1">
-          <Trans>交易时间（GMT+8）</Trans>
-        </Text>
-        <View className="gap-medium">
-          {TRADING_HOURS.map((item, index) => (
-            <View key={index} className="flex-row items-start justify-between">
-              <Text className="text-paragraph-p3 text-content-4">{item.day}</Text>
-              <Text className="text-paragraph-p3 text-content-1">{item.hours}</Text>
+      {
+        !!tradeTimeConf?.length && (
+          <View className="gap-xl">
+            <Text className="text-important-1 text-content-1">
+              <Trans>交易时间（GMT+8）</Trans>
+            </Text>
+            <View className="gap-medium">
+              {tradeTimeConf.map((item, index) => (
+                <View key={index} className="flex-row items-start justify-between">
+                  <Text className="text-paragraph-p3 text-content-4">{transferWeekDay(item.weekDay)}</Text>
+                  <Text className="text-paragraph-p3 text-content-1">{formatTimeStr(item.trade)}</Text>
+                </View>
+              ))}
             </View>
-          ))}
-        </View>
-      </View>
+          </View>
+        )
+      }
+
     </ScrollView>
   )
 }
 
 // ============ BottomActionBar Component ============
 interface BottomActionBarProps {
-  buyPrice: string
-  sellPrice: string
-  spread: number
+  symbol: string
   onBuy: () => void
   onSell: () => void
 }
 
-function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomActionBarProps) {
+const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
+  const { trade } = useStores()
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const buyPrice = symbolMarketInfo?.bid
+  const sellPrice = symbolMarketInfo?.ask
+  const spread = symbolMarketInfo?.spread
+
   return (
     <SafeAreaView edges={['bottom']}>
       <View className="px-xl mb-xl py-medium">
@@ -324,7 +379,7 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
             onPress={onBuy}
             className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-rise"
           >
-            <Text className="text-button-2 font-medium text-market-rise-foreground">{buyPrice}</Text>
+            <Text className="text-button-2 font-medium text-market-rise-foreground">{BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo.symbolDecimal })}</Text>
             <Text className="text-button-2 ml-xs text-market-rise-foreground">
               <Trans>买入/做多</Trans>
             </Text>
@@ -332,14 +387,14 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
 
           {/* Spread Badge */}
           <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
-            <Text className="text-paragraph-p3 text-market-content-foreground">{spread}</Text>
+            <Text className="text-paragraph-p3 text-market-content-foreground">{BNumber.toFormatNumber(spread)}</Text>
           </View>
 
           <Pressable
             onPress={onSell}
             className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-fall"
           >
-            <Text className="text-button-2 font-medium text-market-fall-foreground">{sellPrice}</Text>
+            <Text className="text-button-2 font-medium text-market-fall-foreground">{BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo.symbolDecimal })}</Text>
             <Text className="text-button-2 ml-xs text-market-fall-foreground">
               <Trans>卖出/做空</Trans>
             </Text>
@@ -348,13 +403,14 @@ function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomA
       </View>
     </SafeAreaView>
   )
-}
+})
 
 // ============ Main SymbolDepth Component ============
-export default function SymbolDepth() {
+const SymbolDepth = observer(() => {
   const router = useRouter()
-  const { symbol } = useLocalSearchParams<{ symbol: string }>()
-  const [isFavorite, setIsFavorite] = useState(false)
+  // const { symbol } = useLocalSearchParams<{ symbol: string }>()
+  const { trade } = useStores()
+  const symbol = trade.activeSymbolName
 
   const routes = useMemo<Route[]>(
     () => [
@@ -364,16 +420,16 @@ export default function SymbolDepth() {
     []
   )
 
-  const renderScene = useCallback(({ route }: { route: Route }) => {
+  const renderScene = ({ route }: { route: Route }) => {
     switch (route.key) {
       case 'chart':
-        return <ChartView />
+        return <ChartView symbol={symbol} />
       case 'details':
-        return <DetailsView />
+        return <DetailsView symbol={symbol} />
       default:
         return null
     }
-  }, [])
+  }
 
   const handleBuy = useCallback(() => {
     router.push('/trade?side=buy')
@@ -383,19 +439,12 @@ export default function SymbolDepth() {
     router.push('/trade?side=sell')
   }, [router])
 
-  const handleFavoriteToggle = useCallback(() => {
-    setIsFavorite((prev) => !prev)
-  }, [])
-
   return (
     <View className="flex-1">
       <SymbolDepthHeader
-        symbol={symbol || 'SOL-USDC'}
-        priceChange="+1.54%"
-        isPriceUp={true}
-        isFavorite={isFavorite}
-        onFavoriteToggle={handleFavoriteToggle}
+        symbol={symbol}
       />
+
       <SwipeableTabs
         routes={routes}
         renderScene={renderScene}
@@ -405,12 +454,12 @@ export default function SymbolDepth() {
       />
 
       <BottomActionBar
-        buyPrice="184.00"
-        sellPrice="184.00"
-        spread={12}
+        symbol={symbol}
         onBuy={handleBuy}
         onSell={handleSell}
       />
     </View>
   )
-}
+})
+
+export default SymbolDepth

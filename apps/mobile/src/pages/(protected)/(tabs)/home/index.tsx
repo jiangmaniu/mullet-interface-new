@@ -1,7 +1,8 @@
 import { ScrollView, View, Pressable } from 'react-native'
-import { Trans } from '@lingui/react/macro'
+import { Trans, useLingui } from '@lingui/react/macro'
 import React, { useState, useCallback } from 'react'
-import { useRouter } from 'expo-router'
+import { router, useRouter } from 'expo-router'
+import { BNumber } from '@mullet/utils/number'
 
 import { AreaChart, ChartData } from '@/components/trading-view'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,11 +10,19 @@ import { IconifyBell, IconifySearch, IconDepth, IconDepthTB } from '@/components
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { CollapsibleTab, CollapsibleTabScene, CollapsibleFlatList, CollapsibleStickyHeader, CollapsibleStickyContent, CollapsibleStickyNavBar } from '@/components/ui/collapsible-tab'
 import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useResolveClassNames } from 'uniwind'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { getImgSource } from '@/utils/img'
+import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { observer } from 'mobx-react-lite'
+import { EmptyState } from '@/components/states/empty-state'
+import { parseRiseAndFallInfo } from '@/helpers/market'
+import { symbol } from 'zod'
 
 // ============ HomeHeader ============
 function HomeHeader() {
@@ -116,47 +125,65 @@ function MarketOverview() {
   )
 }
 
+const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
+  return (
+    <View className="flex-row items-center gap-medium flex-1">
+      <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
+      <View>
+        <Text className="text-paragraph-p2 text-content-1">{symbolInfo.symbol}</Text>
+        <Text className="text-paragraph-p3 text-content-4">{symbolInfo.alias}</Text>
+      </View>
+    </View>
+  )
+})
+
+const MarketRow = observer(({ viewMode, symbolInfo }: { viewMode: ViewMode, symbolInfo: Account.TradeSymbolListItem }) => {
+  const { trade } = useStores()
+
+  const handlePress = () => {
+    trade.switchSymbol(symbolInfo.symbol)
+    subscribeCurrentAndPositionSymbol({ cover: true })
+    router.push(`/${symbolInfo.symbol}`)
+  }
+
+  return (
+    <Pressable onPress={handlePress} >
+      {viewMode === ViewMode.Market ? <AssetMarketRow symbolInfo={symbolInfo} /> : <AssetPriceRow symbolInfo={symbolInfo} />
+      }
+    </Pressable>
+  )
+})
+
 // ============ AssetRow ============
-interface AssetRowProps {
-  symbol: string
-  name: string
-  price: string
-  change: number
-  chartData?: ChartData[]
+interface AssetMarketRowProps {
+  symbolInfo: Account.TradeSymbolListItem
 }
 
-function AssetRow({ symbol, name, price, change, chartData = [] }: AssetRowProps) {
-  const isPositive = change >= 0
+const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
   const { colorMarketRise, colorMarketFall } = useThemeColors()
+  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.askDiff)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   return (
     <View className="flex-row items-center p-xl gap-xl">
-      <View className="flex-row items-center gap-medium flex-1">
-        <Avatar className="size-6 flex-shrink-0">
-          <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol[0]}</Text>
-          </AvatarFallback>
-        </Avatar>
-        <View>
-          <Text className="text-paragraph-p2 text-content-1">{symbol}</Text>
-          <Text className="text-paragraph-p3 text-content-4">{name}</Text>
-        </View>
-      </View>
+      <SymbolInfoCell symbolInfo={symbolInfo} />
 
       <View className='flex-row flex-shrink-0 gap-xl w-[192px]'>
         <View className="w-[60px] h-8 items-center justify-center overflow-hidden">
-          <AreaChart data={chartData} lineColor={isPositive ? colorMarketRise : colorMarketFall} />
+          <AreaChart data={generateMockData(20, 91000)} lineColor={askPriceChangeInfo.isRise ? colorMarketRise : colorMarketFall} />
         </View>
         <View className="flex-1 items-end">
-          <Text className="text-paragraph-p1 text-content-1">{price}</Text>
-          <Text className={cn('text-paragraph-p2', isPositive ? 'text-market-rise' : 'text-market-fall')}>
-            {isPositive ? '+' : ''}{change.toFixed(2)}%
+          <Text className={cn("text-paragraph-p1", askPriceChangeInfo.isRise ? 'text-market-rise' : askPriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}</Text>
+          <Text className={cn('text-paragraph-p2', percentChangeInfo.isRise ? 'text-market-rise' : percentChangeInfo.isFall ? 'text-market-fall' : 'text-content-1')}>
+            {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
           </Text>
         </View>
       </View>
     </View>
   )
-}
+})
 
 // ============ Mock Data ============
 function generateMockData(count: number, startValue: number): ChartData[] {
@@ -171,109 +198,88 @@ function generateMockData(count: number, startValue: number): ChartData[] {
   return data
 }
 
-type AssetItem = {
-  id: string
-  symbol: string
-  name: string
-  price: string
-  change: number
-  chartData: ChartData[]
-  buyPrice: string
-  sellPrice: string
-  highPrice: string
-  lowPrice: string
-}
-
-const MOCK_ASSETS: AssetItem[] = [
-  { id: '1', symbol: 'SOL-USDC', name: 'Solana', price: '148.00', change: 1.45, chartData: generateMockData(20, 140), buyPrice: '186.00', sellPrice: '186.00', highPrice: '180.00', lowPrice: '180.00' },
-  { id: '2', symbol: 'XAU-USDC', name: '现货黄金', price: '148.00', change: -1.45, chartData: generateMockData(20, 148), buyPrice: '486.00', sellPrice: '486.00', highPrice: '480.00', lowPrice: '480.00' },
-  { id: '3', symbol: 'BTC-USDC', name: 'Bitcoin', price: '91,988.00', change: 2.13, chartData: generateMockData(20, 91000), buyPrice: '198,652.0', sellPrice: '198,186.00', highPrice: '198,280.0', lowPrice: '198,280.0' },
-  { id: '4', symbol: 'SOL-USDC', name: 'Solana', price: '148.00', change: 1.45, chartData: generateMockData(20, 140), buyPrice: '186.00', sellPrice: '186.00', highPrice: '180.00', lowPrice: '180.00' },
-  { id: '5', symbol: 'XAU-USDC', name: '现货黄金', price: '148.00', change: -1.45, chartData: generateMockData(20, 148), buyPrice: '486.00', sellPrice: '486.00', highPrice: '480.00', lowPrice: '480.00' },
-  { id: '6', symbol: 'BTC-USDC', name: 'Bitcoin', price: '91,988.00', change: -0.85, chartData: generateMockData(20, 91000), buyPrice: '198,652.0', sellPrice: '198,186.00', highPrice: '198,280.0', lowPrice: '198,280.0' },
-]
-
-function AssetTradeHeader({ viewMode }: { viewMode: 'list' | 'trade' }) {
+function AssetTradeHeader({ viewMode }: { viewMode: ViewMode }) {
   return (
     <View className="flex-row items-center justify-between py-medium px-xl mt-xl">
       <Text className="text-paragraph-p3 text-content-5 flex-1"><Trans>品类</Trans></Text>
       <View className='flex-row gap-xl flex-shrink-0'>
         <Text className="text-paragraph-p3 text-content-5 w-[90px]">
-          {viewMode === 'list' ? <Trans>走势</Trans> : <Trans>买价</Trans>}
+          {viewMode === ViewMode.Market ? <Trans>走势</Trans> : <Trans>买价</Trans>}
         </Text>
         <Text className="text-paragraph-p3 text-content-5 w-[90px] text-right">
-          {viewMode === 'list' ? <Trans>价格/涨跌幅</Trans> : <Trans>卖价</Trans>}
+          {viewMode === ViewMode.Market ? <Trans>价格/涨跌幅</Trans> : <Trans>卖价</Trans>}
         </Text>
       </View>
     </View>
   )
 }
 
-// ============ AssetTradeRow ============
-interface AssetTradeRowProps {
-  symbol: string
-  name: string
-  buyPrice: string
-  sellPrice: string
-  highPrice: string
-  lowPrice: string
+// ============ AssetPriceRow ============
+interface AssetPriceRowProps {
+  symbolInfo: Account.TradeSymbolListItem
 }
 
-function AssetTradeRow({ symbol, name, buyPrice, sellPrice, highPrice, lowPrice }: AssetTradeRowProps) {
+const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+
   return (
     <View className="flex-row items-center p-xl gap-xl">
-      <View className="flex-row items-center gap-medium flex-1">
-        <Avatar className="size-6 flex-shrink-0">
-          <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol[0]}</Text>
-          </AvatarFallback>
-        </Avatar>
-        <View>
-          <Text className="text-paragraph-p2 text-content-1">{symbol}</Text>
-          <Text className="text-paragraph-p3 text-content-4">{name}</Text>
-        </View>
-      </View>
+      <SymbolInfoCell symbolInfo={symbolInfo} />
 
       <View className='flex-row flex-shrink-0 gap-xl w-[192px]'>
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border border-market-rise rounded-small flex-col items-center justify-center h-[24px]">
-            <Text className="text-paragraph-p2 text-market-rise">{buyPrice}</Text>
+            <Text className="text-paragraph-p2 text-market-rise">{BNumber.toFormatNumber(symbolMarketInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}</Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-4">最高 {highPrice}</Text>
+          <Text className="text-paragraph-p3 text-content-4">最高 {BNumber.toFormatNumber(symbolMarketInfo?.high, { volScale: symbolInfo?.symbolDecimal })}</Text>
         </View>
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border border-market-fall rounded-small flex-col items-center justify-center h-[24px]">
-            <Text className="text-paragraph-p2 text-market-fall">{sellPrice}</Text>
+            <Text className="text-paragraph-p2 text-market-fall">{BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}</Text>
           </View>
-          <Text className="text-content-4 text-paragraph-p3 text-right">最低 {lowPrice}</Text>
+          <Text className="text-content-4 text-paragraph-p3 text-right">最低 {BNumber.toFormatNumber(symbolMarketInfo?.low, { volScale: symbolInfo?.symbolDecimal })}</Text>
         </View>
       </View>
     </View>
   )
-}
+})
 
 // ============ Main Index ============
-function AssetTabList({ viewMode }: { viewMode: string }) {
-  const renderListItem = useCallback(({ item }: { item: AssetItem }) => (
-    <AssetRow symbol={item.symbol} name={item.name} price={item.price} change={item.change} chartData={item.chartData} />
-  ), [])
+const AssetTabListContent = observer(({ viewMode, categoryOption }: { viewMode: ViewMode, categoryOption: SymbolCategoryOption }) => {
+  const { trade } = useStores()
+  let tradeList = trade.favoriteList
 
-  const renderTradeItem = useCallback(({ item }: { item: AssetItem }) => (
-    <AssetTradeRow symbol={item.symbol} name={item.name} buyPrice={item.buyPrice} sellPrice={item.sellPrice} highPrice={item.highPrice} lowPrice={item.lowPrice} />
-  ), [])
+  if (categoryOption.value !== SymbolCategory.Favorite) {
+    tradeList = categoryOption.value === SymbolCategory.All ?
+      trade.symbolListAll :
+      trade.symbolListAll.filter((item) => item.classify === categoryOption.value)
+  }
 
   return (
     <CollapsibleFlatList
-      data={MOCK_ASSETS}
-      keyExtractor={(item) => item.id}
-      renderItem={viewMode === 'list' ? renderListItem : renderTradeItem}
+      data={tradeList}
+      keyExtractor={(item) => item.symbol}
+      renderItem={({ item }: { item: Account.TradeSymbolListItem }) => {
+        return <MarketRow viewMode={viewMode} symbolInfo={item} />
+      }}
+      ListEmptyComponent={<View className='py-[96px]'>
+        <EmptyState message={<Trans>暂无数据</Trans>} />
+      </View>}
     />
   )
-}
+})
 
+enum ViewMode {
+  Market,
+  Price
+}
 export default function Index() {
-  const [viewMode, setViewMode] = useState<'list' | 'trade'>('list')
+  const [viewMode, setViewMode] = useState(ViewMode.Market)
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
+  const { i18n } = useLingui()
+
+  const initialTab = SYMBOL_CATEGORY_OPTIONS.find(item => item.value === SymbolCategory.All)
 
   const renderHeader = useCallback(() => (
     <CollapsibleStickyHeader className="bg-secondary">
@@ -289,34 +295,32 @@ export default function Index() {
       <CollapsibleTab
         variant="underline"
         size="md"
+        initialTabName={initialTab?.value}
         renderHeader={renderHeader}
         renderTabBarRight={() => (
           <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
             <TabsList variant="icon" size="sm">
-              <TabsTrigger value="list" className="size-5">
-                <IconDepthTB width={12} height={12} color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1} />
+              <TabsTrigger value={ViewMode.Market} className="size-5">
+                <IconDepthTB width={12} height={12} color={viewMode === ViewMode.Market ? colorMarketFall : colorBrandSecondary1} />
               </TabsTrigger>
-              <TabsTrigger value="trade" className="size-5">
-                <IconDepth width={12} height={12} color={viewMode === 'trade' ? colorMarketFall : colorBrandSecondary1} primaryColor={viewMode === 'trade' ? colorMarketRise : colorBrandSecondary1} />
+              <TabsTrigger value={ViewMode.Price} className="size-5">
+                <IconDepth width={12} height={12} color={viewMode === ViewMode.Price ? colorMarketFall : colorBrandSecondary1} primaryColor={viewMode === ViewMode.Price ? colorMarketRise : colorBrandSecondary1} />
               </TabsTrigger>
             </TabsList>
           </Tabs>
         )}
         renderTabBarBottom={() => (<AssetTradeHeader viewMode={viewMode} />)}
       >
-        <CollapsibleTabScene name="watchlist" label="自选">
-          <AssetTabList viewMode={viewMode} />
-        </CollapsibleTabScene>
-        <CollapsibleTabScene name="all" label="全部">
-          <AssetTabList viewMode={viewMode} />
-        </CollapsibleTabScene>
-        <CollapsibleTabScene name="hot" label="热门">
-          <AssetTabList viewMode={viewMode} />
-        </CollapsibleTabScene>
-        <CollapsibleTabScene name="gainers" label="涨跌幅">
-          <AssetTabList viewMode={viewMode} />
-        </CollapsibleTabScene>
+        {SYMBOL_CATEGORY_OPTIONS.map((categoryOption) => {
+          const label = i18n._(categoryOption.label)
+          return (
+            <CollapsibleTabScene key={categoryOption.value} name={categoryOption.value} label={label}>
+              <AssetTabListContent viewMode={viewMode} categoryOption={categoryOption} />
+            </CollapsibleTabScene>
+          )
+        })}
       </CollapsibleTab>
     </View>
   )
 }
+
