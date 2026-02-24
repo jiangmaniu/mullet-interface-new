@@ -5,11 +5,13 @@ import { useLingui } from '@lingui/react/macro'
 import { IconHome, IconifyActivity, IconifyHomeSimple, IconifyWallet, IconTrade, IconWallet } from '@/components/ui/icons'
 import { useResolveClassNames } from 'uniwind'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export default function TabLayout() {
   const { t } = useLingui()
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
   const tabBarLabelStyle = useResolveClassNames('text-paragraph-p3')
+  const insets = useSafeAreaInsets()
 
   return (
     <Tabs
@@ -20,6 +22,8 @@ export default function TabLayout() {
         tabBarLabelStyle: tabBarLabelStyle,
         tabBarStyle: {
           borderTopWidth: 0,
+          paddingBottom: insets.bottom,
+          height: 60 + insets.bottom,
         },
       }}
     >
