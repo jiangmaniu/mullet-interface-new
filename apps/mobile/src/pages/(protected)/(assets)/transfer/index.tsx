@@ -10,6 +10,7 @@ import { Trans } from '@lingui/react/macro';
 import { useState } from 'react';
 import { Pressable, View } from "react-native";
 import { AccountSelectionDrawer, Account } from './_comps/account-selection-drawer';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const INITIAL_ACCOUNTS: Account[] = [
 	{ id: '88234911', type: 'STP', balance: '10,234.50', currency: 'USDC' },
@@ -99,7 +100,7 @@ export default function TransferScreen() {
 							<Text className="text-paragraph-p3 text-content-1">
 								{fromAccount.balance} {fromAccount.currency}
 							</Text>
-							<IconButton variant='ghost' color='primary'>
+							<IconButton color='primary'>
 								<IconifyPlusCircle width={14} height={14} />
 							</IconButton>
 						</View>
@@ -109,18 +110,19 @@ export default function TransferScreen() {
 
 
 			{/* Footer Button */}
-			<View
-				className="p-4"
-			>
-				<Button
-					size="lg"
-					color='primary'
-					disabled={amount === ''}
-					onPress={() => { }}
-				>
-					<Text><Trans>确定</Trans></Text>
-				</Button>
-			</View>
+			<SafeAreaView edges={['bottom']}>
+				<View className="px-5 py-3xl">
+					<Button
+						size="lg"
+						color='primary'
+						disabled={amount === ''}
+						onPress={() => { }}
+					>
+						<Text><Trans>确定</Trans></Text>
+					</Button>
+				</View>
+			</SafeAreaView>
+
 
 			<AccountSelectionDrawer
 				visible={isFromDrawerOpen}

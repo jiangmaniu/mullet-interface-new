@@ -122,7 +122,7 @@ export default function WalletCreditCardDepositScreen() {
 
 			{/* Bottom button */}
 			<SafeAreaView edges={['bottom']}>
-				<View className="px-5 py-6">
+				<View className="px-5 py-3xl">
 					<Button
 						block
 						size="lg"

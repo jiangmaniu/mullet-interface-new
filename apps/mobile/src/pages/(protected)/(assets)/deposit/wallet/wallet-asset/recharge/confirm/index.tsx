@@ -178,7 +178,7 @@ export default function ConfirmOrderScreen() {
 
 			{/* 底部操作区 */}
 			<SafeAreaView edges={['bottom']}>
-				<View className="px-5 py-6 gap-xl">
+				<View className="px-5 py-3xl gap-xl">
 					{['idle', 'processing'].includes(status) && (
 						<Text className="text-button-1 text-content-4 text-center">
 							<Trans>点击确认订单，即表示您同意</Trans>

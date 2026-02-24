@@ -141,7 +141,7 @@ export default function WalletCryptoDepositScreen() {
 
 			{/* 底部按钮 */}
 			<SafeAreaView edges={['bottom']}>
-				<View className="px-5 py-6">
+				<View className="px-5 py-3xl">
 					<Button block size="lg" color="primary" onPress={handleConfirmDeposit}>
 						<Text><Trans>确定存款</Trans></Text>
 					</Button>
