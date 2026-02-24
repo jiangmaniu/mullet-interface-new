@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { useResolveClassNames } from 'uniwind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, {
   useAnimatedStyle,
   interpolate,
@@ -269,7 +270,14 @@ export function CollapsibleTab({
             )}
           />
           {renderTabBarRight && (
-            <View className='flex-shrink-0'>
+            <View className='flex-shrink-0 flex-row items-center'>
+              <LinearGradient
+                colors={['transparent', backgroundColorSecondary]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ width: 24, position: 'absolute', left: -24, top: 0, bottom: 2 }}
+                pointerEvents="none"
+              />
               {renderTabBarRight()}
             </View>
           )}
