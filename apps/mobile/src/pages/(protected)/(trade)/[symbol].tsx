@@ -18,6 +18,7 @@ import { IconStar } from '@/components/ui/icons/set/star'
 import { Trans } from '@lingui/react/macro'
 import { t } from '@/locales/i18n'
 import { TimePeriodDrawer } from './_comps/time-period-drawer'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
@@ -316,34 +317,36 @@ interface BottomActionBarProps {
 
 function BottomActionBar({ buyPrice, sellPrice, spread, onBuy, onSell }: BottomActionBarProps) {
   return (
-    <View className="px-xl mb-xl py-medium">
-      <View className='flex-row gap-medium items-center relative'>
-        <Pressable
-          onPress={onBuy}
-          className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-rise"
-        >
-          <Text className="text-button-2 font-medium text-market-rise-foreground">{buyPrice}</Text>
-          <Text className="text-button-2 ml-xs text-market-rise-foreground">
-            <Trans>买入/做多</Trans>
-          </Text>
-        </Pressable>
+    <SafeAreaView edges={['bottom']}>
+      <View className="px-xl mb-xl py-medium">
+        <View className='flex-row gap-medium items-center relative'>
+          <Pressable
+            onPress={onBuy}
+            className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-rise"
+          >
+            <Text className="text-button-2 font-medium text-market-rise-foreground">{buyPrice}</Text>
+            <Text className="text-button-2 ml-xs text-market-rise-foreground">
+              <Trans>买入/做多</Trans>
+            </Text>
+          </Pressable>
 
-        {/* Spread Badge */}
-        <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
-          <Text className="text-paragraph-p3 text-market-content-foreground">{spread}</Text>
+          {/* Spread Badge */}
+          <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
+            <Text className="text-paragraph-p3 text-market-content-foreground">{spread}</Text>
+          </View>
+
+          <Pressable
+            onPress={onSell}
+            className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-fall"
+          >
+            <Text className="text-button-2 font-medium text-market-fall-foreground">{sellPrice}</Text>
+            <Text className="text-button-2 ml-xs text-market-fall-foreground">
+              <Trans>卖出/做空</Trans>
+            </Text>
+          </Pressable>
         </View>
-
-        <Pressable
-          onPress={onSell}
-          className="flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center bg-market-fall"
-        >
-          <Text className="text-button-2 font-medium text-market-fall-foreground">{sellPrice}</Text>
-          <Text className="text-button-2 ml-xs text-market-fall-foreground">
-            <Trans>卖出/做空</Trans>
-          </Text>
-        </Pressable>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
