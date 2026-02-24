@@ -162,6 +162,8 @@ function CustomTabItem({
   });
 
   const handlePress = () => {
+    // 如果当前 tab 已选中，不触发 onPress 以避免双击滚动到顶部
+    if (Math.abs(index - indexDecimal.value) < 0.5) return;
     Haptics.selectionAsync();
     onPress();
   }
