@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils'
 import { IconButton } from './button'
 import { IconifyXmark } from './icons'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 const { height: screenHeight } = Dimensions.get('window')
 
@@ -238,16 +239,18 @@ interface DrawerContentProps extends ViewProps {
 function DrawerContent({ className, children, ref, ...props }: DrawerContentProps) {
   return (
     <DrawerPortal>
-      <View
-        ref={ref}
-        className={cn(
-          'bg-special rounded-t-large gap-3xl',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </View>
+      <SafeAreaView edges={['bottom']}>
+        <View
+          ref={ref}
+          className={cn(
+            'bg-special rounded-t-large gap-3xl',
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </View>
+      </SafeAreaView>
     </DrawerPortal>
   )
 }
