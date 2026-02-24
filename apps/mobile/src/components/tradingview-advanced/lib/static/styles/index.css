@@ -1,0 +1,30 @@
+/* stylelint-disable */
+
+/* 禁止左上角symbol查询点击 */
+#header-toolbar-symbol-search{
+  pointer-events: none;
+}
+#header-toolbar-symbol-search .icon-GwQQdU8S {
+  display: none;
+}
+.button-cq__ntSC {
+  width: auto !important;
+}
+
+/* 手机端适配 */
+@media screen and (width <= 767px) {
+  /* 隐藏指标图例设置按钮 */
+  .legendMainSourceWrapper-l31H9iuA .noWrapWrapper-l31H9iuA {
+    display: none !important;
+  }
+  /* 指标图例高开低收大小等设置 */
+  .valuesAdditionalWrapper-l31H9iuA {
+    font-size: 10px !important;
+    display: flex !important;
+    line-height: 18px !important;
+  }
+}
+
+.chart-controls-bar [data-name="percentage"],.chart-controls-bar [data-name="logarithm"]{
+  display: none;
+}
