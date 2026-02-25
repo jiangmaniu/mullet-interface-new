@@ -2,6 +2,7 @@ import { PLATFORM } from '../constants'
 import { CC_TradingviewThemeCssVar } from './theme.cc'
 import { CDEX_TradingviewThemeCssVar } from './theme.cdex'
 import { MC_TradingviewThemeCssVar } from './theme.mc'
+import { MULLET_TradingviewThemeCssVar } from './theme.mullet'
 
 // 各个项目的主色
 export const PLATFORMThemeConst = {
@@ -10,7 +11,8 @@ export const PLATFORMThemeConst = {
     textPrimary: '#C49002' // 文字主色按钮
   },
   mc: {},
-  cc: {}
+  cc: {},
+  mullet: {}
 }[PLATFORM]
 
 export const DEFAULT_COLOR = '#2962ff'
@@ -28,5 +30,6 @@ export const ThemeConst = {
 export const getTradingviewThemeCssVar = {
   cdex: CDEX_TradingviewThemeCssVar,
   cc: CC_TradingviewThemeCssVar,
-  mc: MC_TradingviewThemeCssVar
+  mc: MC_TradingviewThemeCssVar,
+  mullet: MULLET_TradingviewThemeCssVar
 }[PLATFORM]

@@ -5,7 +5,7 @@ const { publicRuntimeConfig } = getConfig()
 
 export const KEY_TRADINGVIEW_CHART_PROPS = 'tradingview.chartproperties'
 
-type platform = 'cdex' | 'mc' | 'cc'
+type platform = 'cdex' | 'mc' | 'cc' | 'mullet'
 export const PLATFORM: platform = publicRuntimeConfig.PLATFORM || 'cdex'
 export const BASE_PATH = publicRuntimeConfig.BASE_PATH
 export const isProd = process.env.NODE_ENV === 'production'
@@ -38,5 +38,7 @@ export const WEBSOCKET_URLS = {
     'wss://tradeapi-jf-mc3.djueap.com:4434/trade'
   ],
   // 暂时写死
-  cc: ['wss://tradeapi-cc.gwskfs.com/api/gw/noauth/websocks/mt5sock', 'wss://tradeapi-cc.beewd.com/api/gw/noauth/websocks/mt5sock']
+  cc: ['wss://tradeapi-cc.gwskfs.com/api/gw/noauth/websocks/mt5sock', 'wss://tradeapi-cc.beewd.com/api/gw/noauth/websocks/mt5sock'],
+  // mullet平台
+  mullet: ['wss://websocket.stellux.io/websocketServer']
 }[PLATFORM]

@@ -6,7 +6,8 @@ const getOrigin = () => {
   return {
     cdex: 'mt.cd-ex.com',
     mc: 'traderview.mctzglobals.com',
-    cc: 'wap.gwcdf.com'
+    cc: 'wap.gwcdf.com',
+    mullet: 'client.stellux.io'
   }[PLATFORM]
 }
 
