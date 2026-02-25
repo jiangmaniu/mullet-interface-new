@@ -2,6 +2,8 @@
 const { getDefaultConfig } = require('expo/metro-config')
 const { withUniwindConfig } = require('uniwind/metro');
 const { createInspectorMiddleware } = require('react-native-dev-inspector/metro');
+const path = require('path');
+const fs = require('fs');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname)
@@ -50,6 +52,37 @@ const inspectorMiddleware = createInspectorMiddleware({
   editor: 'cursor',
 })
 
+// TradingView 静态文件中间件 - 开发环境提供本地文件服务
+const TRADINGVIEW_SOURCE_DIR = path.join(__dirname, 'src/components/tradingview-advanced/source')
+const MIME_TYPES = {
+  '.html': 'text/html',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+}
+
+function tradingviewMiddleware(req, res, next) {
+  if (!req.url.startsWith('/tradingview/')) return next()
+
+  const relativePath = req.url.replace('/tradingview/', '').split('?')[0]
+  const filePath = path.join(TRADINGVIEW_SOURCE_DIR, relativePath || 'index.html')
+
+  if (!fs.existsSync(filePath) || !filePath.startsWith(TRADINGVIEW_SOURCE_DIR)) {
+    return next()
+  }
+
+  const ext = path.extname(filePath)
+  const contentType = MIME_TYPES[ext] || 'application/octet-stream'
+
+  res.setHeader('Content-Type', contentType)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  fs.createReadStream(filePath).pipe(res)
+}
+
 const existingEnhanceMiddleware = uniwindConfig.server?.enhanceMiddleware
 
 module.exports = {
@@ -62,10 +95,12 @@ module.exports = {
       if (existingEnhanceMiddleware) {
         enhanced = existingEnhanceMiddleware(metroMiddleware, server)
       }
-      // 再添加 Inspector 中间件
+      // 再添加 Inspector 中间件和 TradingView 静态文件中间件
       return (req, res, next) => {
-        inspectorMiddleware(req, res, () => {
-          enhanced(req, res, next)
+        tradingviewMiddleware(req, res, () => {
+          inspectorMiddleware(req, res, () => {
+            enhanced(req, res, next)
+          })
         })
       }
     },

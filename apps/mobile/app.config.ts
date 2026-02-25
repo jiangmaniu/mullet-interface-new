@@ -100,6 +100,8 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/queries.js',
       // Android 网络安全配置 - 解决 SSL 证书验证问题
       './plugins/withNetworkSecurityConfig.js',
+      // TradingView Advanced Charts - 复制 charting library 到原生 assets
+      './plugins/withTradingView.js',
       // Android SSL 信任所有证书 - 已删除，使用 HTTP 临时过渡
       // iOS 禁用代码签名 - 解决开发环境无证书问题
       // './plugins/withDisableCodeSigning.js',
