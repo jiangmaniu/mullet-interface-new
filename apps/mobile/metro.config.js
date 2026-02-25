@@ -1,9 +1,9 @@
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config')
-const { withUniwindConfig } = require('uniwind/metro');
-const { createInspectorMiddleware } = require('react-native-dev-inspector/metro');
-const path = require('path');
-const fs = require('fs');
+const { withUniwindConfig } = require('uniwind/metro')
+const { createInspectorMiddleware } = require('react-native-dev-inspector/metro')
+const path = require('path')
+const fs = require('fs')
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname)
@@ -44,7 +44,7 @@ config.transformer.babelTransformerPath = require.resolve('@lingui/metro-transfo
 // 应用 Uniwind 配置
 const uniwindConfig = withUniwindConfig(config, {
   cssEntryFile: './src/app/global.css',
-  dtsFile: './types/uniwind-types.d.ts'
+  dtsFile: './types/uniwind-types.d.ts',
 })
 
 // 手动添加 Inspector 中间件（避免覆盖 Uniwind 配置）
@@ -53,7 +53,7 @@ const inspectorMiddleware = createInspectorMiddleware({
 })
 
 // TradingView 静态文件中间件 - 开发环境提供本地文件服务
-const TRADINGVIEW_SOURCE_DIR = path.join(__dirname, 'src/components/tradingview-advanced/source')
+const TRADINGVIEW_SOURCE_DIR = path.join(__dirname, 'src/components/tradingview-advanced/lib')
 const MIME_TYPES = {
   '.html': 'text/html',
   '.js': 'application/javascript',

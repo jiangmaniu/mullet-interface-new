@@ -15,11 +15,13 @@ const SOURCE_DIR = path.join(
   'src',
   'components',
   'tradingview-advanced',
-  'source'
+  'lib'
 );
 
 function copyDirSync(src, dest) {
-  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(src)) {
+    throw new Error(`TradingView source directory not found: ${src}`);
+  }
   fs.mkdirSync(dest, { recursive: true });
 
   for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
