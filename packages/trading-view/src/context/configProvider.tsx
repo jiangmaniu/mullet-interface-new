@@ -18,7 +18,7 @@ type ProviderType = {
 }
 
 interface IProps {
-  children: JSX.Element
+  children: React.ReactNode
 }
 
 const Context = createContext<ProviderType>({})

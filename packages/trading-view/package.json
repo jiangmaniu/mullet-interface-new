@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "postinstall": "cross-env PLATFORM=mullet next build",
     "build:cdex": "cross-env PLATFORM=cdex next build",
     "build:cdex:tradingview": "cross-env PLATFORM=cdex BASE_PATH=/tradingview next build",
     "build:mc": "cross-env PLATFORM=mc next build",

@@ -20,7 +20,7 @@ import { applyOverrides, ColorType, setChartStyleProperties, setCSSCustomPropert
 import getWidgetOpts from './widgetOpts'
 
 export const TVChart = () => {
-  const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>
+  const chartContainerRef = useRef<HTMLDivElement>(null)
   const { ws } = useStores()
   const { isMobile, isIpad, isPc } = useConfig()
   const { query } = useRouter()
