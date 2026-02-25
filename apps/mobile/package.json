@@ -7,6 +7,7 @@
     "start:test": "ENV=test expo start",
     "start:prod": "ENV=prod expo start",
     "prebuild": "node ./scripts/prebuild.js",
+    "build:tradingview": "pnpm --filter @mullet/trading-view build:mullet",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "ENV=dev expo run:android --port 8131",
     "android:test": "ENV=test expo run:android --port 8131",
@@ -22,6 +23,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@mullet/trading-view": "workspace:*",
     "@mullet/utils": "workspace:*",
     "@dev-plugins/react-query": "^0.4.0",
     "@ethersproject/shims": "^5.8.0",

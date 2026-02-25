@@ -53,7 +53,10 @@ const inspectorMiddleware = createInspectorMiddleware({
 })
 
 // TradingView 静态文件中间件 - 开发环境提供本地文件服务
-const TRADINGVIEW_SOURCE_DIR = path.join(__dirname, 'src/components/tradingview-advanced/lib')
+const TRADINGVIEW_SOURCE_DIR = path.join(
+  path.dirname(require.resolve('@mullet/trading-view/package.json')),
+  'dist'
+)
 const MIME_TYPES = {
   '.html': 'text/html',
   '.js': 'application/javascript',

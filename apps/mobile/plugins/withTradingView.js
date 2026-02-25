@@ -9,13 +9,10 @@ const path = require('path');
  * iOS: 复制到 ios/<projectName>/tradingview/ 并添加到 Xcode 项目
  */
 
+// 从 @mullet/trading-view 包的 dist 目录读取构建产物
 const SOURCE_DIR = path.join(
-  __dirname,
-  '..',
-  'src',
-  'components',
-  'tradingview-advanced',
-  'lib'
+  path.dirname(require.resolve('@mullet/trading-view/package.json')),
+  'dist'
 );
 
 function copyDirSync(src, dest) {
