@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+
+message LogIn {
+  uint64 login = 1;
+  string pwd = 2;
+  uint32 device = 3;
+}

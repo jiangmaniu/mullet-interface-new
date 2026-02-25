@@ -1,0 +1,25 @@
+# docker-compose -f docker-compose.yml up -d(后台启动)
+version: '3.0'
+
+services:
+  nginx:
+    image: nginx # 使用官方镜像
+    container_name: tradingview-dev-nginx
+    ports:
+      - 8900:80 # 本地端口:容器端口
+    restart: on-failure
+    volumes: # 映射本地目录到容器目录
+      - ./.docker-volumes/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./.docker-volumes/nginx/conf.d:/etc/nginx/conf.d
+      # - ./.docker-volumes/nginx/html:/usr/share/nginx/html
+      # 本地测试直接访问打包的dist目录
+      - ./dist:/usr/share/nginx/html
+      - ./.docker-volumes/nginx/log:/var/log/nginx
+    networks:
+      - my-server
+
+# 声明一下网桥  my-server。
+# 重要：将所有服务都挂载在同一网桥即可通过容器名来互相通信了
+# 如egg连接mysql和redis，可以通过容器名来互相通信
+networks:
+  my-server:

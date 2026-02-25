@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package com.ud.xcloud.mt5.proto;
+option java_outer_classname = "MtEventBuilder";
+
+message OrderEvent {
+  uint64 login = 1;
+  string sbl = 2;
+  optional int32 digit = 3;
+  double price = 4;
+  uint64 order = 5;
+  uint32 reason = 6;
+}
+message DealEvent {
+  uint64 login = 1;
+  string sbl = 2;
+  optional int32 digit = 3;
+  double price = 4;
+  uint64 order = 5;
+  uint32 reason = 6;
+  uint64 deal = 7;
+  uint64 position = 8;
+  uint32 vol = 9;
+}
+message SymbolStatic{
+  string sbl = 1;
+  optional int32 digit = 2;
+  uint64 ut = 3;
+  double askHigh = 4;
+  double askLow = 5;
+  double bidHigh = 6;
+  double bidLow = 7;
+  double lastHigh = 8;
+  double lastLow = 9;
+  double priceClose = 10;
+  double priceOpen = 11;
+}
+message MtOrder{
+  uint64 order = 1;
+  uint64 login = 2;
+  string symbol = 3;
+  int32 digit = 4;
+  uint64 ut = 5;
+  int32 type = 6;
+  double price = 7;
+  optional double sl = 8;
+  optional double tp = 9;
+  optional int64 expire = 10;
+  uint32 vol = 11;
+  optional double fee = 12;
+}
+message MtOrders{
+  repeated MtOrder orders = 1;
+}
+message MtPos{
+  uint64 position = 1;
+  uint64 login = 2;
+  string symbol = 3;
+  int32 digit = 4;
+  uint64 ut = 5;
+  int32 action = 6;
+  double price = 7;
+  uint32 vol = 8;
+  double storage = 9;
+  double sl = 10;
+  double tp = 11;
+}
+message MtPositions{
+  repeated MtPos positions = 1;
+}
+message MtBalance{
+  double balance = 1;
+  double equity = 2;
+  double margin = 3;
+  double marginfree = 4;
+}
+message SblSession{
+  int32 close = 1;
+  int32 close_h = 2;
+  int32 close_m = 3;
+  int32 day = 4;
+  int32 open = 5;
+  int32 open_h = 6;
+  int32 open_m = 7;
+  int32 type = 8;
+}
+message MtSymbol{
+  int32 consize = 1;
+  string cur_base = 2;
+  int32 cur_digit = 3;
+  string cur_margin = 4;
+  int32 cur_margin_digit = 5;
+  string cur_profit = 6;
+  int32 cur_profit_digit = 7;
+  int32 digit = 8;
+  double el = 9;
+  double ep = 10;
+  int32 et = 11;
+  int32 exec = 12;
+  int32 freezl = 13;
+  double margin_hedge = 14;
+  double margin_hold = 15;
+  double margin_hold_buy = 16;
+  double margin_hold_sell = 17;
+  double margin_init = 18;
+  double margin_init_buy = 19;
+  double margin_init_sell = 20;
+  double margin_rate_cur =  21;
+  double margin_rate_liq = 22;
+  string path = 23;
+  double pricemax = 24;
+  double pricemin = 25;
+  string sbl = 26;
+  int32 spread = 27;
+  int32 stopl = 28;
+  int32 swap_3day = 29;
+  double swap_long = 30;
+  int32 swap_mode = 31;
+  double swap_short = 32;
+  int32 vollimit = 33;
+  int32 volmax = 34;
+  int32 volmin = 35;
+  int32 volstep = 36;
+  repeated SblSession sessions = 37;
+}

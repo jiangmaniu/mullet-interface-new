@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package com.ud.xcloud.mt5.proto;
+option java_outer_classname = "UserInfoBuilder";
+
+message UserInfo {
+  uint64 login = 1;
+  string group = 2;
+  optional string phone = 3;
+  optional string email = 4;
+  uint32 leverage = 5;
+  optional uint32 agent = 6;
+  optional string name = 7;
+  uint32 rights = 8;
+  bool enable = 9;
+}

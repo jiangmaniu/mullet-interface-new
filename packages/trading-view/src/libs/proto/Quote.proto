@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.ud.xcloud.mt5.proto.quote;
+option java_outer_classname = "QuoteBuilder";
+
+message Tick {
+  optional int32 pos = 1;
+  double price = 2;
+  optional double vol = 3;
+}
+message QuoteMsg {
+  fixed64 ut = 1;
+  string sbl = 2;
+  optional uint32 digit = 3;
+  repeated Tick ask = 4;
+  repeated Tick bid = 5;
+  optional bool isbuy = 6;          //买卖1变动时,总是由于某一方成交导致的
+  optional double vfree = 7;        //买卖1变动时,成交量是多少
+}

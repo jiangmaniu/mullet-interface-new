@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package com.ud.xcloud.mt5.proto;
+option java_outer_classname = "MtQuestBuilder";
+
+message NewOrder {
+  optional string ip = 1;
+  string sbl = 2;
+  int32 act = 3;
+  int32 type = 4;
+  double price = 5;
+  uint64 vol = 6;
+  optional double sl = 7;
+  optional double tp = 8;
+  optional uint64 position = 9;
+  optional uint64 positionBy = 10;
+}
+message ModOrder{
+  uint64 ticket = 1;
+  optional double price = 2;
+  optional double sl = 3;
+  optional double tp = 4;
+}
+message ModPos{
+  uint64 ticket = 1;
+  optional double sl = 2;
+  optional double tp = 3;
+}
+message QSymbol {
+  optional string ip = 1;
+  string sbl = 2;
+}
+message Subscribe{
+  repeated QSymbol sbls = 1;
+}
+message Response{
+  optional string sbl = 1;
+  optional uint64 login = 2;
+  optional uint64 order = 3;
+  optional uint64 deal = 4;
+  optional uint64 vol = 5;
+  optional double price = 6;
+  optional double sl = 7;
+  optional double tp = 8;
+  optional int32 type = 9;
+  optional int32 digit = 10;
+  optional int32 status = 11;
+  optional int32 closed = 12;
+  optional double profit = 13;
+  optional double storage = 14;
+  optional double fee = 15;
+  optional string msg = 16;
+  optional int32 device = 17;
+}

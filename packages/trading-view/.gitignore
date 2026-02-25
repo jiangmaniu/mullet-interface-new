@@ -1,0 +1,9 @@
+node_modules/
+build/
+/dist
+out/
+
+.next
+.idea
+tsconfig.tsbuildinfo
+.docker-volumes/nginx/log
