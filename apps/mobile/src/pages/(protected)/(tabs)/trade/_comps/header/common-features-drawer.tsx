@@ -18,9 +18,11 @@ import {
 import { IconRecord } from '@/components/ui/icons/set/record'
 import { IconStar } from '@/components/ui/icons/set/star'
 import { IconStarFill } from '@/components/ui/icons/set/star-fill'
+import { isUndefined } from 'lodash-es'
 
 interface CommonFeaturesDrawerProps {
   open: boolean
+  isFavorite?: boolean
   onOpenChange: (open: boolean) => void
   onTradingSettings?: () => void
   onDeposit?: () => void
@@ -53,6 +55,7 @@ function FeatureItem({ icon, label, onPress }: FeatureItemProps) {
 
 export function CommonFeaturesDrawer({
   open,
+  isFavorite,
   onOpenChange,
   onTradingSettings,
   onDeposit,
@@ -60,13 +63,6 @@ export function CommonFeaturesDrawer({
   onBill,
   onFavorites,
 }: CommonFeaturesDrawerProps) {
-  const [isFavorited, setIsFavorited] = useState(false)
-
-  const handleFavoritesPress = () => {
-    setIsFavorited(!isFavorited)
-    // onFavorites?.()
-  }
-
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent className='gap-xl pb-3xl'>
@@ -104,11 +100,15 @@ export function CommonFeaturesDrawer({
 
           {/* Row 2 - 1 item aligned to start */}
           <View className="flex-row">
-            <FeatureItem
-              icon={isFavorited ? <IconStarFill width={28} height={28} className='text-brand-primary' /> : <IconStar width={28} height={28} className='text-content-1' />}
-              label={<Trans>收藏</Trans>}
-              onPress={handleFavoritesPress}
-            />
+            {
+              !isUndefined(isFavorite) && (
+                <FeatureItem
+                  icon={isFavorite ? <IconStarFill width={28} height={28} className='text-brand-primary' /> : <IconStar width={28} height={28} className='text-content-1' />}
+                  label={<Trans>收藏</Trans>}
+                  onPress={onFavorites}
+                />
+              )
+            }
           </View>
         </View>
       </DrawerContent>

@@ -116,9 +116,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     ...(volScale ? { mantissa: volScale } : {}),
   })
 
-  return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${
-    !isFrontUnit ? rearUnitLabel : ''
-  }`
+  return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${!isFrontUnit ? rearUnitLabel : ''}`
 }
 
 type formatAutoHideDecimalParams = {

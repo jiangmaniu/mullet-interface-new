@@ -198,6 +198,7 @@ function DrawerPortal({ children }: DrawerPortalProps) {
         <Animated.View
           style={[
             { maxHeight: screenHeight * 0.85 },
+            // { maxHeight: screenHeight * 1 },
             drawerAnimatedStyle,
           ]}
         >

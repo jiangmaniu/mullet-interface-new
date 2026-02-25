@@ -49,10 +49,15 @@ export function AccountSelectDrawer({
 	selectedAccountId,
 	onSelect,
 }: AccountSelectDrawerProps) {
+
+	// const { trade } = useStores()
+	// const realAccountList = accountList.filter((item) => !item.isSimulate)
 	const handleSelect = useCallback((account: Account) => {
 		onSelect(account);
 		onClose();
 	}, [onSelect, onClose]);
+
+
 
 	const routes = useMemo<Route[]>(() => [
 		{ key: 'real', title: t`真实账户` },

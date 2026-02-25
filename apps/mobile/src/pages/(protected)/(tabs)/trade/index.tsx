@@ -3,28 +3,17 @@ import { useState, useCallback, useEffect } from 'react'
 import { View, Pressable } from 'react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
-  IconifyActivity,
-  IconifyCandlestickChart,
-  IconifyMoreHoriz,
-  IconifyNavArrowDownSolid,
   IconifyNavArrowDown,
-  IconifyUserCircle,
-  IconifyPlusCircle,
   IconifyPage,
   IconNavArrowSuperior,
   IconNavArrowDown,
   IconifyNavArrowRight,
 } from '@/components/ui/icons'
 import { EmptyState } from '@/components/states/empty-state'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { ScreenHeader } from '@/components/ui/screen-header'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
 import { Trans } from '@lingui/react/macro'
-import { IconButton, Button } from '@/components/ui/button'
+import { IconButton } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   CollapsibleTab,
@@ -34,436 +23,17 @@ import {
   CollapsibleStickyContent,
   CollapsibleScrollView,
 } from '@/components/ui/collapsible-tab'
-import { Input } from '@/components/ui/input'
-import { t } from '@/locales/i18n'
-import { Switch } from '@/components/ui/switch'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import * as AccordionPrimitive from '@rn-primitives/accordion'
-import {
-  AccountSwitchDrawer,
-  type Account,
-} from '@/components/drawers/account-switch-drawer'
-import { OrderConfirmationDrawer } from './_comps/order-confirmation-drawer'
-import { ClosePositionDrawer } from './_comps/close-position-drawer'
-import { StopProfitLossDrawer } from './_comps/stop-profit-loss-drawer'
-import { CommonFeaturesDrawer } from './_comps/common-features-drawer'
-import { toast } from '@/components/ui/toast'
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { observer } from 'mobx-react-lite'
+import { TradeHeader } from './_comps/header'
+import { OrderPanel } from './_comps/order-panel'
+import { AccountCard } from './_comps/account-card'
+import { MOCK_POSITIONS, TradePositions } from './_comps/records/positions'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
-// ============ TradeHeader Component ============
-interface TradeHeaderProps {
-  symbol: string
-  priceChange: string
-  isPriceUp: boolean
-  onSymbolPress?: () => void
-  onMorePress?: () => void
-}
-
-function TradeHeader({
-  symbol,
-  priceChange,
-  isPriceUp,
-  onSymbolPress,
-  onMorePress,
-}: TradeHeaderProps) {
-  const router = useRouter()
-
-  const handleViewChange = useCallback((view: 'chart' | 'depth') => {
-    if (view === 'chart') {
-      // Already on chart view, do nothing
-      return
-    } else {
-      // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
-      router.push('/SOL-USDC')
-    }
-  }, [router])
-
-  return (
-    <ScreenHeader
-      showBackButton={false}
-      left={
-        <View className="flex-row items-center gap-medium">
-          <Pressable
-            onPress={onSymbolPress}
-            className="flex-row items-center gap-medium"
-          >
-            <Avatar className="size-[30px]">
-              <AvatarFallback className="bg-[#9945FF]">
-                <Text className="text-white text-xs">S</Text>
-              </AvatarFallback>
-            </Avatar>
-            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbol}</Text>
-            <Text className={isPriceUp ? 'text-market-rise' : 'text-market-fall'}>
-              {priceChange}
-            </Text>
-            <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
-          </Pressable>
-        </View>
-      }
-      right={
-        <View className="flex-row items-center gap-xl">
-          <View className={cn('flex-row rounded-full border border-brand-default overflow-hidden p-[3px]')}>
-            <Pressable
-              onPress={() => handleViewChange('chart')}
-              className="w-[36px] h-[24px] rounded-full justify-center items-center bg-button"
-            >
-              <IconifyActivity width={22} height={22} className="text-content-1" />
-            </Pressable>
-            <Pressable
-              onPress={() => handleViewChange('depth')}
-              className="w-[36px] h-[24px] rounded-full justify-center items-center"
-            >
-              <IconifyCandlestickChart
-                width={22}
-                height={22}
-                className="text-brand-default"
-              />
-            </Pressable>
-          </View>
-
-          <Pressable onPress={onMorePress}>
-            <IconifyMoreHoriz width={22} height={22} className="text-content-1" />
-          </Pressable>
-        </View>
-      }
-    />
-  )
-}
-
-// ============ Interfaces ============
-interface AccountInfo {
-  id: string
-  type: string
-  balance: string
-  currency: string
-  isReal: boolean
-}
-
-// ============ AccountCard ============
-interface AccountCardProps {
-  account: AccountInfo
-  onPress: () => void
-  onDeposit?: () => void
-}
-
-function AccountCard({ account, onPress, onDeposit }: AccountCardProps) {
-  return (
-    <Pressable onPress={onPress}>
-      <Card className="border-brand-default bg-button">
-        <CardContent className="px-xl py-medium gap-xs">
-          {/* Header Row: User Icon + Account ID + Badges + Arrow */}
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-medium">
-              {/* User + ID */}
-              <View className="flex-row items-center gap-xs">
-                <IconifyUserCircle width={20} height={20} className='text-content-1' />
-                <Text className="text-paragraph-p2 text-content-1">{account.id}</Text>
-              </View>
-              {/* Badges */}
-              <View className="flex-row items-center gap-medium">
-                <Badge color={account.isReal ? 'green' : 'secondary'}>
-                  <Text>{account.isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
-                </Badge>
-                <Badge color="default">
-                  <Text>{account.type}</Text>
-                </Badge>
-              </View>
-            </View>
-            <IconifyNavArrowDown width={16} height={16} className='text-content-1' />
-          </View>
-
-          {/* Balance Row: Available + Balance + Deposit Icon */}
-          <View className="flex-row items-center justify-between">
-            <Tooltip title={<Trans>可用</Trans>}>
-              <TooltipTrigger><Trans>可用</Trans></TooltipTrigger>
-              <TooltipContent><Trans>当前可用于交易的资金余额</Trans></TooltipContent>
-            </Tooltip>
-            <View className="flex-row items-center gap-xs">
-              <Text className="text-paragraph-p3 text-content-1">
-                {account.balance} {account.currency}
-              </Text>
-              <IconButton color='primary'>
-                <IconifyPlusCircle width={14} height={14} />
-              </IconButton>
-            </View>
-          </View>
-        </CardContent>
-      </Card>
-    </Pressable>
-  )
-}
-
-// ============ OrderPanel ============
-interface OrderPanelProps {
-  buyPrice: string
-  sellPrice: string
-  spread: number
-  onBuy: () => void
-  onSell: () => void
-  estimatedMargin: string
-  maxLots: string
-  defaultSide?: 'buy' | 'sell'
-}
-
-function OrderPanel({
-  buyPrice,
-  sellPrice,
-  spread,
-  onBuy,
-  onSell,
-  estimatedMargin,
-  maxLots,
-  defaultSide = 'buy',
-}: OrderPanelProps) {
-  const [orderType, setOrderType] = useState<'market' | 'limit'>('market')
-  const [selectedSide, setSelectedSide] = useState<'buy' | 'sell'>(defaultSide)
-  const [quantity, setQuantity] = useState('0.01')
-  const [limitPrice, setLimitPrice] = useState('180.66')
-  const [stopLossEnabled, setStopLossEnabled] = useState(false)
-  const [takeProfitPrice, setTakeProfitPrice] = useState('')
-  const [takeProfitPercent, setTakeProfitPercent] = useState('')
-  const [stopLossPrice, setStopLossPrice] = useState('')
-  const [stopLossPercent, setStopLossPercent] = useState('')
-
-  // Update selectedSide when defaultSide changes (from URL params)
-  useEffect(() => {
-    setSelectedSide(defaultSide)
-  }, [defaultSide])
-
-  return (
-    <View className="px-xl gap-xl">
-      {/* Order Type Tabs */}
-      <Tabs value={orderType} onValueChange={(v) => setOrderType(v as 'market' | 'limit')}>
-        <TabsList variant="underline" size="md" className='w-full border-b-1 border-brand-default'>
-          <TabsTrigger value="market" className="flex-1">
-            <Text>
-              <Trans>市价</Trans>
-            </Text>
-          </TabsTrigger>
-          <TabsTrigger value="limit" className="flex-1">
-            <Text>
-              <Trans>限价</Trans>
-            </Text>
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
-      {/* Buy/Sell Buttons */}
-      <View className="flex-row gap-medium items-center relative">
-        <Pressable
-          onPress={() => setSelectedSide('buy')}
-          className={`flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center ${selectedSide === 'buy' ? 'bg-market-rise' : 'bg-button'
-            }`}
-        >
-          <Text
-            className={`text-button-2 font-medium ${selectedSide === 'buy' ? 'text-market-rise-foreground' : 'text-content-4'}`}
-          >
-            {buyPrice}
-          </Text>
-          <Text
-            className={`text-button-2 ml-xs ${selectedSide === 'buy' ? 'text-market-rise-foreground' : 'text-content-4'}`}
-          >
-            <Trans>买入/做多</Trans>
-          </Text>
-        </Pressable>
-
-        {/* Spread Badge - Centered */}
-        <View className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xs p-[2px] z-10 items-center justify-center size-[20px]">
-          <Text className="text-paragraph-p3 text-content-foreground">{spread}</Text>
-        </View>
-
-        <Pressable
-          onPress={() => setSelectedSide('sell')}
-          className={`flex-1 h-[40px] px-xl rounded-small flex-row items-center justify-center ${selectedSide === 'sell' ? 'bg-market-fall' : 'bg-button'
-            }`}
-        >
-          <Text
-            className={`text-button-2 font-medium ${selectedSide === 'sell' ? 'text-market-fall-foreground' : 'text-content-4'}`}
-          >
-            {sellPrice}
-          </Text>
-          <Text
-            className={`text-button-2 ml-xs ${selectedSide === 'sell' ? 'text-market-fall-foreground' : 'text-content-4'}`}
-          >
-            <Trans>卖出/做空</Trans>
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Price Input - Different UI for Market vs Limit */}
-      {orderType === 'market' ? (
-        <View className="border border-brand-default rounded-small py-large px-xl flex-row items-center justify-between">
-          <Text className="text-paragraph-p2 text-content-5">
-            <Trans>以当前最优价</Trans>
-          </Text>
-          <Text className="text-paragraph-p2 text-content-1">
-            <Trans>最新</Trans>
-          </Text>
-        </View>
-      ) : (
-        <Input
-          labelText={t`价格`}
-          value={limitPrice}
-          onValueChange={setLimitPrice}
-          keyboardType="decimal-pad"
-          RightContent={
-            <Pressable onPress={() => {
-              setLimitPrice(selectedSide === 'buy' ? buyPrice : sellPrice)
-            }}>
-              <Text className="text-paragraph-p2 text-brand-primary">
-                <Trans>最新</Trans>
-              </Text>
-            </Pressable>
-          }
-          variant="outlined"
-          size="md"
-        />
-      )}
-
-      {/* Quantity Input */}
-      <Input
-        labelText={t`买入数量`}
-        value={quantity}
-        onValueChange={setQuantity}
-        keyboardType="decimal-pad"
-        RightContent={<Text className="text-paragraph-p2 text-content-1"><Trans>手</Trans></Text>}
-        variant="outlined"
-        size="md"
-      />
-
-      {/* Quantity Range Hint */}
-      <Text className="text-paragraph-p3 text-content-4">
-        <Trans>买入范围</Trans> ≥{' '}
-        <Text className="text-content-1 text-paragraph-p3">0.01-20.00<Trans>手</Trans></Text>
-      </Text>
-
-      {/* Stop Loss Toggle */}
-      <View className="flex-row items-center gap-medium">
-        <Switch
-          checked={stopLossEnabled}
-          onCheckedChange={setStopLossEnabled}
-        />
-        <Text className="text-paragraph-p3 text-content-4">
-          <Trans>止盈/止损</Trans>
-        </Text>
-      </View>
-
-      {/* Stop Loss/Take Profit Inputs - Only show when enabled */}
-      {stopLossEnabled && (
-        <>
-          {/* Take Profit Section */}
-          <View className="gap-xs">
-            <View className="flex-row gap-xl">
-              <Input
-                labelText={t`止盈触发价`}
-                value={takeProfitPrice}
-                onValueChange={setTakeProfitPrice}
-                keyboardType="decimal-pad"
-                placeholder={t`输入价格`}
-                variant="outlined"
-                size="md"
-                className="flex-1"
-              />
-              <Input
-                labelText={t`百分比`}
-                value={takeProfitPercent}
-                onValueChange={setTakeProfitPercent}
-                keyboardType="decimal-pad"
-                placeholder="0.00"
-                clean={false}
-                RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
-                variant="outlined"
-                size="md"
-                className="w-[90px]"
-              />
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>范围</Trans> ≥ <Text className="text-market-fall text-paragraph-p3">1.17 USDC</Text>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">0.00 USDC</Text>
-              </Text>
-            </View>
-          </View>
-
-          {/* Stop Loss Section */}
-          <View className="gap-xs">
-            <View className="flex-row gap-xl">
-              <Input
-                labelText={t`止损触发价`}
-                value={stopLossPrice}
-                onValueChange={setStopLossPrice}
-                keyboardType="decimal-pad"
-                placeholder={t`输入价格`}
-                variant="outlined"
-                size="md"
-                className="flex-1"
-              />
-              <Input
-                labelText={t`百分比`}
-                value={stopLossPercent}
-                onValueChange={setStopLossPercent}
-                keyboardType="decimal-pad"
-                placeholder="0.00"
-                clean={false}
-                RightContent={<Text className="text-paragraph-p2 text-content-1">%</Text>}
-                variant="outlined"
-                size="md"
-                className="w-[90px]"
-              />
-            </View>
-            <View className="flex-row justify-between">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>预计盈亏</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">0.00 USDC</Text>
-              </Text>
-            </View>
-          </View>
-        </>
-      )}
-
-      {/* Submit Button */}
-      <Button
-        variant="solid"
-        color="primary"
-        size="lg"
-        block
-        onPress={selectedSide === 'buy' ? onBuy : onSell}
-      >
-        <Text className="text-content-foreground text-button-2 font-medium">
-          {selectedSide === 'buy' ? <Trans>确定买入</Trans> : <Trans>确定卖出</Trans>}
-        </Text>
-      </Button>
-
-      {/* Info Footer */}
-      <View className="flex-row justify-between">
-        <Tooltip title={<Trans>预估保证金</Trans>}>
-          <TooltipTrigger className="text-clickable-1"><Trans>预估保证金</Trans></TooltipTrigger>
-          <TooltipContent><Trans>开仓所需的预估保证金金额</Trans></TooltipContent>
-        </Tooltip>
-        <Text className="text-paragraph-p3 text-content-1">{estimatedMargin} USDC</Text>
-      </View>
-      <View className="flex-row justify-between">
-        <Tooltip title={<Trans>可开</Trans>}>
-          <TooltipTrigger className="text-clickable-1"><Trans>可开</Trans></TooltipTrigger>
-          <TooltipContent><Trans>当前资金可开仓的最大手数</Trans></TooltipContent>
-        </Tooltip>
-        <Text className="text-paragraph-p3 text-content-1">
-          {maxLots} <Trans>手</Trans>
-        </Text>
-      </View>
-    </View>
-  )
-}
+import OrderConfirmationDrawer from './_comps/order-confirmation-drawer'
+import { MOCK_PENDING_ORDERS, TradePendingOrders } from './_comps/records/pending-orders'
 
 // ============ KLineChart ============
 interface KLineChartProps {
@@ -524,341 +94,16 @@ function KLineChart({ isVisible, onToggle }: KLineChartProps) {
   )
 }
 
-// ============ PositionList ============
-interface Position {
-  id: string
-  symbol: string
-  direction: 'long' | 'short'
-  quantity: number
-  openPrice: number
-  markPrice: number
-  profit: number
-  profitPercent: number
-  marginRate: number
-  margin: number
-  fee: number
-  storageFee: number
-}
-
-interface PendingOrder {
-  id: string
-  symbol: string
-  direction: 'long' | 'short'
-  quantity: number
-  orderPrice: number
-  markPrice: number
-}
-
-// ============ PositionItem ============
-interface PositionItemProps {
-  position: Position
-  onStopLoss?: () => void
-  onClosePosition?: () => void
-}
-
-function PositionItemContent({ position, onStopLoss, onClosePosition }: PositionItemProps) {
-  const profitColor = position.profit >= 0 ? 'text-market-rise' : 'text-market-fall'
-  const { isExpanded } = AccordionPrimitive.useItemContext()
-
-  return (
-    <View className="gap-xl">
-      {/* Header with trigger */}
-      <AccordionTrigger className="py-0 px-xl">
-        <Pressable
-          onPress={() => {
-            console.log('Pressable')
-          }}
-        >
-          <View className="flex-row items-center gap-[10px] flex-1">
-            <View className="size-[24px] rounded-full bg-button items-center justify-center">
-              <Text className="text-paragraph-p3 text-content-1">S</Text>
-            </View>
-            <Text className="text-important-1 text-content-1">{position.symbol}</Text>
-            <Badge color={position.direction === 'long' ? 'rise' : 'fall'}>
-              <Text>{position.direction === 'long' ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
-            </Badge>
-            <IconifyNavArrowRight
-              width={16}
-              height={16}
-              className="text-content-1"
-            />
-          </View>
-        </Pressable>
-      </AccordionTrigger>
-
-      {/* Fixed: Row 1 - 浮动盈亏, 收益率, 数量 (数量仅展开时显示) */}
-      <View className="px-xl">
-        <View className="flex-row justify-between">
-          <View className="w-[100px]">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>浮动盈亏(USDC)</Trans>
-            </Text>
-            <Text className={`text-paragraph-p2 ${profitColor}`}>
-              {position.profit >= 0 ? '+' : ''}{position.profit.toFixed(2)}
-            </Text>
-          </View>
-          <View className={cn('w-[100px]', !isExpanded && 'items-end')}>
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>收益率(%)</Trans>
-            </Text>
-            <Text className={`text-paragraph-p2 ${profitColor}`}>
-              {position.profitPercent >= 0 ? '+' : ''}{position.profitPercent.toFixed(2)}%
-            </Text>
-          </View>
-          {isExpanded && (
-            <View className="w-[100px] items-end">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>数量(手)</Trans>
-              </Text>
-              <Text className="text-paragraph-p2 text-content-2">
-                {position.quantity.toFixed(1)}
-              </Text>
-            </View>
-          )}
-        </View>
-      </View>
-
-      {/* Expandable: Row 2 & Row 3 */}
-      <AccordionContent className="px-xl gap-xl pb-0">
-        {/* Row 2: 保证金率, 保证金, 开仓价 */}
-        <View className="flex-row justify-between">
-          <View className="w-[100px]">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>保证金率(%)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.marginRate.toFixed(2)}%
-            </Text>
-          </View>
-          <View className="w-[100px]">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>保证金(USDC)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.margin.toFixed(2)}
-            </Text>
-          </View>
-          <View className="w-[100px] items-end">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>开仓价(USDC)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.openPrice.toFixed(2)}
-            </Text>
-          </View>
-        </View>
-
-        {/* Row 3: 标记价, 手续费, 库存费 */}
-        <View className="flex-row justify-between">
-          <View className="w-[100px]">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>标记价(USDC)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.markPrice.toFixed(2)}
-            </Text>
-          </View>
-          <View className="w-[100px]">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>手续费(USDC)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.fee.toFixed(2)}
-            </Text>
-          </View>
-          <View className="w-[100px] items-end">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>库存费(USDC)</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.storageFee.toFixed(2)}
-            </Text>
-          </View>
-        </View>
-      </AccordionContent>
-
-      {/* Fixed: Action Buttons (always visible) */}
-      <View className="px-xl">
-        <View className="flex-row gap-xl">
-          <Button
-            variant="solid"
-            size="md"
-            className="flex-1"
-            onPress={onStopLoss}
-          >
-            <Text>
-              <Trans>止盈止损</Trans>
-            </Text>
-          </Button>
-          <Button
-            variant="solid"
-            size="md"
-            className="flex-1"
-            onPress={onClosePosition}
-          >
-            <Text>
-              <Trans>平仓</Trans>
-            </Text>
-          </Button>
-        </View>
-      </View>
-    </View>
-  )
-}
-
-function PositionItem({ position, onStopLoss, onClosePosition }: PositionItemProps) {
-  return (
-    <Accordion type="multiple" className="border-b-0">
-      <AccordionItem value={position.id} className="border-b-0 py-xl">
-        <PositionItemContent
-          position={position}
-          onStopLoss={onStopLoss}
-          onClosePosition={onClosePosition}
-        />
-      </AccordionItem>
-    </Accordion>
-  )
-}
-
-// ============ PendingOrderItem ============
-interface PendingOrderItemProps {
-  order: PendingOrder
-  onCancel?: () => void
-}
-
-function PendingOrderItem({ order, onCancel }: PendingOrderItemProps) {
-  return (
-    <View className="py-xl gap-xl">
-      {/* Header Row */}
-      <View className="flex-row items-center justify-between px-xl">
-        <Pressable
-          onPress={() => {
-            console.log('Pressable')
-          }}
-        >
-          <View className="flex-row items-center gap-[10px] flex-1">
-            <View className="size-[24px] rounded-full bg-button items-center justify-center">
-              <Text className="text-paragraph-p3 text-content-1">S</Text>
-            </View>
-            <Text className="text-important-1 text-content-1">{order.symbol}</Text>
-            <Badge color={order.direction === 'long' ? 'rise' : 'fall'}>
-              <Text>{order.direction === 'long' ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
-            </Badge>
-            <IconifyNavArrowRight
-              width={16}
-              height={16}
-              className="text-content-1"
-            />
-          </View>
-        </Pressable>
-        <Pressable onPress={onCancel}>
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>取消</Trans>
-          </Text>
-        </Pressable>
-      </View>
-
-      {/* Data Row: 数量, 挂单价, 标记价 */}
-      <View className="flex-row justify-between px-xl">
-        <View className="w-[100px]">
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>数量(手)</Trans>
-          </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {order.quantity.toFixed(1)}
-          </Text>
-        </View>
-        <View className="w-[100px]">
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>挂单价(USDC)</Trans>
-          </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {order.orderPrice.toFixed(2)}
-          </Text>
-        </View>
-        <View className="w-[100px] items-end">
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>标记价(USDC)</Trans>
-          </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {order.markPrice.toFixed(2)}
-          </Text>
-        </View>
-      </View>
-    </View>
-  )
-}
-
-// ============ Main Trade Component ============
-
-
-// Mock positions data
-const MOCK_POSITIONS: Position[] = [
-  {
-    id: '1',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    openPrice: 187.00,
-    markPrice: 186.00,
-    profit: 152.00,
-    profitPercent: 15.00,
-    marginRate: 10.04,
-    margin: 10.00,
-    fee: 1.00,
-    storageFee: 1.00,
-  },
-  {
-    id: '2',
-    symbol: 'SOL-USDC',
-    direction: 'short',
-    quantity: 1.0,
-    openPrice: 187.00,
-    markPrice: 186.00,
-    profit: 152.00,
-    profitPercent: 15.00,
-    marginRate: 10.04,
-    margin: 10.00,
-    fee: 1.00,
-    storageFee: 1.00,
-  },
-]
-
-// Mock pending orders data
-const MOCK_PENDING_ORDERS: PendingOrder[] = [
-  {
-    id: '1',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-  {
-    id: '2',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-  {
-    id: '3',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-]
-
-export default function Trade() {
+const Trade = observer(() => {
   // Get URL params
   const { side } = useLocalSearchParams<{ side?: 'buy' | 'sell' }>()
   const defaultSide = side === 'sell' ? 'sell' : 'buy'
 
   // Router
   const router = useRouter()
+
+  const { trade } = useStores()
+  const symbol = trade.activeSymbolName
 
   // Safe Area Insets
   const insets = useSafeAreaInsets()
@@ -868,39 +113,21 @@ export default function Trade() {
 
   // State
   const [isChartVisible, setIsChartVisible] = useState(true)
-  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const [isOrderConfirmDrawerOpen, setIsOrderConfirmDrawerOpen] = useState(false)
   const [isClosePositionDrawerOpen, setIsClosePositionDrawerOpen] = useState(false)
   const [isStopProfitLossDrawerOpen, setIsStopProfitLossDrawerOpen] = useState(false)
-  const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
-  const [selectedPosition, setSelectedPosition] = useState<Position | null>(null)
   const [pendingOrder, setPendingOrder] = useState<{
     side: 'buy' | 'sell'
     price: string
     quantity: string
   } | null>(null)
-  const [selectedAccount, setSelectedAccount] = useState<AccountInfo>({
-    id: '152365963',
-    type: 'STP',
-    balance: '250,800.00',
-    currency: 'USDC',
-    isReal: true,
-  })
 
   // Handlers
   const handleChartToggle = useCallback(() => {
     setIsChartVisible((prev) => !prev)
   }, [])
 
-  const handleAccountSelect = useCallback((account: Account) => {
-    setSelectedAccount({
-      id: account.id,
-      type: account.type,
-      balance: account.balance,
-      currency: account.currency,
-      isReal: account.isReal ?? true,
-    })
-  }, [])
+
 
   const handleBuy = useCallback(() => {
     setPendingOrder({
@@ -940,47 +167,46 @@ export default function Trade() {
     }
   }, [pendingOrder])
 
-  const handleClosePosition = useCallback((position: Position) => {
-    setSelectedPosition(position)
-    if (closeConfirmation) {
-      setIsClosePositionDrawerOpen(true)
-    } else {
-      // 跳过确认，直接平仓
-      console.log('Close position (skip confirmation):', position)
-      // TODO: 实际平仓逻辑
-    }
-  }, [closeConfirmation])
+  // const handleClosePosition = useCallback((position: Position) => {
+  //   setSelectedPosition(position)
+  //   if (closeConfirmation) {
+  //     setIsClosePositionDrawerOpen(true)
+  //   } else {
+  //     // 跳过确认，直接平仓
+  //     console.log('Close position (skip confirmation):', position)
+  //     // TODO: 实际平仓逻辑
+  //   }
+  // }, [closeConfirmation])
 
-  const handleConfirmClosePosition = useCallback((quantity: number, orderType: 'market' | 'limit', limitPrice?: string) => {
-    if (selectedPosition) {
-      console.log('Close position:', {
-        position: selectedPosition,
-        quantity,
-        orderType,
-        limitPrice,
-      })
-      // TODO: 实际平仓逻辑
-      setSelectedPosition(null)
-    }
-  }, [selectedPosition])
+  // const handleConfirmClosePosition = useCallback((quantity: number, orderType: 'market' | 'limit', limitPrice?: string) => {
+  //   if (selectedPosition) {
+  //     console.log('Close position:', {
+  //       position: selectedPosition,
+  //       quantity,
+  //       orderType,
+  //       limitPrice,
+  //     })
+  //     // TODO: 实际平仓逻辑
+  //     setSelectedPosition(null)
+  //   }
+  // }, [selectedPosition])
 
-  const handleStopProfitLoss = useCallback((takeProfitPrice: string, takeProfitPercent: string, stopLossPrice: string, stopLossPercent: string) => {
-    if (selectedPosition) {
-      console.log('Stop profit/loss:', {
-        position: selectedPosition,
-        takeProfitPrice,
-        takeProfitPercent,
-        stopLossPrice,
-        stopLossPercent,
-      })
-      // TODO: 实际止盈止损逻辑
-      setSelectedPosition(null)
-    }
-  }, [selectedPosition])
+  // const handleStopProfitLoss = useCallback((takeProfitPrice: string, takeProfitPercent: string, stopLossPrice: string, stopLossPercent: string) => {
+  //   if (selectedPosition) {
+  //     console.log('Stop profit/loss:', {
+  //       position: selectedPosition,
+  //       takeProfitPrice,
+  //       takeProfitPercent,
+  //       stopLossPrice,
+  //       stopLossPercent,
+  //     })
+  //     // TODO: 实际止盈止损逻辑
+  //     setSelectedPosition(null)
+  //   }
+  // }, [selectedPosition])
 
   return (
     <View className="flex-1">
-
       <CollapsibleTab
         variant="underline"
         size="md"
@@ -995,31 +221,24 @@ export default function Trade() {
           <CollapsibleStickyHeader>
             <CollapsibleStickyNavBar fixed>
               <TradeHeader
-                symbol="SOL-USDC"
-                priceChange="+1.54%"
-                isPriceUp={true}
-                onSymbolPress={() => router.push('/symbol-selector')}
-                onMorePress={() => setIsCommonFeaturesDrawerOpen(true)}
+                symbol={symbol}
               />
             </CollapsibleStickyNavBar>
 
             <CollapsibleStickyContent>
               {/* K-Line Chart - 顶部位置 */}
-              {chartPosition === 'top' && (
+              {/* {chartPosition === 'top' && (
                 <KLineChart
                   isVisible={isChartVisible}
                   onToggle={handleChartToggle}
                   symbol="SOL-USDC"
                 />
-              )}
+              )} */}
+              <View>11</View>
 
               {/* Account Card */}
               <View className="pt-xl px-xl">
-                <AccountCard
-                  account={selectedAccount}
-                  onPress={() => setIsAccountDrawerOpen(true)}
-                  onDeposit={() => console.log('Deposit pressed')}
-                />
+                <AccountCard />
               </View>
 
               {/* Order Panel */}
@@ -1035,64 +254,35 @@ export default function Trade() {
               />
 
               {/* K-Line Chart - 底部位置 */}
-              {chartPosition === 'bottom' && (
+              {/* {chartPosition === 'bottom' && (
                 <KLineChart
                   isVisible={isChartVisible}
                   onToggle={handleChartToggle}
                   symbol="SOL-USDC"
                 />
-              )}
+              )} */}
             </CollapsibleStickyContent>
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={`持仓(${MOCK_POSITIONS.length})`}>
+        <CollapsibleTabScene name="positions" label={`持仓(${MOCK_POSITIONS?.length ?? 0})`}>
           <CollapsibleScrollView>
-            {MOCK_POSITIONS.length === 0 ? (
-              <EmptyState message={<Trans>暂无资产</Trans>} />
-            ) : (
-              MOCK_POSITIONS.map((position) => (
-                <PositionItem
-                  key={position.id}
-                  position={position}
-                  onStopLoss={() => {
-                    setSelectedPosition(position)
-                    setIsStopProfitLossDrawerOpen(true)
-                  }}
-                  onClosePosition={() => handleClosePosition(position)}
-                />
-              ))
-            )}
+
+            <View>123</View>
           </CollapsibleScrollView>
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={`挂单(${MOCK_PENDING_ORDERS.length})`}>
+        <CollapsibleTabScene name="orders" label={`挂单(${MOCK_PENDING_ORDERS?.length ?? 0})`}>
           <CollapsibleScrollView>
-            {MOCK_PENDING_ORDERS.length === 0 ? (
-              <EmptyState message={<Trans>暂无订单</Trans>} />
-            ) : (
-              MOCK_PENDING_ORDERS.map((order) => (
-                <PendingOrderItem
-                  key={order.id}
-                  order={order}
-                  onCancel={() => console.log('Cancel order:', order.id)}
-                />
-              ))
-            )}
+
+            <View>123</View>
           </CollapsibleScrollView>
         </CollapsibleTabScene>
       </CollapsibleTab>
 
-      {/* Account Selection Drawer */}
-      <AccountSwitchDrawer
-        visible={isAccountDrawerOpen}
-        onClose={() => setIsAccountDrawerOpen(false)}
-        selectedAccountId={selectedAccount.id}
-        onSwitch={handleAccountSelect}
-      />
 
       {/* Order Confirmation Drawer */}
-      <OrderConfirmationDrawer
+      {/* <OrderConfirmationDrawer
         open={isOrderConfirmDrawerOpen}
         onOpenChange={setIsOrderConfirmDrawerOpen}
         symbol="SOL-USDC"
@@ -1101,10 +291,10 @@ export default function Trade() {
         margin="56321.52"
         contractValue="56321.52"
         onConfirm={handleConfirmOrder}
-      />
+      /> */}
 
       {/* Close Position Drawer */}
-      {selectedPosition && (
+      {/* {selectedPosition && (
         <ClosePositionDrawer
           open={isClosePositionDrawerOpen}
           onOpenChange={setIsClosePositionDrawerOpen}
@@ -1117,10 +307,10 @@ export default function Trade() {
           isProfitable={selectedPosition.profit >= 0}
           onConfirm={handleConfirmClosePosition}
         />
-      )}
+      )} */}
 
       {/* Stop Profit Loss Drawer */}
-      {selectedPosition && (
+      {/* {selectedPosition && (
         <StopProfitLossDrawer
           open={isStopProfitLossDrawerOpen}
           onOpenChange={setIsStopProfitLossDrawerOpen}
@@ -1130,34 +320,10 @@ export default function Trade() {
           markPrice={selectedPosition.markPrice.toFixed(2)}
           onConfirm={handleStopProfitLoss}
         />
-      )}
+      )} */}
 
-      {/* Common Features Drawer */}
-      <CommonFeaturesDrawer
-        open={isCommonFeaturesDrawerOpen}
-        onOpenChange={setIsCommonFeaturesDrawerOpen}
-        onTradingSettings={() => {
-          setIsCommonFeaturesDrawerOpen(false)
-          router.push('/(trade)/settings')
-        }}
-        onDeposit={() => {
-          setIsCommonFeaturesDrawerOpen(false)
-          // TODO: 实现入金功能
-          console.log('Deposit pressed')
-        }}
-        onTransfer={() => {
-          setIsCommonFeaturesDrawerOpen(false)
-          router.push('/(assets)/transfer')
-        }}
-        onBill={() => {
-          setIsCommonFeaturesDrawerOpen(false)
-          router.push('/(trade)/records')
-        }}
-        onFavorites={() => {
-          setIsCommonFeaturesDrawerOpen(false)
-          toast.success('订单提交成功')
-        }}
-      />
     </View>
   )
-}
+})
+
+export default Trade
