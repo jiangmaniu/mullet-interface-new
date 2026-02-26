@@ -1,11 +1,11 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { View, ScrollView, Pressable } from 'react-native'
 import { Route } from 'react-native-tab-view'
-import { useRouter, useLocalSearchParams } from 'expo-router'
+import { useRouter } from 'expo-router'
 
 import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tabs, TabsList, TabsTrigger, SwipeableTabs } from '@/components/ui/tabs'
+import { AvatarImage } from '@/components/ui/avatar'
+import { SwipeableTabs } from '@/components/ui/tabs'
 import {
   IconifyActivity,
   IconifyCandlestickChart,
@@ -17,7 +17,7 @@ import { IconStarFill } from '@/components/ui/icons/set/star-fill'
 import { IconStar } from '@/components/ui/icons/set/star'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { t } from '@/locales/i18n'
-import { TimePeriodDrawer } from './_comps/time-period-drawer'
+import { TradingviewChart, TradingviewChart as TradingviewChartMock } from './_comps/tradingview'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { observer } from 'mobx-react-lite'
@@ -116,17 +116,6 @@ const SymbolDepthHeader = observer(({
   )
 })
 
-// ============ Constants ============
-const TIME_PERIODS = [
-  { label: '15分', value: '15' },
-  { label: '1小时', value: '60' },
-  { label: '4小时', value: '240' },
-  { label: '天', value: 'D' },
-  { label: '周', value: 'W' },
-  { label: '月', value: 'M' },
-  { label: '年', value: 'Y' },
-]
-
 // ============ PriceInfo Component ============
 interface PriceInfoProps {
   symbol: string
@@ -206,54 +195,22 @@ const PriceInfo = observer(({
 })
 
 // ============ ChartView Component ============
+// DEV 模式下使用 mock 版本调试主题和数据源
+const KLineChart = __DEV__ ? TradingviewChartMock : TradingviewChart
+
 function ChartView({ symbol }: { symbol: string }) {
-  const [selectedPeriod, setSelectedPeriod] = useState('15')
-  const [showMoreDrawer, setShowMoreDrawer] = useState(false)
-
-  const handleSelectPeriod = useCallback((value: string) => {
-    setSelectedPeriod(value)
-    setShowMoreDrawer(false)
-  }, [])
-
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    // <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <View className="flex-1">
       {/* Price Info */}
-      <PriceInfo
-        symbol={symbol}
-      />
+      <PriceInfo symbol={symbol} />
 
-      {/* Time Period Selector */}
-      <View className="flex-row items-center h-[40px] px-medium">
-        <View className="flex-row items-center">
-          <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod}>
-            <TabsList variant="text" size="sm" className="gap-2xl">
-              {TIME_PERIODS.map((period) => (
-                <TabsTrigger key={period.value} value={period.value} className="flex-row">
-                  <Text>{period.label}</Text>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          <TabsTrigger value="more" className="flex-row" onPress={() => setShowMoreDrawer(true)}>
-            <Text><Trans>更多</Trans></Text>
-            <IconifyNavArrowDownSolid width={12} height={12} className="text-content-4" />
-          </TabsTrigger>
-        </View>
+      {/* K线图（内置时间周期选择器） */}
+      <View className="flex-1">
+        <KLineChart />
       </View>
-
-      {/* Chart Placeholder */}
-      <View className="h-[530px] bg-brand-primary">
-        {/* TODO: K-line chart will be implemented here */}
-      </View>
-
-      {/* More Time Periods Drawer */}
-      <TimePeriodDrawer
-        open={showMoreDrawer}
-        onOpenChange={setShowMoreDrawer}
-        selectedPeriod={selectedPeriod}
-        onSelectPeriod={handleSelectPeriod}
-      />
-    </ScrollView>
+    </View>
+    // </ScrollView>
   )
 }
 

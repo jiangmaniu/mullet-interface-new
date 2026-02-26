@@ -10,7 +10,8 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { Text, TextClassContext } from '@/components/ui/text';
-import { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useThemeColors } from '@/hooks/use-theme-colors';
 
 type TabVariant = 'solid' | 'outline' | 'underline' | 'text' | 'icon' | 'icons-and-text';
 type TabSize = 'sm' | 'md' | 'lg';
@@ -316,6 +317,7 @@ interface TabsProps<T> {
   value: T;
   onValueChange: (value: T) => void;
   children: React.ReactNode;
+  renderTabBarRight?: () => React.ReactNode;
   className?: string;
 }
 
@@ -424,12 +426,26 @@ interface SimpleTabsContextValue<T> {
 const SimpleTabsContext = React.createContext<SimpleTabsContextValue<string> | null>(null)
 
 // Simple Tabs Root
-function SimpleTabs<T>({ value, onValueChange, children, className }: TabsProps<T>) {
+function SimpleTabs<T>({ value, onValueChange, children, renderTabBarRight, className }: TabsProps<T>) {
+  const { backgroundColorSecondary } = useThemeColors();
   return (
     <SimpleTabsContext.Provider value={{ value: value as string, onValueChange: onValueChange as (value: string) => void }}>
-      <View className={className}>
+      <View className={cn('flex-1', className)}>
         {children}
       </View>
+      {renderTabBarRight && (
+        <View className='flex-shrink-0 flex-row items-center'>
+          <LinearGradient
+            colors={['transparent', backgroundColorSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ width: 24, position: 'absolute', left: -24, top: 0, bottom: 2 }}
+            pointerEvents="none"
+          />
+
+          {renderTabBarRight()}
+        </View>
+      )}
     </SimpleTabsContext.Provider>
   );
 }
