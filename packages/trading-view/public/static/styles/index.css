@@ -1,30 +1,50 @@
 /* stylelint-disable */
 
-/* 禁止左上角symbol查询点击 */
-#header-toolbar-symbol-search{
-  pointer-events: none;
-}
-#header-toolbar-symbol-search .icon-GwQQdU8S {
-  display: none;
-}
-.button-cq__ntSC {
-  width: auto !important;
-}
+/* ================================================================
+ * Mullet Dark 主题 — 编译时覆盖 TradingView CSS 变量
+ * 在 custom_css_url 加载阶段就生效，无需等 onChartReady
+ * https://www.tradingview.com/charting-library-docs/latest/customization/styles/CSS-Color-Themes/
+ * ================================================================ */
 
-/* 手机端适配 */
-@media screen and (width <= 767px) {
-  /* 隐藏指标图例设置按钮 */
-  .legendMainSourceWrapper-l31H9iuA .noWrapWrapper-l31H9iuA {
-    display: none !important;
-  }
-  /* 指标图例高开低收大小等设置 */
-  .valuesAdditionalWrapper-l31H9iuA {
-    font-size: 10px !important;
-    display: flex !important;
-    line-height: 18px !important;
-  }
-}
+ .theme-dark:root {
+  /* ---- 背景 ---- */
+  --tv-color-pane-background: #060717;
+  --tv-color-platform-background: #060717;
 
-.chart-controls-bar [data-name="percentage"],.chart-controls-bar [data-name="logarithm"]{
-  display: none;
+  /* ---- 工具栏按钮 ---- */
+  --tv-color-toolbar-button-text: #a6a8c0;
+  --tv-color-toolbar-button-text-hover: #ffffff;
+  --tv-color-toolbar-button-text-active: #eed94c;
+  --tv-color-toolbar-button-text-active-hover: #eed94c;
+  --tv-color-toolbar-button-background-hover: #14172B;
+  --tv-color-toolbar-button-background-expanded: #14172B;
+  --tv-color-toolbar-button-background-active: transparent;
+  --tv-color-toolbar-button-background-active-hover: transparent;
+  --tv-color-toolbar-divider-background: rgba(101,104,134,0.2);
+  --tv-color-toolbar-save-layout-loader: #eed94c;
+
+  /* ---- 切换按钮 ---- */
+  --tv-color-toolbar-toggle-button-background-active: #eed94c;
+  --tv-color-toolbar-toggle-button-background-active-hover: #eed94c;
+
+  /* ---- 激活项文本 ---- */
+  --tv-color-item-active-text: #060717;
+
+  /* ---- 弹窗 / 对话框 / 底部弹窗 ---- */
+  --tv-color-popup-background: #14172B;
+  --tv-color-popup-element-text: #bcbed3;
+  --tv-color-popup-element-text-hover: #ffffff;
+  --tv-color-popup-element-text-active: #ffffff;
+  --tv-color-popup-element-background-active: rgba(101,104,134,0.2);
+  --tv-color-popup-element-background-hover: rgba(101,104,134,0.15);
+  --tv-color-popup-element-secondary-text: #9093ad;
+  --tv-color-popup-element-hint-text: #9093ad;
+  --tv-color-popup-element-divider-background: rgba(101,104,134,0.2);
+
+  /* ---- 弹窗工具箱（侧边栏绘图工具子菜单） ---- */
+  --tv-color-popup-element-toolbox-text: #a6a8c0;
+  --tv-color-popup-element-toolbox-text-hover: #ffffff;
+  --tv-color-popup-element-toolbox-text-active-hover: #eed94c;
+  --tv-color-popup-element-toolbox-background-hover: rgba(101,104,134,0.15);
+  --tv-color-popup-element-toolbox-background-active-hover: rgba(101,104,134,0.2);
 }

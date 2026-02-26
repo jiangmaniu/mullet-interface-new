@@ -1,24 +1,10 @@
 const BASE_PATH = process.env.BASE_PATH || ''
-const PLATFORM = process.env.PLATFORM // 平台 cdex mc cc
-
-// 区分不同k线请求历史数据地址
-const getOrigin = () => {
-  return {
-    cdex: 'mt.cd-ex.com',
-    mc: 'traderview.mctzglobals.com',
-    cc: 'wap.gwcdf.com',
-    mullet: 'client.stellux.io'
-  }[PLATFORM]
-}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // https://nextjs.org/docs/pages/api-reference/next-config-js/runtime-configuration
   // 注入server、client公用的环境变量，通过const { publicRuntimeConfig } = getConfig()访问
-  publicRuntimeConfig: {
-    BASE_PATH,
-    PLATFORM
-  },
+  publicRuntimeConfig: { BASE_PATH, PLATFORM: 'mullet' },
   reactStrictMode: false,
   trailingSlash: true,
   // 导出目录
@@ -28,10 +14,7 @@ const nextConfig = {
     return {
       fallback: [
         // 获取k线历史数据接口转发
-        {
-          source: '/kline/:path*',
-          destination: `https://${getOrigin()}/kline/:path*`
-        }
+        { source: '/kline/:path*', destination: 'https://client.stellux.io/kline/:path*' }
       ]
     }
   }
@@ -47,6 +30,10 @@ if (BASE_PATH) {
 if (process.env.NODE_ENV === 'production') {
   // 启用静态导出
   nextConfig.output = 'export'
+  // 未指定 BASE_PATH 时使用相对路径，确保在 WebView 等非根路径环境下资源可正常加载
+  if (!BASE_PATH) {
+    nextConfig.assetPrefix = '.'
+  }
 }
 
 module.exports = nextConfig

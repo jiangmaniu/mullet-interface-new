@@ -44,27 +44,27 @@ const customerMovingAverage = (PineJS: PineJS) => {
             // 显示价格线?
             trackPrice: false,
             // 绘制透明度，百分比。
-            transparency: 35,
+            transparency: 0,
             visible: true,
-            color: '#FF0000'
+            color: '#eed94c' // MA5 黄色
           },
           plot_1: {
             linestyle: 0,
             linewidth: 1,
             plottype: 0,
             trackPrice: false,
-            transparency: 35,
+            transparency: 0,
             visible: true,
-            color: '#00FF00'
+            color: '#a855f7' // MA10 紫色
           },
           plot_2: {
             linestyle: 0,
             linewidth: 1,
             plottype: 0,
             trackPrice: false,
-            transparency: 35,
+            transparency: 0,
             visible: true,
-            color: '#00FFFF'
+            color: '#38bdf8' // MA30 浅蓝色
           }
         },
         inputs: {

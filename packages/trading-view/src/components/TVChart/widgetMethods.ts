@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { ChartStyle, IChartingLibraryWidget, ThemeName, TOverrides } from 'public/static/charting_library'
 
-import { getTradingviewThemeCssVar, ThemeConst } from '@/theme/theme'
+import { ThemeConst } from '@/theme/theme'
 import { isPC } from '@/utils/tools'
 
 // 设置图表样式
@@ -123,6 +123,7 @@ export function applyOverrides(props: {
   chartType: ChartStyle
   bgGradientStartColor?: string
   bgGradientEndColor?: string
+  bgColor?: string
   tvWidget: IChartingLibraryWidget
 }) {
   // 修改override样式
@@ -133,20 +134,12 @@ export function applyOverrides(props: {
   if (props.bgGradientStartColor) {
     overrides['paneProperties.backgroundGradientStartColor'] = props.bgGradientStartColor
     overrides['paneProperties.backgroundGradientEndColor'] = props.bgGradientEndColor
+  } else if (props.bgColor) {
+    // changeTheme 会重置 backgroundType 为 gradient，需要强制设回 solid
+    overrides['paneProperties.backgroundType'] = 'solid'
+    overrides['paneProperties.background'] = props.bgColor
   }
   tvWidget.applyOverrides(overrides)
-}
-
-// 设置自定义颜色
-export function setCSSCustomProperty(props: { tvWidget: IChartingLibraryWidget; theme: ThemeName }) {
-  const { tvWidget, theme } = props
-  const conf = getTradingviewThemeCssVar(theme)
-  const keys = Object.keys(conf)
-  if (keys.length) {
-    keys.forEach((key) => {
-      tvWidget.setCSSCustomProperty(key, conf[key])
-    })
-  }
 }
 
 // 移动端自定义全屏按钮

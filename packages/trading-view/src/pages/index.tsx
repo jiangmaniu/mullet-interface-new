@@ -1,13 +1,11 @@
 import { observer } from 'mobx-react'
 import dynamic from 'next/dynamic'
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
-import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, ThemeName } from 'public/static/charting_library'
 import { useEffect, useState } from 'react'
 
 import Loading from '@/components/loading'
-import { BASE_PATH } from '@/constants'
+import { BASE_PATH, isProd } from '@/constants'
 import { useConfig } from '@/context/configProvider'
 import { useStores } from '@/context/mobxProvider'
 import { ThemeConst } from '@/theme/theme'
@@ -19,7 +17,7 @@ export default observer(() => {
   const [error, showError] = useState(false)
   const [showChart, setShowChart] = useState(false)
   const [isScriptReady, setIsScriptReady] = useState(false)
-  const { isMobile, isIpad } = useConfig()
+  const { isMobile } = useConfig()
   const { ws } = useStores()
   const { query } = useRouter()
   const loading = ws.loading
@@ -45,8 +43,18 @@ export default observer(() => {
 
   return (
     <>
+      {!isProd && (
+        <Script
+          src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"
+          strategy="afterInteractive"
+          onReady={() => {
+            // @ts-ignore
+            new window.VConsole()
+          }}
+        />
+      )}
       <Script
-        src={`${BASE_PATH || ''}/static/datafeeds/udf/dist/bundle.js`}
+        src={`${BASE_PATH || '.'}/static/datafeeds/udf/dist/bundle.js`}
         strategy="lazyOnload"
         onReady={() => {
           setIsScriptReady(true)
@@ -59,7 +67,7 @@ export default observer(() => {
             height: '100vh'
           }}
         >
-          {!showChart && loading && <Loading />}
+          {loading && <Loading />}
           {isScriptReady && showChart && <TVChart />}
         </div>
       )}

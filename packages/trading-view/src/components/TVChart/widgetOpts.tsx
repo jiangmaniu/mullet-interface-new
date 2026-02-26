@@ -8,13 +8,13 @@ import {
 } from 'public/static/charting_library'
 import React, { useEffect, useState } from 'react'
 
-import { DEFAULT_COLOR, PLATFORMThemeConst, ThemeConst } from '@/theme/theme'
+import { ThemeConst } from '@/theme/theme'
 
 import ma from './customIndicators/ma'
 
 const fullZero = (value: number | string) => String(value).padStart(2, '0')
 
-import { BASE_PATH, PLATFORM } from '@/constants'
+import { BASE_PATH } from '@/constants'
 
 import DataFeedBase from './datafeed'
 
@@ -53,15 +53,17 @@ export default function getWidgetOpts(
 
     // 'legend_widget', // 隐藏图例
     'symbol_info', // 隐藏图例中点击的商品信息
+    'display_market_status', // 隐藏开市状态按钮
     'timeframes_toolbar', // 隐藏底部工具条 时间栏
     'scales_date_format',
-    'header_fullscreen_button' // 全屏
     // 'use_localstorage_for_settings' // 背景色改不动，配置不生效的原因，需要禁用本地配置、背景色改不动，也跟主题色属性有关，不能存在主题色属性 theme: "dark",//"light"
     // 'main_series_scale_menu', // 隐藏右下角设置按钮
     // 'header_settings',    // 设置
-    // 'header_resolutions' // 时间
-    // 'header_chart_type',  // 图表类型
-    // 'header_indicators',  // 指标
+    'header_fullscreen_button', // 隐藏全屏按钮
+    'header_symbol_search', // 隐藏头部搜索
+    // 'header_resolutions', // 时间
+    // 'header_chart_type', // 图表类型
+    // 'header_indicators', // 指标
     // 'legend_context_menu',
   ]
 
@@ -107,7 +109,7 @@ export default function getWidgetOpts(
     // timeframe: '1M', // 设置图表展示的时间范围数据
     // timezone: 'Asia/Shanghai', // 设置时区
     timezone: 'Etc/UTC',
-    library_path: `${BASE_PATH || ''}/static/charting_library/`, // 核心库位置
+    library_path: `${BASE_PATH || '.'}/static/charting_library/`, // 核心库位置
     // @ts-ignore
     datafeed: new DataFeedBase(datafeedParams),
     // BEWARE: no trailing slash is expected in feed URL
@@ -235,7 +237,7 @@ export default function getWidgetOpts(
       // 'mainSeriesProperties.visible': false, // 隐藏主图
       'paneProperties.background': `${bgColor}`, // 图表背景颜色
       'scalesProperties.showSeriesLastValue': false, // 是否在右侧价格刻度上显示当前价格
-      'mainSeriesProperties.showPriceLine': false // 是否展示价格线
+      'mainSeriesProperties.showPriceLine': false, // 是否展示价格线
       // 'scalesProperties.showStudyLastValue': true // 是否在右侧价格刻度上展示value值
       // 'paneProperties.backgroundType': 'solid'
       // "paneProperties.vertGridProperties.color": "#454545",
@@ -244,22 +246,36 @@ export default function getWidgetOpts(
       // 'paneProperties.topMargin': 0, // 图表距顶部距离
       // 'paneProperties.bottomMargin': 0,
       // 'mainSeriesProperties.priceLineColor': 'red', // 价格涨跌线样式
+      ...(theme === 'dark'
+        ? {
+          'paneProperties.backgroundType': 'solid',
+          'paneProperties.vertGridProperties.color': ThemeConst.gridColor,
+          'paneProperties.horzGridProperties.color': ThemeConst.gridColor,
+          'paneProperties.separatorColor': ThemeConst.separatorColor,
+          'paneProperties.crossHairProperties.color': ThemeConst.crosshairColor,
+          'scalesProperties.textColor': ThemeConst.scaleTextColor,
+          'scalesProperties.lineColor': ThemeConst.separatorColor
+        }
+        : {})
     },
     // 可用于自定义指标参数的属性，例如颜色、线宽、绘图类型等
     // https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides?_highlight=studies_overrides
     studies_overrides: {
-      // 'MACD.Signal.color': '#00ff00',
-      // 'MACD.Histogram.color.0': '#ff0000'
-      // 外国股市都是绿涨红跌，但中国却相反
-      // 'volume.color.0': green,
-      // 'volume.color.1': red
+      // MACD 柱状图颜色：0=涨增强 1=涨减弱 2=跌减弱 3=跌增强
+      'MACD.Histogram.color.0': ThemeConst.green, // 涨增强
+      'MACD.Histogram.color.1': 'rgba(46,188,132,0.5)', // 涨减弱
+      'MACD.Histogram.color.2': 'rgba(255,17,47,0.5)', // 跌减弱
+      'MACD.Histogram.color.3': ThemeConst.red, // 跌增强
+      // MACD 线颜色
+      'MACD.MACD.color': ThemeConst.green,
+      'MACD.Signal.color': '#f7a21b'
     },
     // 禁用关闭的配置
     disabled_features,
     // 启动打开的配置
     enabled_features,
     // time_frames: [],// 设置底部右下角时间选择
-    custom_css_url: `${BASE_PATH || ''}/static/styles/index.css`, // 自定义颜色配置
+    custom_css_url: '../styles/index.css', // 相对于 library_path (charting_library/) 解析
     // 允许用户在本地存储中存储一些存储项，例如分辨率1D 1W 和图标类型，其旁边会有一个星号
     favorites: {
       // @ts-ignore
@@ -274,8 +290,8 @@ export default function getWidgetOpts(
       return Promise.resolve([ma(PineJS)])
     },
     loading_screen: {
-      // backgroundColor: '#162431',
-      foregroundColor: PLATFORM === 'cdex' ? ThemeConst.primary : DEFAULT_COLOR
+      backgroundColor: bgColor,
+      foregroundColor: ThemeConst.primary
     } // 加载背景 加载图标背景颜色  没找到隐藏方式，这样隐藏
     // charts_storage_url: "https://saveload.tradingview.com", // 点击图标保存按钮会把配置保存到服务器
     // settings_adapter: {

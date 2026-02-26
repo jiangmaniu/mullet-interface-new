@@ -7,7 +7,6 @@ import NP from 'number-precision'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
 import { WEBSOCKET_URLS } from '@/constants'
-import { isProd, PLATFORM } from '@/constants'
 import { MSG_TYPE } from '@/constants/enum'
 import LogInPb from '@/libs/proto/LogIn_pb'
 import MtEventPb from '@/libs/proto/MtEvent_pb'
@@ -39,26 +38,7 @@ class WsStore {
 
   @action
   async connect() {
-    const protocol = location.protocol === 'http:' ? 'ws:' : 'wss:'
-
     const urls = this.wsUrls
-    // if (PLATFORM === 'cdex' && isProd) {
-    //   // 从部署的域名去访问 /wsurl 代理转发，避免写死
-    //   urls = [protocol + location.host + '/wsurl/api/bbtc/noauth/websocks/mt5sock']
-    // } else
-    if (PLATFORM === 'mc' && isProd) {
-      // 从https://traderview.mctzglobals.com/socket接口去获取
-      const res = await myrequest
-        .get('/socket/')
-        .then((res) => {
-          return res.data
-        })
-        .catch((e) => e)
-      const trade = res?.TradeServer?.Trade
-      if (trade?.length) {
-        this.wsUrls = trade
-      }
-    }
 
     let urlIndex = 0
     const urlProvider = () => urls[urlIndex++ % urls.length]

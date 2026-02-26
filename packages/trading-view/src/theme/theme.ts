@@ -1,35 +1,28 @@
-import { PLATFORM } from '../constants'
-import { CC_TradingviewThemeCssVar } from './theme.cc'
-import { CDEX_TradingviewThemeCssVar } from './theme.cdex'
-import { MC_TradingviewThemeCssVar } from './theme.mc'
-import { MULLET_TradingviewThemeCssVar } from './theme.mullet'
-
-// 各个项目的主色
-export const PLATFORMThemeConst = {
-  cdex: {
-    primary: '#FFC238', // 按钮主色按钮
-    textPrimary: '#C49002' // 文字主色按钮
-  },
-  mc: {},
-  cc: {},
-  mullet: {}
-}[PLATFORM]
-
-export const DEFAULT_COLOR = '#2962ff'
+// mullet 平台主题常量（对齐项目设计系统 Design Tokens）
+// CSS 变量已通过 public/static/styles/index.css 静态覆盖，无需运行时注入
 export const ThemeConst = {
-  ...PLATFORMThemeConst,
-  primary: PLATFORMThemeConst.primary || DEFAULT_COLOR,
-  textPrimary: PLATFORMThemeConst.textPrimary || DEFAULT_COLOR,
-  white: '#fff',
-  black: '#1C192F', // 黑色主题背景色
-  red: '#C54747',
-  green: '#45A48A'
-}
+  // 品牌色
+  primary: '#eed94c', // brand-primary (yellow-500)
+  textPrimary: '#eed94c',
 
-// 各个项目的tradingview主题css变量
-export const getTradingviewThemeCssVar = {
-  cdex: CDEX_TradingviewThemeCssVar,
-  cc: CC_TradingviewThemeCssVar,
-  mc: MC_TradingviewThemeCssVar,
-  mullet: MULLET_TradingviewThemeCssVar
-}[PLATFORM]
+  // 背景色
+  black: '#060717', // background-secondary (zinc-800)
+  bgPrimary: '#14172B', // background-primary (弹窗/对话框/工具栏背景)
+  white: '#fff',
+
+  // 文本色
+  textContent1: '#ffffff', // content-1
+  textContent2: '#bcbed3', // content-2 (zinc-50)
+  textContent3: '#a6a8c0', // content-3 (zinc-100)
+  textContent4: '#9093ad', // content-4 (zinc-200)
+
+  // 图表元素色
+  gridColor: 'rgba(101,104,134,0.08)', // 网格线（极淡）
+  scaleTextColor: '#9093ad', // 刻度文字 (zinc-200)
+  separatorColor: 'rgba(101,104,134,0.2)', // 分隔线
+  crosshairColor: '#a6a8c0', // 十字线 (zinc-100)
+
+  // 交易色
+  green: '#2ebc84', // 涨 / success (green-500)
+  red: '#ff112f', // 跌 / danger (red-500)
+}
