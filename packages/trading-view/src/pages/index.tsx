@@ -1,17 +1,15 @@
 import { observer } from 'mobx-react'
-import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
 import Loading from '@/components/loading'
+import { TVChart } from '@/components/TVChart'
 import { BASE_PATH, isProd } from '@/constants'
 import { useConfig } from '@/context/configProvider'
 import { useStores } from '@/context/mobxProvider'
 import { ThemeConst } from '@/theme/theme'
 import { symbolInfoArr } from '@/utils/wsUtil'
-
-const TVChart = dynamic(() => import('@/components/TVChart').then((mod) => mod.TVChart), { ssr: false })
 
 export default observer(() => {
   const [error, showError] = useState(false)
@@ -55,7 +53,7 @@ export default observer(() => {
       )}
       <Script
         src={`${BASE_PATH || '.'}/static/datafeeds/udf/dist/bundle.js`}
-        strategy="lazyOnload"
+        strategy="afterInteractive"
         onReady={() => {
           setIsScriptReady(true)
         }}
