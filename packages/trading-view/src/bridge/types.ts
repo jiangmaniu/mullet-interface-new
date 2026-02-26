@@ -12,6 +12,7 @@ export enum BridgeIncoming {
   Invoke = 'invoke',
   SyncQuote = 'syncQuote',
   ChangeSymbol = 'changeSymbol',
+  SetWatermark = 'setWatermark',
 }
 
 /** Web → App */
@@ -47,7 +48,13 @@ export interface ChangeSymbolMessage {
   payload: any
 }
 
-export type AppToWebMessage = InvokeMessage | SyncQuoteMessage | ChangeSymbolMessage
+export interface SetWatermarkMessage {
+  type: BridgeIncoming.SetWatermark
+  /** base64 编码的水印图片 */
+  payload: string
+}
+
+export type AppToWebMessage = InvokeMessage | SyncQuoteMessage | ChangeSymbolMessage | SetWatermarkMessage
 
 // ── Web → App 消息 ──
 

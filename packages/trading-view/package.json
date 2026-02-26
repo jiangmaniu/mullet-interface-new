@@ -8,8 +8,7 @@
   ],
   "scripts": {
     "postinstall": "cross-env PLATFORM=mullet next build",
-    "build": "cross-env PLATFORM=mullet next build",
-    "build:tradingview": "cross-env PLATFORM=mullet BASE_PATH=/tradingview next build",
+    "build": "cross-env PLATFORM=mullet BASE_PATH=/tradingview next build",
     "cz": "git add . && git-cz",
     "dev": "cross-env PLATFORM=mullet next dev",
     "lint": "next lint",

@@ -1,6 +1,6 @@
 import type { IChartingLibraryWidget } from 'public/static/charting_library'
 
-import { BridgeIncoming, BridgeOutgoing, InvokeTarget, type AppToWebMessage, type WebToAppMessage } from './types'
+import { type AppToWebMessage, BridgeIncoming, BridgeOutgoing, InvokeTarget, type WebToAppMessage } from './types'
 
 // ── 发送消息到宿主 App ──
 
@@ -12,6 +12,7 @@ function postToApp(msg: WebToAppMessage) {
 
 let tvWidget: IChartingLibraryWidget | null = null
 let listening = false
+let watermarkCallback: ((base64: string) => void) | null = null
 
 function handleMessage(event: MessageEvent) {
   let msg: AppToWebMessage
@@ -42,6 +43,9 @@ function handleMessage(event: MessageEvent) {
     case BridgeIncoming.ChangeSymbol:
       // TODO: 对接品种切换逻辑
       break
+    case BridgeIncoming.SetWatermark:
+      watermarkCallback?.(msg.payload)
+      break
   }
 }
 
@@ -60,7 +64,12 @@ export function destroyBridge() {
   window.removeEventListener('message', handleMessage)
   document.removeEventListener('message', handleMessage as EventListener)
   tvWidget = null
+  watermarkCallback = null
   listening = false
+}
+
+export function onWatermark(cb: (base64: string) => void) {
+  watermarkCallback = cb
 }
 
 export { BridgeOutgoing, postToApp }
