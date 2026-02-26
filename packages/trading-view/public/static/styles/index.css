@@ -14,13 +14,13 @@
   /* ---- 工具栏按钮 ---- */
   --tv-color-toolbar-button-text: #a6a8c0;
   --tv-color-toolbar-button-text-hover: #ffffff;
-  --tv-color-toolbar-button-text-active: #eed94c;
-  --tv-color-toolbar-button-text-active-hover: #eed94c;
+  --tv-color-toolbar-button-text-active: #ffffff;
+  --tv-color-toolbar-button-text-active-hover: #ffffff;
   --tv-color-toolbar-button-background-hover: #14172B;
   --tv-color-toolbar-button-background-expanded: #14172B;
   --tv-color-toolbar-button-background-active: transparent;
   --tv-color-toolbar-button-background-active-hover: transparent;
-  --tv-color-toolbar-divider-background: rgba(101,104,134,0.2);
+  --tv-color-toolbar-divider-background: rgba(101,104,134,0.4);
   --tv-color-toolbar-save-layout-loader: #eed94c;
 
   /* ---- 切换按钮 ---- */
@@ -39,12 +39,75 @@
   --tv-color-popup-element-background-hover: rgba(101,104,134,0.15);
   --tv-color-popup-element-secondary-text: #9093ad;
   --tv-color-popup-element-hint-text: #9093ad;
-  --tv-color-popup-element-divider-background: rgba(101,104,134,0.2);
+  --tv-color-popup-element-divider-background: rgba(101,104,134,0.4);
 
   /* ---- 弹窗工具箱（侧边栏绘图工具子菜单） ---- */
   --tv-color-popup-element-toolbox-text: #a6a8c0;
   --tv-color-popup-element-toolbox-text-hover: #ffffff;
-  --tv-color-popup-element-toolbox-text-active-hover: #eed94c;
+  --tv-color-popup-element-toolbox-text-active-hover: #ffffff;
   --tv-color-popup-element-toolbox-background-hover: rgba(101,104,134,0.15);
   --tv-color-popup-element-toolbox-background-active-hover: rgba(101,104,134,0.2);
+}
+
+/* ================================================================
+ * 对话框 / 抽屉 / 遮罩层 — 硬编码颜色覆盖
+ * TradingView 的 modal dialog 不走 CSS 变量，需要直接覆盖类名
+ * 注意：哈希后缀随库版本变化，升级 charting_library 后需验证
+ * ================================================================ */
+
+/* 对话框主体背景（指标设置、图表属性等弹窗） */
+html.theme-dark [class^="dialog-"],
+html.theme-dark [class*=" dialog-"] {
+  background-color: #14172B;
+}
+
+/* 对话框 darker 变体 */
+html.theme-dark [class^="darker-"],
+html.theme-dark [class*=" darker-"] {
+  background-color: #0d0f1f;
+}
+
+/* 遮罩层（dialog / drawer backdrop） */
+html.theme-dark [class^="backdrop-"],
+html.theme-dark [class*=" backdrop-"] {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* 顶部工具栏 & 侧边栏按钮文字 */
+[class^="button-"][class*="S_1OCXUK"],
+[class^="button-"][class*="JQv8nO8e"],
+[id*="header-toolbar"] [class*="button-"],
+[id*="header-toolbar"] [class*="button-"] div[class*="value"] {
+  font-size: 12px !important;
+}
+
+/* 弹窗 / 对话框 / 抽屉内文字 */
+[class^="dialog-"] [class*="content"],
+[class^="dialog-"] [class*="label"],
+[class^="dialog-"] [class*="title"],
+[class^="drawer-"] [class*="item"],
+[class^="dialog-"] [class*="cell"],
+[class^="dialog-"] [class*="tab"] {
+  font-size: 14px !important;
+}
+
+/* 弹窗菜单项文字（下拉菜单、右键菜单等） */
+[class^="menuBox-"] [class*="label"],
+[class^="menuBox-"] [class*="content"],
+[class^="menuBox-"] [class*="title"] {
+  font-size: 14px !important;
+}
+
+/* 图标统一 20px（排除箭头等小型装饰图标） */
+[id*="header-toolbar"] div:not([class*="arrow"]) svg,
+[class^="button-"] svg,
+[class^="menuBox-"] svg,
+[class^="dialog-"] svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+[class^="dialog-"] button[data-name*="close"] svg {
+  width: 14px !important;
+  height: 14px !important;
 }

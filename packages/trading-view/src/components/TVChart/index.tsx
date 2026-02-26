@@ -1,16 +1,13 @@
 import { useRouter } from 'next/router'
 import {
-  ChartingLibraryWidgetOptions,
   ChartStyle,
-  EntityId,
   LanguageCode,
-  ResolutionString,
   ThemeName,
-  TickMarkType,
   widget
 } from 'public/static/charting_library'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { BridgeOutgoing, destroyBridge, initBridge, postToApp } from '@/bridge'
 import { useConfig } from '@/context/configProvider'
 import { useStores } from '@/context/mobxProvider'
 import { ThemeConst } from '@/theme/theme'
@@ -65,8 +62,6 @@ export const TVChart = () => {
     const tvWidget = new widget(widgetOptions)
 
     tvWidget.onChartReady(async () => {
-      // CSS 主题变量已通过 custom_css_url 静态文件在编译时覆盖，无需运行时设置
-
       // 设置k线柱样式（涨跌色）
       setChartStyleProperties({ colorType, tvWidget })
 
@@ -103,53 +98,21 @@ export const TVChart = () => {
         }
       )
 
-      // 暴露 TVBridge 给上层（RN WebView）调用
-      // @ts-ignore
-      window.TVBridge = {
-        setResolution: (resolution: string) => {
-          tvWidget.activeChart().setResolution(resolution as ResolutionString, () => { })
-        },
-        getResolution: () => {
-          return tvWidget.activeChart().resolution()
-        },
-        setChartType: (type: number) => {
-          tvWidget.activeChart().setChartType(type)
-        },
-        getChartType: () => {
-          return tvWidget.activeChart().chartType()
-        },
-        addStudy: (name: string, inputs?: Record<string, any>) => {
-          return tvWidget.activeChart().createStudy(name, false, false, inputs)
-        },
-        removeStudy: (entityId: string) => {
-          tvWidget.activeChart().removeEntity(entityId as EntityId)
-        },
-        getAllStudies: () => {
-          return tvWidget.activeChart().getAllStudies()
-        },
-        showIndicatorsDialog: () => {
-          tvWidget.activeChart().executeActionById('insertIndicator')
-        },
-        showChartTypeDialog: () => {
-          tvWidget.activeChart().executeActionById('chartProperties')
-        },
-      }
+      // 初始化 Bridge（替代旧的 window.TVBridge 全局挂载）
+      initBridge(tvWidget)
 
       // 主题已就绪，显示图表
       setChartReady(true)
 
-      // 通知 RN 侧 chart 已就绪
-      if ((window as any).ReactNativeWebView) {
-        (window as any).ReactNativeWebView.postMessage(JSON.stringify({ type: 'chartReady' }))
-      }
+      // 通知宿主 App chart 已就绪
+      postToApp({ type: BridgeOutgoing.ChartReady })
     })
 
     // 记录k线实例
     ws.setTvWidget(tvWidget)
-    // @ts-ignore
-    window.tvWidget = tvWidget
 
     return () => {
+      destroyBridge()
       tvWidget.remove()
     }
   }, [params, isPc, chartType, showBottomMACD, bgGradientStartColor, bgGradientEndColor])

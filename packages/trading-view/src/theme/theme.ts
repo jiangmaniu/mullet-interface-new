@@ -19,7 +19,7 @@ export const ThemeConst = {
   // 图表元素色
   gridColor: 'rgba(101,104,134,0.08)', // 网格线（极淡）
   scaleTextColor: '#9093ad', // 刻度文字 (zinc-200)
-  separatorColor: 'rgba(101,104,134,0.2)', // 分隔线
+  separatorColor: 'rgba(101,104,134,0.4)', // 分隔线
   crosshairColor: '#a6a8c0', // 十字线 (zinc-100)
 
   // 交易色

@@ -232,12 +232,14 @@ export default function getWidgetOpts(
     // 可以通过api来动态设置 applyOverrides
     // https://www.tradingview.com/charting-library-docs/latest/customization/overrides/
     overrides: {
-      // 'paneProperties.legendProperties.showSeriesTitle': false, // 图例标题可见性，legend最左侧的标题
       // priceScaleSelectionStrategyName: 'left', // 将价格刻度位置更改为左侧
       // 'mainSeriesProperties.visible': false, // 隐藏主图
+      'paneProperties.legendProperties.showSeriesTitle': false, // 隐藏图例品种名
+      // 'paneProperties.legendProperties.showSeriesOHLC': false, // 隐藏图例 OHLC 价格
+      // 'paneProperties.legendProperties.showBarChange': false, // 隐藏图例涨跌幅
       'paneProperties.background': `${bgColor}`, // 图表背景颜色
-      'scalesProperties.showSeriesLastValue': false, // 是否在右侧价格刻度上显示当前价格
-      'mainSeriesProperties.showPriceLine': false, // 是否展示价格线
+      'scalesProperties.showSeriesLastValue': true, // 在右侧价格刻度上显示当前价格
+      'mainSeriesProperties.showPriceLine': true, // 是否展示价格线
       // 'scalesProperties.showStudyLastValue': true // 是否在右侧价格刻度上展示value值
       // 'paneProperties.backgroundType': 'solid'
       // "paneProperties.vertGridProperties.color": "#454545",
@@ -263,8 +265,8 @@ export default function getWidgetOpts(
     studies_overrides: {
       // MACD 柱状图颜色：0=涨增强 1=涨减弱 2=跌减弱 3=跌增强
       'MACD.Histogram.color.0': ThemeConst.green, // 涨增强
-      'MACD.Histogram.color.1': 'rgba(46,188,132,0.5)', // 涨减弱
-      'MACD.Histogram.color.2': 'rgba(255,17,47,0.5)', // 跌减弱
+      'MACD.Histogram.color.1': ThemeConst.green, // 涨减弱
+      'MACD.Histogram.color.2': ThemeConst.red, // 跌减弱
       'MACD.Histogram.color.3': ThemeConst.red, // 跌增强
       // MACD 线颜色
       'MACD.MACD.color': ThemeConst.green,

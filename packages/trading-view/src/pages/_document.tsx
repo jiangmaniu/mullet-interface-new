@@ -5,6 +5,7 @@ export default function Document() {
   return (
     <Html lang="en" suppressHydrationWarning>
       <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         {/* 在 <head> 中注入阻塞脚本，浏览器绘制任何内容之前就设置背景色 */}
         <script
           dangerouslySetInnerHTML={{

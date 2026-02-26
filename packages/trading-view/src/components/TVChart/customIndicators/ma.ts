@@ -8,8 +8,6 @@ import {
   StudyPlotType
 } from 'public/static/charting_library'
 
-import { ThemeConst } from '@/theme/theme'
-
 const customerMovingAverage = (PineJS: PineJS) => {
   // 它将由图表库内部使用
   const indicators: CustomIndicator = {
@@ -46,7 +44,7 @@ const customerMovingAverage = (PineJS: PineJS) => {
             // 绘制透明度，百分比。
             transparency: 0,
             visible: true,
-            color: '#eed94c' // MA5 黄色
+            color: '#D5B95C' // MA5 金黄
           },
           plot_1: {
             linestyle: 0,
@@ -55,7 +53,7 @@ const customerMovingAverage = (PineJS: PineJS) => {
             trackPrice: false,
             transparency: 0,
             visible: true,
-            color: '#a855f7' // MA10 紫色
+            color: '#12A170' // MA10 绿色
           },
           plot_2: {
             linestyle: 0,
@@ -64,7 +62,7 @@ const customerMovingAverage = (PineJS: PineJS) => {
             trackPrice: false,
             transparency: 0,
             visible: true,
-            color: '#38bdf8' // MA30 浅蓝色
+            color: '#C37CD8' // MA30 紫粉
           }
         },
         inputs: {
