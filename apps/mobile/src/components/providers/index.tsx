@@ -20,6 +20,7 @@ import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
 import { WalletStateInjector } from './wallet-state-injector'
 import { Toaster } from '@/components/ui/toast'
+import * as SystemUI from 'expo-system-ui'
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
@@ -47,6 +48,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     Uniwind.setTheme('dark')
+    SystemUI.setBackgroundColorAsync(backgroundColorSecondary)
     dynamicActivate(initialLocale).then(() => {
       setIsI18nLoaded(true)
     })

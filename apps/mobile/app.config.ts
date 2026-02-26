@@ -34,9 +34,7 @@ export default ({ config }: { config: ConfigContext }) => {
     orientation: 'portrait',
     icon: './public/images/icon.png',
     scheme: 'mullet',
-    userInterfaceStyle: 'automatic',
-    newArchEnabled: true,
-
+    userInterfaceStyle: 'dark',
     extra: extra,
 
     ios: {
@@ -70,7 +68,6 @@ export default ({ config }: { config: ConfigContext }) => {
         backgroundImage: './public/images/android-icon-background.png',
         monochromeImage: './public/images/android-icon-monochrome.png',
       },
-      edgeToEdgeEnabled: true,
       predictiveBackGestureEnabled: false,
       package: 'com.mullet.mobile',
     },
@@ -87,14 +84,12 @@ export default ({ config }: { config: ConfigContext }) => {
           imageWidth: 200,
           resizeMode: 'contain',
           backgroundColor: '#060717',
-          dark: {
-            backgroundColor: '#060717',
-          },
         },
       ],
       'expo-secure-store',
       'expo-web-browser',
       'expo-localization',
+      'expo-font',
       // Android 钱包检测插件
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
       './plugins/queries.js',
