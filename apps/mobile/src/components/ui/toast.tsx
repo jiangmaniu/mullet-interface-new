@@ -10,10 +10,12 @@ export { Toaster }
 
 type ToastType = 'success' | 'error' | 'warning' | 'info'
 
+type ExternalToast = Parameters<typeof sonnerToast.custom>[1];
+
 interface ToastConfig {
   type?: ToastType
   message: React.ReactNode
-  duration?: number
+  options?: ExternalToast
   icon?: React.ReactNode
 }
 
@@ -27,7 +29,7 @@ const borderMap: Record<string, string> = {
 }
 
 function renderToast(config: ToastConfig) {
-  const { type, message, duration, icon } = config
+  const { type, message, options, icon } = config
   const toastIcon = icon ?? (type ? iconMap[type] : undefined)
   const borderClass = type
     ? (borderMap[type] ?? 'border-brand-default')
@@ -45,7 +47,7 @@ function renderToast(config: ToastConfig) {
         {message}
       </Text>
     </View>,
-    { duration: duration ?? 2000 },
+    { ...options, duration: options?.duration ?? 2000 },
   )
 }
 
@@ -58,14 +60,14 @@ function renderToast(config: ToastConfig) {
 export const toast = Object.assign(
   (config: ToastConfig) => renderToast(config),
   {
-    success: (message: React.ReactNode, duration?: number) =>
-      renderToast({ type: 'success', message, duration }),
-    warning: (message: React.ReactNode, duration?: number) =>
-      renderToast({ type: 'warning', message, duration }),
-    error: (message: React.ReactNode, duration?: number) =>
-      renderToast({ type: 'error', message, duration }),
-    info: (message: React.ReactNode, duration?: number) =>
-      renderToast({ type: 'info', message, duration }),
+    success: (message: React.ReactNode, options?: ExternalToast) =>
+      renderToast({ type: 'success', message, options }),
+    warning: (message: React.ReactNode, options?: ExternalToast) =>
+      renderToast({ type: 'warning', message, options }),
+    error: (message: React.ReactNode, options?: ExternalToast) =>
+      renderToast({ type: 'error', message, options }),
+    info: (message: React.ReactNode, options?: ExternalToast) =>
+      renderToast({ type: 'info', message, options }),
     dismiss: sonnerToast.dismiss,
   },
 )

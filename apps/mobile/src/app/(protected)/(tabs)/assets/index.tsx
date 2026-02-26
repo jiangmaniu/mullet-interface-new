@@ -1,2 +1,5 @@
 import Assets from '@/pages/(protected)/(tabs)/assets'
-export default Assets
+
+export default function AssetsScreen() {
+  return <Assets />
+}

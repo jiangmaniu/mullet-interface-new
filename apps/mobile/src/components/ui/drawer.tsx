@@ -53,6 +53,12 @@ const closeDuration = 350
 // Drawer Root
 // ============================================================================
 
+export type DrawerRef = {
+  open: () => void
+  close: () => void
+  toggle: () => void
+}
+
 interface DrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void

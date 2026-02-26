@@ -1,13 +1,14 @@
 import { Base64 } from 'js-base64'
 
-import { message } from './message'
-// import { onLogout } from './navigation'
-import { STORAGE_GET_TOKEN, STORAGE_GET_TRADER_SERVER, STORAGE_GET_USER_INFO } from './storage'
+import { toast } from '@/components/ui/toast'
+import { handle401Error } from '@/lib/auth-handler'
 import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
-import { handle401Error } from '@/lib/auth-handler'
+
+// import { onLogout } from './navigation'
+import { STORAGE_GET_TOKEN, STORAGE_GET_TRADER_SERVER, STORAGE_GET_USER_INFO } from './storage'
 
 interface IRequestConfig extends RequestInit {
   /** 接口是否需要客户端鉴权 */
@@ -40,7 +41,7 @@ interface IRequestConfig extends RequestInit {
 // 默认配置
 const DEFAULT_TIMEOUT = 30000
 const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json'
+  'Content-Type': 'application/json',
 }
 
 // 构建请求头
@@ -129,7 +130,7 @@ function buildUrlWithParams(baseUrl: string, params?: Record<string, any>): stri
 // 处理响应
 async function handleResponse<T>(
   response: Response,
-  config?: IRequestConfig
+  config?: IRequestConfig,
 ): Promise<{ data: T; status: number; ok: boolean }> {
   const responseType = config?.responseType || 'json'
 
@@ -156,11 +157,7 @@ async function handleResponse<T>(
 }
 
 // 处理错误响应
-function handleErrorResponse(
-  status: number,
-  data: any,
-  skipErrorHandler?: boolean
-): Error {
+function handleErrorResponse(status: number, data: any, skipErrorHandler?: boolean): Error {
   const errorMessage = data?.msg || data?.message || data?.error_description || data?.error
   let statusText: string | undefined
 
@@ -191,18 +188,14 @@ function handleErrorResponse(
   statusText = errorMessage || statusText
 
   if (status !== 401) {
-    statusText && !skipErrorHandler && message.info(statusText, 2)
+    statusText && !skipErrorHandler && toast.error(statusText, 2)
   }
 
   return new Error(statusText || 'Unknown Error')
 }
 
 // 带超时的 fetch
-async function fetchWithTimeout(
-  url: string,
-  options: RequestInit,
-  timeout: number
-): Promise<Response> {
+async function fetchWithTimeout(url: string, options: RequestInit, timeout: number): Promise<Response> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => {
     controller.abort()
@@ -216,7 +209,7 @@ async function fetchWithTimeout(
       method: options.method || 'GET',
       headers: options.headers,
       body: options.body,
-      signal: controller.signal
+      signal: controller.signal,
     }
 
     const response = await fetch(url, fetchOptions)
@@ -236,9 +229,9 @@ async function fetchWithTimeout(
 export const request = <T = any>(url: string, config?: IRequestConfig): Promise<T> => {
   const skipErrorHandler = config?.skipErrorHandler ?? false
 
-  let toastKey = 0
+  // let toastKey = 0
   if (config?.showLoading) {
-    toastKey = message.loading(t`Loading`, 0)
+    // toastKey = message.loading(t`Loading`, 0)
   }
 
   return new Promise(async (resolve, reject) => {
@@ -267,24 +260,18 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
       const method = (config?.method?.toUpperCase() || 'GET') as string
       const fetchConfig: RequestInit = {
         method,
-        headers
+        headers,
       }
 
       // 添加请求体（仅对非 GET 请求）
       if (config?.data && method !== 'GET') {
-        fetchConfig.body = typeof config.data === 'string'
-          ? config.data
-          : JSON.stringify(config.data)
+        fetchConfig.body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data)
       }
 
       console.log('Fetch Config:', fullUrl, method)
 
       // 执行请求
-      const response = await fetchWithTimeout(
-        fullUrl,
-        fetchConfig,
-        config?.timeout || DEFAULT_TIMEOUT
-      )
+      const response = await fetchWithTimeout(fullUrl, fetchConfig, config?.timeout || DEFAULT_TIMEOUT)
 
       // 处理响应
       const { data, status, ok } = await handleResponse<any>(response, config)
@@ -325,6 +312,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
           return
         }
         const error = handleErrorResponse(status, data, skipErrorHandler)
+
         reject(error)
         return
       }
@@ -337,44 +325,46 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
 
       const { msg, code } = data || {}
 
-      if(!['api/blade-auth/oauth/token'].some((item) => {
-        return requestUrl.includes(item)
-      }) ){
-      if (code !== 200 && code !== 401) {
-        console.log(`请求失败，接口地址:${baseURL}${requestUrl}`, data)
+      if (
+        !['api/blade-auth/oauth/token'].some((item) => {
+          return requestUrl.includes(item)
+        })
+      ) {
+        if (code !== 200 && code !== 401) {
+          console.log(`请求失败，接口地址:${baseURL}${requestUrl}`, data)
 
-        // 客户端请求失败了统一提示，是否跳过错误提示
-        if (!skipErrorHandler && msg) {
-          message.info(msg, 2)
+          // 客户端请求失败了统一提示，是否跳过错误提示
+          if (!skipErrorHandler && msg) {
+            toast.error(msg)
+          }
         }
-      }
 
-      // 处理响应体中的 401 错误码
-      if (code === 401 && !config?.skipAllErrorHandler) {
-        console.log('401 code in response body, attempting auto re-auth...')
-        const shouldRetry = await handle401Error()
-        if (shouldRetry) {
-          // 重新认证成功，重试请求
-          console.log('Re-auth successful, retrying request...')
-          try {
-            const retryResult = await request<T>(url, config)
-            resolve(retryResult)
-            return
-          } catch (retryError) {
-            reject(retryError)
+        // 处理响应体中的 401 错误码
+        if (code === 401 && !config?.skipAllErrorHandler) {
+          console.log('401 code in response body, attempting auto re-auth...')
+          const shouldRetry = await handle401Error()
+          if (shouldRetry) {
+            // 重新认证成功，重试请求
+            console.log('Re-auth successful, retrying request...')
+            try {
+              const retryResult = await request<T>(url, config)
+              resolve(retryResult)
+              return
+            } catch (retryError) {
+              reject(retryError)
+              return
+            }
+          } else {
+            // 需要重新登录，不重试请求
+            reject(new Error('Authentication required'))
             return
           }
-        } else {
-          // 需要重新登录，不重试请求
-          reject(new Error('Authentication required'))
-          return
         }
       }
-    }
- 
-      resolve({ 
+
+      resolve({
         success: true,
-        ...data
+        ...data,
       })
     } catch (error: any) {
       console.log('Request Error:', error.message, error)
@@ -385,11 +375,11 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
       }
 
       if (error.message === 'Request Timeout') {
-        !skipErrorHandler && message.info('Request Timeout', 2)
+        !skipErrorHandler && toast.error('Request Timeout')
       } else if (error.message?.includes('Network request failed')) {
-        !skipErrorHandler && message.info(t`None response! Please retry`, 2)
+        !skipErrorHandler && toast.error(t`None response! Please retry`)
       } else {
-        !skipErrorHandler && message.info(error.message)
+        !skipErrorHandler && toast.error(error.message)
       }
 
       reject(error)

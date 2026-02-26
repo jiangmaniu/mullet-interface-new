@@ -11,6 +11,8 @@ import { useState } from 'react';
 import { Pressable, View } from "react-native";
 import { AccountSelectionDrawer, Account } from './_comps/account-selection-drawer';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { DrawerTitle } from '@/components/ui/drawer';
+import { toast } from '@/components/ui/toast';
 
 const INITIAL_ACCOUNTS: Account[] = [
 	{ id: '88234911', type: 'STP', balance: '10,234.50', currency: 'USDC' },
@@ -20,8 +22,8 @@ const INITIAL_ACCOUNTS: Account[] = [
 export default function TransferScreen() {
 	const { textColorContent1 } = useThemeColors();
 
-	const [fromAccount, setFromAccount] = useState<Account>(INITIAL_ACCOUNTS[0]);
-	const [toAccount, setToAccount] = useState<Account>(INITIAL_ACCOUNTS[1]);
+	const [fromAccount, setFromAccount] = useState<User.AccountItem>();
+	const [toAccount, setToAccount] = useState<User.AccountItem>();
 	const [amount, setAmount] = useState('');
 
 	const [isFromDrawerOpen, setIsFromDrawerOpen] = useState(false);
@@ -33,9 +35,15 @@ export default function TransferScreen() {
 	};
 
 	const handleMax = () => {
-		// Remove commas for calculation, assuming balance string is formatted
-		const balance = parseFloat(fromAccount.balance.replace(/,/g, ''));
-		setAmount(balance.toFixed(2));
+
+		if (!fromAccount) {
+			toast.error(<Trans>请先选择要转出的账户</Trans>)
+			return
+		}
+
+		if (fromAccount.money) {
+			setAmount(fromAccount.money.toString());
+		}
 	};
 
 	return (
@@ -53,26 +61,26 @@ export default function TransferScreen() {
 				{/* Account Selection Area */}
 				<View className="relative mt-4">
 					{/* From Account */}
-					<AccountSelector
+					{/* <AccountSelector
 						label={<Trans>从</Trans>}
 						account={fromAccount}
 						onPress={() => setIsFromDrawerOpen(true)}
-					/>
+					/> */}
 
 					{/* Swap Button */}
 					<View className="absolute left-1/2 top-1/2 -ml-[20px] -mt-[20px] z-10">
-						<IconButton variant='ghost' onPress={handleSwap}>
+						<IconButton variant='outline' onPress={handleSwap}>
 							<IconGroup5 width={24} height={24} />
 						</IconButton>
 					</View>
 
 					{/* To Account */}
 					<View className="mt-2">
-						<AccountSelector
+						{/* <AccountSelector
 							label={<Trans>到</Trans>}
 							account={toAccount}
 							onPress={() => setIsToDrawerOpen(true)}
-						/>
+						/> */}
 					</View>
 				</View>
 
@@ -98,7 +106,7 @@ export default function TransferScreen() {
 						<Text className="text-paragraph-p3 text-content-4"><Trans>可用余额</Trans></Text>
 						<View className="flex-row items-center gap-xs">
 							<Text className="text-paragraph-p3 text-content-1">
-								{fromAccount.balance} {fromAccount.currency}
+								{/* {fromAccount.balance} {fromAccount.currency} */}
 							</Text>
 							<IconButton color='primary'>
 								<IconifyPlusCircle width={14} height={14} />
@@ -123,22 +131,22 @@ export default function TransferScreen() {
 				</View>
 			</SafeAreaView>
 
-
+			{/* 
 			<AccountSelectionDrawer
 				visible={isFromDrawerOpen}
 				onClose={() => setIsFromDrawerOpen(false)}
 				onSelect={setFromAccount}
 				selectedAccountId={fromAccount.id}
-				title={<Trans>从</Trans>}
-			/>
+				title={<DrawerTitle><Trans>从</Trans></DrawerTitle>}
+			/> */}
 
-			<AccountSelectionDrawer
+			{/* <AccountSelectionDrawer
 				visible={isToDrawerOpen}
 				onClose={() => setIsToDrawerOpen(false)}
 				onSelect={setToAccount}
 				selectedAccountId={toAccount.id}
-				title={<Trans>到</Trans>}
-			/>
+				title={<DrawerTitle><Trans>到</Trans></DrawerTitle>}
+			/> */}
 		</View >
 	);
 }

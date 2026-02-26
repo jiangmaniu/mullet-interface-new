@@ -17,6 +17,12 @@ const ModalContext = React.createContext<{
 	onClose?: () => void;
 }>({});
 
+export type ModalRef = {
+	open: () => void;
+	close: () => void;
+	toggle: () => void;
+}
+
 interface ModalProps extends RNModalProps {
 	/**
 	 * 是否显示遮罩层

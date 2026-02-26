@@ -4,6 +4,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalRef,
   ModalTitle,
 } from '@/components/ui/modal';
 import { IconRemind } from '@/components/ui/icons';
@@ -11,11 +12,12 @@ import { Text } from '@/components/ui/text';
 import * as React from 'react';
 import { View } from 'react-native';
 import { Trans } from '@lingui/react/macro';
+import { useToggle } from 'ahooks';
+import { useImperativeHandle } from 'react';
 
 interface TransferHintModalProps {
-  open: boolean;
-  onClose: () => void;
   onCreateAccount: () => void;
+  ref: React.RefObject<ModalRef | null>;
 }
 
 /**
@@ -24,15 +26,22 @@ interface TransferHintModalProps {
  * 当用户尝试划转资金但账户不足两个时显示。
  */
 export function TransferHintModal({
-  open,
-  onClose,
   onCreateAccount,
+  ref
 }: TransferHintModalProps) {
+  const [open, { toggle, setRight: setOpen, setLeft: setClose }] = useToggle(false)
+
+  useImperativeHandle(ref, () => ({
+    open: setOpen,
+    close: setClose,
+    toggle: toggle,
+  }))
+
   return (
     <Modal
       transparent
       visible={open}
-      onClose={onClose}
+      onClose={setClose}
       animationType="fade"
     >
       <ModalContent>
@@ -54,15 +63,15 @@ export function TransferHintModal({
         <ModalFooter>
           <Button
             className="flex-1"
-            variant="secondary"
+            variant="outline"
             size="lg"
-            onPress={onClose}
+            onPress={setClose}
           >
             <Text><Trans>取消</Trans></Text>
           </Button>
           <Button
             className="flex-1"
-            variant="primary"
+            variant="solid"
             color="primary"
             size="lg"
             onPress={onCreateAccount}
