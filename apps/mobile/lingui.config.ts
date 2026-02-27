@@ -4,7 +4,7 @@ const config: LinguiConfig = {
   locales: ['en', 'zh-cn'],
   sourceLocale: 'zh-cn',
   fallbackLocales: {
-     default: 'zh-cn'
+    default: 'zh-cn',
   },
   catalogs: [
     {
@@ -12,7 +12,7 @@ const config: LinguiConfig = {
       include: ['<rootDir>/src'],
     },
   ],
-  format: 'po'
+  format: 'po',
 }
 
 export default config

@@ -51,7 +51,7 @@ const RealAccountRow = observer(({ account,
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-medium">
             <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-            <Text className="text-paragraph-p1 text-content-1">{account.name}</Text>
+            <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
           </View>
 
           <View className="flex-row items-center gap-medium">
@@ -135,7 +135,7 @@ const SimulateAccountRow = ({
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-medium">
             <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-            <Text className="text-paragraph-p1 text-content-1">{account.name}</Text>
+            <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
           </View>
 
           <View className="flex-row items-center gap-medium">

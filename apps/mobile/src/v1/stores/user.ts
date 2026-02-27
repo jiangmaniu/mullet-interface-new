@@ -1,9 +1,14 @@
-import { action, configure, makeObservable, observable, runInAction } from 'mobx'
+import { action, configure, get, makeObservable, observable, runInAction } from 'mobx'
 
 import { stores } from '@/v1/provider/mobxProvider'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import { onLogout, replace } from '@/v1/utils/navigation'
-import { setLocalUserInfo, STORAGE_GET_CONF_INFO, STORAGE_GET_USER_INFO, STORAGE_SET_USER_INFO } from '@/v1/utils/storage'
+import {
+  setLocalUserInfo,
+  STORAGE_GET_CONF_INFO,
+  STORAGE_GET_USER_INFO,
+  STORAGE_SET_USER_INFO,
+} from '@/v1/utils/storage'
 
 // 禁用 MobX 严格模式
 configure({ enforceActions: 'never' })
@@ -23,6 +28,14 @@ class UserStore {
   //   this.currentUser = (await STORAGE_GET_USER_INFO()) || ({} as User.UserInfo)
   // }
 
+  get realAccountList() {
+    return this.currentUser.accountList?.filter((item) => !item.isSimulate) ?? []
+  }
+
+  get simulateAccountList() {
+    return this.currentUser.accountList?.filter((item) => item.isSimulate) ?? []
+  }
+
   // 获取用户信息
   @action
   fetchUserInfo = async (isRefreshAccount?: boolean) => {
@@ -30,14 +43,14 @@ class UserStore {
       const id = await STORAGE_GET_USER_INFO('user_id')
       // 查询客户信息
       const clientInfo = await getClientDetail({
-        id
+        id,
       })
 
       const localUserInfo = (await STORAGE_GET_USER_INFO()) || {}
 
       const currentUser = {
         ...localUserInfo,
-        ...clientInfo // 用户详细信息
+        ...clientInfo, // 用户详细信息
       } as User.UserInfo
 
       // 更新本地的用户信息
@@ -79,7 +92,7 @@ class UserStore {
         // })
       } else {
         replace('AccountNew', {
-          back: false
+          back: false,
         })
       }
     })
@@ -94,7 +107,8 @@ class UserStore {
     await stores.trade.init()
 
     // 初始化设置默认当前账号信息
-    const localAccountId = stores.trade.currentAccountInfo?.id || (await STORAGE_GET_CONF_INFO(`currentAccountInfo`))?.id
+    const localAccountId =
+      stores.trade.currentAccountInfo?.id || (await STORAGE_GET_CONF_INFO(`currentAccountInfo`))?.id
     // const hasAccount = (currentUser?.accountList || []).filter((v) => !v.isSimulate).some((item) => item.id === localAccountId)
     const hasAccount = (currentUser?.accountList || []).some((item) => item.id === localAccountId)
     // 本地不存在账号或本地存在账号但不在登录返回的accountList中，需重新设置默认值，避免切换不同账号登录使用上一次缓存
@@ -104,7 +118,9 @@ class UserStore {
       stores.trade.setCurrentAccountInfo(currentUser.accountList?.[0] as User.AccountItem)
     } else if (localAccountId) {
       // 更新本地存在的账号信息，确保证数据是最新的
-      stores.trade.setCurrentAccountInfo(currentUser.accountList?.find((item) => item.id === localAccountId) as User.AccountItem)
+      stores.trade.setCurrentAccountInfo(
+        currentUser.accountList?.find((item) => item.id === localAccountId) as User.AccountItem,
+      )
     } else {
       stores.trade.getSymbolList()
     }

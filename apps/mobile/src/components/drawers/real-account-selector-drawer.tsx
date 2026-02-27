@@ -1,35 +1,43 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer';
+import { Drawer, DrawerContent, DrawerHeader, DrawerRef } from '@/components/ui/drawer';
 import { Text } from '@/components/ui/text';
 import { useStores } from '@/v1/provider/mobxProvider';
 import { getAccountSynopsisByLng } from '@/v1/utils/business';
 import { Trans } from '@lingui/react/macro';
 import { BNumber } from '@mullet/utils/number';
+import { useToggle } from 'ahooks';
 import { observer } from 'mobx-react-lite';
+import { RefObject, useImperativeHandle } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 
-interface AccountSelectionDrawerProps {
-	visible: boolean;
-	onClose: () => void;
-	onSelect: (account: User.AccountItem) => void;
+interface RealAccountSelectionDrawerProps {
+	onSelect?: (account: User.AccountItem) => void;
 	selectedAccountId?: string;
 	title?: React.ReactNode;
+	ref?: RefObject<DrawerRef | null>
 }
 
-export const AccountSelectionDrawer = observer(({
-	visible,
-	onClose,
+export const RealAccountSelectionDrawer = observer(({
 	onSelect,
 	selectedAccountId,
-	title
-}: AccountSelectionDrawerProps) => {
+	title,
+	ref
+}: RealAccountSelectionDrawerProps) => {
 	const { user } = useStores()
+
+	const [isOpen, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle()
+
+	useImperativeHandle(ref, () => ({
+		open: setOpen,
+		close: setClose,
+		toggle: toggle,
+	}))
 
 	const accountList = user.currentUser.accountList?.filter((accountGroup) => !accountGroup.isSimulate) ?? []
 	return (
-		<Drawer open={visible} onOpenChange={onClose}>
+		<Drawer open={isOpen} onOpenChange={setToggle}>
 			<DrawerContent className='h-[240px] gap-0 py-xl'>
 
 				{title && <DrawerHeader className='px-5'>
@@ -45,8 +53,8 @@ export const AccountSelectionDrawer = observer(({
 
 							selectedAccountId={selectedAccountId}
 							onPress={() => {
-								onSelect(account);
-								onClose();
+								onSelect?.(account);
+								setClose();
 							}}
 						/>
 					))}
@@ -95,4 +103,3 @@ function AccountRow({
 	);
 }
 
-export default AccountSelectionDrawer;

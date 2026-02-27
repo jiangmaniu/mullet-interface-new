@@ -235,7 +235,7 @@ export function CollapsibleTab({
           <MaterialTabBar
             {...tabBarProps}
             scrollEnabled={scrollEnabled}
-            style={{ height: '100%', backgroundColor: 'transparent' }}
+            style={{ flex: 1, height: '100%', backgroundColor: 'transparent' }}
             contentContainerStyle={{ alignItems: 'center' }}
 
             // 指示器样式配置

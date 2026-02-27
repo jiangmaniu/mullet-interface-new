@@ -17,6 +17,19 @@ import { getAccountSynopsisByLng } from '@/v1/utils/business';
 import { BNumber } from '@mullet/utils/number';
 import { toast } from '../ui/toast';
 
+export interface Account {
+	id: string;
+	type: string;
+	balance: string;
+	currency: string;
+	isReal?: boolean;
+	leverage?: string;
+	platform?: string;
+	server?: string;
+	address?: string;
+	[key: string]: any;
+}
+
 interface AccountSelectDrawerProps {
 	visible: boolean;
 	onClose: () => void;
@@ -33,9 +46,8 @@ export const AccountSelectDrawer = observer(({
 
 	const { user } = useStores()
 	const { t } = useLingui();
-	console.log(user.currentUser)
-	const realAccountList = user.currentUser?.accountList?.filter((item) => !item.isSimulate) || []
-	const simulateAccountList = user.currentUser?.accountList?.filter((item) => item.isSimulate) || []
+	const realAccountList = user.realAccountList || []
+	const simulateAccountList = user.simulateAccountList || []
 
 	const handleSelect = (account: User.AccountItem) => {
 		if (!account?.enableConnect || account.status === 'DISABLED') {
@@ -103,7 +115,7 @@ const AccountRow = observer(({ account, isSelected, onPress }: AccountRowProps) 
 						<View className="flex-row items-center justify-between gap-medium">
 							<View className="flex-row items-center gap-xs">
 								<IconifyUserCircle width={20} height={20} color={textColorContent1} />
-								<Text className="text-paragraph-p2 text-content-1">{account.name}</Text>
+								<Text className="text-paragraph-p2 text-content-1">{account.id}</Text>
 							</View>
 
 							<View className="flex-row items-center gap-medium">

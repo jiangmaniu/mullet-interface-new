@@ -46,7 +46,7 @@ export const TradeAccountOverviewCard = observer(({ }: TradeAccountOverviewCardP
             <View className="flex-row items-center gap-medium">
               <View className="flex-row items-center gap-xs">
                 <IconifyUserCircle width={20} height={20} className="text-content-1" />
-                <Text className="text-content-1 text-paragraph-p2">{tradeAccount.name}</Text>
+                <Text className="text-content-1 text-paragraph-p2">{tradeAccount.id}</Text>
               </View>
               <Badge color={isReal ? "rise" : "secondary"}><Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text></Badge>
               <Badge><Text>{synopsis.abbr}</Text></Badge>

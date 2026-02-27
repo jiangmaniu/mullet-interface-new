@@ -1,0 +1,192 @@
+import { observer } from "mobx-react-lite"
+import { Card, CardContent } from '@/components/ui/card';
+import { Text } from '@/components/ui/text';
+import { Trans } from '@lingui/react/macro';
+import React from 'react';
+import { ActivityIndicator, FlatList, View } from 'react-native';
+import { BillsCardRow } from "./card-row";
+import { useBillsScreenContext } from "../index";
+import { getMoneyRecordsPageList } from "@/v1/services/tradeCore/account";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import { EmptyState } from "@/components/states/empty-state";
+import { BNumber } from "@mullet/utils/number";
+import { renderFallback } from "@mullet/utils/fallback";
+import { Badge } from "@/components/ui/badge";
+import { getAccountSynopsisByLng } from "@/v1/utils/business";
+import { useStores } from "@/v1/provider/mobxProvider";
+
+const PAGE_SIZE = 10;
+
+export const TransferList = observer(({
+  accountSelector,
+}: {
+  accountSelector: React.ReactNode;
+}) => {
+  const { selectedAccount, dateRange } = useBillsScreenContext();
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useInfiniteQuery({
+    queryKey: ['transferRecords', selectedAccount?.id, dateRange.startDate?.getTime(), dateRange.endDate?.getTime()],
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await getMoneyRecordsPageList({
+        current: pageParam,
+        size: PAGE_SIZE,
+        type: 'TRANSFER',
+        accountId: selectedAccount?.id,
+        startTime: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD 00:00:00') : undefined,
+        endTime: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD 23:59:59') : undefined,
+      });
+      return res.data;
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      if (!lastPage) return undefined;
+      const { current, pages } = lastPage;
+      return current < pages ? current + 1 : undefined;
+    },
+    enabled: !!selectedAccount?.id,
+    // 保留旧数据，queryKey 变化时先展示旧数据再后台刷新
+    placeholderData: keepPreviousData,
+    // 组件重新挂载时始终后台刷新最新数据
+    refetchOnMount: 'always',
+  });
+
+  // 将所有页的记录合并并去重
+  const records = React.useMemo(() => {
+    if (!data?.pages) return [];
+    const all = data.pages.flatMap(page => page?.records ?? []);
+    // 按 id 去重
+    const seen = new Set<number>();
+    return all.filter(item => {
+      if (item.id == null || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  }, [data]);
+
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const renderItem = ({ item }: { item: Account.MoneyRecordsPageListItem }) => (
+    <TransferCard record={item} />
+  );
+
+  const renderFooter = () => {
+    if (isFetchingNextPage) {
+      return (
+        <View className="py-xl items-center">
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    if (!hasNextPage && records.length > 0) {
+      return (
+        <View className="py-xl items-center">
+          <Text className="text-paragraph-p3 text-content-4"><Trans>没有更多了</Trans></Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const renderEmpty = () => {
+    if (isLoading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    return (
+      <View className="py-[60px] items-center">
+        <EmptyState message={<Trans>暂无划转记录</Trans>} />
+      </View>
+
+    );
+  };
+
+  return (
+    <FlatList
+      className="flex-1"
+      contentContainerStyle={{ paddingBottom: 24 }}
+      data={records}
+      keyExtractor={(item) => String(item.id)}
+      renderItem={renderItem}
+      ListHeaderComponent={
+        <View className="pt-xl pb-xl">
+          {accountSelector}
+        </View>
+      }
+      ItemSeparatorComponent={() => <View className="h-xl" />}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.3}
+      onRefresh={() => refetch()}
+      refreshing={isRefetching && !isFetchingNextPage}
+      style={{ paddingHorizontal: 16 }}
+    />
+  );
+});
+
+// 划转卡片组件
+const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageListItem }) => {
+  const remark = record.remark
+  const { selectedAccount } = useBillsScreenContext();
+
+  const { user } = useStores()
+
+  const getTag = (accountId: any) => {
+    const synopsis = getAccountSynopsisByLng(user.realAccountList.find((item) => item.id === accountId)?.synopsis)
+    return synopsis?.abbr
+  }
+
+  return (
+    <Card>
+      <CardContent className="gap-medium">
+        <BillsCardRow
+          label={<Trans>划转金额</Trans>}
+          value={`${BNumber.toFormatNumber(remark?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal })}`}
+        />
+        <BillsCardRow
+          label={<Trans>转出账户</Trans>}
+          valueComponent={
+            <View className="flex-row gap-1">
+              <Badge color="default">
+                <Text>{getTag(remark?.fromAccountId)}</Text>
+              </Badge>
+
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.fromAccountId)}</Text>
+            </View>}
+        />
+        <BillsCardRow
+          label={<Trans>转入账户</Trans>}
+          valueComponent={
+            <View className="flex-row gap-1">
+              <Badge color="default">
+                <Text>{getTag(remark?.fromAccountId)}</Text>
+              </Badge>
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.toAccountId)}</Text>
+            </View>
+          }
+        />
+        <BillsCardRow
+          label={<Trans>时间</Trans>}
+          value={renderFallback(record.createTime)}
+        />
+      </CardContent>
+    </Card>
+  );
+}
+)

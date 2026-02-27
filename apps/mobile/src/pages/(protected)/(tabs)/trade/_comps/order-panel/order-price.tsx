@@ -4,13 +4,13 @@ import React from 'react'
 import { View, Pressable } from 'react-native'
 import { Text } from '@/components/ui/text'
 import { Trans } from '@lingui/react/macro'
-import { Input } from '@/components/ui/input'
 import { t } from '@/locales/i18n'
 import { useStores } from "@/v1/provider/mobxProvider"
 import { useGetCurrentQuoteCallback } from "@/v1/utils/wsUtil"
 import { BNumber } from "@mullet/utils/number"
 import useDisabled from "@/v1/hooks/trade/useDisabled"
 import useQuote from "@/v1/hooks/trade/useQoute"
+import { NumberInput, NumberInputSourceType } from "@/components/ui/number-input"
 
 export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
   const { trade } = useStores()
@@ -19,6 +19,7 @@ export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
   const { setOrderPrice } = trade
 
   const isBuyOrder = trade.buySell === 'BUY'
+  const isMarket = orderType === 'MARKET_ORDER'
 
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const quoteInfo = getCurrentQuote(symbol)
@@ -40,24 +41,23 @@ export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
           <Text className="text-paragraph-p2 text-content-5">
             <Trans>以当前最优价</Trans>
           </Text>
-
         </View>
       ) : (
-        <Input
+        <NumberInput
           labelText={t`价格`}
           placeholder={BNumber.toFormatNumber(0, { volScale: symbolInfo.symbolDecimal })}
-          // decimalScale={symbolInfo.symbolDecimal}
+          decimalScale={symbolInfo.symbolDecimal}
           value={price}
-          // disabled={disabledInput}
-          // onValueChange={({ value }, { source }) => {
-          //   if (isMarket) {
-          //     return
-          //   }
+          disabled={disabledInput}
+          onValueChange={({ value }, { source }) => {
+            if (isMarket) {
+              return
+            }
 
-          //   if (source === NumberInputSourceType.EVENT) {
-          //     setOrderPrice(value)
-          //   }
-          // }}
+            if (source === NumberInputSourceType.EVENT) {
+              setOrderPrice(value)
+            }
+          }}
 
           keyboardType="decimal-pad"
           RightContent={

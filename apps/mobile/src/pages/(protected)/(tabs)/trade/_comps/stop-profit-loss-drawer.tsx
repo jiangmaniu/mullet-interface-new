@@ -145,7 +145,7 @@ function StopProfitLossDrawerContent({
               />
             </View>
             <View className="w-[90px]">
-              <Input
+              < Input
                 labelText={t`百分比`}
                 displayLabelClassName='bg-special'
                 value={takeProfitPercent}

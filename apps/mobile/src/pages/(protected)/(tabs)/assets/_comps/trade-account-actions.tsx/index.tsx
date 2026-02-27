@@ -33,8 +33,8 @@ const RealAccountActions = observer(({ account }: { account: User.AccountItem })
   // const transferHintModalRef = useRef<ModalRef>(null)
 
   const handlePressTransfer = () => {
-    // 跳转到划转页面
-    router.push('/transfer')
+    // 跳转到划转页面，传入当前账户 ID
+    router.push({ pathname: '/transfer', params: { accountId: account.id } })
   }
 
   const handlePressBill = () => {

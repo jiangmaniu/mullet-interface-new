@@ -2,71 +2,26 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { View, Pressable } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import {
-  IconifyActivity,
-  IconifyCandlestickChart,
-  IconifyMoreHoriz,
-  IconifyNavArrowDownSolid,
   IconifyNavArrowDown,
   IconifyUserCircle,
   IconifyPlusCircle,
-  IconifyPage,
-  IconNavArrowSuperior,
-  IconNavArrowDown,
-  IconifyNavArrowRight,
 } from '@/components/ui/icons'
-import { EmptyState } from '@/components/states/empty-state'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ScreenHeader } from '@/components/ui/screen-header'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Trans } from '@lingui/react/macro'
-import { IconButton, Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  CollapsibleTab,
-  CollapsibleTabScene,
-  CollapsibleStickyHeader,
-  CollapsibleStickyNavBar,
-  CollapsibleStickyContent,
-  CollapsibleScrollView,
-} from '@/components/ui/collapsible-tab'
-import { Input } from '@/components/ui/input'
-import { t } from '@/locales/i18n'
-import { Switch } from '@/components/ui/switch'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import * as AccordionPrimitive from '@rn-primitives/accordion'
-import {
-  AccountSwitchDrawer,
-  type Account,
-} from '@/components/drawers/account-switch-drawer'
+import { IconButton } from '@/components/ui/button'
+
+
 import { observer } from 'mobx-react-lite'
-import account from '@/pages/(protected)/(assets)/account'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getAccountSynopsisByLng } from '@/v1/utils/business'
 import { BNumber } from '@mullet/utils/number'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
+import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
 
-
-
-
-// ============ Interfaces ============
-interface AccountInfo {
-  id: string
-  type: string
-  balance: string
-  currency: string
-  isReal: boolean
-}
 
 // ============ AccountCard ============
 interface AccountCardProps {
@@ -85,19 +40,6 @@ export const AccountCard = observer(({ }: AccountCardProps) => {
   const getAccountBalance = useGetAccountBalanceCallback()
   const { availableMargin } = getAccountBalance(trade.currentAccountInfo, trade.positionList)
 
-
-
-
-  const handleAccountSelect = useCallback((account: Account) => {
-    // setSelectedAccount({
-    //   id: account.id,
-    //   type: account.type,
-    //   balance: account.balance,
-    //   currency: account.currency,
-    //   isReal: account.isReal ?? true,
-    // })
-  }, [])
-
   return (
     <>
       <Pressable onPress={handleAccountPress}>
@@ -109,12 +51,12 @@ export const AccountCard = observer(({ }: AccountCardProps) => {
                 {/* User + ID */}
                 <View className="flex-row items-center gap-xs">
                   <IconifyUserCircle width={20} height={20} className='text-content-1' />
-                  <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo.name}</Text>
+                  <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo.id}</Text>
                 </View>
                 {/* Badges */}
                 <View className="flex-row items-center gap-medium">
-                  <Badge color={currentAccountInfo.isSimulate ? 'green' : 'secondary'}>
-                    <Text>{currentAccountInfo.isSimulate ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
+                  <Badge color={!currentAccountInfo.isSimulate ? 'green' : 'secondary'}>
+                    <Text>{!currentAccountInfo.isSimulate ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
                   </Badge>
                   <Badge color="default">
                     <Text>{synopsis.abbr}</Text>
@@ -144,12 +86,11 @@ export const AccountCard = observer(({ }: AccountCardProps) => {
       </Pressable>
 
       {/* Account Selection Drawer */}
-      {/* <AccountSwitchDrawer
+      <TradeAccountSwitchDrawer
         visible={isAccountDrawerOpen}
         onClose={() => setIsAccountDrawerOpen(false)}
-        selectedAccountId={selectedAccount.id}
-        onSwitch={handleAccountSelect}
-      /> */}
+        selectedAccountId={currentAccountInfo.id}
+      />
     </>
   )
 })

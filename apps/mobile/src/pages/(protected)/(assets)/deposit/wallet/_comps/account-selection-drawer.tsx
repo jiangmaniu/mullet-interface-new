@@ -70,7 +70,7 @@ function AccountRow({
 					<View className="gap-xs flex-1">
 						<View className="flex-row items-center gap-medium">
 							<Text className="text-paragraph-p2 text-content-1">
-								{account.name}
+								{account.id}
 							</Text>
 							<Text className="text-paragraph-p2 text-content-4">
 								{account.id}
