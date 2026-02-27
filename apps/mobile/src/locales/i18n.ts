@@ -2,14 +2,10 @@ import { getLocales } from 'expo-localization'
 import { i18n, MessageDescriptor } from '@lingui/core'
 
 export const LOCALE_ZH_CN = 'zh-cn'
-export const LOCALE_ZH_TW = 'zh-tw'
-export const LOCALE_ZH_HK = 'zh-hk'
 export const LOCALE_EN = 'en'
 
 export const locales = {
   [LOCALE_ZH_CN]: '简体中文',
-  [LOCALE_ZH_TW]: '繁體中文',
-  [LOCALE_ZH_HK]: '繁體中文（香港）',
   [LOCALE_EN]: 'English',
 }
 
@@ -35,14 +31,8 @@ function getLanguage(): Locale {
     }
   }
 
-  // 基于 languageCode 和 regionCode 的回退策略
+  // 基于 languageCode 的回退策略
   if (languageCode === 'zh') {
-    if (regionCode === 'HK' || regionCode === 'MO') {
-      return LOCALE_ZH_HK
-    }
-    if (regionCode === 'TW') {
-      return LOCALE_ZH_TW
-    }
     return LOCALE_ZH_CN
   }
 
@@ -61,12 +51,6 @@ export async function dynamicActivate(locale: Locale) {
     console.log(`[i18n] Attempting to switch to locale: ${locale}`)
     let messages
     switch (locale) {
-      case LOCALE_ZH_TW:
-        messages = (await import(`./zh-tw/messages.po`)).messages
-        break
-      case LOCALE_ZH_HK:
-        messages = (await import(`./zh-hk/messages.po`)).messages
-        break
       case LOCALE_EN:
         messages = (await import(`./en/messages.po`)).messages
         break

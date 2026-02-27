@@ -15,7 +15,7 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
     <ThemedView>
       <Pressable
         style={styles.heading}
-        onPress={() => setIsOpen((value) => !value)}
+        onPress={() => setIsOpen((value) => !value)}>
         <IconSymbol
         name="chevron.right"
         size={18}

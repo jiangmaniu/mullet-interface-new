@@ -43,8 +43,6 @@ const getDatePickerLocale = () => {
 	const locale = i18n.locale;
 	const localeMap: Record<string, string> = {
 		'zh-cn': 'zh-Hans',
-		'zh-tw': 'zh-Hant',
-		'zh-hk': 'zh-Hant-HK',
 		en: 'en-US',
 	};
 	return localeMap[locale] || 'zh-Hans';
@@ -55,8 +53,6 @@ const getFormatLocale = () => {
 	const locale = i18n.locale;
 	const localeMap: Record<string, string> = {
 		'zh-cn': 'zh-CN',
-		'zh-tw': 'zh-TW',
-		'zh-hk': 'zh-HK',
 		en: 'en-US',
 	};
 	return localeMap[locale] || 'zh-CN';

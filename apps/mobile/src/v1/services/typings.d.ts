@@ -234,10 +234,4 @@ declare namespace API {
 
   // 交易-到期
   type Expire = 'CLIENT_CANCEL'
-  // 保证金类型
-  type MarginType =
-    /** 全仓 */
-    | 'CROSS_MARGIN'
-    /** 逐仓 */
-    | 'ISOLATED_MARGIN'
 }

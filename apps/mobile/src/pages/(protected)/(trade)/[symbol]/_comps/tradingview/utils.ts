@@ -3,7 +3,7 @@ import RNFS from 'react-native-fs'
 import Constants from 'expo-constants'
 import { Base64 } from 'js-base64'
 
-import { LOCALE_ZH_CN, LOCALE_ZH_HK, LOCALE_ZH_TW } from '@/locales/i18n'
+import { LOCALE_ZH_CN } from '@/locales/i18n'
 import { Config } from '@/v1/platform/config'
 
 export interface SymbolInfo {
@@ -51,9 +51,6 @@ export function getSourceUri(query?: Record<string, string>): string {
 
 export function getTradingviewLocale(appLocale: string): string {
   switch (appLocale) {
-    case LOCALE_ZH_TW:
-    case LOCALE_ZH_HK:
-      return 'zh_TW'
     case LOCALE_ZH_CN:
       return 'zh'
     default:
