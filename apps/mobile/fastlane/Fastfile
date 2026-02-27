@@ -1,0 +1,112 @@
+default_platform(:ios)
+
+before_all do
+  ensure_env_vars(
+    env_vars: ["APP_ENV"]
+  )
+  UI.message("Building for environment: #{ENV['APP_ENV']}")
+end
+
+# ============================================
+# iOS Lanes
+# ============================================
+platform :ios do
+
+  desc "Build iOS and upload to TestFlight"
+  lane :beta do
+    ios_build(export_method: "app-store")
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true
+    )
+  end
+
+  desc "Build iOS IPA only (no upload)"
+  lane :build_only do
+    export_method = ENV["APP_ENV"] == "prod" ? "app-store" : "development"
+    ios_build(export_method: export_method)
+  end
+
+  private_lane :ios_build do |options|
+    export_method = options[:export_method] || "development"
+
+    workspace = File.expand_path(Dir.glob("../ios/*.xcworkspace").first)
+    xcodeproj = File.expand_path(Dir.glob("../ios/*.xcodeproj").first)
+
+    UI.user_error!("No .xcworkspace found in ios/") unless workspace
+    UI.user_error!("No .xcodeproj found in ios/") unless xcodeproj
+
+    scheme = File.basename(xcodeproj, ".xcodeproj")
+
+    UI.message("Workspace: #{workspace}")
+    UI.message("Scheme: #{scheme}")
+    UI.message("Export method: #{export_method}")
+
+    if ENV["VERSION_NAME"]
+      increment_version_number(
+        version_number: ENV["VERSION_NAME"],
+        xcodeproj: xcodeproj
+      )
+    end
+
+    if ENV["VERSION_CODE"]
+      increment_build_number(
+        build_number: ENV["VERSION_CODE"],
+        xcodeproj: xcodeproj
+      )
+    end
+
+    build_app(
+      workspace: workspace,
+      scheme: scheme,
+      export_method: export_method,
+      output_directory: File.expand_path("../build"),
+      output_name: "Mullet-#{ENV['APP_ENV']}.ipa",
+      clean: true,
+      xcargs: "-allowProvisioningUpdates"
+    )
+  end
+end
+
+# ============================================
+# Android Lanes
+# ============================================
+platform :android do
+
+  desc "Build Android Release APK"
+  lane :apk do
+    properties = {}
+    properties["versionName"] = ENV["VERSION_NAME"] if ENV["VERSION_NAME"]
+    properties["versionCode"] = ENV["VERSION_CODE"] if ENV["VERSION_CODE"]
+
+    gradle(
+      project_dir: File.expand_path("../android"),
+      task: "assemble",
+      build_type: "Release",
+      properties: properties
+    )
+
+    # 复制 APK 到 build 目录
+    build_dir = File.expand_path("../build")
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    if apk_path && File.exist?(apk_path)
+      sh("mkdir -p '#{build_dir}'")
+      sh("cp '#{apk_path}' '#{build_dir}/Mullet-#{ENV['APP_ENV']}.apk'")
+      UI.success("APK: #{build_dir}/Mullet-#{ENV['APP_ENV']}.apk")
+    end
+  end
+
+  desc "Build Android AAB (for Play Store)"
+  lane :aab do
+    properties = {}
+    properties["versionName"] = ENV["VERSION_NAME"] if ENV["VERSION_NAME"]
+    properties["versionCode"] = ENV["VERSION_CODE"] if ENV["VERSION_CODE"]
+
+    gradle(
+      project_dir: File.expand_path("../android"),
+      task: "bundle",
+      build_type: "Release",
+      properties: properties
+    )
+  end
+end

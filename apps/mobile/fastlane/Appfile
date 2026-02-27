@@ -1,0 +1,7 @@
+# iOS
+app_identifier "com.mullet.app"
+apple_id ENV["APPLE_ID"]
+team_id ENV["TEAM_ID"]
+
+# Android
+package_name "com.mullet.mobile"

@@ -40,6 +40,7 @@ export default ({ config }: { config: ConfigContext }) => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: 'com.mullet.app',
+      appleTeamId: 'NJX3V5USJP',
       usesAppleSignIn: true,
       // 钱包检测 - LSApplicationQueriesSchemes
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
@@ -69,7 +70,7 @@ export default ({ config }: { config: ConfigContext }) => {
         monochromeImage: './public/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
-      package: 'com.mullet.mobile',
+      package: 'com.mullet.app',
     },
     web: {
       output: 'static',
@@ -97,9 +98,8 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withNetworkSecurityConfig.js',
       // TradingView Advanced Charts - 复制 charting library 到原生 assets
       './plugins/withTradingView.js',
-      // Android SSL 信任所有证书 - 已删除，使用 HTTP 临时过渡
-      // iOS 禁用代码签名 - 解决开发环境无证书问题
-      // './plugins/withDisableCodeSigning.js',
+      // Android Release 签名配置
+      './plugins/withAndroidSigning.js',
     ],
     experiments: {
       typedRoutes: true,
