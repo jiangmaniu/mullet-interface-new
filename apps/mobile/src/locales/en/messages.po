@@ -17,35 +17,35 @@ msgstr ""
 #: src/v1/utils/request1.ts:187
 #: src/v1/utils/request1.ts:189
 msgid "common.None response! Please retry"
-msgstr ""
+msgstr "No response! Please retry"
 
 #. js-lingui-explicit-id
 #: src/v1/utils/request1.ts:207
 msgid "common.Loading"
-msgstr ""
+msgstr "Loading"
 
 #. js-lingui-explicit-id
 #: src/components/drawers/symbol-select-drawer.tsx:70
 msgid "搜索"
-msgstr ""
+msgstr "Search"
 
 #: src/pages/(protected)/(home)/notifications.tsx:73
 #: src/pages/(protected)/(home)/search.tsx:233
 msgid " 暂无内容"
-msgstr ""
+msgstr " No content"
 
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:165
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:118
 msgid "5分钟"
-msgstr ""
+msgstr "5 min"
 
 #: src/v1/stores/trade.ts:788
 msgid "All"
-msgstr ""
+msgstr "All"
 
 #: src/v1/utils/download.ts:151
 msgid "baocuntupianchenggong"
-msgstr ""
+msgstr "Image saved successfully"
 
 #: src/v1/utils/download.ts:80
 #: src/v1/utils/download.ts:87
@@ -54,174 +54,174 @@ msgstr ""
 #: src/v1/utils/download.ts:110
 #: src/v1/utils/download.ts:155
 msgid "baocuntupianshibai"
-msgstr ""
+msgstr "Failed to save image"
 
 #: src/v1/utils/business.ts:281
 msgid "BUY"
-msgstr ""
+msgstr "BUY"
 
 #: src/v1/stores/trade.ts:1183
 msgid "Cancel Success"
-msgstr ""
+msgstr "Cancel Success"
 
 #: src/v1/utils/index.ts:600
 msgid "Copy Success"
-msgstr ""
+msgstr "Copy Success"
 
 #: src/v1/utils/business.ts:286
 msgid "CROSS_MARGIN"
-msgstr ""
+msgstr "Cross"
 
 #: src/v1/utils/zodSchema.ts:9
 msgid "Customer NO placeholder"
-msgstr ""
+msgstr "Enter customer number"
 
 #: src/v1/stores/trade.ts:769
 msgid "Favorite Cancel Success"
-msgstr ""
+msgstr "Removed from favorites"
 
 #: src/v1/stores/trade.ts:776
 msgid "Favorite Success"
-msgstr ""
+msgstr "Added to favorites"
 
 #: src/v1/utils/business.ts:288
 msgid "Fixed Margin Abbr"
-msgstr ""
+msgstr "Fixed"
 
 #: src/v1/utils/business.ts:286
 msgid "ISOLATED_MARGIN"
-msgstr ""
+msgstr "Isolated"
 
 #: src/pages/(protected)/(trade)/settings.tsx:95
 msgid "K线"
-msgstr ""
+msgstr "Candlestick"
 
 #: src/pages/(protected)/(tabs)/trade/index.tsx:56
 msgid "K线图表"
-msgstr ""
+msgstr "Candlestick Chart"
 
 #: src/v1/stores/trade.ts:1158
 msgid "Modify Spsl Success"
-msgstr ""
+msgstr "TP/SL Modified Successfully"
 
 #: src/v1/utils/download.ts:101
 #: src/v1/utils/download.ts:138
 #: src/v1/utils/upload.ts:17
 #: src/v1/utils/upload.ts:32
 msgid "ninyiguanbiquanxian"
-msgstr ""
+msgstr "You have disabled the permission"
 
 #: src/v1/utils/request.ts:380
 msgid "None response! Please retry"
-msgstr ""
+msgstr "No response! Please retry"
 
 #: src/v1/utils/zodSchema.ts:13
 msgid "Password lowercase"
-msgstr ""
+msgstr "Must contain at least one lowercase letter"
 
 #: src/v1/utils/zodSchema.ts:12
 msgid "Password min"
-msgstr ""
+msgstr "Must be at least 8 characters"
 
 #: src/v1/utils/zodSchema.ts:16
 msgid "Password symbol"
-msgstr ""
+msgstr "Must contain at least one special character"
 
 #: src/v1/utils/zodSchema.ts:14
 msgid "Password uppercase"
-msgstr ""
+msgstr "Must contain at least one uppercase letter"
 
 #: src/v1/stores/trade.ts:1171
 msgid "Pending Success"
-msgstr ""
+msgstr "Order Placed Successfully"
 
 #: src/v1/utils/business.ts:281
 msgid "SELL"
-msgstr ""
+msgstr "SELL"
 
 #: src/v1/utils/upload.ts:82
 #: src/v1/utils/upload.ts:91
 msgid "Upload Failed"
-msgstr ""
+msgstr "Upload Failed"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:160
 msgid "不再询问，您可以在设置->交易设置中重新提醒"
-msgstr ""
+msgstr "Don't ask again. You can re-enable this in Settings > Trade Settings"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:131
 msgid "不再询问，您可以在设置->交易设置中重新设置"
-msgstr ""
+msgstr "Don't ask again. You can change this in Settings > Trade Settings"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/index.tsx:106
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/index.tsx:106
 msgid "为您自动选择"
-msgstr ""
+msgstr "Auto-selected for you"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx:207
 #: src/pages/symbol-selector.tsx:188
 msgid "买价"
-msgstr ""
+msgstr "Bid"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-direction.tsx:34
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:341
 msgid "买入/做多"
-msgstr ""
+msgstr "Buy/Long"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:100
 msgid "买入范围"
-msgstr ""
+msgstr "Buy Range"
 
 #: src/pages/(protected)/(tabs)/_layout.tsx:48
 msgid "交易"
-msgstr ""
+msgstr "Trade"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:372
 msgid "交易时间"
-msgstr ""
+msgstr "Trade Time"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:297
 msgid "交易时间（GMT+8）"
-msgstr ""
+msgstr "Trading Hours (GMT+8)"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:365
 #: src/pages/(protected)/(trade)/records/index.tsx:528
 msgid "交易签名"
-msgstr ""
+msgstr "Trade Signature"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:351
 msgid "交易类型"
-msgstr ""
+msgstr "Trade Type"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:612
 msgid "交易记录"
-msgstr ""
+msgstr "Trade History"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:81
 #: src/pages/(protected)/(trade)/settings.tsx:29
 msgid "交易设置"
-msgstr ""
+msgstr "Trade Settings"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:453
 msgid "交易账号"
-msgstr ""
+msgstr "Trading Account"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:408
 msgid "仅作确认您是此钱包的所有权"
-msgstr ""
+msgstr "Only to confirm your ownership of this wallet"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-price.tsx:41
 msgid "以当前最优价"
-msgstr ""
+msgstr "At best available price"
 
 #: src/components/drawers/symbol-select-drawer.tsx:103
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:80
 #: src/pages/symbol-selector.tsx:152
 msgid "价格"
-msgstr ""
+msgstr "Price"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx:210
 msgid "价格/涨跌幅"
-msgstr ""
+msgstr "Price/Change"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:135
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:135
@@ -229,48 +229,48 @@ msgstr ""
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:189
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:189
 msgid "价格影响"
-msgstr ""
+msgstr "Price Impact"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:135
 msgid "价格影响是您在存款过程中需要支付的手续费"
-msgstr ""
+msgstr "Price impact is the fee you pay during the deposit process"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:511
 msgid "余额"
-msgstr ""
+msgstr "Balance"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/index.tsx:62
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/index.tsx:62
 msgid "余额："
-msgstr ""
+msgstr "Balance: "
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:47
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:47
 msgid "使用{channelName}完成交易"
-msgstr ""
+msgstr "Complete transaction with {channelName}"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:88
 msgid "保证金"
-msgstr ""
+msgstr "Margin"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:221
 msgid "保证金(USDC)"
-msgstr ""
+msgstr "Margin (USDC)"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:213
 msgid "保证金率(%)"
-msgstr ""
+msgstr "Margin Ratio (%)"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:344
 msgid "保证金类型"
-msgstr ""
+msgstr "Margin Type"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/index.tsx:57
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:161
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/index.tsx:57
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:117
 msgid "信用卡买币"
-msgstr ""
+msgstr "Buy with Credit Card"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:91
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:71
@@ -279,7 +279,7 @@ msgstr ""
 #: src/pages/(protected)/(trade)/records/index.tsx:238
 #: src/pages/(protected)/(trade)/records/index.tsx:299
 msgid "做多"
-msgstr ""
+msgstr "Long"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:91
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:71
@@ -291,23 +291,23 @@ msgstr ""
 #: src/pages/(protected)/(trade)/records/index.tsx:299
 #: src/pages/(protected)/(trade)/records/index.tsx:401
 msgid "做空"
-msgstr ""
+msgstr "Short"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:63
 msgid "充值您的钱包"
-msgstr ""
+msgstr "Fund Your Wallet"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:86
 msgid "入金"
-msgstr ""
+msgstr "Deposit"
 
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx:49
 msgid "入金失败"
-msgstr ""
+msgstr "Deposit Failed"
 
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx:45
 msgid "入金成功"
-msgstr ""
+msgstr "Deposit Successful"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:460
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:34
@@ -315,114 +315,114 @@ msgstr ""
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:34
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:32
 msgid "入金状态"
-msgstr ""
+msgstr "Deposit Status"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:456
 msgid "入金金额"
-msgstr ""
+msgstr "Deposit Amount"
 
 #: src/options/market/symbol.tsx:12
 #: src/options/market/symbol.tsx:45
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:165
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:165
 msgid "全部"
-msgstr ""
+msgstr "All"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx:49
 #: src/pages/(protected)/(assets)/settings/index.tsx:69
 msgid "关于Mullet"
-msgstr ""
+msgstr "About Mullet"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:173
 msgid "最低"
-msgstr ""
+msgstr "Low"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:115
 msgid "最低存款金额$1"
-msgstr ""
+msgstr "Minimum deposit amount $1"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx:99
 msgid "最大"
-msgstr ""
+msgstr "Max"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-price.tsx:66
 msgid "最新"
-msgstr ""
+msgstr "Latest"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:144
 msgid "最新价格"
-msgstr ""
+msgstr "Latest Price"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:167
 msgid "最高"
-msgstr ""
+msgstr "High"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:420
 msgid "出金状态"
-msgstr ""
+msgstr "Withdrawal Status"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:416
 msgid "出金金额"
-msgstr ""
+msgstr "Withdrawal Amount"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx:52
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-actions.tsx/index.tsx:71
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx:49
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:91
 msgid "划转"
-msgstr ""
+msgstr "Transfer"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:500
 msgid "划转状态"
-msgstr ""
+msgstr "Transfer Status"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:496
 msgid "划转金额"
-msgstr ""
+msgstr "Transfer Amount"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx:58
 msgid "创建多个账户后可进行资金划转"
-msgstr ""
+msgstr "You can transfer funds after creating multiple accounts"
 
 #: src/pages/(protected)/(assets)/create-account/index.tsx:105
 #: src/pages/(protected)/(assets)/create-account/index.tsx:192
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx:79
 msgid "创建账户"
-msgstr ""
+msgstr "Create Account"
 
 #: src/pages/(protected)/(assets)/create-account/index.tsx:138
 msgid "创建账户成功"
-msgstr ""
+msgstr "Account Created Successfully"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:63
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:117
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:63
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:99
 msgid "加密货币入金"
-msgstr ""
+msgstr "Crypto Deposit"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:443
 #: src/pages/(protected)/(assets)/bills/index.tsx:483
 msgid "单号"
-msgstr ""
+msgstr "Order No."
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:237
 msgid "单笔交易手数"
-msgstr ""
+msgstr "Lots per Trade"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx:210
 #: src/pages/symbol-selector.tsx:191
 msgid "卖价"
-msgstr ""
+msgstr "Ask"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-direction.tsx:56
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:356
 msgid "卖出/做空"
-msgstr ""
+msgstr "Sell/Short"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx:119
 msgid "占用"
-msgstr ""
+msgstr "Used"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/clear-cache-modal.tsx:39
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx:40
@@ -430,47 +430,47 @@ msgstr ""
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx:70
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx:62
 msgid "取消"
-msgstr ""
+msgstr "Cancel"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:79
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:79
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-actions.tsx/index.tsx:52
 msgid "取现"
-msgstr ""
+msgstr "Withdraw"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:59
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:59
 msgid "取现哈希"
-msgstr ""
+msgstr "Withdrawal Hash"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:55
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:55
 msgid "取现地址"
-msgstr ""
+msgstr "Withdrawal Address"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:39
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:39
 msgid "取现成功"
-msgstr ""
+msgstr "Withdrawal Successful"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:51
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:51
 msgid "取现数量"
-msgstr ""
+msgstr "Withdrawal Amount"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:29
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:29
 msgid "取现状态"
-msgstr ""
+msgstr "Withdrawal Status"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:519
 msgid "变动前"
-msgstr ""
+msgstr "Before Change"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:33
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:34
 msgid "可开"
-msgstr ""
+msgstr "Available Lots"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:160
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:160
@@ -478,556 +478,556 @@ msgstr ""
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx:129
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx:130
 msgid "可用"
-msgstr ""
+msgstr "Available"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx:106
 msgid "可用余额"
-msgstr ""
+msgstr "Available Balance"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:96
 msgid "合约价值"
-msgstr ""
+msgstr "Contract Value"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:233
 msgid "合约单位"
-msgstr ""
+msgstr "Contract Unit"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:280
 msgid "合约属性"
-msgstr ""
+msgstr "Contract Details"
 
 #: src/v1/constants/enum.ts:13
 msgid "周一"
-msgstr ""
+msgstr "Mon"
 
 #: src/v1/constants/enum.ts:15
 msgid "周三"
-msgstr ""
+msgstr "Wed"
 
 #: src/v1/constants/enum.ts:14
 msgid "周二"
-msgstr ""
+msgstr "Tue"
 
 #: src/v1/constants/enum.ts:17
 msgid "周五"
-msgstr ""
+msgstr "Fri"
 
 #: src/v1/constants/enum.ts:18
 msgid "周六"
-msgstr ""
+msgstr "Sat"
 
 #: src/v1/constants/enum.ts:16
 msgid "周四"
-msgstr ""
+msgstr "Thu"
 
 #: src/v1/constants/enum.ts:19
 msgid "周日"
-msgstr ""
+msgstr "Sun"
 
 #: src/components/drawers/symbol-select-drawer.tsx:100
 #: src/pages/(protected)/(tabs)/home/index.tsx:204
 #: src/pages/symbol-selector.tsx:148
 #: src/pages/symbol-selector.tsx:184
 msgid "品类"
-msgstr ""
+msgstr "Category"
 
 #: src/options/market/symbol.tsx:54
 msgid "商品"
-msgstr ""
+msgstr "Commodities"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:81
 #: src/pages/(protected)/(trade)/records/index.tsx:460
 msgid "地址"
-msgstr ""
+msgstr "Address"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:42
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:42
 msgid "复制失败，请重试"
-msgstr ""
+msgstr "Copy failed, please try again"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:40
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:40
 msgid "复制成功"
-msgstr ""
+msgstr "Copied"
 
 #: src/options/market/symbol.tsx:49
 msgid "外汇"
-msgstr ""
+msgstr "Forex"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:378
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:125
 msgid "失败"
-msgstr ""
+msgstr "Failed"
 
 #: src/components/ui/tooltip.tsx:66
 msgid "好的"
-msgstr ""
+msgstr "OK"
 
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:39
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:38
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-actions.tsx/index.tsx:62
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-actions.tsx/index.tsx:106
 msgid "存款"
-msgstr ""
+msgstr "Deposit"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:64
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:64
 msgid "存款交易"
-msgstr ""
+msgstr "Deposit Transaction"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:100
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:100
 msgid "存款地址"
-msgstr ""
+msgstr "Deposit Address"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:46
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:46
 msgid "存款已接收并正在处理中..."
-msgstr ""
+msgstr "Deposit received and processing..."
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:48
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:48
 msgid "存款成功"
-msgstr ""
+msgstr "Deposit Successful"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:66
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:66
 msgid "完成交易"
-msgstr ""
+msgstr "Complete Transaction"
 
 #: src/pages/(protected)/(tabs)/trade/index.tsx:61
 msgid "展开"
-msgstr ""
+msgstr "Expand"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:70
 msgid "市价"
-msgstr ""
+msgstr "Market"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:271
 msgid "市价手续费"
-msgstr ""
+msgstr "Market Order Fee"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:71
 msgid "常用功能"
-msgstr ""
+msgstr "Quick Actions"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:79
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:286
 msgid "平仓"
-msgstr ""
+msgstr "Close Position"
 
 #: src/pages/(protected)/(trade)/settings.tsx:44
 msgid "平仓确认"
-msgstr ""
+msgstr "Close Position Confirmation"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:257
 msgid "库存费(USDC)"
-msgstr ""
+msgstr "Swap (USDC)"
 
 #: src/pages/(protected)/(trade)/settings.tsx:147
 msgid "底部"
-msgstr ""
+msgstr "Bottom"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:100
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:120
 msgid "开仓价"
-msgstr ""
+msgstr "Open Price"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:229
 msgid "开仓价(USDC)"
-msgstr ""
+msgstr "Open Price (USDC)"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:328
 msgid "开仓价格/成交价格"
-msgstr ""
+msgstr "Open Price/Fill Price"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:28
 msgid "开仓所需的预估保证金金额"
-msgstr ""
+msgstr "Estimated margin required to open position"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:421
 msgid "开仓手数/价格"
-msgstr ""
+msgstr "Open Lots/Price"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:439
 msgid "开仓时间"
-msgstr ""
+msgstr "Open Time"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:181
 msgid "开盘价"
-msgstr ""
+msgstr "Open"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx:131
 msgid "当前可用于交易的资金余额"
-msgstr ""
+msgstr "Current balance available for trading"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:35
 msgid "当前资金可开仓的最大手数"
-msgstr ""
+msgstr "Maximum lots available with current funds"
 
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx:166
 msgid "快速选择"
-msgstr ""
+msgstr "Quick Select"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:139
 msgid "总用时"
-msgstr ""
+msgstr "Total Time"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx:70
 msgid "总资产"
-msgstr ""
+msgstr "Total Assets"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:59
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:59
 msgid "您使用"
-msgstr ""
+msgstr "You used"
 
 #: src/pages/(protected)/(assets)/create-account/index.tsx:111
 msgid "您最多可以创建10个账户，允许您独立管理每个账户的资产，并灵活分配杠杆率和保证金使用情况。资金可以在帐户之间快速转移，以实现高效的资金配置和方便的交易统计追踪。"
-msgstr ""
+msgstr "You can create up to 10 accounts, allowing you to manage each account's assets independently and flexibly allocate leverage and margin usage. Funds can be quickly transferred between accounts for efficient capital allocation and convenient trade tracking."
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:50
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:50
 msgid "您可以关闭此窗口"
-msgstr ""
+msgstr "You can close this window"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:127
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:127
 msgid "您可以向此地址发送任何可接受的代币，它将自动兑换成USDC转入您的账户"
-msgstr ""
+msgstr "You can send any accepted token to this address, and it will be automatically converted to USDC and deposited into your account"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:147
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:124
 msgid "您将发送"
-msgstr ""
+msgstr "You will send"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:157
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:136
 msgid "您将收到"
-msgstr ""
+msgstr "You will receive"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:424
 msgid "您将收到 1 个安全登录签名请求。签名是免费的，不会触发任何交易。"
-msgstr ""
+msgstr "You will receive 1 secure login signature request. Signing is free and will not trigger any transactions."
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:157
 msgid "您收到"
-msgstr ""
+msgstr "You receive"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:53
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:53
 msgid "您的存款将很快到账"
-msgstr ""
+msgstr "Your deposit will arrive shortly"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:55
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:55
 msgid "您的存款已存入账户"
-msgstr ""
+msgstr "Your deposit has been credited to your account"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/_comps/withdraw-status-modal.tsx:42
 #: src/pages/(protected)/(assets)/withdraw/wallet/_comps/withdraw-status-modal.tsx:42
 msgid "您的资产已成功取现"
-msgstr ""
+msgstr "Your assets have been successfully withdrawn"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:79
 msgid "您的资金存入失败"
-msgstr ""
+msgstr "Your deposit has failed"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:77
 msgid "您的资金已成功存入"
-msgstr ""
+msgstr "Your funds have been deposited successfully"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:81
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:81
 msgid "您获得"
-msgstr ""
+msgstr "You received"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/_comps/deposit-status-modal.tsx:70
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/_comps/deposit-status-modal.tsx:70
 msgid "您购买"
-msgstr ""
+msgstr "You purchased"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:378
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:125
 msgid "成功"
-msgstr ""
+msgstr "Success"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:185
 msgid "我们的条款"
-msgstr ""
+msgstr "our Terms"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:90
 msgid "或者"
-msgstr ""
+msgstr "Or"
 
 #: src/options/trade/unit.ts:3
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:124
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:93
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:101
 msgid "手"
-msgstr ""
+msgstr "Lots"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:243
 msgid "手数差值"
-msgstr ""
+msgstr "Lot Step"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:249
 msgid "手续费(USDC)"
-msgstr ""
+msgstr "Commission (USDC)"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:467
 msgid "手续费/库存费"
-msgstr ""
+msgstr "Commission/Swap"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:235
 msgid "报价小数位"
-msgstr ""
+msgstr "Quote Decimals"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:446
 msgid "持仓单号"
-msgstr ""
+msgstr "Position ID"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx:79
 msgid "挂单价(USDC)"
-msgstr ""
+msgstr "Pending Price (USDC)"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:262
 msgid "挂单价格"
-msgstr ""
+msgstr "Pending Price"
 
 #: src/options/market/symbol.tsx:58
 msgid "指数"
-msgstr ""
+msgstr "Indices"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:395
 msgid "按照两个简单步骤连接您的钱包到 Mullet。"
-msgstr ""
+msgstr "Connect your wallet to Mullet in two simple steps."
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:433
 msgid "收款地址"
-msgstr ""
+msgstr "Receiving Address"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:464
 msgid "收款账户"
-msgstr ""
+msgstr "Receiving Account"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:188
 msgid "收益率(%)"
-msgstr ""
+msgstr "Return (%)"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:187
 msgid "收盘价"
-msgstr ""
+msgstr "Close"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:107
 msgid "收藏"
-msgstr ""
+msgstr "Favorites"
 
 #: src/options/market/symbol.tsx:67
 msgid "数字货币"
-msgstr ""
+msgstr "Crypto"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx:71
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:197
 #: src/pages/(protected)/(trade)/records/index.tsx:269
 #: src/pages/(protected)/(trade)/records/index.tsx:337
 msgid "数量(手)"
-msgstr ""
+msgstr "Volume (Lots)"
 
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:120
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:76
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:100
 msgid "无限制 · 即时"
-msgstr ""
+msgstr "No limit · Instant"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:444
 #: src/pages/(protected)/(assets)/bills/index.tsx:484
 #: src/pages/(protected)/(assets)/bills/index.tsx:521
 msgid "时间"
-msgstr ""
+msgstr "Time"
 
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx:194
 msgid "时间范围"
-msgstr ""
+msgstr "Time Range"
 
 #: src/components/drawers/symbol-select-drawer.tsx:165
 #: src/pages/(protected)/(tabs)/home/index.tsx:267
 #: src/pages/symbol-selector.tsx:162
 #: src/pages/symbol-selector.tsx:198
 msgid "暂无数据"
-msgstr ""
+msgstr "No data"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:102
 msgid "暂无模拟账户"
-msgstr ""
+msgstr "No demo accounts"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:22
 msgid "暂无真实账户"
-msgstr ""
+msgstr "No live accounts"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx:132
 msgid "暂无订单"
-msgstr ""
+msgstr "No orders"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:119
 msgid "暂无资产"
-msgstr ""
+msgstr "No positions"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx:35
 msgid "更新App，体验最新版本"
-msgstr ""
+msgstr "Update the app to experience the latest version"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx:30
 msgid "更新版本"
-msgstr ""
+msgstr "Update Available"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx:66
 msgid "服务条款"
-msgstr ""
+msgstr "Terms of Service"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:107
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:117
 msgid "未设置"
-msgstr ""
+msgstr "Not set"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:97
 msgid "来源"
-msgstr ""
+msgstr "Source"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:208
 msgid "查看资产"
-msgstr ""
+msgstr "View Assets"
 
 #: src/pages/(protected)/(home)/search.tsx:183
 #: src/pages/(protected)/(tabs)/home/index.tsx:40
 msgid "查询"
-msgstr ""
+msgstr "Search"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx:87
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:241
 msgid "标记价(USDC)"
-msgstr ""
+msgstr "Mark Price (USDC)"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:108
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:126
 msgid "标记价格"
-msgstr ""
+msgstr "Mark Price"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx:86
 msgid "检查更新"
-msgstr ""
+msgstr "Check for Updates"
 
 #: src/components/drawers/account-select-drawer.tsx:111
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:143
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx:51
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx:117
 msgid "模拟"
-msgstr ""
+msgstr "Demo"
 
 #: src/components/drawers/account-select-drawer.tsx:52
 #: src/pages/(protected)/(assets)/create-account/index.tsx:174
 msgid "模拟账户"
-msgstr ""
+msgstr "Demo Account"
 
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx:65
 msgid "模拟账户存款"
-msgstr ""
+msgstr "Demo Account Deposit"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:114
 msgid "止损"
-msgstr ""
+msgstr "Stop Loss"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:104
 msgid "止盈"
-msgstr ""
+msgstr "Take Profit"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:111
 #: src/pages/(protected)/(trade)/records/index.tsx:430
 msgid "止盈/止损"
-msgstr ""
+msgstr "TP/SL"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:276
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:100
 msgid "止盈止损"
-msgstr ""
+msgstr "TP/SL"
 
 #: src/components/drawers/account-switch-drawer.tsx:47
 msgid "正在切换账户，请稍后..."
-msgstr ""
+msgstr "Switching account, please wait..."
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:289
 msgid "正在打开钱包连接"
-msgstr ""
+msgstr "Opening wallet connection"
 
 #. placeholder {0}: BNumber.toFormatNumber(dailyDepositAmount, { unit: account.currencyUnit, volScale: account.currencyDecimal })
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx:67
 msgid "每日可存款{0} "
-msgstr ""
+msgstr "Daily deposit limit {0} "
 
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:145
 #: src/pages/(protected)/(trade)/records/index.tsx:409
 msgid "浮动盈亏"
-msgstr ""
+msgstr "Unrealized P&L"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx:180
 msgid "浮动盈亏(USDC)"
-msgstr ""
+msgstr "Unrealized P&L (USDC)"
 
 #: src/components/drawers/symbol-select-drawer.tsx:106
 #: src/pages/symbol-selector.tsx:155
 msgid "涨跌幅"
-msgstr ""
+msgstr "Change %"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/clear-cache-modal.tsx:29
 #: src/pages/(protected)/(assets)/settings/about/index.tsx:110
 msgid "清除缓存"
-msgstr ""
+msgstr "Clear Cache"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/index.tsx:103
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/index.tsx:103
 msgid "渠道选择"
-msgstr ""
+msgstr "Select Channel"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:184
 msgid "点击确认订单，即表示您同意"
-msgstr ""
+msgstr "By confirming the order, you agree to"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:250
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:263
 msgid "点模式"
-msgstr ""
+msgstr "Point Mode"
 
 #: src/pages/(protected)/(home)/search.tsx:205
 msgid "热门品种"
-msgstr ""
+msgstr "Popular"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:122
 msgid "状态"
-msgstr ""
+msgstr "Status"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:215
 msgid "由于行情变动快，止损触发价不宜离预估强平价过近，避免触发失败"
-msgstr ""
+msgstr "Due to rapid market changes, the stop loss trigger price should not be too close to the estimated liquidation price to avoid trigger failure"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:389
 msgid "登录"
-msgstr ""
+msgstr "Log In"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:307
 msgid "登录中"
-msgstr ""
+msgstr "Logging in"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:325
 msgid "登录失败，重试"
-msgstr ""
+msgstr "Login failed, retry"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:316
 msgid "盈亏"
-msgstr ""
+msgstr "P&L"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:109
 msgid "目标地址"
-msgstr ""
+msgstr "Destination Address"
 
 #: src/components/drawers/account-select-drawer.tsx:111
 #: src/pages/(protected)/(assets)/bills/index.tsx:361
@@ -1040,12 +1040,12 @@ msgstr ""
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx:51
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx:117
 msgid "真实"
-msgstr ""
+msgstr "Live"
 
 #: src/components/drawers/account-select-drawer.tsx:51
 #: src/pages/(protected)/(assets)/create-account/index.tsx:166
 msgid "真实账户"
-msgstr ""
+msgstr "Live Account"
 
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx:282
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:157
@@ -1054,71 +1054,71 @@ msgstr ""
 #: src/pages/(protected)/(tabs)/trade/_comps/close-position-drawer.tsx:174
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:146
 msgid "确定"
-msgstr ""
+msgstr "Confirm"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:201
 msgid "确定买入"
-msgstr ""
+msgstr "Confirm Buy"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:201
 msgid "确定卖出"
-msgstr ""
+msgstr "Confirm Sell"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:214
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:214
 msgid "确定取现"
-msgstr ""
+msgstr "Confirm Withdrawal"
 
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx:78
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:146
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:146
 msgid "确定存款"
-msgstr ""
+msgstr "Confirm Deposit"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx:43
 msgid "确定更新"
-msgstr ""
+msgstr "Update Now"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/clear-cache-modal.tsx:34
 msgid "确定要清除缓存吗？"
-msgstr ""
+msgstr "Are you sure you want to clear the cache?"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:191
 msgid "确定订单"
-msgstr ""
+msgstr "Confirm Order"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:230
 msgid "确认"
-msgstr ""
+msgstr "Confirm"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:274
 msgid "签名"
-msgstr ""
+msgstr "Sign"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:298
 msgid "签名中"
-msgstr ""
+msgstr "Signing"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:421
 msgid "签名请求"
-msgstr ""
+msgstr "Signature Request"
 
 #: src/pages/(protected)/(trade)/settings.tsx:74
 msgid "红涨绿跌"
-msgstr ""
+msgstr "Red Up Green Down"
 
 #: src/pages/(protected)/(assets)/deposit/privy/credit-card/index.tsx:134
 #: src/pages/(protected)/(assets)/deposit/wallet/credit-card/index.tsx:134
 msgid "继续"
-msgstr ""
+msgstr "Continue"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:205
 msgid "继续入金"
-msgstr ""
+msgstr "Continue Deposit"
 
 #: src/pages/(protected)/(trade)/settings.tsx:55
 msgid "绿涨红跌"
-msgstr ""
+msgstr "Green Up Red Down"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:134
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:134
@@ -1126,211 +1126,211 @@ msgstr ""
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:184
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:184
 msgid "网络费用"
-msgstr ""
+msgstr "Network Fee"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:134
 msgid "网络费用是您在存款过程中需要支付的手续费"
-msgstr ""
+msgstr "Network fee is the fee you pay during the deposit process"
 
 #: src/options/market/symbol.tsx:62
 msgid "股票"
-msgstr ""
+msgstr "Stocks"
 
 #: src/options/market/symbol.tsx:16
 #: src/options/market/symbol.tsx:41
 msgid "自选"
-msgstr ""
+msgstr "Watchlist"
 
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx:212
 msgid "至"
-msgstr ""
+msgstr "To"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:146
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:182
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:164
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:204
 msgid "范围"
-msgstr ""
+msgstr "Range"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:358
 msgid "订单号"
-msgstr ""
+msgstr "Order ID"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:70
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:70
 msgid "订单已成交"
-msgstr ""
+msgstr "Order Filled"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/_comps/deposit-status-modal.tsx:68
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/_comps/deposit-status-modal.tsx:68
 msgid "订单已提交"
-msgstr ""
+msgstr "Order Submitted"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:58
 #: src/pages/(protected)/(tabs)/trade/_comps/order-confirmation-drawer.tsx:58
 #: src/pages/(protected)/(trade)/settings.tsx:36
 msgid "订单确认"
-msgstr ""
+msgstr "Order Confirmation"
 
 #: src/pages/(protected)/(assets)/settings/index.tsx:24
 msgid "设置"
-msgstr ""
+msgstr "Settings"
 
 #: src/components/drawers/account-select-drawer.tsx:42
 msgid "该账户已被禁用"
-msgstr ""
+msgstr "This account has been disabled"
 
 #: src/pages/(protected)/(assets)/settings/index.tsx:31
 msgid "语言设置"
-msgstr ""
+msgstr "Language"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx:40
 msgid "请先选择要转出的账户"
-msgstr ""
+msgstr "Please select the account to transfer from first"
 
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:174
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:174
 msgid "请确保您选择的提现网络，与您在外部钱包/交易所的收款网络一致。否则资产可能会丢失"
-msgstr ""
+msgstr "Please ensure the withdrawal network you select matches the receiving network of your external wallet/exchange. Otherwise, assets may be lost"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:306
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-actions.tsx/index.tsx:80
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx:96
 msgid "账单"
-msgstr ""
+msgstr "Bills"
 
 #: src/components/drawers/account-select-drawer.tsx:120
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:69
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx:153
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx:107
 msgid "账户余额"
-msgstr ""
+msgstr "Account Balance"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:234
 msgid "货币单位"
-msgstr ""
+msgstr "Currency Unit"
 
 #: src/pages/(protected)/(tabs)/_layout.tsx:55
 #: src/pages/(protected)/(tabs)/assets/index.tsx:26
 msgid "资产"
-msgstr ""
+msgstr "Assets"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:197
 msgid "资产兑换中"
-msgstr ""
+msgstr "Converting assets"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx:207
 msgid "走势"
-msgstr ""
+msgstr "Trend"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:473
 msgid "转入地址"
-msgstr ""
+msgstr "Transfer To Address"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:513
 msgid "转入账户"
-msgstr ""
+msgstr "Transfer To Account"
 
 #: src/pages/(protected)/(assets)/bills/index.tsx:424
 #: src/pages/(protected)/(assets)/bills/index.tsx:504
 msgid "转出账户"
-msgstr ""
+msgstr "Transfer From Account"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:280
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:332
 msgid "连接"
-msgstr ""
+msgstr "Connect"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:289
 msgid "连接中"
-msgstr ""
+msgstr "Connecting"
 
 #: src/components/states/connect-state.tsx:67
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:405
 msgid "连接钱包"
-msgstr ""
+msgstr "Connect Wallet"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/index.tsx:27
 msgid "选择资产"
-msgstr ""
+msgstr "Select Asset"
 
 #: src/pages/(protected)/(assets)/deposit/privy/index.tsx:93
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:66
 msgid "选择适合您的入金方式"
-msgstr ""
+msgstr "Choose a deposit method that suits you"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/index.tsx:31
 msgid "选择需要兑换的资产"
-msgstr ""
+msgstr "Select the asset to convert"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:215
 msgid "重新入金"
-msgstr ""
+msgstr "Deposit Again"
 
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx:270
 msgid "重置"
-msgstr ""
+msgstr "Reset"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx:316
 msgid "重试"
-msgstr ""
+msgstr "Retry"
 
 #: src/pages/(protected)/(trade)/records/index.tsx:498
 msgid "金额"
-msgstr ""
+msgstr "Amount"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:68
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:68
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:88
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:88
 msgid "钱包余额："
-msgstr ""
+msgstr "Wallet Balance: "
 
 #. placeholder {0}: MOCK_BALANCE.toLocaleString('en-US', { minimumFractionDigits: 2 })
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/index.tsx:69
 msgid "钱包余额：${0}"
-msgstr ""
+msgstr "Wallet Balance: ${0}"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/index.tsx:75
 msgid "钱包资产入金"
-msgstr ""
+msgstr "Wallet Deposit"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:75
 msgid "限价"
-msgstr ""
+msgstr "Limit"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:270
 msgid "限价和停损距离"
-msgstr ""
+msgstr "Limit & Stop Distance"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:272
 msgid "限价手续费"
-msgstr ""
+msgstr "Limit Order Fee"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx:76
 msgid "隐私政策"
-msgstr ""
+msgstr "Privacy Policy"
 
 #: src/pages/(protected)/(tabs)/trade/index.tsx:84
 msgid "隐藏"
-msgstr ""
+msgstr "Hide"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:245
 msgid "隔夜利息（多单）"
-msgstr ""
+msgstr "Swap (Long)"
 
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx:258
 msgid "隔夜利息（空单）"
-msgstr ""
+msgstr "Swap (Short)"
 
 #: src/pages/(protected)/(trade)/settings.tsx:122
 msgid "顶部"
-msgstr ""
+msgstr "Top"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:26
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx:27
 msgid "预估保证金"
-msgstr ""
+msgstr "Est. Margin"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:136
 #: src/pages/(protected)/(assets)/deposit/wallet/crypto/index.tsx:136
@@ -1338,23 +1338,23 @@ msgstr ""
 #: src/pages/(protected)/(assets)/withdraw/privy/index.tsx:194
 #: src/pages/(protected)/(assets)/withdraw/wallet/index.tsx:194
 msgid "预估滑点"
-msgstr ""
+msgstr "Est. Slippage"
 
 #: src/pages/(protected)/(assets)/deposit/privy/crypto/index.tsx:136
 msgid "预估滑点是您在存款过程中需要支付的手续费"
-msgstr ""
+msgstr "Estimated slippage is the fee you pay during the deposit process"
 
 #: src/pages/(protected)/(assets)/deposit/wallet/wallet-asset/recharge/confirm/index.tsx:131
 msgid "预计时间"
-msgstr ""
+msgstr "Est. Time"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:149
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/index.tsx:185
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:167
 #: src/pages/(protected)/(tabs)/trade/_comps/stop-profit-loss-drawer.tsx:207
 msgid "预计盈亏"
-msgstr ""
+msgstr "Est. P&L"
 
 #: src/pages/(protected)/(tabs)/_layout.tsx:41
 msgid "首页"
-msgstr ""
+msgstr "Home"

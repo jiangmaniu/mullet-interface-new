@@ -6,6 +6,9 @@ const config: LinguiConfig = {
   fallbackLocales: {
     default: 'zh-cn',
   },
+  formatOptions: {
+    lineNumbers: false,
+  },
   catalogs: [
     {
       path: '<rootDir>/src/locales/{locale}/messages',
@@ -13,6 +16,10 @@ const config: LinguiConfig = {
     },
   ],
   format: 'po',
+  orderBy: 'messageId',
+  rootDir: '.',
+  runtimeConfigModule: ['@lingui/core', 'i18n'],
+  pseudoLocale: 'pseudo',
 }
 
 export default config
