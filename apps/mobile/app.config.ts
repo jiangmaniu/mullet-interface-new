@@ -113,6 +113,8 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withTradingView.js',
       // Android Release 签名配置
       './plugins/withAndroidSigning.js',
+      // iOS Debug 自动签名 - prebuild --clean 后无需手动到 Xcode 重新开启
+      './plugins/withDebugAutoSigning.js',
     ],
     experiments: {
       typedRoutes: true,
