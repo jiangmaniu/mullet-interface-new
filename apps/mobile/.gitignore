@@ -51,10 +51,8 @@ fastlane/test_output
 # Build output
 /build
 
-# Android signing
-android/signing.properties
-keystores/*.keystore
-keystores/*.jks
+# Android signing (generated during prebuild, not committed)
+android/app/signing.properties
 
 # Ruby vendor
 vendor/

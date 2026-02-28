@@ -4,7 +4,7 @@ before_all do
   ensure_env_vars(
     env_vars: ["APP_ENV"]
   )
-  UI.message("Building for environment: #{ENV['APP_ENV']}")
+  UI.message("当前构建环境: #{ENV['APP_ENV']}")
 end
 
 # ============================================
@@ -16,31 +16,77 @@ platform :ios do
   lane :beta do
     ios_build(export_method: "app-store")
 
-    upload_to_testflight(
-      skip_waiting_for_build_processing: true
-    )
+    begin
+      upload_to_testflight(
+        skip_waiting_for_build_processing: true
+      )
+    rescue => e
+      UI.error("TestFlight 上传失败: #{e.message}")
+      UI.important("IPA 已构建成功: #{lane_context[SharedValues::IPA_OUTPUT_PATH]}")
+      UI.important("请使用 Transporter App 或 xcrun altool 手动上传")
+    end
   end
 
   desc "Build iOS IPA only (no upload)"
   lane :build_only do
-    export_method = ENV["APP_ENV"] == "prod" ? "app-store" : "development"
-    ios_build(export_method: export_method)
+    ios_build(export_method: "development")
+  end
+
+  desc "Build iOS IPA with AdHoc signing for testing distribution"
+  lane :adhoc do
+    ios_build(export_method: "ad-hoc")
+  end
+
+  desc "Build iOS IPA with app-store signing (no upload)"
+  lane :build_release do
+    ios_build(export_method: "app-store")
   end
 
   private_lane :ios_build do |options|
     export_method = options[:export_method] || "development"
+    bundle_id = ENV["IOS_BUNDLE_ID"]
 
     workspace = File.expand_path(Dir.glob("../ios/*.xcworkspace").first)
     xcodeproj = File.expand_path(Dir.glob("../ios/*.xcodeproj").first)
 
-    UI.user_error!("No .xcworkspace found in ios/") unless workspace
-    UI.user_error!("No .xcodeproj found in ios/") unless xcodeproj
+    UI.user_error!("ios/ 目录下未找到 .xcworkspace 文件") unless workspace
+    UI.user_error!("ios/ 目录下未找到 .xcodeproj 文件") unless xcodeproj
 
     scheme = File.basename(xcodeproj, ".xcodeproj")
 
-    UI.message("Workspace: #{workspace}")
+    match_type = case export_method
+                 when "app-store" then "appstore"
+                 when "ad-hoc" then "adhoc"
+                 else "development"
+                 end
+
+    UI.message("工作空间: #{workspace}")
     UI.message("Scheme: #{scheme}")
-    UI.message("Export method: #{export_method}")
+    UI.message("Bundle ID: #{bundle_id}")
+    UI.message("导出方式: #{export_method}")
+    UI.message("签名类型: #{match_type}")
+
+    match(
+      type: match_type,
+      app_identifier: bundle_id,
+      readonly: true
+    )
+
+    profile_name = ENV["sigh_#{bundle_id}_#{match_type}_profile-name"]
+
+    code_sign_identity = case match_type
+                         when "appstore", "adhoc" then "Apple Distribution"
+                         else "Apple Development"
+                         end
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: xcodeproj,
+      team_id: ENV["TEAM_ID"],
+      bundle_identifier: bundle_id,
+      profile_name: profile_name,
+      code_sign_identity: code_sign_identity
+    )
 
     if ENV["VERSION_NAME"]
       increment_version_number(
@@ -63,7 +109,13 @@ platform :ios do
       output_directory: File.expand_path("../build"),
       output_name: "Mullet-#{ENV['APP_ENV']}.ipa",
       clean: true,
-      xcargs: "-allowProvisioningUpdates"
+      export_options: {
+        signingStyle: "manual",
+        teamID: ENV["TEAM_ID"],
+        provisioningProfiles: {
+          bundle_id => profile_name
+        }
+      }
     )
   end
 end
@@ -92,7 +144,7 @@ platform :android do
     if apk_path && File.exist?(apk_path)
       sh("mkdir -p '#{build_dir}'")
       sh("cp '#{apk_path}' '#{build_dir}/Mullet-#{ENV['APP_ENV']}.apk'")
-      UI.success("APK: #{build_dir}/Mullet-#{ENV['APP_ENV']}.apk")
+      UI.success("APK 输出: #{build_dir}/Mullet-#{ENV['APP_ENV']}.apk")
     end
   end
 

@@ -11,6 +11,18 @@ if (fs.existsSync(envFile)) {
   dotenv.config({ path: envFile })
 }
 
+const displayName: Record<string, string> = {
+  dev: 'Mullet (dev)',
+  test: 'Mullet (test)',
+  prod: 'Mullet',
+}
+
+const bundleIdSuffix: Record<string, string> = {
+  dev: '.dev',
+  test: '.test',
+  prod: '',
+}
+
 export default ({ config }: { config: ConfigContext }) => {
   const extra: ExpoConfigExtra = {
     // Privy 配置
@@ -28,7 +40,7 @@ export default ({ config }: { config: ConfigContext }) => {
 
   const result: ExpoConfig = {
     ...config,
-    name: `Mullet (${env})`,
+    name: displayName[env] ?? `Mullet (${env})`,
     slug: 'mullet',
     version: '1.0.0',
     orientation: 'portrait',
@@ -39,13 +51,14 @@ export default ({ config }: { config: ConfigContext }) => {
 
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.mullet.app',
+      bundleIdentifier: `com.mullet.app${bundleIdSuffix[env] ?? ''}`,
       appleTeamId: 'NJX3V5USJP',
       usesAppleSignIn: true,
       // 钱包检测 - LSApplicationQueriesSchemes
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
       infoPlist: {
         CADisableMinimumFrameDurationOnPhone: true,
+        ITSAppUsesNonExemptEncryption: false,
         LSApplicationQueriesSchemes: [
           // Solana 钱包
           'phantom',
@@ -70,7 +83,7 @@ export default ({ config }: { config: ConfigContext }) => {
         monochromeImage: './public/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
-      package: 'com.mullet.app',
+      package: `com.mullet.app${bundleIdSuffix[env] ?? ''}`,
     },
     web: {
       output: 'static',

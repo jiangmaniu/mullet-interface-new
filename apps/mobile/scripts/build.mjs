@@ -8,8 +8,13 @@ import shelljs from 'shelljs'
 /**
  * Mullet Build Script
  *
- * 交互模式: node scripts/build.js
- * 命令行模式: node scripts/build.js <ios|android> <dev|test|prod> [--upload]
+ * 交互模式: node scripts/build.mjs
+ * 命令行模式: node scripts/build.mjs <ios|android> <dev|test|prod> [--dist=local|adhoc|testflight]
+ *
+ * iOS 分发方式:
+ *   --dist=local       本地直装 (development 签名)
+ *   --dist=adhoc       AdHoc 分发 (ad-hoc 签名，可直接发 ipa)
+ *   --dist=testflight  上传 TestFlight (app-store 签名)
  */
 
 const __filename = fileURLToPath(import.meta.url)
@@ -23,7 +28,7 @@ function run(cmd, cwd = PROJECT_DIR) {
   shelljs.env.FORCE_COLOR = '1'
   const result = shelljs.exec(cmd, { cwd })
   if (result.code !== 0) {
-    console.error(chalk.red(`\nCommand failed with exit code ${result.code}`))
+    console.error(chalk.red(`\n命令执行失败，退出码: ${result.code}`))
     process.exit(result.code || 1)
   }
 }
@@ -40,19 +45,25 @@ async function parseArgs() {
     const flags = args.slice(2)
 
     if (!['ios', 'android'].includes(platform)) {
-      console.error(chalk.red("Error: platform must be 'ios' or 'android'"))
+      console.error(chalk.red("错误: 平台必须是 'ios' 或 'android'"))
       process.exit(1)
     }
     if (!['dev', 'test', 'prod'].includes(env)) {
-      console.error(chalk.red("Error: env must be 'dev', 'test', or 'prod'"))
+      console.error(chalk.red("错误: 环境必须是 'dev'、'test' 或 'prod'"))
       process.exit(1)
     }
 
-    return {
-      platform,
-      env,
-      upload: flags.includes('--upload'),
+    let iosDist = env === 'dev' ? 'local' : env === 'test' ? 'adhoc' : 'testflight'
+    const distFlag = flags.find((f) => f.startsWith('--dist='))
+    if (distFlag) {
+      iosDist = distFlag.split('=')[1]
+      if (!['local', 'adhoc', 'testflight'].includes(iosDist)) {
+        console.error(chalk.red("错误: --dist 必须是 'local'、'adhoc' 或 'testflight'"))
+        process.exit(1)
+      }
     }
+
+    return { platform, env, iosDist }
   }
 
   // 交互模式
@@ -71,29 +82,38 @@ async function parseArgs() {
       type: 'select',
       message: chalk.magentaBright('选择环境'),
       choices: [
-        { name: '开发环境 (dev)', value: 'dev' },
-        { name: '测试环境 (test)', value: 'test' },
-        { name: '生产环境 (prod)', value: 'prod' },
+        { name: '🟢 开发环境 (dev)', value: 'dev' },
+        { name: '🟡 测试环境 (test)', value: 'test' },
+        { name: '🔴 生产环境 (prod)', value: 'prod' },
       ],
       default: 'test',
     },
     {
-      name: 'upload',
+      name: 'iosDist',
       type: 'select',
-      message: chalk.magentaBright('是否上传到 TestFlight?'),
-      when: (ans) => ans.platform === 'ios' && ans.env === 'prod',
+      message: chalk.magentaBright('选择 iOS 分发方式'),
+      when: (ans) => ans.platform === 'ios',
       choices: [
-        { name: '是', value: true },
-        { name: '否', value: false },
+        { name: '📱 本地直装 (development 签名)', value: 'local' },
+        { name: '📦 AdHoc 分发 (发 ipa 给他人安装)', value: 'adhoc' },
+        { name: '🚀 TestFlight (上传到 TestFlight)', value: 'testflight' },
       ],
-      default: false,
+      default: (ans) => {
+        if (ans.env === 'dev') {
+          return 'local'
+        } else if (ans.env === 'test') {
+          return 'adhoc'
+        } else {
+          return 'testflight'
+        }
+      },
     },
   ])
 
   return {
     platform: answers.platform,
     env: answers.env,
-    upload: answers.upload || false,
+    iosDist: answers.iosDist || 'local',
   }
 }
 
@@ -129,7 +149,7 @@ function organizeArtifacts(platform, env, version) {
       }
     }
   } else {
-    console.log(chalk.yellow(`  Warning: ${srcName} not found in build/`))
+    console.log(chalk.yellow(`  警告: ${srcName} 未在 build/ 目录中找到`))
   }
 
   return outputDir
@@ -138,49 +158,76 @@ function organizeArtifacts(platform, env, version) {
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, upload } = await parseArgs()
+  const { platform, env, iosDist } = await parseArgs()
 
   // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
   const version = pkg.version
-  const [major, minor, patch] = version.split('.').map(Number)
-  const versionCode = major * 10000 + minor * 100 + patch
+
+  // versionCode 使用 YYMMDDHHMM 格式的时间戳，保证每次构建唯一且递增
+  const now = new Date()
+  const versionCode = [
+    String(now.getFullYear()).slice(2),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+  ].join('')
 
   shelljs.env.VERSION_NAME = version
-  shelljs.env.VERSION_CODE = String(versionCode)
+  shelljs.env.VERSION_CODE = versionCode
 
   console.log('')
-  console.log(chalk.green(`✨ Starting Mullet build... (v${version})`))
+  console.log(chalk.green(`✨ 开始构建 Mullet... (v${version}, 构建号: ${versionCode})`))
   console.log('')
 
   // Step 1: Prebuild (always clean)
-  console.log(chalk.magentaBright(' [1/4] Running expo prebuild... '))
+  console.log(chalk.magentaBright(' [1/4] 执行 expo prebuild... '))
   run(`pnpm expo-prebuild ${env} --platform ${platform} --clean`)
+
+  // Restore Android signing config (prebuild --clean deletes android/)
+  if (platform === 'android') {
+    const src = path.join(PROJECT_DIR, 'keystores', 'signing.properties')
+    const dest = path.join(PROJECT_DIR, 'android', 'app', 'signing.properties')
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, dest)
+      console.log(chalk.gray('  已恢复 android/signing.properties'))
+    } else {
+      console.error(chalk.red('  错误: keystores/signing.properties 未找到！'))
+      console.error(chalk.red('  请将 keystores/ 目录放到 apps/mobile/ 下（从团队获取）'))
+      process.exit(1)
+    }
+  }
 
   // Step 2: Pod Install (iOS only)
   if (platform === 'ios') {
-    console.log(chalk.magentaBright(' [2/4] Installing CocoaPods... '))
+    console.log(chalk.magentaBright(' [2/4] 安装 CocoaPods 依赖... '))
     run('bundle exec pod install', path.join(PROJECT_DIR, 'ios'))
   } else {
-    console.log(chalk.gray(' [2/4] Skipping pod install (Android)'))
+    console.log(chalk.gray(' [2/4] 跳过 pod install (Android)'))
   }
 
   // Step 3: Fastlane Build
-  console.log(chalk.magentaBright(' [3/4] Running Fastlane... '))
+  console.log(chalk.magentaBright(' [3/4] 执行 Fastlane 构建... '))
   if (platform === 'ios') {
-    const lane = upload ? 'beta' : 'build_only'
+    const iosLaneMap = {
+      local: 'build_only',
+      adhoc: 'adhoc',
+      testflight: 'beta',
+    }
+    const lane = iosLaneMap[iosDist]
     run(`bundle exec fastlane ios ${lane} --env ${env}`)
   } else {
     run(`bundle exec fastlane android apk --env ${env}`)
   }
 
   // Step 4: Organize build artifacts
-  console.log(chalk.magentaBright(' [4/4] Organizing build artifacts... '))
+  console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
   const outputDir = organizeArtifacts(platform, env, version)
 
   console.log('')
-  console.log(chalk.green(' ✅ Build Complete! '))
-  console.log(chalk.green(` 📦 Output: ${path.relative(PROJECT_DIR, outputDir)}/`))
+  console.log(chalk.green(' ✅ 构建完成！'))
+  console.log(chalk.green(` 📦 产物目录: ${path.relative(PROJECT_DIR, outputDir)}/`))
   console.log('')
 }
 

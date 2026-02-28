@@ -1,0 +1,14 @@
+git_url("https://github.com/jiangmaniu/mullet-interface-new.git")
+git_branch("certificates")
+storage_mode("git")
+
+type("development")
+
+app_identifier([
+  "com.mullet.app",
+  "com.mullet.app.dev",
+  "com.mullet.app.test"
+])
+
+team_id("NJX3V5USJP")
+username("1968304304@qq.com")

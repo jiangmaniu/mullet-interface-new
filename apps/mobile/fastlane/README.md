@@ -31,6 +31,22 @@ Build iOS and upload to TestFlight
 
 Build iOS IPA only (no upload)
 
+### ios adhoc
+
+```sh
+[bundle exec] fastlane ios adhoc
+```
+
+Build iOS IPA with AdHoc signing for testing distribution
+
+### ios build_release
+
+```sh
+[bundle exec] fastlane ios build_release
+```
+
+Build iOS IPA with app-store signing (no upload)
+
 ----
 
 

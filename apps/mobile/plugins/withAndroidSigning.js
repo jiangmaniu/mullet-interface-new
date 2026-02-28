@@ -4,7 +4,7 @@ const { withAppBuildGradle } = require('@expo/config-plugins')
  * Android Release 签名配置插件
  *
  * 从 android/signing.properties 读取 keystore 配置，注入到 build.gradle。
- * 如果 signing.properties 不存在，则 fallback 到 debug keystore。
+ * 如果 signing.properties 不存在，Release 构建会直接报错终止。
  *
  * signing.properties 格式：
  *   RELEASE_STORE_FILE=../../keystores/mullet-release.keystore
@@ -19,10 +19,11 @@ const withAndroidSigning = (config) => {
     // 在 android { 之前插入 signing.properties 读取逻辑
     const propsLoader = `
 def signingPropsFile = file("signing.properties")
-def signingProps = new Properties()
-if (signingPropsFile.exists()) {
-    signingProps.load(new FileInputStream(signingPropsFile))
+if (!signingPropsFile.exists()) {
+    throw new GradleException("signing.properties not found! Please place keystores/ directory (get it from your team) under apps/mobile/")
 }
+def signingProps = new Properties()
+signingProps.load(new FileInputStream(signingPropsFile))
 `
     contents = contents.replace(
       'android {',
@@ -32,12 +33,10 @@ if (signingPropsFile.exists()) {
     // 在 signingConfigs 的 debug 块后面添加 release 块
     const releaseConfig = `
         release {
-            if (signingProps.containsKey('RELEASE_STORE_FILE')) {
-                storeFile file(signingProps['RELEASE_STORE_FILE'])
-                storePassword signingProps['RELEASE_STORE_PASSWORD']
-                keyAlias signingProps['RELEASE_KEY_ALIAS']
-                keyPassword signingProps['RELEASE_KEY_PASSWORD']
-            }
+            storeFile file(signingProps['RELEASE_STORE_FILE'])
+            storePassword signingProps['RELEASE_STORE_PASSWORD']
+            keyAlias signingProps['RELEASE_KEY_ALIAS']
+            keyPassword signingProps['RELEASE_KEY_PASSWORD']
         }`
 
     // 匹配 signingConfigs { debug { ... } } 并在 debug 块后追加 release
@@ -49,7 +48,7 @@ if (signingPropsFile.exists()) {
     // 将 release buildType 的 signingConfig 从 debug 改为 release
     contents = contents.replace(
       /(buildTypes\s*\{[\s\S]*?release\s*\{[\s\S]*?)signingConfig\s+signingConfigs\.debug/,
-      '$1signingConfig signingProps.containsKey("RELEASE_STORE_FILE") ? signingConfigs.release : signingConfigs.debug'
+      '$1signingConfig signingConfigs.release'
     )
 
     config.modResults.contents = contents
