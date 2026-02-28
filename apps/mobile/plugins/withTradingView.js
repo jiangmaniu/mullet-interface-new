@@ -92,8 +92,16 @@ function withTradingViewIos(config) {
     const xcodeProject = config.modResults;
     const projectName = config.modRequest.projectName;
 
-    // 检查是否已添加
-    if (xcodeProject.pbxGroupByName('tradingview')) {
+    // 检查 PBXFileReference 中是否已存在 tradingview
+    const fileRefSection = xcodeProject.pbxFileReferenceSection();
+    const alreadyAdded = Object.keys(fileRefSection).some(
+      (key) =>
+        !key.endsWith('_comment') &&
+        fileRefSection[key].name === 'tradingview' &&
+        fileRefSection[key].lastKnownFileType === 'folder',
+    );
+    if (alreadyAdded) {
+      console.log('ℹ️  TradingView folder reference already exists, skipping');
       return config;
     }
 
@@ -101,45 +109,48 @@ function withTradingViewIos(config) {
     const mainGroupId = xcodeProject.getFirstProject().firstProject.mainGroup;
     const mainGroup = xcodeProject.getPBXGroupByKey(mainGroupId);
     const projectGroupEntry = mainGroup.children.find(
-      (c) => c.comment === projectName
+      (c) => c.comment === projectName,
     );
-
     if (!projectGroupEntry) {
       console.warn('⚠️  Could not find project group in Xcode project');
       return config;
     }
+    const projectGroup = xcodeProject.getPBXGroupByKey(
+      projectGroupEntry.value,
+    );
 
-    const projectGroup = xcodeProject.getPBXGroupByKey(projectGroupEntry.value);
-
-    // 创建 PBXFileReference（folder reference）
+    // 1. 直接写入 PBXFileReference section（folder reference）
+    //    path 必须包含项目名前缀，与 Images.xcassets 等保持一致
     const fileRefUuid = xcodeProject.generateUuid();
-    xcodeProject.addToPbxFileReferenceSection({
-      uuid: fileRefUuid,
+    fileRefSection[fileRefUuid] = {
       isa: 'PBXFileReference',
       lastKnownFileType: 'folder',
       name: 'tradingview',
-      path: 'tradingview',
+      path: `${projectName}/tradingview`,
       sourceTree: '"<group>"',
-    });
+    };
+    fileRefSection[`${fileRefUuid}_comment`] = 'tradingview';
 
-    // 添加到项目 group
+    // 2. 添加到项目 group
     projectGroup.children.push({
       value: fileRefUuid,
       comment: 'tradingview',
     });
 
-    // 添加到 Copy Bundle Resources build phase
+    // 3. 直接写入 PBXBuildFile section
     const buildFileUuid = xcodeProject.generateUuid();
-    xcodeProject.addToPbxBuildFileSection({
-      uuid: buildFileUuid,
+    const buildFileSection = xcodeProject.pbxBuildFileSection();
+    buildFileSection[buildFileUuid] = {
       isa: 'PBXBuildFile',
       fileRef: fileRefUuid,
       fileRef_comment: 'tradingview',
-    });
+    };
+    buildFileSection[`${buildFileUuid}_comment`] = 'tradingview in Resources';
 
-    const resourcesBuildPhase = xcodeProject.pbxResourcesBuildPhaseObj(
-      xcodeProject.getFirstTarget().uuid
-    );
+    // 4. 添加到 Copy Bundle Resources build phase
+    const targetUuid = xcodeProject.getFirstTarget().uuid;
+    const resourcesBuildPhase =
+      xcodeProject.pbxResourcesBuildPhaseObj(targetUuid);
     if (resourcesBuildPhase) {
       resourcesBuildPhase.files.push({
         value: buildFileUuid,

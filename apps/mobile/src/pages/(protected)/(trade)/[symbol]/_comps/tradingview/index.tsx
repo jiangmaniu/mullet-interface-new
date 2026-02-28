@@ -3,7 +3,7 @@ import { View, Platform, type ViewStyle } from 'react-native'
 import { WebView, type WebViewMessageEvent } from 'react-native-webview'
 import { observer } from 'mobx-react-lite'
 
-import { getSourceUri } from './utils'
+import { getSourceUri, getAllowingReadAccessToURL } from './utils'
 import { useTradingviewConfig } from './hooks/use-tradingview-config'
 import { useQuoteSync } from './hooks/use-quote-sync'
 import { useWebviewLifecycle } from './hooks/use-webview-lifecycle'
@@ -27,6 +27,8 @@ function TradingviewChartInner() {
   useQuoteSync(webviewRef, accountGroupId, symbolName)
   useWebviewLifecycle(webviewRef, env, symbolName, symbolItem, accountGroupId)
 
+  const allowingReadAccess = getAllowingReadAccessToURL()
+
   // ---- WebView 消息处理 ----
   const handleMessage = useCallback((event: WebViewMessageEvent) => {
     let msg: { type?: string } = JSON.parse(event.nativeEvent.data)
@@ -48,7 +50,7 @@ function TradingviewChartInner() {
       source={{ uri: getSourceUri(urlQuery) }}
       injectedJavaScript={injectedJS}
       style={{ flex: 1, backgroundColor: backgroundColorSecondary }}
-      allowingReadAccessToURL="*"
+      {...(allowingReadAccess && { allowingReadAccessToURL: allowingReadAccess })}
       allowUniversalAccessFromFileURLs
       allowFileAccess
       allowFileAccessFromFileURLs

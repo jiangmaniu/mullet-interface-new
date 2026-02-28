@@ -26,6 +26,14 @@ export const authorization = `Basic ${Base64.encode(`${Config.CLIENT_ID}:${Confi
 
 // ─── 工具函数 ──────────────────────────────────────────────────────────
 
+/** iOS Bundle 内 tradingview 目录路径 */
+const IOS_TV_DIR = Platform.OS === 'ios' ? `${RNFS.MainBundlePath}/tradingview` : ''
+
+export function getAllowingReadAccessToURL(): string | undefined {
+  if (Platform.OS !== 'ios' || __DEV__) return undefined
+  return `file://${IOS_TV_DIR}`
+}
+
 export function getSourceUri(query?: Record<string, string>): string {
   let base: string
 
@@ -37,7 +45,7 @@ export function getSourceUri(query?: Record<string, string>): string {
   } else if (Platform.OS === 'android') {
     base = 'file:///android_asset/tradingview/index.html'
   } else {
-    base = `file://${RNFS.MainBundlePath}/tradingview/index.html`
+    base = `file://${IOS_TV_DIR}/index.html`
   }
 
   if (query && Object.keys(query).length > 0) {
