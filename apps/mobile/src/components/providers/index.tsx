@@ -20,6 +20,7 @@ import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
 import { WalletStateInjector } from './wallet-state-injector'
 import { Toaster } from '@/components/ui/toast'
+import { Loading } from '@/components/ui/loading'
 import * as SystemUI from 'expo-system-ui'
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
@@ -84,6 +85,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                         {children}
                       </V1Provider>
                       <Toaster position="center" />
+                      <Loading />
                     </WalletStateInjector>
                     {/* Privy UI Elements */}
                     <PrivyElements
