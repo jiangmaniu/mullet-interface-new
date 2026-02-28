@@ -83,7 +83,7 @@ export default ({ config }: { config: ConfigContext }) => {
         monochromeImage: './public/images/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
-      package: `com.mullet.app${bundleIdSuffix[env] ?? ''}`,
+      package: `com.mullet.mobile${bundleIdSuffix[env] ?? ''}`,
     },
     web: {
       output: 'static',
