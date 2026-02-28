@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 
 import { cn } from '@/lib/utils'
-import { useAccount } from '@/lib/appkit'
 import {
   IconOkxWallet,
   IconMetamask,
@@ -11,7 +9,7 @@ import {
   IconGoogleTiplink,
 } from '@/components/ui/icons/set/wallet'
 import { Web3LoginDrawer } from './web3-login-drawer'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useWeb3LoginFlow } from '../_hooks/use-web3-login-flow'
 
 // 钱包图标组件列表
 const WalletIcons = [
@@ -28,38 +26,12 @@ interface Web3LoginSectionProps {
 }
 
 export function Web3LoginSection({ autoAuth = false }: Web3LoginSectionProps) {
-  const { isConnected: isWalletConnected } = useAccount()
-  const isBackendAuthenticated = useLoginAuthStore((state) => state.accessToken)
-
-  // Web3 登录抽屉状态
-  const [isDrawerVisible, setIsDrawerVisible] = useState(false)
-  // 是否需要自动授权（钱包已连接，需要重新签名）
-  const [needAutoAuth, setNeedAutoAuth] = useState(false)
-
-  // 处理 autoAuth 参数 - 当 401 重定向且钱包已连接时自动打开抽屉
-  useEffect(() => {
-    if (autoAuth && isWalletConnected && !isBackendAuthenticated) {
-      console.log('Auto auth mode: wallet connected, opening drawer for re-authorization...')
-      setNeedAutoAuth(true)
-      setIsDrawerVisible(true)
-    }
-  }, [autoAuth, isWalletConnected, isBackendAuthenticated])
-
-  // 打开 Web3 登录抽屉
-  const handleOpenWeb3Login = () => {
-    setIsDrawerVisible(true)
-  }
-
-  // 关闭抽屉
-  const handleCloseDrawer = () => {
-    setIsDrawerVisible(false)
-    setNeedAutoAuth(false)
-  }
+  const { isDrawerVisible, connectionError, startLogin, closeDrawer } = useWeb3LoginFlow({ autoAuth })
 
   return (
     <View className={cn('w-full')}>
       <Pressable
-        onPress={handleOpenWeb3Login}
+        onPress={startLogin}
         className={cn(
           'flex-row', 'items-center', 'justify-between',
           'px-xl', 'py-medium',
@@ -85,12 +57,14 @@ export function Web3LoginSection({ autoAuth = false }: Web3LoginSectionProps) {
           钱包登录/注册
         </Text>
       </Pressable>
+      {connectionError && (
+        <Text className={cn('text-red-500', 'text-paragraph-p4', 'mt-1')}>{connectionError}</Text>
+      )}
 
       {/* Web3 登录抽屉 */}
       <Web3LoginDrawer
         visible={isDrawerVisible}
-        onClose={handleCloseDrawer}
-        autoStartAuth={needAutoAuth}
+        onClose={closeDrawer}
       />
     </View>
   )

@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -40,14 +40,9 @@ interface StepState {
 interface Web3LoginDrawerProps {
   visible: boolean
   onClose: () => void
-  /**
-   * 自动开始授权流程（用于 401 重定向且钱包已连接的情况）
-   * 当为 true 时，打开抽屉后会自动开始验证授权流程
-   */
-  autoStartAuth?: boolean
 }
 
-export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth = false }: Web3LoginDrawerProps) {
+export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDrawerProps) {
   const { open, disconnect: disconnectWallet } = useAppKit()
   const { address, isConnected } = useAccount()
   const { isOpen: isAppKitOpen, isLoading: isAppKitOpenLoading } = useAppKitState()
@@ -228,30 +223,29 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp, autoStartAuth =
   handleSignRef.current = handleSign
   const handleConnectWalletRef = useRef(handleConnectWallet)
   handleConnectWalletRef.current = handleConnectWallet
+  const visibleRef = useRef(visible)
+  visibleRef.current = visible
 
-  // 当抽屉打开时，自动开始第一步
+  // 当抽屉打开时，检查钱包状态
   useEffect(() => {
     if (visible) {
-      // 如果已连接，直接标记第一步完成
       if (isConnected && address) {
+        // 钱包已连接，标记第一步完成并自动开始签名
         setStep1({ status: 'completed' })
-        // 如果是自动授权模式，直接开始验证
-        // if (autoStartAuth) {
-        //   console.log('Auto start auth: wallet connected, starting verification...')
-        //   handleSignRef.current()
-        // }
-      } else {
-        // 未连接时自动调用连接钱包
+        handleSignRef.current()
+      } else if (Platform.OS !== 'ios') {
+        // Android: 未连接时自动打开 AppKit 连接钱包（Android 支持 Modal 叠加）
         handleConnectWalletRef.current()
       }
     }
-  }, [visible, isConnected, address, autoStartAuth])
+  }, [visible, isConnected, address])
 
+  // 监听钱包连接成功事件（仅在 Drawer 可见时处理）
   useAppKitEventSubscription(
     'CONNECT_SUCCESS',
     useCallback((event) => {
       if (event.data.event === 'CONNECT_SUCCESS') {
-        if (!!event.data.address) {
+        if (!!event.data.address && visibleRef.current) {
           setStep1({ status: 'completed' })
           handleSignRef.current()
         }

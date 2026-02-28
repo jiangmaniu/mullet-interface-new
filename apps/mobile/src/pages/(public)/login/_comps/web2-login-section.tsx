@@ -57,6 +57,18 @@ export function Web2LoginSection() {
     setIsLoggingIn(true)
     loginTriggeredRef.current = true
 
+    // 如果已登录 Privy（后端登录失败后重试的场景），直接登录后端
+    if (privyUser) {
+      try {
+        await loginToBackend()
+      } catch (error) {
+        console.error('Backend login failed:', error)
+      } finally {
+        resetLoginState()
+      }
+      return
+    }
+
     try {
       await privyLogin({ loginMethods: ['email'] })
     } catch (error) {
