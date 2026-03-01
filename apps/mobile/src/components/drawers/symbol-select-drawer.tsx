@@ -47,6 +47,16 @@ export const SymbolSelectDrawer = observer(({
   const { i18n } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
 
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setSearchQuery('')
+        onClose()
+      }
+    },
+    [onClose]
+  )
+
   const handleSelect = useCallback((symbolInfo: Account.TradeSymbolListItem) => {
     onSelect(symbolInfo)
     onClose()
@@ -81,7 +91,7 @@ export const SymbolSelectDrawer = observer(({
   )
 
   return (
-    <Drawer open={visible} onOpenChange={onClose}>
+    <Drawer open={visible} onOpenChange={handleOpenChange}>
       <DrawerContent className="px-0 gap-0 py-3 h-full">
         {/* 搜索框 */}
         <View className="px-xl pb-medium">
