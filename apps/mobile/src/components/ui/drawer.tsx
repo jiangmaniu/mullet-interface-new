@@ -116,27 +116,27 @@ function DrawerPortal({ children }: DrawerPortalProps) {
   const overlayOpacity = useSharedValue(0)
   const drawerTranslateY = useSharedValue(screenHeight)
 
-  // 监听键盘事件
-  React.useEffect(() => {
-    const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      (e) => {
-        setKeyboardHeight(e.endCoordinates.height)
-      }
-    )
+  // // 监听键盘事件
+  // React.useEffect(() => {
+  //   const keyboardWillShow = Keyboard.addListener(
+  //     Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+  //     (e) => {
+  //       setKeyboardHeight(e.endCoordinates.height)
+  //     }
+  //   )
 
-    const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        setKeyboardHeight(0)
-      }
-    )
+  //   const keyboardWillHide = Keyboard.addListener(
+  //     Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+  //     () => {
+  //       setKeyboardHeight(0)
+  //     }
+  //   )
 
-    return () => {
-      keyboardWillShow.remove()
-      keyboardWillHide.remove()
-    }
-  }, [])
+  //   return () => {
+  //     keyboardWillShow.remove()
+  //     keyboardWillHide.remove()
+  //   }
+  // }, [])
 
   // Animation effects
   React.useEffect(() => {
