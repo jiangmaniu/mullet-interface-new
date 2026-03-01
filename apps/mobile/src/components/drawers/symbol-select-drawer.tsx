@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useCallback } from 'react'
-import { ScrollView, Pressable, View } from 'react-native'
+import { FlatList, Pressable, View } from 'react-native'
 import type { Route } from 'react-native-tab-view'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 
 import { Text } from '@/components/ui/text'
 import { AvatarImage } from '@/components/ui/avatar'
-import { IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
-import { SwipeableTabs, Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { IconifySearch } from '@/components/ui/icons'
+import { SwipeableTabs } from '@/components/ui/tabs'
 import { Drawer, DrawerContent } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { EmptyState } from '@/components/states/empty-state'
@@ -18,7 +18,6 @@ import { getImgSource } from '@/utils/img'
 import { BNumber } from '@mullet/utils/number'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
-import { CollapsibleFlatList, CollapsibleTab, CollapsibleTabScene } from '../ui/collapsible-tab'
 
 // ============ Types ============
 interface SymbolSelectDrawerProps {
@@ -53,8 +52,33 @@ export const SymbolSelectDrawer = observer(({
     onClose()
   }, [onSelect, onClose])
 
+  const routes = useMemo<Route[]>(
+    () => SYMBOL_CATEGORY_OPTIONS.map((opt) => ({
+      key: opt.value,
+      title: i18n._(opt.label),
+    })),
+    [i18n]
+  )
 
-  const initialTab = SYMBOL_CATEGORY_OPTIONS.find(item => item.value === SymbolCategory.All)
+  const initialIndex = useMemo(
+    () => SYMBOL_CATEGORY_OPTIONS.findIndex((item) => item.value === SymbolCategory.All) ?? 0,
+    []
+  )
+
+  const renderScene = useCallback(
+    ({ route }: { route: Route }) => {
+      const categoryOption = SYMBOL_CATEGORY_OPTIONS.find((opt) => opt.value === route.key)
+      if (!categoryOption) return null
+      return (
+        <CategoryTabListContent
+          searchQuery={searchQuery}
+          categoryOption={categoryOption}
+          onSelect={handleSelect}
+        />
+      )
+    },
+    [searchQuery, handleSelect]
+  )
 
   return (
     <Drawer open={visible} onOpenChange={onClose}>
@@ -73,21 +97,15 @@ export const SymbolSelectDrawer = observer(({
 
         {/* SwipeableTabs */}
         <View className="flex-1">
-          <CollapsibleTab
+          <SwipeableTabs
+            routes={routes}
+            renderScene={renderScene}
             variant="underline"
             size="md"
-            initialTabName={initialTab?.value}
-            renderTabBarBottom={() => (<AssetTradeHeader />)}
-          >
-            {SYMBOL_CATEGORY_OPTIONS.map((categoryOption) => {
-              const label = i18n._(categoryOption.label)
-              return (
-                <CollapsibleTabScene key={categoryOption.value} name={categoryOption.value} label={label}>
-                  <CategoryTabListContent searchQuery={searchQuery} categoryOption={categoryOption} onSelect={handleSelect} />
-                </CollapsibleTabScene>
-              )
-            })}
-          </CollapsibleTab>
+            initialIndex={initialIndex}
+            tabBarClassName="px-xl border-b border-brand-default"
+            renderTabBarBottom={() => <AssetTradeHeader />}
+          />
         </View>
       </DrawerContent>
     </Drawer>
@@ -155,15 +173,17 @@ const CategoryTabListContent = observer(({ searchQuery, categoryOption, onSelect
   }
 
   return (
-    <CollapsibleFlatList
+    <FlatList
       data={tradeList}
       keyExtractor={(item) => item.symbol}
-      renderItem={({ item }: { item: Account.TradeSymbolListItem }) => {
-        return <MarketRow onSelect={onSelect} symbolInfo={item} />
-      }}
-      ListEmptyComponent={<View className='py-[96px]'>
-        <EmptyState message={<Trans>暂无数据</Trans>} />
-      </View>}
+      renderItem={({ item }: { item: Account.TradeSymbolListItem }) => (
+        <MarketRow onSelect={onSelect} symbolInfo={item} />
+      )}
+      ListEmptyComponent={
+        <View className="py-[96px]">
+          <EmptyState message={<Trans>暂无数据</Trans>} />
+        </View>
+      }
     />
   )
 })
