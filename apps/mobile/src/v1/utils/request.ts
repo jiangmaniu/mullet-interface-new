@@ -2,13 +2,14 @@ import { Base64 } from 'js-base64'
 
 import { toast } from '@/components/ui/toast'
 import { handle401Error } from '@/lib/auth-handler'
+import { useLoginAuthStore } from '@/stores/login-auth'
 import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
 
 // import { onLogout } from './navigation'
-import { STORAGE_GET_TOKEN, STORAGE_GET_TRADER_SERVER, STORAGE_GET_USER_INFO } from './storage'
+import { STORAGE_GET_TRADER_SERVER } from './storage'
 
 interface IRequestConfig extends RequestInit {
   /** 接口是否需要客户端鉴权 */
@@ -46,8 +47,8 @@ const DEFAULT_HEADERS = {
 
 // 构建请求头
 async function buildHeaders(config?: IRequestConfig): Promise<Record<string, string>> {
-  const userInfo = await STORAGE_GET_USER_INFO()
-  const token = await STORAGE_GET_TOKEN()
+  const userInfo = useLoginAuthStore.getState().loginInfo
+  const token = useLoginAuthStore.getState().accessToken
   const ENV = await getEnv()
 
   let privyAccessToken: string | null = null

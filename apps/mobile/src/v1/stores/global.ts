@@ -1,15 +1,13 @@
 import { action, makeAutoObservable, observable, reaction } from 'mobx'
 import { hydrateStore } from 'mobx-persist-store'
 
-import {
-  STORAGE_GET_ENV,
-  STORAGE_GET_TOKEN,
-  STORAGE_GET_TRADER_SERVER,
-} from '@/v1/utils/storage'
+import { STORAGE_GET_ENV, STORAGE_GET_TRADER_SERVER } from '@/v1/utils/storage'
 
 import { hydrateStores, stores } from '../provider/mobxProvider'
 import type { IStore, PVoid } from './types'
 import { fetchRemoteConfig } from '@/v1/env'
+import { useLoginAuthStore } from '@/stores/login-auth'
+import { Platform } from 'react-native'
 
 type StoreDefaultKeys = 'set' | 'upload' | 'hydrate'
 
@@ -38,7 +36,7 @@ export class GlobalStore implements IStore {
             this.verifyCodeDownTimer = null
           }
         }
-      }
+      },
     )
   }
 
@@ -51,6 +49,7 @@ export class GlobalStore implements IStore {
   @observable scrollRef: any = null
   @observable scrollRefY = 0
   @observable scrolling = false
+  @observable showAndroidPrivacyModal = Platform.OS === 'android' ? 0 : '' // 初始0 点过同意1  安卓端 是否显示隐私协议弹窗
   countryList: Common.AreaCodeItem[] = []
 
   set<T extends StoreKeysOf<GlobalStore>>(what: T, value: GlobalStore[T]) {
@@ -86,7 +85,7 @@ export class GlobalStore implements IStore {
   onStartApp = async () => {
     await hydrateStores()
 
-    const token = await STORAGE_GET_TOKEN()
+    const token = useLoginAuthStore.getState().accessToken
 
     // 初始化远程配置
     await this.initRemoteConfig()

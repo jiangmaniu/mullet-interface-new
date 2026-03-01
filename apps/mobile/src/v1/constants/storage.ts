@@ -2,8 +2,6 @@ import { NAMESPACE } from './config'
 
 // 本地存储-用户信息-键
 export const KEY_ACCOUNT_PASSWORD = NAMESPACE + '_' + 'account_password'
-export const KEY_TOKEN = NAMESPACE + '_' + 'token'
-export const KEY_USER_INFO = NAMESPACE + '_' + 'userInfo'
 
 // 打开的品种名称
 export const KEY_SYMBOL_NAME_LIST = NAMESPACE + '_' + 'open_symbol_name_list'

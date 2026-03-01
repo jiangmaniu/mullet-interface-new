@@ -1,14 +1,16 @@
-import { stores } from "@/v1/provider/mobxProvider"
+import { useStores } from "@/v1/provider/mobxProvider"
+import { observer } from "mobx-react-lite"
 import { useCallback, useEffect, useState } from "react"
 import { Platform, Text, View } from "react-native"
 
 let unsubscribe: (() => void) | undefined
 
-export const GlobalStateInitializer = ({ children }: { children: React.ReactNode }) => {
+export const GlobalStateInitializer = observer(({ children }: { children: React.ReactNode }) => {
   const [ready, setReady] = useState(false)
+  const { global } = useStores()
 
   const startApp = async () => {
-    await stores.global.onStartApp()
+    await global.onStartApp()
   }
 
   const initApp = useCallback(async () => {
@@ -46,3 +48,4 @@ export const GlobalStateInitializer = ({ children }: { children: React.ReactNode
     </>
   )
 }
+)

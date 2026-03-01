@@ -1,15 +1,14 @@
+import { useCallback } from 'react'
+import { cloneDeep } from 'lodash-es'
 import { toJS } from 'mobx'
+import type { IQuoteItem, SymbolWSItem } from '@/v1/stores/ws'
 
+import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { TRADE_BUY_SELL } from '@/v1/constants/enum'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
 
 import { toFixed } from '.'
-
-import { useCallback } from 'react'
 import { multiply, subtract } from './float'
-import { cloneDeep } from 'lodash-es'
-import type { IQuoteItem, SymbolWSItem } from '@/v1/stores/ws'
-import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 
 /**
  * 格式化交易时间段
@@ -55,7 +54,7 @@ type IExchangeRateParams = {
 export const useCalcExchangeRateCallback = () => {
   const {
     trade: { allSimpleSymbolsMap, currentAccountInfo },
-    ws
+    ws,
   } = stores
   const quotes = ws.quotes
   return useCallback(
@@ -116,7 +115,7 @@ export const useCalcExchangeRateCallback = () => {
 
       return Number(profit)
     },
-    [quotes, allSimpleSymbolsMap, currentAccountInfo?.currencyUnit]
+    [quotes, allSimpleSymbolsMap, currentAccountInfo?.currencyUnit],
   )
 }
 
@@ -190,7 +189,7 @@ export const calcExchangeRate = ({ value, unit, buySell }: IExchangeRateParams) 
 export const calcOrderMarginExchangeRate = ({
   value,
   exchangeSymbol,
-  exchangeRate
+  exchangeRate,
 }: {
   /** 需要转化的值 */
   value: any
@@ -280,7 +279,7 @@ export const useCovertProfitCallback = (adapt?: boolean) => {
       profit = calcExchangeRate({
         value: profit,
         unit,
-        buySell: positionItem.buySell
+        buySell: positionItem.buySell,
       })
 
       if (adapt) {
@@ -290,7 +289,7 @@ export const useCovertProfitCallback = (adapt?: boolean) => {
       // 返回转化后的 profit
       return Number(profit)
     },
-    [getCurrentQuote]
+    [getCurrentQuote],
   )
 }
 
@@ -312,7 +311,7 @@ export const useGetCurrentAccountFloatProfitCallback = () => {
       }
       return totalProfit
     },
-    [covertProfit, precision]
+    [covertProfit, precision],
   )
 }
 
@@ -334,7 +333,10 @@ export const useGetAccountBalanceCallback = () => {
       const money = currentAccountInfo.money
       // 当前账户占用的保证金 = 逐仓保证金 + 全仓保证金（可用保证金）
       const occupyMargin = Number(
-        toFixed(Number(currentAccountInfo?.margin || 0) + Number(currentAccountInfo?.isolatedMargin || 0), currencyDecimal)
+        toFixed(
+          Number(currentAccountInfo?.margin || 0) + Number(currentAccountInfo?.isolatedMargin || 0),
+          currencyDecimal,
+        ),
       )
       // 可用保证金
       let availableMargin = Number(money) - Number(occupyMargin)
@@ -362,7 +364,7 @@ export const useGetAccountBalanceCallback = () => {
         balance,
         totalProfit: toFixed(totalProfit, currencyDecimal),
         currentAccountInfo,
-        money: toFixed(money, currencyDecimal)
+        money: toFixed(money, currencyDecimal),
       }
     },
     [
@@ -372,8 +374,8 @@ export const useGetAccountBalanceCallback = () => {
       tcurrentAccountInfo.margin,
       tcurrentAccountInfo.isolatedMargin,
       tcurrentAccountInfo.usableAdvanceCharge,
-      tpositionList
-    ]
+      tpositionList,
+    ],
   )
 }
 
@@ -434,7 +436,7 @@ export const calcForceClosePrice = (item: Partial<Order.BgaOrderPageListItem>) =
   let exchangeRateValue = calcExchangeRate({
     value: contractSize * orderVolume * (1 / leverage),
     unit: conf?.profitCurrency,
-    buySell: item.buySell
+    buySell: item.buySell,
   })
 
   // 全仓
@@ -460,7 +462,9 @@ export const calcForceClosePrice = (item: Partial<Order.BgaOrderPageListItem>) =
 // 获取配置的手续费
 export const getHandlingFees = (conf: Symbol.SymbolConf, orderType: API.OrderType | string, orderVolume: number) => {
   const feeConfList =
-    conf?.transactionFeeConf?.type === 'trade_vol' ? conf?.transactionFeeConf?.trade_vol : conf?.transactionFeeConf?.trade_hand // 手续费配置列表
+    conf?.transactionFeeConf?.type === 'trade_vol'
+      ? conf?.transactionFeeConf?.trade_vol
+      : conf?.transactionFeeConf?.trade_hand // 手续费配置列表
   const feeConfItem = (feeConfList || []).filter((v) => orderVolume >= v.from && orderVolume <= v.to)?.[0]
   const feeComputeMode = feeConfItem?.compute_mode // 手续费计算模式
   let marketFee = Number(feeConfItem?.market_fee || 0) // 市价手续费
@@ -513,11 +517,11 @@ export const useCalcExpectedForceClosePriceCallback = () => {
         compelCloseRatio: trade?.currentAccountInfo?.compelCloseRatio || 0,
         interestFees: 0, // 库存费0
         handlingFees, // 手续费
-        profit: 0 // 浮动盈亏0
+        profit: 0, // 浮动盈亏0
       }
       return calcForceClosePrice(item)
     },
-    [getCurrentQuote]
+    [getCurrentQuote],
   )
 }
 
@@ -606,10 +610,10 @@ export const useCalcExpectedMarginCallback = () => {
       return calcExchangeRate({
         value: expectedMargin,
         unit: conf?.prepaymentCurrency,
-        buySell
+        buySell,
       })
     },
-    [getCurrentQuote]
+    [getCurrentQuote],
   )
 }
 
@@ -665,7 +669,7 @@ export const useCalcExpectedMarginCallback = () => {
 
 export const useGetMaxOpenVolumeCallback = () => {
   const {
-    trade: { leverageMultiple }
+    trade: { leverageMultiple },
   } = stores
   const getAccountBalance = useGetAccountBalanceCallback()
   const getCurrentQuote = useGetCurrentQuoteCallback()
@@ -685,7 +689,7 @@ export const useGetMaxOpenVolumeCallback = () => {
           value,
           // 计算保证金使用预付款货币单位
           unit: quote?.symbolConf?.prepaymentCurrency,
-          buySell
+          buySell,
         })
       }
 
@@ -718,7 +722,7 @@ export const useGetMaxOpenVolumeCallback = () => {
 
       return volume > 0 ? toFixed(volume) : '0.00'
     },
-    [getAccountBalance, getCurrentQuote, leverageMultiple, calcExchangeRate]
+    [getAccountBalance, getCurrentQuote, leverageMultiple, calcExchangeRate],
   )
 }
 
@@ -801,7 +805,7 @@ export const useGetMaxOpenVolumeCallback = () => {
 export function useGetCurrentDepthCallback() {
   const {
     ws: { depth },
-    trade: { activeSymbolName, getActiveSymbolInfo, symbolMapAll }
+    trade: { activeSymbolName, getActiveSymbolInfo, symbolMapAll },
   } = stores
   return useCallback(
     (currentSymbolName?: string) => {
@@ -812,7 +816,7 @@ export function useGetCurrentDepthCallback() {
 
       return currentDepth
     },
-    [depth, activeSymbolName, getActiveSymbolInfo]
+    [depth, activeSymbolName, getActiveSymbolInfo],
   )
 }
 
@@ -904,7 +908,7 @@ export function useGetCurrentDepthCallback() {
 export function getCurrentQuoteV2(
   quotes: Map<string, IQuoteItem>,
   currentSymbolName: string,
-  symbolMap: { [key: string]: Account.TradeSymbolListItem }
+  symbolMap: { [key: string]: Account.TradeSymbolListItem },
 ) {
   let symbol = currentSymbolName // 后台自定义的品种名称，symbol是唯一的, || trade.activeSymbolName 改成外部传入
 
@@ -968,7 +972,7 @@ export function getCurrentQuoteV2(
     spread, // 买卖点差
     bidDiff: currentQuote?.bidDiff || 0,
     askDiff: currentQuote?.askDiff || 0,
-    hasQuote: !!currentQuote?.priceData?.buy // 是否存在行情
+    hasQuote: !!currentQuote?.priceData?.buy, // 是否存在行情
   }
 
   return result
@@ -981,8 +985,8 @@ export const useGetCurrentQuoteCallback = () => {
   const activeSymbolName = trade.activeSymbolName
 
   return useCallback(
-    (currentSymbolName?) => getCurrentQuoteV2(ws.quotes, currentSymbolName ?? activeSymbolName, symbolMap),
-    [ws.quotes, activeSymbolName, symbolMap]
+    (currentSymbolName?: string) => getCurrentQuoteV2(ws.quotes, currentSymbolName ?? activeSymbolName, symbolMap),
+    [ws.quotes, activeSymbolName, symbolMap],
   )
 }
 
@@ -1001,11 +1005,11 @@ export const subscribeCurrentAndPositionSymbol = ({ cover = false }: { cover?: b
           symbol: item.symbol,
           // dataSourceCode: item.dataSourceCode,
           conf: {
-            profitCurrency: item.conf?.profitCurrency
-          }
-        })
-      )
-    )
+            profitCurrency: item.conf?.profitCurrency,
+          },
+        }),
+      ),
+    ),
   ).map((str) => JSON.parse(str))
 
   setTimeout(() => {
@@ -1014,7 +1018,7 @@ export const subscribeCurrentAndPositionSymbol = ({ cover = false }: { cover?: b
       // 打开行情订阅
       stores.ws.openPosition({
         symbols: stores.ws.makeWsSymbolBySemi([activeSymbolInfo, ...symbols]),
-        cover
+        cover,
       })
 
       /** 动态订阅汇率品种行情，用于计算下单时保证金等 */
@@ -1045,11 +1049,11 @@ export const subscribePositionSymbol = ({ cover = true }: { cover?: boolean }) =
           symbol: item.symbol,
           // dataSourceCode: item.dataSourceCode,
           conf: {
-            profitCurrency: item.conf?.profitCurrency
-          }
-        })
-      )
-    )
+            profitCurrency: item.conf?.profitCurrency,
+          },
+        }),
+      ),
+    ),
   ).map((str) => JSON.parse(str))
 
   setTimeout(() => {
@@ -1058,7 +1062,7 @@ export const subscribePositionSymbol = ({ cover = true }: { cover?: boolean }) =
       // 打开行情订阅
       stores.ws.openPosition({
         symbols: stores.ws.makeWsSymbolBySemi(symbols as SymbolWSItem[]),
-        cover
+        cover,
       })
 
       // 动态订阅汇率品种行情，用于计算下单时保证金等
@@ -1086,11 +1090,11 @@ export const subscribePendingSymbol = ({ cover = false }: { cover?: boolean }) =
           symbol: item.symbol,
           // dataSourceCode: item.dataSourceCode,
           conf: {
-            profitCurrency: item.conf?.profitCurrency
-          }
-        })
-      )
-    )
+            profitCurrency: item.conf?.profitCurrency,
+          },
+        }),
+      ),
+    ),
   ).map((str) => JSON.parse(str))
 
   setTimeout(() => {
@@ -1099,7 +1103,7 @@ export const subscribePendingSymbol = ({ cover = false }: { cover?: boolean }) =
       // 打开行情订阅
       stores.ws.openPosition({
         symbols: stores.ws.makeWsSymbolBySemi(symbols as SymbolWSItem[]),
-        cover
+        cover,
       })
 
       // 动态订阅汇率品种行情，用于计算下单时保证金等

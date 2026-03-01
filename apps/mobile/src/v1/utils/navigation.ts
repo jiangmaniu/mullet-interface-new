@@ -4,18 +4,15 @@ import { router, usePathname, useSegments } from 'expo-router'
 import { parse, stringify } from 'qs'
 import type { DependencyList } from 'react'
 
+import { useLoginAuthStore } from '@/stores/login-auth'
 import { WEBVIEW_AUTHRORIZATION_URI } from '@/v1/constants'
 import { getEnv } from '@/v1/env'
 
 import {
   STORAGE_GET_AUTHORIZED,
-  STORAGE_GET_TOKEN,
-  STORAGE_GET_USER_INFO,
   STORAGE_REMOVE_AUTHORIZED,
   STORAGE_REMOVE_CONF_INFO,
   STORAGE_REMOVE_ENV,
-  STORAGE_REMOVE_TOKEN,
-  STORAGE_REMOVE_USER_INFO,
 } from './storage'
 
 // v1 路由名称到 expo-router 路径的映射
@@ -39,8 +36,8 @@ function getRoutePath(name: string): string {
 
 // 格式化参数到url上
 export const formatUrlParams = async (url: string, params?: any) => {
-  const token = await STORAGE_GET_TOKEN()
-  const userInfo = (await STORAGE_GET_USER_INFO()) as User.UserInfo
+  const token = useLoginAuthStore.getState().accessToken
+  const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
   const tempUrl = new URL(url)
   // 解析url中?后面的参数
   const parseUrlParams = parse(tempUrl.search.slice(1) || '') || {}
@@ -264,11 +261,10 @@ export function reset(routeName: string, params = {}) {
  * @param noRequestLogout 不请求退出接口
  */
 export const onLogout = async (noRequestLogout?: boolean) => {
-  await STORAGE_REMOVE_TOKEN()
-  await STORAGE_REMOVE_USER_INFO()
   await STORAGE_REMOVE_CONF_INFO()
   await STORAGE_REMOVE_ENV()
   await STORAGE_REMOVE_AUTHORIZED()
+  await useLoginAuthStore.getState().logout()
   setTimeout(() => {
     replace('Welcome')
   }, 50)

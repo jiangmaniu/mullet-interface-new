@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+
 import { mmkvStorage } from '@/lib/storage/mmkv'
 
 interface LoginAuthState {
@@ -9,6 +10,7 @@ interface LoginAuthState {
   _hasHydrated: boolean
   redirectTo?: string
 
+  setLoginInfo: (loginInfo: User.LoginResult) => void
   setHasHydrated: (v: boolean) => void
   logout: () => void
   setRedirectTo: (path?: string) => void
@@ -23,6 +25,7 @@ export const useLoginAuthStore = create<LoginAuthState>()(
       _hasHydrated: false,
       redirectTo: undefined,
 
+      setLoginInfo: (loginInfo: User.LoginResult) => set({ loginInfo }),
       setHasHydrated: (v) => set({ _hasHydrated: v }),
       setRedirectTo: (v) => set({ redirectTo: v }),
       logout: () => set({ accessToken: undefined, loginInfo: null }),

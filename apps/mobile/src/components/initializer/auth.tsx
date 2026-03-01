@@ -8,15 +8,7 @@ import { stores } from "@/v1/provider/mobxProvider"
  */
 export function AuthInitializer() {
 
-  const startApp = async () => {
-    try {
-      await stores.global.onStartApp()
-    } catch (e) {
-    } finally {
-      // 用来控制APP加载启动前做的一些事情、如果没有授权网络先启动应用
-      setReady(true)
-    }
-  }
+
 
   return null
 }

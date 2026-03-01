@@ -25,8 +25,6 @@ import {
   STORAGE_GET_ORDER_CONFIRM_CHECKED,
   STORAGE_GET_POSITION_CONFIRM_CHECKED,
   STORAGE_GET_QUICK_PLACE_ORDER_CHECKED,
-  STORAGE_GET_TOKEN,
-  STORAGE_GET_USER_INFO,
   STORAGE_REMOVE_HISTORY_SEARCH,
   STORAGE_SET_CONF_INFO,
   STORAGE_SET_HISTORY_SEARCH,
@@ -45,6 +43,7 @@ import klineStore from './kline'
 import { getSymbolIsHoliday } from '@/v1/services/tradeCore/holiday'
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { getSymbolTicker } from '@/v1/services/market/symbol'
+import { useLoginAuthStore } from '@/stores/login-auth'
 
 export type UserConfInfo = Record<
   string,
@@ -853,7 +852,7 @@ class TradeStore {
   getAllSimbleSymbols = async () => {
     try {
       // 判断是否登录
-      const userInfo = await STORAGE_GET_USER_INFO()
+      const userInfo = useLoginAuthStore.getState().loginInfo
       if (!userInfo) {
         return
       }
@@ -890,6 +889,7 @@ class TradeStore {
     }
     const cacheSymbolList = (await STORAGE_GET_CONF_INFO(`${this.currentAccountInfo?.id}.symbolList`)) || []
     // 如果缓存有优先取一次缓存的展示
+
     if (
       cacheSymbolList?.length &&
       (!this.symbolListAll.length || this.symbolListAll.length !== cacheSymbolList.length)
@@ -937,18 +937,13 @@ class TradeStore {
         })
 
         // 获取品种后，动态订阅品种
-        if (stores.ws.socket?.readyState === 1) {
-          // TODO: 这里需要优化，如果切换之后是持仓页面或交易页面，只需要订阅当前品种和持仓列表品种
-          setTimeout(() => {
-            stores.ws.checkSocketReady(() => {
-              // 打开行情订阅
-              stores.ws.openSymbol({
-                // 构建参数
-                symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll),
-              })
-            })
-          }, 400)
-        }
+        stores.ws.checkSocketReady(() => {
+          // 打开行情订阅
+          stores.ws.openSymbol({
+            // 构建参数
+            symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll),
+          })
+        })
 
         // 判断品种是否在假期内
         this.getSymbolIsHoliday()
@@ -1012,7 +1007,7 @@ class TradeStore {
   // 查询持仓列表
   @action
   getPositionList = async (cover = false) => {
-    const token = await STORAGE_GET_TOKEN()
+    const token = useLoginAuthStore.getState().accessToken
     if (!token) {
       return
     }

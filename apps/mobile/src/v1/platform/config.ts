@@ -1,7 +1,7 @@
 export const baseConfig = {
   // ⚠️ APP版本，每次发布更新时，需要更新版本号，否则版本更新不会触发，不在使用react-native-device-info获取否则过审权限问题较多
   VERSION: '1.2.0', // 需要跟 android/app/build.gradle 中的 versionName 保持一致
-  NAMESPACE: 'stellux',
+  NAMESPACE: 'mullet',
   CLIENT_ID: 'trade-app-client', // 客户端ID
   CLIENT_SECRET: 'trade-app-client-secret', // 客户端密钥
   REGISTER_APP_CODE: '123456', // 注册应用验证码 管理端后台业务线中配置获取
@@ -27,7 +27,7 @@ export const baseConfig = {
   KYC_FACE: false, // 是否开启KYC人脸识别
   ENABLE_DEFAULT_LAYOUT: true, // 使用默认布局 首页是行情 交易在一级页，关闭则是交易在二级页。首页是活动相关
   locationApi: 'https://api.ipdatacloud.com/v2/query?key=4d6e45c57a5811ef9c5f00163e167ffb', // 获取IP地址信息
-  ANDROID_PRIVACY_URL: 'https://www.qawfadwd.xyz/privite-app.html' // 安卓端隐私协议
+  ANDROID_PRIVACY_URL: 'https://www.qawfadwd.xyz/privite-app.html', // 安卓端隐私协议
 }
 
 // 类型推导

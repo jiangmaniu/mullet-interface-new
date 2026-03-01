@@ -1,15 +1,15 @@
 import { stringify } from 'qs'
 
-import { request } from '@/v1/utils/request'
-import { setLocalUserInfo, STORAGE_GET_USER_INFO } from '@/v1/utils/storage'
+import { useLoginAuthStore } from '@/stores/login-auth'
 import { getEnv } from '@/v1/env'
+import { request } from '@/v1/utils/request'
 
 // 获取图形验证码
 export async function getCaptcha() {
   return request<User.Captcha>('/api/blade-auth/oauth/captcha', {
     method: 'GET',
     needToken: false,
-    authorization: false
+    authorization: false,
   })
 }
 
@@ -18,23 +18,23 @@ export async function login(body: User.LoginParams, options?: { [key: string]: a
   return request<User.LoginResult>(`/api/blade-auth/oauth/token?${stringify(body)}`, {
     method: 'POST',
     needToken: false,
-    ...(options || {})
+    ...(options || {}),
   })
 }
 
 // 刷新token
 export async function refreshToken() {
-  const userInfo = (await STORAGE_GET_USER_INFO()) as User.UserInfo
+  const userInfo = useLoginAuthStore.getState().loginInfo
   const body = {
     grant_type: 'refresh_token',
     scope: 'all',
-    refresh_token: userInfo?.refresh_token
+    refresh_token: userInfo?.refresh_token,
   }
   return request<User.UserInfo>(`/api/blade-auth/oauth/token?${stringify(body)}`, {
-    method: 'POST'
+    method: 'POST',
   }).then((res) => {
     if (res?.access_token) {
-      setLocalUserInfo(res)
+      useLoginAuthStore.getState().setLoginInfo(res)
     }
     return res
   })
@@ -45,7 +45,7 @@ export async function logout() {
   return request('/api/blade-auth/oauth/logout', {
     method: 'GET',
     authorization: false,
-    skipErrorHandler: true
+    skipErrorHandler: true,
   })
 }
 
@@ -55,14 +55,14 @@ export async function sendCustomEmailCode(body: { email?: string }) {
     method: 'POST',
     needToken: false,
     replayProtection: true,
-    data: body
+    data: body,
   })
 }
 
 // 发送邮箱验证码（不需要输入邮箱）
 export async function sendEmailCode() {
   return request<API.Response<any>>('/api/trade-crm/crmClient/validateCode/userEmail', {
-    method: 'POST'
+    method: 'POST',
   })
 }
 
@@ -72,14 +72,14 @@ export async function sendCustomPhoneCode(body: { phone?: string; phoneAreaCode?
     method: 'POST',
     needToken: false,
     replayProtection: true,
-    data: body
+    data: body,
   })
 }
 
 // 发送手机验证码(不需要输入手机)
 export async function sendPhoneCode() {
   return request<API.Response<any>>('/api/trade-crm/crmClient/validateCode/userPhone', {
-    method: 'POST'
+    method: 'POST',
   })
 }
 
@@ -89,7 +89,7 @@ export async function registerSubmitPhone(body: User.RegisterParams) {
     method: 'POST',
     needToken: false,
     replayProtection: true,
-    data: body
+    data: body,
   })
 }
 
@@ -98,7 +98,7 @@ export async function registerSubmitEmail(body: User.RegisterParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/register/submitEmail', {
     method: 'POST',
     needToken: false,
-    data: body
+    data: body,
   })
 }
 
@@ -107,7 +107,7 @@ export async function forgetPasswordPhone(body: User.ForgetPasswordParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/register/forgetPasswordPhone', {
     method: 'POST',
     needToken: false,
-    data: body
+    data: body,
   })
 }
 
@@ -116,7 +116,7 @@ export async function forgetPasswordEmail(body: User.ForgetPasswordParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/register/forgetPasswordEmail', {
     method: 'POST',
     needToken: false,
-    data: body
+    data: body,
   })
 }
 
@@ -124,7 +124,7 @@ export async function forgetPasswordEmail(body: User.ForgetPasswordParams) {
 export async function editPhone(body: User.EditPhoneParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/user/editPhone', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -132,7 +132,7 @@ export async function editPhone(body: User.EditPhoneParams) {
 export async function editEmail(body: User.EditEmailParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/user/editEmail', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -140,7 +140,7 @@ export async function editEmail(body: User.EditEmailParams) {
 export async function bindPhone(body: User.BindPhoneParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/user/bindPhone', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -148,7 +148,7 @@ export async function bindPhone(body: User.BindPhoneParams) {
 export async function bindEmail(body: User.BindEmailParams) {
   return request<API.Response<any>>('/api/trade-crm/crmClient/user/bindEmail', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -159,8 +159,8 @@ export async function getServiceProviderList() {
     '/api/trade-crm/crmClient/public/dictBiz/service_provider',
     {
       method: 'GET',
-      baseURL: ENVS.baseURL // 不使用服务商的接口服务
-    }
+      baseURL: ENVS.baseURL, // 不使用服务商的接口服务
+    },
   ).then((res) => {
     if (res.success && res.data?.length) {
       res.data = res.data.map((item) => {
@@ -181,6 +181,6 @@ export async function getServiceProviderList() {
 export async function setUserLanguage(body: { language: any }) {
   return request<API.Response<any>>(`/api/trade-crm/crmApi/user/setLanguage?language=${body?.language || ''}`, {
     method: 'POST',
-    data: body
+    data: body,
   })
 }

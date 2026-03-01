@@ -1,28 +1,26 @@
-import { mmkv } from '@/lib/storage/mmkv'
 import lodashGet from 'lodash-es/get'
 import lodashSet from 'lodash-es/set'
 
+import { mmkv } from '@/lib/storage/mmkv'
 import {
   KEY_ACCOUNT_PASSWORD,
+  KEY_ANDROID_PRIVACY_MODAL,
+  KEY_APP_VERSION,
+  KEY_AUTHORIZED,
+  KEY_DIRECTION,
+  KEY_ENV,
   KEY_GUIDE,
+  KEY_HISTORY_SEARCH,
   KEY_LNG,
-  KEY_THEME,
-  KEY_TOKEN,
-  KEY_TRADER_SERVER,
-  KEY_USER_CONF_INFO,
-  KEY_USER_INFO,
-  KEY_QUICK_PLACE_ORDER_CHECKED,
+  KEY_LOCATION_INFO,
   KEY_ORDER_CONFIRM_CHECKED,
   KEY_POSITION_CONFIRM_CHECKED,
-  KEY_DIRECTION,
+  KEY_QUICK_PLACE_ORDER_CHECKED,
   KEY_SELECTED_TAB,
-  KEY_APP_VERSION,
-  KEY_HISTORY_SEARCH,
-  KEY_ENV,
+  KEY_THEME,
+  KEY_TRADER_SERVER,
   KEY_TRADINGVIEW_RELOAD_TIME,
-  KEY_AUTHORIZED,
-  KEY_LOCATION_INFO,
-  KEY_ANDROID_PRIVACY_MODAL
+  KEY_USER_CONF_INFO,
 } from '@/v1/constants'
 
 import { valuetype } from './type'
@@ -33,20 +31,10 @@ export const STORAGE_GET_ACCOUNT_PASSWORD = genStorageGet(KEY_ACCOUNT_PASSWORD)
 export const STORAGE_SET_ACCOUNT_PASSWORD = genStorageSet(KEY_ACCOUNT_PASSWORD)
 export const STORAGE_REMOVE_ACCOUNT_PASSWORD = storageRemove(KEY_ACCOUNT_PASSWORD)
 
-// 本地存储-令牌
-export const STORAGE_GET_TOKEN = genStorageGet(KEY_TOKEN)
-export const STORAGE_SET_TOKEN = genStorageSet(KEY_TOKEN)
-export const STORAGE_REMOVE_TOKEN = storageRemove(KEY_TOKEN)
-
 // 本地存储-Webview授权状态
 export const STORAGE_GET_AUTHORIZED = genStorageGet(KEY_AUTHORIZED)
 export const STORAGE_SET_AUTHORIZED = genStorageSet(KEY_AUTHORIZED)
 export const STORAGE_REMOVE_AUTHORIZED = storageRemove(KEY_AUTHORIZED)
-
-// 本地存储-用户信息
-export const STORAGE_GET_USER_INFO = genStorageGet(KEY_USER_INFO)
-export const STORAGE_SET_USER_INFO = genStorageSet(KEY_USER_INFO)
-export const STORAGE_REMOVE_USER_INFO = storageRemove(KEY_USER_INFO)
 
 // 本地存储-按当前交易账号储存 自选、激活的品种名称、打开的品种名称列表
 export const STORAGE_GET_CONF_INFO = genStorageGet(KEY_USER_CONF_INFO)
@@ -116,16 +104,6 @@ export const STORAGE_REMOVE_LOCATION_INFO = storageRemove(KEY_LOCATION_INFO)
 // 安卓端点击同意隐私政策
 export const STORAGE_GET_ANDROID_PRIVACY_MODAL = genStorageGet(KEY_ANDROID_PRIVACY_MODAL)
 export const STORAGE_SET_ANDROID_PRIVACY_MODAL = genStorageSet(KEY_ANDROID_PRIVACY_MODAL)
-
-// =================================================
-
-// 设置本地用户信息
-export const setLocalUserInfo = async (userInfo: User.UserInfo) => {
-  // 保存token到本地
-  await STORAGE_SET_TOKEN(userInfo?.access_token)
-  // 保存登录的用户信息到本地
-  await STORAGE_SET_USER_INFO(userInfo)
-}
 
 // ============================================================
 // 工厂函数-获取
@@ -218,7 +196,12 @@ function storageGetting(key: string) {
 function storageSetting(key: string, value: any) {
   let result = value
 
-  if (valuetype(value, 'Object') || valuetype(value, 'Array') || valuetype(value, 'number') || valuetype(value, 'boolean')) {
+  if (
+    valuetype(value, 'Object') ||
+    valuetype(value, 'Array') ||
+    valuetype(value, 'number') ||
+    valuetype(value, 'boolean')
+  ) {
     try {
       result = JSON.stringify(value)
     } catch (error) {
@@ -231,7 +214,7 @@ function storageSetting(key: string, value: any) {
   } else {
     console.log({
       msg: '本地存储失败',
-      result: result
+      result: result,
     })
   }
 }

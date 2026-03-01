@@ -53,8 +53,8 @@ export const appKit = createAppKit({
   metadata: {
     name: 'Mullet',
     description: 'Mullet - Trade Smarter',
-    url: 'https://mullet.top',
-    // url: EXPO_ENV_CONFIG.WEBSITE_URL,
+    // url: 'https://mullet.top',
+    url: EXPO_ENV_CONFIG.WEBSITE_URL,
     icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-appkit.png`],
     redirect: {
       native: `${appScheme}://login`,

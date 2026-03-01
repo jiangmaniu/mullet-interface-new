@@ -2,13 +2,7 @@ import { useCallback, useState } from 'react'
 
 import { useAppKit } from '@/lib/appkit'
 import { useLoginAuthStore } from '@/stores/login-auth'
-import {
-  STORAGE_REMOVE_AUTHORIZED,
-  STORAGE_REMOVE_CONF_INFO,
-  STORAGE_REMOVE_ENV,
-  STORAGE_REMOVE_TOKEN,
-  STORAGE_REMOVE_USER_INFO,
-} from '@/v1/utils/storage'
+import { STORAGE_REMOVE_AUTHORIZED, STORAGE_REMOVE_CONF_INFO, STORAGE_REMOVE_ENV } from '@/v1/utils/storage'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseLogoutReturn {
@@ -32,8 +26,6 @@ export function useLogout(): UseLogoutReturn {
     setIsLoggingOut(true)
 
     try {
-      await STORAGE_REMOVE_TOKEN()
-      await STORAGE_REMOVE_USER_INFO()
       await STORAGE_REMOVE_CONF_INFO()
       await STORAGE_REMOVE_ENV()
       await STORAGE_REMOVE_AUTHORIZED()

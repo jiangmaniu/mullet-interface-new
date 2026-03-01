@@ -4,7 +4,6 @@ import { router } from 'expo-router'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { stores } from '@/v1/provider/mobxProvider'
 import { login } from '@/v1/services/user'
-import { setLocalUserInfo } from '@/v1/utils/storage'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseBackendLoginOptions {
@@ -42,9 +41,6 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
         accessToken: userinfo.access_token,
         loginInfo: userinfo,
       })
-
-      // 缓存用户信息
-      await setLocalUserInfo(userinfo)
 
       // 重新获取用户信息
       await stores.user.handleLoginSuccess(userinfo)

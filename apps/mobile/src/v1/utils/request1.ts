@@ -3,13 +3,14 @@ import axios from 'axios'
 import { Base64 } from 'js-base64'
 import type { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
+import { useLoginAuthStore } from '@/stores/login-auth'
 import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 
 // import { t } from '@lingui/core/macro'
 import { message } from './message'
 import { onLogout } from './navigation'
-import { STORAGE_GET_TOKEN, STORAGE_GET_TRADER_SERVER, STORAGE_GET_USER_INFO } from './storage'
+import { STORAGE_GET_TRADER_SERVER } from './storage'
 
 interface IAxiosRequestConfig extends AxiosRequestConfig {
   /** 接口是否需要客户端鉴权 */
@@ -43,8 +44,8 @@ const $axios: AxiosInstance = axios.create({
 $axios.interceptors.request.use(
   async (config: IAxiosRequestConfig) => {
     // 请求之前添加token
-    const userInfo = await STORAGE_GET_USER_INFO()
-    const token = await STORAGE_GET_TOKEN()
+    const userInfo = useLoginAuthStore.getState().loginInfo
+    const token = useLoginAuthStore.getState().accessToken
     const ENV = await getEnv()
 
     const headers: any = {

@@ -7,7 +7,6 @@ import { router } from 'expo-router'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { stores } from '@/v1/provider/mobxProvider'
 import { login } from '@/v1/services/user'
-import { setLocalUserInfo, STORAGE_REMOVE_TOKEN, STORAGE_REMOVE_USER_INFO } from '@/v1/utils/storage'
 import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
 
 // 防止并发重复处理
@@ -49,11 +48,7 @@ async function isPrivyTokenValid(): Promise<boolean> {
  */
 async function clearAllAuthData(): Promise<void> {
   try {
-    await Promise.allSettled([
-      STORAGE_REMOVE_TOKEN(),
-      STORAGE_REMOVE_USER_INFO(),
-      useLoginAuthStore.getState().logout(),
-    ])
+    await Promise.allSettled([useLoginAuthStore.getState().logout()])
   } catch (error) {
     console.error('Clear auth data failed:', error)
   }
@@ -76,7 +71,7 @@ async function tryAutoLogin(): Promise<boolean> {
     })
 
     // 保存用户信息
-    await setLocalUserInfo(userInfo)
+    useLoginAuthStore.getState().setLoginInfo(userInfo)
     await stores.user.handleLoginSuccess(userInfo)
 
     console.log('Auto login successful')
