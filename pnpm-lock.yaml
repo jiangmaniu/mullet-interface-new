@@ -449,6 +449,9 @@ importers:
       inquirer:
         specifier: ^13.3.0
         version: 13.3.0(@types/node@24.7.2)
+      reactotron-react-native:
+        specifier: ^5.1.18
+        version: 5.1.18(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))
       shelljs:
         specifier: ^0.10.0
         version: 0.10.0
@@ -12514,6 +12517,17 @@ packages:
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
+
+  reactotron-core-client@2.9.9:
+    resolution: {integrity: sha512-caI6ZWpfV/gNeCBhm6alxuCpOxYEFxg9FsgVaOXJWZeKjK2egjxkXcUEFWeS3b9mC6Kwi7Wuu79zfeGtkbdAYw==}
+
+  reactotron-core-contract@0.3.2:
+    resolution: {integrity: sha512-39ZNLfxxV7WEOszekIRg56F6VFZrQk7+Lei+8MccNESX3VbQzs1uex/GNesxk6CMTS6ytwqYIBAgLyc9WX/PaA==}
+
+  reactotron-react-native@5.1.18:
+    resolution: {integrity: sha512-Nyb/w7tRQICtfvjAJSN6Q/3aRO8L6eTfEcWpDR/atUyoINkyzducMx6yXA+sz1mazxivY16N3VPkmQ1XohQAcg==}
+    peerDependencies:
+      react-native: '>=0.40.0'
 
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -30876,6 +30890,18 @@ snapshots:
   react@19.2.0: {}
 
   react@19.2.3: {}
+
+  reactotron-core-client@2.9.9:
+    dependencies:
+      reactotron-core-contract: 0.3.2
+
+  reactotron-core-contract@0.3.2: {}
+
+  reactotron-react-native@5.1.18(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)):
+    dependencies:
+      mitt: 3.0.1
+      react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
+      reactotron-core-client: 2.9.9
 
   read-cache@1.0.0:
     dependencies:

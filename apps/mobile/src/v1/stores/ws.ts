@@ -2,7 +2,6 @@ import { action, configure, makeObservable, observable, runInAction, toJS } from
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
 import { formaOrderList } from '@/v1/services/tradeCore/order'
-import { STORAGE_GET_TOKEN, STORAGE_GET_USER_INFO } from '@/v1/utils/storage'
 
 import trade from './trade'
 // import { onDisplayNotification } from '@/components/Base/Notification'
@@ -13,6 +12,16 @@ import { Platform } from 'react-native'
 import { getEnv } from '@/v1/env'
 import { uniqueObjectArray } from '@/v1/utils'
 import mitt from '@/v1/utils/mitt'
+import { useLoginAuthStore } from '@/stores/login-auth'
+import type Reactotron from 'reactotron-react-native'
+
+// Reactotron WS 日志（仅开发环境）
+let tron: typeof Reactotron | null = null
+if (__DEV__) {
+  try {
+    tron = require('@/lib/reactotron').default
+  } catch {}
+}
 
 export type IQuotePriceItem = {
   /** 卖交易量 */
@@ -84,7 +93,7 @@ enum MessageType {
   /** 消息 */
   notice = 'notice',
   /** 需要响应的消息 */
-  msg = 'msg'
+  msg = 'msg',
 }
 type IMessage = {
   header: {
@@ -185,7 +194,7 @@ class WSStore {
   makeWsSymbol = (symbols: string[], _accountGroupId?: string) => {
     const symbolMap = trade.symbolMapAll
     const symbolSemis = symbols.map((symbol) => ({
-      symbol
+      symbol,
       // dataSourceCode: symbolMap?.[symbol]?.dataSourceCode
     })) as SymbolWSItemSemi[]
 
@@ -200,10 +209,10 @@ class WSStore {
   }
 
   // 检查socket是否连接，如果未连接，则重新连接
-  checkSocketReady = (fn?: () => void) => {
+  checkSocketReady = async (fn?: () => void) => {
     if (this.socket?.readyState !== 1) {
       // this.reconnect(fn)
-      this.connect(fn)
+      await this.connect(fn)
     } else {
       fn?.()
     }
@@ -219,7 +228,7 @@ class WSStore {
     const [symbol, accountGroupId, dataSourceCode] = str.split('-')
     return {
       symbol: symbol === 'undefined' ? '' : symbol,
-      accountGroupId: accountGroupId === 'undefined' ? undefined : accountGroupId
+      accountGroupId: accountGroupId === 'undefined' ? undefined : accountGroupId,
       // dataSourceCode: dataSourceCode === 'undefined' ? undefined : dataSourceCode
     }
   }
@@ -251,7 +260,7 @@ class WSStore {
   batchSubscribeSymbol = ({
     cancel = false,
     list = [],
-    cover = false
+    cover = false,
   }: {
     cancel?: boolean
     needAccountGroupId?: boolean
@@ -263,7 +272,10 @@ class WSStore {
     const symbolList = toJS(list)
 
     console.log(' ')
-    console.log(`--- start: 批量${cancel ? '取消' : '订阅'}行情${cover ? '[并取消其他历史订阅]' : ''}:`, symbolList.length)
+    console.log(
+      `--- start: 批量${cancel ? '取消' : '订阅'}行情${cover ? '[并取消其他历史订阅]' : ''}:`,
+      symbolList.length,
+    )
     // 先打标记
     this.setSendingSymbols({ symbolList, cancel, cover })
   }
@@ -278,7 +290,7 @@ class WSStore {
   openPosition = ({ symbols, cover = true }: { symbols: SymbolWSItem[]; cover?: boolean }) => {
     this.openSymbol({
       symbols,
-      cover
+      cover,
     })
     this.subscribePosition()
   }
@@ -291,7 +303,7 @@ class WSStore {
 
   @action
   async connect(resolve?: () => void) {
-    const token = await STORAGE_GET_TOKEN()
+    const token = useLoginAuthStore.getState().accessToken
     const { ws: websocketUrl } = await getEnv()
     // token不要传bear前缀
     // 游客传WebSocket:visitor
@@ -299,7 +311,7 @@ class WSStore {
       minReconnectionDelay: 1,
       connectionTimeout: 3000, // 重连时间
       maxEnqueuedMessages: 0, // 不缓存发送失败的指令
-      maxRetries: 10000000 // 最大重连次数
+      maxRetries: 10000000, // 最大重连次数
       // debug: process.env.NODE_ENV === 'development' // 测试环境打开调试
     })
     const regex = /"body":\s*(\{.*?\})/
@@ -330,7 +342,7 @@ class WSStore {
 
   // 订阅消息
   subscribeMessage = async (cancel?: boolean) => {
-    const userInfo = (await STORAGE_GET_USER_INFO()) as User.UserInfo
+    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
     if (!userInfo?.user_id) return
 
     // 公共订阅：/{租户ID}/public/1
@@ -340,41 +352,42 @@ class WSStore {
     // 用户订阅：/{租户ID}/user/{用户ID}
     this.send({
       topic: `/000000/public/1`,
-      cancel
+      cancel,
     })
     this.send({
       topic: `/000000/role/${userInfo.role_id}`,
-      cancel
+      cancel,
     })
     this.send({
       topic: `/000000/dept/${userInfo.dept_id}`,
-      cancel
+      cancel,
     })
     this.send({
       topic: `/000000/post/${userInfo.post_id}`,
-      cancel
+      cancel,
     })
     this.send({
       topic: `/000000/user/${userInfo?.user_id}`,
-      cancel
+      cancel,
     })
   }
 
   // 订阅中消息（目前只订阅支付响应消息：20250327）
   subscribeNotify = async (cancel?: boolean) => {
-    const userInfo = (await STORAGE_GET_USER_INFO()) as User.UserInfo
+    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
     if (!userInfo?.user_id) return
 
     console.log('=========订阅响应消息', `/000000/msg/${userInfo?.user_id}`, cancel)
     this.send({
       topic: `/000000/msg/${userInfo?.user_id}`,
-      cancel
+      cancel,
     })
   }
 
   // 开始心跳
   startHeartbeat() {
-    if (!STORAGE_GET_TOKEN()) return
+    const token = useLoginAuthStore.getState().accessToken
+    if (!token) return
     this.stopHeartbeat()
     this.heartbeatInterval = setInterval(() => {
       this.send({}, { msgId: 'heartbeat' })
@@ -390,7 +403,15 @@ class WSStore {
   }
 
   // ============ 订阅相关 start ============
-  setSendingSymbols = ({ symbolList, cancel, cover }: { symbolList: SymbolWSItem[]; cancel: boolean; cover?: boolean }) => {
+  setSendingSymbols = ({
+    symbolList,
+    cancel,
+    cover,
+  }: {
+    symbolList: SymbolWSItem[]
+    cancel: boolean
+    cover?: boolean
+  }) => {
     symbolList?.forEach((item) => {
       // 记录当前正在订阅的符号
       if (cancel) {
@@ -445,7 +466,7 @@ class WSStore {
 
     this.send({
       topic: topics,
-      cancel
+      cancel,
     })
   }
 
@@ -472,9 +493,9 @@ class WSStore {
     toSend.set(
       ws.symbolToString({
         accountGroupId: trade.currentAccountInfo.accountGroupId,
-        symbol: symbolInfo.symbol
+        symbol: symbolInfo.symbol,
       }),
-      true
+      true,
     )
     ws.debounceBatchSubscribeSymbol({ toSend })
   }
@@ -494,7 +515,7 @@ class WSStore {
     setTimeout(() => {
       this.send({
         topic,
-        cancel
+        cancel,
       })
     }, 300)
   }
@@ -506,26 +527,36 @@ class WSStore {
     if (!accountId) return
     this.send({
       topic: `/000000/trade/${accountId}`,
-      cancel
+      cancel,
     })
   }
 
   // 发送socket指令
   @action
   async send(cmd = {}, header = {}) {
-    const userInfo = (await STORAGE_GET_USER_INFO()) as User.UserInfo
+    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
     // 游客身份userId传123456789
     const userId = userInfo?.user_id || '123456789'
     if (this.socket && this.socket.readyState === 1) {
-      this.socket.send(
-        JSON.stringify({
-          header: { tenantId: '000000', userId, msgId: 'subscribe', flowId: Date.now(), ...header },
-          body: {
-            cancel: false,
-            ...cmd
-          }
+      const payload = {
+        header: { tenantId: '000000', userId, msgId: 'subscribe', flowId: Date.now(), ...header },
+        body: {
+          cancel: false,
+          ...cmd,
+        },
+      }
+      this.socket.send(JSON.stringify(payload))
+
+      // Reactotron 记录发送的 WS 指令
+      const msgId = (header as any)?.msgId
+      if (tron && msgId !== 'heartbeat') {
+        tron.display({
+          name: 'WS 发送',
+          value: payload,
+          preview: (payload.body as any)?.topic?.slice(0, 60) || msgId || 'subscribe',
+          important: true,
         })
-      )
+      }
     }
   }
 
@@ -576,10 +607,10 @@ class WSStore {
             (symbolMap[item.symbol] || []).map((item) => {
               return {
                 price: item.priceData?.buy,
-                id: item.priceData?.id
+                id: item.priceData?.id,
               }
             }),
-            'price'
+            'price',
           )
 
           if (quoteData) {
@@ -602,7 +633,7 @@ class WSStore {
               const changedQuoteItem = {
                 ...item,
                 // 储存原始数据 ，用于K线图播放走一遍全部报价，避免数据过滤丢失绘制的k线跟后台历史数据不一样
-                klineList
+                klineList,
               }
               this.quotes.set(dataSourceKey, changedQuoteItem)
             }
@@ -610,7 +641,7 @@ class WSStore {
             // 新增行情
             const changedQuoteItem = {
               ...item,
-              klineList
+              klineList,
             }
             this.quotes.set(dataSourceKey, changedQuoteItem)
           }
@@ -728,7 +759,7 @@ class WSStore {
         buy: Number(buy || 0),
         sell: Number(sell || 0),
         id: Number(id || 0),
-        buySize: Number(buySize || 0)
+        buySize: Number(buySize || 0),
       }
     }
     return quoteItem
@@ -758,7 +789,7 @@ class WSStore {
             const [price, amount] = (item || '').split('_')
             return {
               price: Number(price || 0),
-              amount: Number(amount || 0)
+              amount: Number(amount || 0),
             }
           })
         : []
@@ -767,7 +798,7 @@ class WSStore {
             const [price, amount] = (item || '').split('_')
             return {
               price: Number(price || 0),
-              amount: Number(amount || 0)
+              amount: Number(amount || 0),
             }
           })
         : []
@@ -815,6 +846,14 @@ class WSStore {
         break
       // 交易信息：账户余额变动、持仓列表、挂单列表
       case MessageType.trade:
+        if (tron) {
+          tron.display({
+            name: 'WS 交易',
+            value: data,
+            preview: `type: ${data.type}`,
+            important: true,
+          })
+        }
         const type = data.type as ITradeType
         // 账户余额变动
         if (type === 'ACCOUNT') {
@@ -822,7 +861,7 @@ class WSStore {
           runInAction(() => {
             trade.currentAccountInfo = {
               ...trade.currentAccountInfo,
-              ...accountInfo
+              ...accountInfo,
             }
           })
         }
@@ -849,6 +888,9 @@ class WSStore {
         }
         break
       case MessageType.notice:
+        if (tron) {
+          tron.display({ name: 'WS 通知', value: data, preview: data?.title || 'notice', important: true })
+        }
         console.log('消息通知', data)
         // const info = data as MessagePopupInfo
         // onDisplayNotification({
@@ -857,6 +899,9 @@ class WSStore {
         // })
         break
       case MessageType.msg:
+        if (tron) {
+          tron.display({ name: 'WS 响应', value: data, preview: 'msg', important: true })
+        }
         console.log('消息响应', data)
         // 派发消息响应事件
         mitt.emit('RESOLVE_MSG', data)

@@ -138,6 +138,7 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0",
     "inquirer": "^13.3.0",
+    "reactotron-react-native": "^5.1.18",
     "shelljs": "^0.10.0",
     "typescript": "~5.9.2"
   },
