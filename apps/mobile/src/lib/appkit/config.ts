@@ -4,12 +4,14 @@ import '@walletconnect/react-native-compat'
 
 import { createAppKit, solana, solanaDevnet } from '@reown/appkit-react-native'
 import { PhantomConnector, SolanaAdapter, SolflareConnector } from '@reown/appkit-solana-react-native'
+import Constants from 'expo-constants'
 import type { Storage } from '@reown/appkit-react-native'
 
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { mmkv } from '@/lib/storage/mmkv'
 
 const projectId = EXPO_ENV_CONFIG.REOWN_PROJECT_ID
+const appScheme = (Constants.expoConfig?.scheme as string) ?? 'mullet'
 
 // Solana adapter
 const solanaAdapter = new SolanaAdapter()
@@ -46,17 +48,20 @@ export const appKit = createAppKit({
   defaultNetwork: solana,
   adapters: [solanaAdapter],
   storage,
-  // debug: true,
+  debug: true,
   // themeMode 由 Providers 中的 useUniwind 动态控制
   metadata: {
     name: 'Mullet',
     description: 'Mullet - Trade Smarter',
     url: 'https://mullet.top',
+    // url: EXPO_ENV_CONFIG.WEBSITE_URL,
     icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-appkit.png`],
     redirect: {
-      native: 'mullet://login',
-      // TODO: 添加通用连接，需要服务器支持
-      universal: 'https://mullet.top',
+      native: `${appScheme}://login`,
+      // 不设置 universal — PhantomConnector/SolflareConnector 会优先使用 universal 作为 redirect_link，
+      // 但 Phantom 在 Android 上通过 Chrome Custom Tab 打开 universal link，
+      // JS 重定向后 URL scheme 不匹配导致连接失败（"Unexpected redirect URI"）。
+      // 仅使用 native scheme，Phantom 会通过 Intent 直接打开 App。
     },
   },
   // 禁用所有 Web2 登录方式，仅支持钱包连接

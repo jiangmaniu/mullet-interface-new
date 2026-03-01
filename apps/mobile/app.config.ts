@@ -23,6 +23,12 @@ const bundleIdSuffix: Record<string, string> = {
   prod: '',
 }
 
+const schemeSuffix: Record<string, string> = {
+  dev: '-dev',
+  test: '-test',
+  prod: '',
+}
+
 export default ({ config }: { config: ConfigContext }) => {
   const extra: ExpoConfigExtra = {
     // Privy 配置
@@ -38,6 +44,9 @@ export default ({ config }: { config: ConfigContext }) => {
     REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID!,
   }
 
+  // 从 WEBSITE_URL 提取域名，用于 iOS associatedDomains
+  const websiteHost = new URL(extra.WEBSITE_URL).host
+
   const result: ExpoConfig = {
     ...config,
     name: displayName[env] ?? `Mullet (${env})`,
@@ -45,7 +54,7 @@ export default ({ config }: { config: ConfigContext }) => {
     version: '1.0.0',
     orientation: 'portrait',
     icon: './public/images/icon.png',
-    scheme: 'mullet',
+    scheme: `mullet${schemeSuffix[env] ?? ''}`,
     userInterfaceStyle: 'dark',
     extra: extra,
 
@@ -56,6 +65,7 @@ export default ({ config }: { config: ConfigContext }) => {
       usesAppleSignIn: true,
       // 钱包检测 - LSApplicationQueriesSchemes
       // https://docs.reown.com/appkit/react-native/core/installation#enable-wallet-detection
+      associatedDomains: [`applinks:${websiteHost}`, `webcredentials:${websiteHost}`],
       infoPlist: {
         CADisableMinimumFrameDurationOnPhone: true,
         ITSAppUsesNonExemptEncryption: false,
@@ -84,6 +94,20 @@ export default ({ config }: { config: ConfigContext }) => {
       },
       predictiveBackGestureEnabled: false,
       package: `com.mullet.mobile${bundleIdSuffix[env] ?? ''}`,
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'https',
+              host: '*.mullet.top',
+              pathPrefix: '/app-redirect',
+            },
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
     },
     web: {
       output: 'static',

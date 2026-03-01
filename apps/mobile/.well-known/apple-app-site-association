@@ -1,0 +1,29 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": [
+          "NJX3V5USJP.com.mullet.app.dev",
+          "NJX3V5USJP.com.mullet.app.test",
+          "NJX3V5USJP.com.mullet.app"
+        ],
+        "paths": [
+          "*"
+        ],
+        "components": [
+          {
+            "/": "/*"
+          }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "NJX3V5USJP.com.mullet.app.dev",
+      "NJX3V5USJP.com.mullet.app.test",
+      "NJX3V5USJP.com.mullet.app"
+    ]
+  }
+}
