@@ -212,6 +212,7 @@ interface SwipeableTabsProps {
   swipeEnabled?: boolean;
   lazy?: boolean;
   renderTabBarRight?: () => React.ReactNode;
+  renderTabBarBottom?: () => React.ReactNode;
   tabFlex?: boolean;
 }
 
@@ -227,6 +228,7 @@ function SwipeableTabs({
   swipeEnabled = true,
   lazy = true,
   renderTabBarRight,
+  renderTabBarBottom,
   tabFlex = false,
 }: SwipeableTabsProps) {
   const layout = useWindowDimensions();
@@ -265,36 +267,39 @@ function SwipeableTabs({
 
   const renderTabBar = () => {
     return (
-      <View className={cn(tabsListVariants({ variant, size }), tabBarClassName)}>
-        <View className="flex-row" style={{ flex: renderTabBarRight ? 1 : undefined }}>
-          {routes.map((route) => {
-            const isActive = routes[index].key === route.key;
-            const textClassName = tabsTriggerTextVariants({ variant, size, state: isActive ? 'active' : 'inactive' });
+      <>
+        <View className={cn(tabsListVariants({ variant, size }), tabBarClassName)}>
+          <View className="flex-row" style={{ flex: renderTabBarRight ? 1 : undefined }}>
+            {routes.map((route) => {
+              const isActive = routes[index].key === route.key;
+              const textClassName = tabsTriggerTextVariants({ variant, size, state: isActive ? 'active' : 'inactive' });
 
-            return (
-              <Pressable
-                key={route.key}
-                onLayout={(e) => onTabLayout(route.key, { x: e.nativeEvent.layout.x, width: e.nativeEvent.layout.width })}
-                onPress={() => handleIndexChange(routes.findIndex((r) => r.key === route.key))}
-                className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }), tabFlex && 'flex-1')}
-              >
-                <Text className={textClassName}>{route.title}</Text>
-              </Pressable>
-            );
-          })}
-          {variant === 'underline' && (
-            <Animated.View
-              className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
-              style={animatedIndicatorStyle}
-            />
+              return (
+                <Pressable
+                  key={route.key}
+                  onLayout={(e) => onTabLayout(route.key, { x: e.nativeEvent.layout.x, width: e.nativeEvent.layout.width })}
+                  onPress={() => handleIndexChange(routes.findIndex((r) => r.key === route.key))}
+                  className={cn(tabsTriggerVariants({ variant, size, state: isActive ? 'active' : 'inactive' }), tabFlex && 'flex-1')}
+                >
+                  <Text className={textClassName}>{route.title}</Text>
+                </Pressable>
+              );
+            })}
+            {variant === 'underline' && (
+              <Animated.View
+                className="absolute bottom-0 left-0 h-[2px] bg-brand-primary"
+                style={animatedIndicatorStyle}
+              />
+            )}
+          </View>
+          {renderTabBarRight && (
+            <View className="flex-shrink-0">
+              {renderTabBarRight()}
+            </View>
           )}
         </View>
-        {renderTabBarRight && (
-          <View className="flex-shrink-0">
-            {renderTabBarRight()}
-          </View>
-        )}
-      </View>
+        {renderTabBarBottom?.()}
+      </>
     );
   };
 
