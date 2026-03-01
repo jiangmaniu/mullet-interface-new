@@ -17,7 +17,6 @@ import { IconStarFill } from '@/components/ui/icons/set/star-fill'
 import { IconStar } from '@/components/ui/icons/set/star'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { t } from '@/locales/i18n'
-import { TradingviewChart, TradingviewChart as TradingviewChartMock } from './_comps/tradingview'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { observer } from 'mobx-react-lite'
@@ -29,6 +28,7 @@ import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { renderFallback } from '@mullet/utils/format'
 import { transferWeekDay } from '@/v1/constants'
 import { formatTimeStr } from '@/v1/utils/business'
+import { TradingviewChart } from '@/components/tradingview'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
@@ -195,22 +195,15 @@ const PriceInfo = observer(({
 })
 
 // ============ ChartView Component ============
-// DEV 模式下使用 mock 版本调试主题和数据源
-const KLineChart = __DEV__ ? TradingviewChartMock : TradingviewChart
-
 function ChartView({ symbol }: { symbol: string }) {
   return (
     // <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
     <View className="flex-1">
-      {/* Price Info */}
       <PriceInfo symbol={symbol} />
-
-      {/* K线图（内置时间周期选择器） */}
       <View className="flex-1">
-        <KLineChart />
+        <TradingviewChart mode="detail" />
       </View>
     </View>
-    // </ScrollView>
   )
 }
 

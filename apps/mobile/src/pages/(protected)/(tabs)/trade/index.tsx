@@ -34,65 +34,7 @@ import { MOCK_POSITIONS, TradePositions } from './_comps/records/positions'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 import OrderConfirmationDrawer from './_comps/order-confirmation-drawer'
 import { MOCK_PENDING_ORDERS, TradePendingOrders } from './_comps/records/pending-orders'
-
-// ============ KLineChart ============
-interface KLineChartProps {
-  isVisible: boolean
-  onToggle: () => void
-  symbol: string
-}
-
-const TIME_PERIODS = ['分时', '1秒', '1分', '3分', '5分', '15分', '30分', '1小时', '2小时', '6小时', '8小时', '12小时', '1天', '3天', '1周', '1月']
-
-function KLineChart({ isVisible, onToggle }: KLineChartProps) {
-  const [selectedPeriod, setSelectedPeriod] = useState('15分')
-
-  // Collapsed state - show "K线图表" and "展开" button
-  if (!isVisible) {
-    return (
-      <View className='flex-row items-center justify-between border-b border-brand-default h-10'>
-        <View className='px-xl py-xs'>
-          <Text className='text-button-1 text-content-1'>
-            <Trans>K线图表</Trans>
-          </Text>
-        </View>
-        <Pressable onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
-          <Text className="text-button-1 text-content-4">
-            <Trans>展开</Trans>
-          </Text>
-          <IconNavArrowDown width={16} height={16} className="text-content-4" />
-        </Pressable>
-      </View>
-    )
-  }
-
-  // Expanded state - show time period tabs and "隐藏" button
-  return (
-    <View>
-      <View className='flex-row items-center h-10'>
-        <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod} className='flex-1'>
-          <TabsList variant="text" size="sm" className='gap-2xl px-medium' scrollable>
-            {TIME_PERIODS.map((period) => (
-              <TabsTrigger key={period} value={period} className='flex-row'>
-                <Text>{period}</Text>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <Pressable onPress={onToggle} className="flex-row items-center gap-xs pr-xl">
-          <Text className="text-button-1 text-content-4">
-            <Trans>隐藏</Trans>
-          </Text>
-          <IconNavArrowSuperior width={16} height={16} className="text-content-4" />
-        </Pressable>
-      </View>
-
-      <View className='h-[193px] border-b border-brand-default'>
-        {/* TODO: K-line chart will be implemented here */}
-      </View>
-    </View>
-  )
-}
+import { SymbolChartView } from './_comps/symbol-chart-view'
 
 const Trade = observer(() => {
   // Get URL params
@@ -112,7 +54,6 @@ const Trade = observer(() => {
   const { orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore()
 
   // State
-  const [isChartVisible, setIsChartVisible] = useState(true)
   const [isOrderConfirmDrawerOpen, setIsOrderConfirmDrawerOpen] = useState(false)
   const [isClosePositionDrawerOpen, setIsClosePositionDrawerOpen] = useState(false)
   const [isStopProfitLossDrawerOpen, setIsStopProfitLossDrawerOpen] = useState(false)
@@ -123,12 +64,6 @@ const Trade = observer(() => {
   } | null>(null)
 
   // Handlers
-  const handleChartToggle = useCallback(() => {
-    setIsChartVisible((prev) => !prev)
-  }, [])
-
-
-
   const handleBuy = useCallback(() => {
     setPendingOrder({
       side: 'buy',
@@ -227,14 +162,7 @@ const Trade = observer(() => {
 
             <CollapsibleStickyContent>
               {/* K-Line Chart - 顶部位置 */}
-              {/* {chartPosition === 'top' && (
-                <KLineChart
-                  isVisible={isChartVisible}
-                  onToggle={handleChartToggle}
-                  symbol="SOL-USDC"
-                />
-              )} */}
-              <View>11</View>
+              <SymbolChartView />
 
               {/* Account Card */}
               <View className="pt-xl px-xl">
