@@ -1,11 +1,11 @@
 // @ts-nocheck
 import ByteBuffer from 'bytebuffer'
 import dayjs from 'dayjs'
-import { Base64 } from 'js-base64'
-import { action, configure, makeAutoObservable, makeObservable, observable, runInAction } from 'mobx'
+import { action, makeAutoObservable, observable } from 'mobx'
 import NP from 'number-precision'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
+import { symbolInfoArr } from '@/config/symbols'
 import { WEBSOCKET_URLS } from '@/constants'
 import { MSG_TYPE } from '@/constants/enum'
 import LogInPb from '@/libs/proto/LogIn_pb'
@@ -13,9 +13,6 @@ import MtEventPb from '@/libs/proto/MtEvent_pb'
 import MtQuestPb from '@/libs/proto/MtQuest_pb'
 import QuotePb from '@/libs/proto/Quote_pb'
 import UserInfoPb from '@/libs/proto/UserInfo_pb'
-import myrequest from '@/utils/axios'
-import { arrayBufferToBase64, base64ToFloat32, base64ToInt, intToBin, stringToBin } from '@/utils/tools'
-import { quoteUtil, symbolInfoArr } from '@/utils/wsUtil'
 
 NP.enableBoundaryChecking(false)
 
@@ -30,10 +27,7 @@ class WsStore {
     symbolInfo: {}
   }
   @observable loading = true
-  @observable lastbar = {} // 最后一条k线数据
-  @observable wsHistory = [] // ws获取历史记录
-  @observable datafeedBarCallbackObj = {} // 记录getbars回调的参数
-  @observable lastBarTime = '' // 用于追踪历史 K 线数据的时间戳，确保后续请求获取的数据是从最新历史数据之后开始的
+  @observable lastbar = {} // 最后一条k线数据（用于 setQuoteData/updateBar 实时更新）
   @observable wsUrls = WEBSOCKET_URLS
 
   @action
@@ -64,29 +58,37 @@ class WsStore {
     })
   }
 
-  // 获取品种信息
+  /** 当前已订阅的行情品种（按需订阅，仅保留 activeSymbol） */
+  subscribedSymbolName = null
+
+  // 获取品种信息（仅查询类，不发起行情订阅；行情由 setActiveSymbolInfo 按需订阅）
   getSymbolInfo() {
-    symbolInfoArr.map((item, i) => {
-      this.getSblLiveData(item)
-      //获取品种信息 10001 商品查询
+    symbolInfoArr.map((item) => {
       this.getSblLiveDataFn(item, MSG_TYPE.SYMBOL_QUERY)
-      //获取高开低收
       this.getSblLiveDataFn(item, MSG_TYPE.SYMBOL_STATIS_QUERY)
-      //获取最新报价
       this.getSblLiveDataFn(item, MSG_TYPE.LATEST_PRICE_QUERY)
     })
   }
 
   // 获取产品实时行情订阅
-  async getSblLiveData(item) {
+  getSblLiveData(item) {
     const qSymbol = new MtQuestPb.QSymbol()
     const sub = new MtQuestPb.Subscribe()
 
     qSymbol.setSbl(item.name)
     sub.addSbls(qSymbol)
 
-    // 行情订阅
     this.serializeBinary(sub, MSG_TYPE.QUOTE_SUBSCRIBE)
+  }
+
+  // 取消产品实时行情订阅（按需退订）
+  getSblUnsubscribe(symbolName) {
+    if (!symbolName) return
+    const qSymbol = new MtQuestPb.QSymbol()
+    const sub = new MtQuestPb.Subscribe()
+    qSymbol.setSbl(symbolName)
+    sub.addSbls(qSymbol)
+    this.serializeBinary(sub, MSG_TYPE.QUOTE_SUBSCRIBE_CANCEL)
   }
 
   // 获取产品实时行情
@@ -254,141 +256,6 @@ class WsStore {
       }
     }
   }
-  // ws获取历史记录
-  @action
-  getWsHistory(data) {
-    if (data.p.length) {
-      const historyList = data.p.map((item) => {
-        return {
-          close: item.c,
-          high: item.h,
-          low: item.l,
-          open: item.o,
-          time: Date.parse(dayjs(item.t).add(8, 'hour')),
-          volume: item.v
-        }
-      })
-      if (this.datafeedBarCallbackObj.firstDataRequest) {
-        // 更新最后一条k线
-        this.lastbar = historyList[history.length - 1]
-      }
-
-      if (this.wsHistory[0] && this.wsHistory.length === 1 && data.p.length == 1 && this.wsHistory[0].t === data.p[0].t) {
-        this.datafeedBarCallbackObj.onHistoryCallback([], { noData: true })
-      } else {
-        this.datafeedBarCallbackObj.onHistoryCallback(historyList, { noData: false })
-      }
-      this.wsHistory = data.p
-      this.lastBarTime = historyList[0].time
-    }
-  }
-  /**
-   *通过http获取k线历史数据
-   * @param symbolInfo 品种信息
-   * @param resolution 分辨率
-   * @param from 开始时间戳
-   * @param to 结束时间戳
-   * @param countBack
-   * @returns
-   */
-  getHttpHistoryBars = async (symbolInfo, resolution, from, to, countBack) => {
-    const resolutionToMin = resolution.includes('M')
-      ? 43200
-      : resolution.includes('W')
-        ? 10080
-        : resolution.includes('D')
-          ? 1440
-          : resolution
-    const symbolName = [
-      ...stringToBin(symbolInfo.mtName || symbolInfo.name, 12),
-      ...intToBin(resolutionToMin),
-      ...intToBin(300), // 请求返回多少个数据
-      ...intToBin(0),
-      ...intToBin(to + 8 * 60 * 60)
-    ]
-    const encodeSymbolName = arrayBufferToBase64(new Int8Array(symbolName))
-    const precision = symbolInfo.precision
-
-    // const b = Base64.btoa(
-    //   quoteUtil.stringToBin(symbolInfo.mtName || symbolInfo.name, 12) + // 品种
-    //     quoteUtil.intToBin(resolutionToMin) + // K线周期
-    //     quoteUtil.intToBin(countBack) + // 请求返回多少个数据
-    //     quoteUtil.timeToBin(to + 8 * 60 * 60) +
-    //     quoteUtil.timeToBin(0)
-    // )
-
-    try {
-      //   const res = await myrequest.post('/kline/TradeInfo/ChartRequestBinary', { b: encodeSymbolName }).finally(() => {
-      const res = await myrequest.post('https://mt.cd-ex.io/kline/TradeInfo/ChartRequestBinary', { b: encodeSymbolName }).finally(() => {
-        runInAction(() => {
-          this.loading = false
-        })
-      })
-      // const res = await myrequest.post(getHistoryDataUrl, { b })
-      // console.log(res, symbolName, to + 8 * 60 * 60, symbolInfo.mtName, '------------')
-      if (res.data.length) {
-        const bars = res.data.map((item) => {
-          const blob = window.atob(item.b)
-          const timeStamp = base64ToInt(blob.slice(20))[0] * 1000
-          return {
-            open: NP.round(base64ToFloat32(blob.slice(0, 4))[0], precision),
-            close: NP.round(base64ToFloat32(blob.slice(4, 8))[0], precision),
-            high: NP.round(base64ToFloat32(blob.slice(8, 12))[0], precision),
-            low: NP.round(base64ToFloat32(blob.slice(12, 16))[0], precision),
-            volume: NP.round(base64ToInt(blob.slice(16, 20))[0], precision),
-            time: timeStamp,
-            mytime: dayjs(timeStamp).format('YYYY-MM-DD HH:mm:ss')
-          }
-        })
-        this.barList = bars
-        // console.log(bars, 'K线数据')
-        return bars
-      } else {
-        return []
-      }
-    } catch (err) {
-      console.log(err)
-      // 请求加载出问题返回上一次有数据的
-      return this.barList || []
-    }
-  }
-  // datafeed getBars回调处理
-  // 首次加载/切换分辨率/左右移动时间轴触发，http方式获取k线柱历史数据
-  @action
-  getDataFeedBarCallback = (obj = {}) => {
-    const { symbolInfo, resolution, firstDataRequest, from, to, countBack } = obj
-    this.datafeedBarCallbackObj = obj
-    // 首次请求
-    if (firstDataRequest) {
-      this.getHttpHistoryBars(symbolInfo, resolution, from, to, countBack).then((bars) => {
-        if (bars?.length) {
-          this.datafeedBarCallbackObj.onHistoryCallback(bars, { noData: false })
-          runInAction(() => {
-            const lastbar = bars[bars.length - 1]
-            this.lastBarTime = bars[0].time / 1000 - 8 * 60 * 60
-            this.lastbar = lastbar
-          })
-        } else {
-          this.datafeedBarCallbackObj.onHistoryCallback(bars, { noData: true })
-        }
-      })
-    } else {
-      this.getHttpHistoryBars(symbolInfo, resolution, from, this.lastBarTime, countBack).then((bars) => {
-        if (bars?.length) {
-          if (this.lastBarTime === bars[0].time / 1000 - 8 * 60 * 60) {
-            this.datafeedBarCallbackObj.onHistoryCallback([], { noData: true })
-          } else if (bars.length) {
-            this.datafeedBarCallbackObj.onHistoryCallback(bars, { noData: false })
-          }
-          runInAction(() => {
-            this.lastBarTime = bars[0].time / 1000 - 8 * 60 * 60
-          })
-        } else {
-          this.datafeedBarCallbackObj.onHistoryCallback(bars, { noData: true })
-        }
-      })
-    }
-  }
 
   // 更新最后一条k线段
   @action
@@ -453,19 +320,33 @@ class WsStore {
     this.tvWidget = tvWidget
   }
 
-  // 记录当前的symbol
+  // 记录当前的 symbol，并按需订阅/退订行情
   @action
   setActiveSymbolInfo = (data) => {
+    const nextName = data?.symbolInfo?.name
+    const prevName = this.subscribedSymbolName
+
+    if (nextName && nextName !== prevName) {
+      if (prevName) this.getSblUnsubscribe(prevName)
+      this.getSblLiveData({ name: nextName })
+      this.subscribedSymbolName = nextName
+    }
+
     this.activeSymbolInfo = {
       ...this.activeSymbolInfo,
       ...data
     }
   }
 
-  // 取消订阅，暂不处理
+  // 取消订阅
   removeActiveSymbol = (subscriberUID) => {
-    if (this.activeSymbolInfo.subscriberUID === subscriberUID) {
+    if (this.activeSymbolInfo.subscriberUID !== subscriberUID) return
+    const name = this.subscribedSymbolName
+    if (name) {
+      this.getSblUnsubscribe(name)
+      this.subscribedSymbolName = null
     }
+    this.activeSymbolInfo = { symbolInfo: {} }
   }
 }
 

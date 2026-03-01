@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { ConfigProvider } from './configProvider'
-import { StoresProvider } from './mobxProvider'
+import { ConfigProvider } from './config-provider'
+import { StoresProvider } from './mobx-provider'
 
 interface IProps {
   children: React.ReactNode

@@ -8,8 +8,7 @@ export default function Loading() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100%',
-        minHeight: '362px'
+        height: '100vh',
       }}
     >
       <div className="page-loading-warp">

@@ -1,4 +1,6 @@
+import { runInAction } from 'mobx'
 import { useRouter } from 'next/router'
+import type { Bar } from 'public/static/charting_library'
 import {
   ChartStyle,
   IChartingLibraryWidget,
@@ -9,15 +11,19 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { BridgeOutgoing, destroyBridge, initBridge, onWatermark, postToApp } from '@/bridge'
+import { symbolInfoArr } from '@/config/symbols'
 import { KEY_TRADINGVIEW_CHART_PROPS } from '@/constants'
-import { useConfig } from '@/context/configProvider'
-import { useStores } from '@/context/mobxProvider'
+import { useConfig } from '@/context/config-provider'
+import { useStores } from '@/context/mobx-provider'
+import { createMt5Datafeed } from '@/core/datafeed/mt5/mt5-datafeed'
+import { Mt5HistoryProvider } from '@/core/datafeed/mt5/mt5-history-provider'
+import { createStaticSymbolProvider } from '@/core/symbols/static-provider'
 import { ThemeConst } from '@/theme/theme'
 import { STORAGE_GET_CHART_PROPS, STORAGE_REMOVE_CHART_PROPS } from '@/utils/storage'
 
 import styles from './index.module.scss'
-import { applyOverrides, ColorType, setChartStyleProperties } from './widgetMethods'
-import getWidgetOpts from './widgetOpts'
+import { applyOverrides, ColorType, setChartStyleProperties } from './widget-methods'
+import getWidgetOpts from './widget-opts'
 
 // ── 辅助函数（纯逻辑，不依赖 React） ──
 
@@ -101,23 +107,40 @@ export const TVChart = () => {
   const bgGradientEndColor = query.bgGradientEndColor ? `#${query.bgGradientEndColor}` : ''
   const showBottomMACD = Number(query.showBottomMACD || 1)
   const chartType = (query.chartType !== '' ? Number(query.chartType || 1) : 1) as ChartStyle
+  const mode = (query.mode === 'simple' ? 'simple' : 'detail') as 'simple' | 'detail'
 
   const params = useMemo(
-    () => ({ symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor }),
-    [symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor]
+    () => ({ symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode }),
+    [symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode]
   )
 
   useEffect(() => {
     clearChartCache(theme, bgGradientStartColor)
 
-    const datafeedParams = {
-      setActiveSymbolInfo: ws.setActiveSymbolInfo,
-      removeActiveSymbol: ws.removeActiveSymbol,
-      getDataFeedBarCallback: ws.getDataFeedBarCallback
-    }
+    const symbolProvider = createStaticSymbolProvider(symbolInfoArr)
+    const historyProvider = new Mt5HistoryProvider()
+    const datafeed = createMt5Datafeed(
+      symbolProvider,
+      {
+        setActiveSymbolInfo: ws.setActiveSymbolInfo,
+        getHistoryBars: (p, onResult) => {
+          historyProvider.getBars(p, (bars: Bar[], meta: { noData?: boolean }) => {
+            runInAction(() => {
+              ws.loading = false
+            })
+            onResult(bars, meta)
+          })
+        },
+        removeActiveSymbol: ws.removeActiveSymbol,
+      },
+      { isZh: locale === 'zh_TW' }
+    )
+
+    const container = chartContainerRef.current
+    if (!container) return
 
     setChartReady(false)
-    const widgetOptions = getWidgetOpts(params, chartContainerRef.current, datafeedParams)
+    const widgetOptions = getWidgetOpts(params, container, datafeed)
     const tvWidget = new widget(widgetOptions)
 
     tvWidget.onChartReady(() => {
@@ -131,7 +154,9 @@ export const TVChart = () => {
         bgGradientEndColor
       })
 
-      createDefaultStudies(tvWidget, showBottomMACD === 1, !!isPc)
+      if (mode !== 'simple') {
+        createDefaultStudies(tvWidget, showBottomMACD === 1, !!isPc)
+      }
 
       initBridge(tvWidget)
       onWatermark((base64) => injectWatermark(chartContainerRef.current, base64))
@@ -146,7 +171,7 @@ export const TVChart = () => {
       destroyBridge()
       tvWidget.remove()
     }
-  }, [params, isPc, chartType, showBottomMACD])
+  }, [params, isPc, chartType, showBottomMACD, mode])
 
   return (
     <div className={styles.TVChartContainer} style={{ visibility: chartReady ? 'visible' : 'hidden' }}>

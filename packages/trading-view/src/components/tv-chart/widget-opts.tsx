@@ -10,24 +10,26 @@ import React, { useEffect, useState } from 'react'
 
 import { ThemeConst } from '@/theme/theme'
 
-import ma from './customIndicators/ma'
+import { buildIndicators } from './indicators/registry'
 
 const fullZero = (value: number | string) => String(value).padStart(2, '0')
 
 import { BASE_PATH } from '@/constants'
 
-import DataFeedBase from './datafeed'
-
 // https://www.tradingview.com/charting-library-docs/latest/api/interfaces/Charting_Library.ChartingLibraryWidgetOptions
+/** 图表模式：simple=纯 K 线（时间由上层通信控制），detail=完整详情 */
+export type ChartMode = 'simple' | 'detail'
+
 export default function getWidgetOpts(
   props: Partial<
     ChartingLibraryWidgetOptions & {
       colorType?: number
       isMobile?: boolean
+      mode?: ChartMode
     }
   >,
-  containerRef: any,
-  datafeedParams: any
+  containerRef: HTMLElement,
+  datafeed: import('public/static/charting_library').IBasicDataFeed
 ): ChartingLibraryWidgetOptions {
   const theme = props.theme
   const bgColor = theme === 'dark' ? ThemeConst.black : ThemeConst.white // 自定义背景颜色
@@ -98,6 +100,22 @@ export default function getWidgetOpts(
     )
   }
 
+  // simple 模式：纯 K 线，无头部/侧栏/图例，时间由上层通信控制
+  if (props.mode === 'simple') {
+    disabled_features.push(
+      'header_widget', // 隐藏头部
+      'left_toolbar', // 隐藏侧边绘图工具栏
+      // 'legend_widget', // 隐藏图例
+      'header_resolutions', // 隐藏时间周期选择（由上层控制）
+      'header_chart_type', // 隐藏图表类型
+      'header_indicators', // 隐藏指标入口
+      'header_screenshot',
+      'control_bar', // 底部控制栏
+      'main_series_scale_menu', // 隐藏主图右下角设置按钮
+      'border_around_the_chart' // 图表边框
+    )
+  }
+
   const widgetOptions: ChartingLibraryWidgetOptions = {
     debug: process.env.NODE_ENV === 'development', // 调试模式
     fullscreen: true, // 全屏
@@ -110,8 +128,7 @@ export default function getWidgetOpts(
     // timezone: 'Asia/Shanghai', // 设置时区
     timezone: 'Etc/UTC',
     library_path: `${BASE_PATH || '.'}/static/charting_library/`, // 核心库位置
-    // @ts-ignore
-    datafeed: new DataFeedBase(datafeedParams),
+    datafeed,
     // BEWARE: no trailing slash is expected in feed URL
     // datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
     // 	"https://demo_feed.tradingview.com",
@@ -126,7 +143,7 @@ export default function getWidgetOpts(
     client_id: 'tradingview.com"', // 设置高级保存/加载图表 API 的客户端 ID
     user_id: 'public_user_id', // 设置高级保存/加载图表 API 的用户 ID。
     locale: props.locale as LanguageCode, // 设置语言
-    interval: '1' as ResolutionString, // 分辨率，时间间隔，例如1W代表每个条形1周的 默认周期  1/5/15/30/60/240-> 1/5/15/30/60/240分钟  D->一天   W->一周   M->一月
+    interval: '15' as ResolutionString, // 分辨率，默认 15 分；1/5/15/30/60/240->分钟 D->天 W->周 M->月
     theme, // 设置主题颜色
     toolbar_bg, // 侧边工具栏和底部工具栏背景颜色
     container: containerRef, // dom的引用
@@ -287,10 +304,8 @@ export default function getWidgetOpts(
       // chartTypes: ['Area', 'Candles'], // 选择的图标旁边有星号
     },
     // 自定义指标 https://www.tradingview.com/charting-library-docs/latest/custom_studies/
-    // @ts-ignore
-    custom_indicators_getter: function (PineJS) {
-      return Promise.resolve([ma(PineJS)])
-    },
+    custom_indicators_getter: (PineJS: import('public/static/charting_library').PineJS) =>
+      Promise.resolve(buildIndicators(PineJS)),
     loading_screen: {
       backgroundColor: bgColor,
       foregroundColor: ThemeConst.primary

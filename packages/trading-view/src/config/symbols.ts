@@ -1,82 +1,19 @@
-// @ts-nocheck
+import type { LibrarySymbolInfo } from 'public/static/charting_library'
 
-// 获取ws行情数据信息
-export const quoteUtil = {
-  base64ToArrayBuffer(data: any) {
-    const binary_string = Base64.atob(data)
-    const len = binary_string.length
-    const bytes = new Uint8Array(len)
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary_string.charCodeAt(i)
-    }
-    return bytes.buffer
-  },
-  getSymbol(data: any) {
-    // 获取种类名称
-    const binary_string = Base64.atob(data)
-    return binary_string.slice(0, 12).replace(/\0/g, '')
-  },
-  getPrice(quoteBuffer: any, offset = 12) {
-    return new Float32Array(quoteBuffer, offset)
-  },
-  getTime(quoteBuffer: any, offset = 20) {
-    const t = new Int32Array(quoteBuffer, offset)
-    return +new Date('1970/01/01').setSeconds(t[0])
-  },
-  getQuote(symbol: any, data: any) {
-    // 返回行情数据
-    if (typeof data == 'undefined') {
-      data = symbol
-      symbol = this.getSymbol(data)
-    }
-    const quoteBuffer = this.base64ToArrayBuffer(data)
-    const priceArr = this.getPrice(quoteBuffer)
-    const time = this.getTime(quoteBuffer)
-    return {
-      symbol,
-      bid: this.strip(priceArr[0]),
-      ask: this.strip(priceArr[1]),
-      time,
-      diff: 0 // 初始值
-    }
-  },
-  getChart(data: any) {
-    const buffer = this.base64ToArrayBuffer(data)
-    const chart = this.getPrice(buffer, 0)
-    const time = this.getTime(buffer)
-    const res = {
-      t: time
-    }
-    const arr = ['o', 'c', 'h', 'l', 'w']
-    arr.forEach((item: any, i) => {
-      res[item] = this.strip(chart[i])
-    })
-    return res
-  },
-  stringToBin(data: any, len: number) {
-    data += ''
-    const bytes = new Array(len)
-    for (let i = 0; i < len; i++) {
-      bytes[i] = data.charCodeAt(i)
-    }
-    return String.fromCharCode.apply(null, bytes)
-  },
-  intToBin(data: any) {
-    const bytes = new Array(4)
-    for (let i = 3; i >= 0; i--) {
-      bytes[i] = (data >> (8 * i)) & 0xff
-    }
-    return String.fromCharCode.apply(null, bytes)
-  },
-  timeToBin(data: any) {
-    // 时间（秒数）转二进制
-    const at = new Date(data)
-    const date = Date.parse(at) / 1000
-    return this.intToBin(date)
-  }
+export type SymbolInfoItem = Partial<LibrarySymbolInfo> & {
+  name: string
+  description?: string
+  type?: string
+  session?: string
+  exchange?: string
+  timezone?: string
+  precision?: number
+  mtName?: string
+  defaultType?: number
 }
 
-export const symbolInfoArr = [
+/** 静态品种列表，后续可改为 API 拉取 */
+export const symbolInfoArr: SymbolInfoItem[] = [
   { name: 'USDHKD', description: '美元港币', type: 'forex', session: '24x7', exchange: '外汇', timezone: 'Europe/London', precision: 5 },
   { name: 'AUDJPY', description: '澳元日元', type: 'forex', session: '24x7', exchange: '外汇', timezone: 'Europe/London', precision: 3 },
   {
@@ -149,74 +86,54 @@ export const symbolInfoArr = [
   { name: 'PDD', type: 'stock', defaultType: 2, description: '拼多多', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'AMZN', type: 'stock', defaultType: 1, description: '亚马逊', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: '00700.hk', type: 'stock', defaultType: 2, description: '腾讯控股', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'BCHx10/usdt', type: 'usdt', description: 'BCHx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCHx20/usdt', type: 'usdt', description: 'BCHx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCHx50/usdt', type: 'usdt', description: 'BCHx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'BTCx10/usdt', type: 'usdt', description: 'BTCx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BTCx20/usdt', type: 'usdt', description: 'BTCx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BTCx50/usdt', type: 'usdt', description: 'BTCx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'LTCx10/usdt', type: 'usdt', description: 'LTCx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'LTCx20/usdt', type: 'usdt', description: 'LTCx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'LTCx50/usdt', type: 'usdt', description: 'LTCx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'DOTx10/usdt', type: 'usdt', description: 'DOTx10', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'DOTx20/usdt', type: 'usdt', description: 'DOTx20', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'DOTx50/usdt', type: 'usdt', description: 'DOTx50', session: '24x7', timezone: 'Europe/London', precision: 4 },
-
   { name: 'ETHx10/usdt', type: 'usdt', description: 'ETHx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETHx20/usdt', type: 'usdt', description: 'ETHx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETHx50/usdt', type: 'usdt', description: 'ETHx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'BTCusdt10x', type: 'usdt', description: 'BCHx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BTCusdt20x', type: 'usdt', description: 'BCHx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BTCusdt50x', type: 'usdt', description: 'BCHx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'BCHusdt10x', type: 'usdt', description: 'BTCx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCHusdt20x', type: 'usdt', description: 'BTCx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCHusdt50x', type: 'usdt', description: 'BTCx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'LTCusdt10x', type: 'usdt', description: 'LTCx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'LTCusdt20x', type: 'usdt', description: 'LTCx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'LTCusdt50x', type: 'usdt', description: 'LTCx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'DOTusdt10x', type: 'usdt', description: 'DOTx10', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'DOTusdt20x', type: 'usdt', description: 'DOTx20', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'DOTusdt50x', type: 'usdt', description: 'DOTx50', session: '24x7', timezone: 'Europe/London', precision: 4 },
-
   { name: 'ETHusdt10x', type: 'usdt', description: 'ETHx10', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETHusdt20x', type: 'usdt', description: 'ETHx20', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETHusdt50x', type: 'usdt', description: 'ETHx50', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'BTC50x', type: 'usdt', description: 'BTC50倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BTC100x', type: 'usdt', description: 'BTC100倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'ETH50x', type: 'usdt', description: 'ETH50倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETH100x', type: 'usdt', description: 'ETH100倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'LTC50x', type: 'usdt', description: 'LTC50倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'LTC100x', type: 'usdt', description: 'LTC100倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'DOT50x', type: 'usdt', description: 'DOT50倍', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'DOT100x', type: 'usdt', description: 'DOT100倍', session: '24x7', timezone: 'Europe/London', precision: 4 },
-
   { name: 'BCH50x', type: 'usdt', description: 'BCH50倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCH100x', type: 'usdt', description: 'BCH100倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
-
   { name: 'FIL50x', type: 'usdt', description: 'FIL50倍', session: '24x7', timezone: 'Europe/London', precision: 4 },
   { name: 'FIL100x', type: 'usdt', description: 'FIL100倍', session: '24x7', timezone: 'Europe/London', precision: 4 },
-
   { name: 'ADA50x', type: 'usdt', description: 'ADA50倍', session: '24x7', timezone: 'Europe/London', precision: 5 },
   { name: 'ADA100x', type: 'usdt', description: 'ADA100倍', session: '24x7', timezone: 'Europe/London', precision: 5 },
-
   { name: 'DOGE50x', type: 'usdt', description: 'DOGE50倍', session: '24x7', timezone: 'Europe/London', precision: 5 },
   { name: 'DOGE100x', type: 'usdt', description: 'DOGE100倍', session: '24x7', timezone: 'Europe/London', precision: 5 },
-
   { name: 'AXS100x', type: 'usdt', description: 'AXS100倍', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'SOL100x', type: 'usdt', description: 'SOL100倍', session: '24x7', timezone: 'Europe/London', precision: 4 },
-
   { name: 'BTCUSDT', mtName: 'BTCUSDT', type: 'usdt', description: 'BTCUSDT', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'ETHUSDT', mtName: 'ETHUSDT', type: 'usdt', description: 'ETHUSDT', session: '24x7', timezone: 'Europe/London', precision: 2 },
   { name: 'BCHUSDT', mtName: 'BCHUSDT', type: 'usdt', description: 'BCHUSDT', session: '24x7', timezone: 'Europe/London', precision: 2 },

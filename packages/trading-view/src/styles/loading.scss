@@ -60,12 +60,12 @@
 .ant-spin-dot-item {
   position: absolute;
   display: block;
-  width: 8px;
-  height: 8px;
+  width: 4px;
+  height: 4px;
   background-color: #eed94c;
   border-radius: 100%;
   opacity: 0.3;
-  transform: scale(0.75);
+  transform: scale(0.7);
   animation: antSpinMove 1s infinite linear alternate;
   transform-origin: 50% 50%;
 }

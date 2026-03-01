@@ -48,7 +48,7 @@ export function applyOverrides(props: {
     'mainSeriesProperties.style': props.chartType, // 默认K线：蜡烛图 1
     'mainSeriesProperties.showPriceLine': true, // 当前价格水平线
     'scalesProperties.showSeriesLastValue': true, // 右侧价格刻度显示当前价格
-    'scalesProperties.fontSize': isPC() ? 10 : 8 // 右侧价格刻度字体大小（全局缩小 2px）
+    'scalesProperties.fontSize': 10 // 右侧价格刻度字体大小
   }
 
   if (props.bgGradientStartColor) {

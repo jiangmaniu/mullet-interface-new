@@ -4,12 +4,12 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
 import Loading from '@/components/loading'
-import { TVChart } from '@/components/TVChart'
-import { BASE_PATH, isProd } from '@/constants'
-import { useConfig } from '@/context/configProvider'
-import { useStores } from '@/context/mobxProvider'
+import { TVChart } from '@/components/tv-chart'
+import { symbolInfoArr } from '@/config/symbols'
+import { BASE_PATH } from '@/constants'
+import { useConfig } from '@/context/config-provider'
+import { useStores } from '@/context/mobx-provider'
 import { ThemeConst } from '@/theme/theme'
-import { symbolInfoArr } from '@/utils/wsUtil'
 
 export default observer(() => {
   const [error, showError] = useState(false)
@@ -41,7 +41,7 @@ export default observer(() => {
 
   return (
     <>
-      {!isProd && (
+      {query.debug === '1' && (
         <Script
           src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"
           strategy="afterInteractive"

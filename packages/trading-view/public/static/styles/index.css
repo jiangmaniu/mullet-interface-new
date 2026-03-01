@@ -102,9 +102,14 @@ html.theme-dark [class*=" backdrop-"] {
 [id*="header-toolbar"] div:not([class*="arrow"]) svg,
 [class^="button-"] svg,
 [class^="menuBox-"] svg,
-[class^="dialog-"] svg {
+[class^="dialog-"] svg,
+[class^="drawer-"] svg {
   width: 20px !important;
   height: 20px !important;
+}
+
+[class^="drawer-"] [class*="item"] {
+  align-items: center !important;
 }
 
 [class^="dialog-"] button[data-name*="close"] svg {
