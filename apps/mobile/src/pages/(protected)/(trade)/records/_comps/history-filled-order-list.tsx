@@ -37,7 +37,7 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
   const OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
     {
       label: <Trans>盈亏</Trans>,
-      content: <Text className={cn(BNumber.from(order.profit)?.gt(0) ? 'text-market-rise' : BNumber.from(order.profit)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(order.profit, { forceSign: true, positive: false, volScale: currentAccountInfo.currencyDecimal })}</Text>
+      content: <Text className={cn('text-paragraph-p3', BNumber.from(order.profit)?.gt(0) ? 'text-market-rise' : BNumber.from(order.profit)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(order.profit, { forceSign: true, positive: false, volScale: currentAccountInfo.currencyDecimal })}</Text>
     },
     {
       label: <Trans>开仓价格/成交价格</Trans>,
@@ -107,17 +107,6 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
 
         {/* Order Details */}
         <View className="gap-medium">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>盈亏</Trans>
-            </Text>
-            <Text
-              className={`text-paragraph-p3 ${(order.profit ?? 0) >= 0 ? 'text-market-rise' : 'text-market-fall'}`}
-            >
-              {renderFallback(order.profit)}
-            </Text>
-          </View>
-
           {OPTIONS.map((item, key) => {
             return <View key={key} className="flex-row items-center justify-between">
               <Text className="text-paragraph-p3 text-content-4">

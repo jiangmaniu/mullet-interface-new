@@ -35,10 +35,9 @@ function FundFlowCard({ item }: { item: Account.MoneyRecordsPageListItem }) {
     },
     {
       label: <Trans>金额</Trans>,
-      content: <Text className={cn(BNumber.from(item.money)?.gt(0) ? 'text-market-rise' : BNumber.from(item.money)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>
+      content: <Text className={cn('text-paragraph-p3', BNumber.from(item.money)?.gt(0) ? 'text-market-rise' : BNumber.from(item.money)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>
         {BNumber.toFormatNumber(item.money, {
           positive: false,
-          forceSign: true,
           unit: currentAccountInfo.currencyUnit, volScale: currentAccountInfo.currencyDecimal
         })}
       </Text>
@@ -53,15 +52,15 @@ function FundFlowCard({ item }: { item: Account.MoneyRecordsPageListItem }) {
     },
     {
       label: <Trans>变动前</Trans>,
-      content: <Text className={cn(BNumber.from(item.oldBalance)?.gt(0) ? 'text-market-rise' : BNumber.from(item.oldBalance)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>
+      content: <>
         {BNumber.toFormatNumber(item.oldBalance, {
           unit: currentAccountInfo.currencyUnit, volScale: currentAccountInfo.currencyDecimal
         })}
-      </Text>
+      </>
     },
     {
       label: <Trans>交易签名</Trans>,
-      content: <>        {renderFallback(formatAddress(item.signature), { verify: !!item.signature })}</>
+      content: <>{renderFallback(formatAddress(item.signature), { verify: !!item.signature })}</>
     },
   ]
   return (

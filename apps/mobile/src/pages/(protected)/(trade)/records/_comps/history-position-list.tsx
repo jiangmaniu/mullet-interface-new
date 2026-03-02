@@ -37,7 +37,7 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
   const OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
     {
       label: <Trans>盈亏</Trans>,
-      content: <Text className={cn(BNumber.from(order.profit)?.gt(0) ? 'text-market-rise' : BNumber.from(order.profit)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(order.profit, { forceSign: true, positive: false, volScale: currentAccountInfo.currencyDecimal, unit: currentAccountInfo.currencyUnit })}</Text>
+      content: <Text className={cn('text-paragraph-p3', BNumber.from(order.profit)?.gt(0) ? 'text-market-rise' : BNumber.from(order.profit)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(order.profit, { forceSign: true, positive: false, volScale: currentAccountInfo.currencyDecimal, unit: currentAccountInfo.currencyUnit })}</Text>
     },
     {
       label: <Trans>开仓手数/价格</Trans>,
