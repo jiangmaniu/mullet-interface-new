@@ -41,9 +41,15 @@ export function useWeb3LoginFlow({ autoAuth = false }: UseWeb3LoginFlowOptions =
   // iOS: 检测 AppKit 关闭但未成功连接的情况
   useEffect(() => {
     if (Platform.OS === 'ios' && prevAppKitOpenRef.current && !isAppKitOpen && pendingDrawerOpenRef.current) {
-      // AppKit 模态框关闭但未触发 CONNECT_SUCCESS
-      pendingDrawerOpenRef.current = false
-      setConnectionError('钱包连接已取消')
+      // 延迟判断：给 CONNECT_SUCCESS 事件一个时间窗口
+      // 从钱包 App 返回时，AppKit modal 关闭可能早于 CONNECT_SUCCESS 事件触发
+      setTimeout(() => {
+        if (pendingDrawerOpenRef.current) {
+          // 超时后仍未收到 CONNECT_SUCCESS，视为用户取消
+          pendingDrawerOpenRef.current = false
+          setConnectionError('钱包连接已取消')
+        }
+      }, 1000)
     }
     prevAppKitOpenRef.current = isAppKitOpen
   }, [isAppKitOpen])
