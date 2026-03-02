@@ -226,9 +226,29 @@ async function main() {
   console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
   const outputDir = organizeArtifacts(platform, env, version)
 
+  // 构建成功汇总
   console.log('')
-  console.log(chalk.green(' ✅ 构建完成！'))
-  console.log(chalk.green(` 📦 产物目录: ${path.relative(PROJECT_DIR, outputDir)}/`))
+  console.log(chalk.green('━'.repeat(50)))
+  console.log(chalk.green.bold(' ✅ 构建完成！'))
+  console.log(chalk.green('━'.repeat(50)))
+  console.log('')
+  console.log(chalk.white(` 应用版本:  v${version} (${versionCode})`))
+  console.log(chalk.white(` 构建平台:  ${platform === 'ios' ? '🍎 iOS' : '🤖 Android'}`))
+  console.log(chalk.white(` 构建环境:  ${env}`))
+  console.log(chalk.white(` 产物目录:  ${path.relative(PROJECT_DIR, outputDir)}/`))
+
+  if (platform === 'ios' && iosDist === 'testflight') {
+    console.log('')
+    console.log(chalk.cyan.bold(' 🚀 TestFlight 上传已提交'))
+    console.log(chalk.gray('    构建正在 App Store Connect 中处理，通常需要 15-30 分钟'))
+    console.log(chalk.gray('    处理完成后测试人员会自动收到通知'))
+    console.log(chalk.gray(`    查看状态: ${chalk.underline('https://appstoreconnect.apple.com')}`))
+  } else if (platform === 'ios' && iosDist === 'adhoc') {
+    console.log('')
+    console.log(chalk.cyan.bold(' 📦 AdHoc IPA 已生成'))
+    console.log(chalk.gray('    可通过蒲公英、fir.im 等平台分发给测试人员'))
+  }
+
   console.log('')
 }
 
