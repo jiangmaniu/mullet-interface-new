@@ -1,6 +1,6 @@
 import { ScrollView, View, Pressable } from 'react-native'
 import { Trans, useLingui } from '@lingui/react/macro'
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useLayoutEffect } from 'react'
 import { router, useRouter } from 'expo-router'
 import { BNumber } from '@mullet/utils/number'
 
@@ -16,13 +16,12 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useResolveClassNames } from 'uniwind'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { getImgSource } from '@/utils/img'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { observer } from 'mobx-react-lite'
 import { EmptyState } from '@/components/states/empty-state'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { symbol } from 'zod'
 
 // ============ HomeHeader ============
 function HomeHeader() {
@@ -290,6 +289,11 @@ export default function Index() {
     </CollapsibleStickyHeader>
   ), [])
 
+  useLayoutEffect(() => {
+    // 重新刷新品种列表
+    stores.trade.getSymbolList()
+  }, [])
+
   return (
     <View className="flex-1 bg-secondary">
       <CollapsibleTab
@@ -298,7 +302,7 @@ export default function Index() {
         initialTabName={initialTab?.value}
         renderHeader={renderHeader}
         renderTabBarRight={() => (
-          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
+          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-none">
             <TabsList variant="icon" size="sm">
               <TabsTrigger value={ViewMode.Market} className="size-5">
                 <IconDepthTB width={12} height={12} color={viewMode === ViewMode.Market ? colorMarketFall : colorBrandSecondary1} />

@@ -156,7 +156,6 @@ declare namespace API {
     | 'TAKE_PROFIT'
     /** 强制平仓 */
     | 'STOP_OUT'
-  // 订单状态
   type OrderStatus =
     /** 已取消 */
     | 'CANCEL'

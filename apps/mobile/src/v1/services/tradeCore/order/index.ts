@@ -4,6 +4,8 @@ import { parseJsonFields } from '@/v1/utils'
 import { formatSymbolConf } from '@/v1/utils/business'
 import { request } from '@/v1/utils/request'
 
+import { Order } from './typings'
+
 export const formaOrderList = (list = []) => {
   if (!list?.length) return []
   return list.map((item: any) => {
@@ -28,7 +30,7 @@ export async function createOrder(body: Order.CreateOrder) {
   return request<API.Response<Order.CreateOrderResponse>>(`/api/trade-core/coreApi/orders/createOrder`, {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }
 
@@ -40,7 +42,7 @@ export async function getOrderMargin(body: Order.CreateOrder) {
   return request<API.Response>('/api/trade-core/coreApi/orders/newOrderMargin', {
     method: 'POST',
     data: body,
-    skipErrorHandler: true
+    skipErrorHandler: true,
   })
 }
 
@@ -49,7 +51,7 @@ export async function modifyPendingOrder(body: Order.UpdatePendingOrderParams) {
   return request<API.Response>('/api/trade-core/coreApi/orders/orderEdit', {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }
 
@@ -58,7 +60,7 @@ export async function cancelOrder(body: API.IdParam) {
   return request<API.Response>(`/api/trade-core/coreApi/orders/orderCancel?${qs.stringify(body)}`, {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }
 
@@ -67,7 +69,7 @@ export async function modifyStopProfitLoss(body: Order.ModifyStopProfitLossParam
   return request<API.Response>(`/api/trade-core/coreApi/orders/stopProfitLoss`, {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }
 
@@ -75,7 +77,7 @@ export async function modifyStopProfitLoss(body: Order.ModifyStopProfitLossParam
 export async function updateOrder(body: Order.UpdateOrder) {
   return request<API.Response>('/api/trade-core/coreApi/orders/updateOrder', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -84,15 +86,15 @@ export async function getOrderPage(params?: Order.OrderPageListParams) {
   return request<API.Response<API.PageResult<Order.OrderPageListItem>>>('/api/trade-core/coreApi/orders/orderPage', {
     method: 'GET',
     skipErrorHandler: true,
-    params
-  }).then((res) => formatOrderResult(res))
+    params,
+  }).then((res) => formatOrderResult(res) as API.Response<API.PageResult<Order.OrderPageListItem>>)
 }
 
 // 订单-详情
 export async function getOrderDetail(params?: API.IdParam /** 订单id */) {
   return request<API.Response<Order.OrderDetailListItem>>('/api/trade-core/coreApi/orders/orderDetail', {
     method: 'GET',
-    params
+    params,
   })
 }
 
@@ -100,26 +102,32 @@ export async function getOrderDetail(params?: API.IdParam /** 订单id */) {
 export async function getOrderAllDetail(params?: API.IdParam /** 持仓单id */) {
   return request<API.Response<Order.OrderDetailListItem>>('/api/trade-core/coreApi/orders/allDetail', {
     method: 'GET',
-    params
+    params,
   })
 }
 
 // 持仓订单-分页
 export async function getBgaOrderPage(params: Order.BgaOrderPageListParams) {
-  return request<API.Response<API.PageResult<Order.BgaOrderPageListItem>>>('/api/trade-core/coreApi/orders/bgaOrderPage', {
-    method: 'GET',
-    skipErrorHandler: true,
-    params
-  }).then((res) => formatOrderResult(res))
+  return request<API.Response<API.PageResult<Order.BgaOrderPageListItem>>>(
+    '/api/trade-core/coreApi/orders/bgaOrderPage',
+    {
+      method: 'GET',
+      skipErrorHandler: true,
+      params,
+    },
+  ).then((res) => formatOrderResult(res))
 }
 
 // 成交记录-分页
 export async function getTradeRecordsPage(params?: Order.TradeRecordsPageListParams) {
-  return request<API.Response<API.PageResult<Order.TradeRecordsPageListItem>>>('/api/trade-core/coreApi/orders/tradeRecordsPage', {
-    method: 'GET',
-    skipErrorHandler: true,
-    params
-  }).then((res) => formatOrderResult(res))
+  return request<API.Response<API.PageResult<Order.TradeRecordsPageListItem>>>(
+    '/api/trade-core/coreApi/orders/tradeRecordsPage',
+    {
+      method: 'GET',
+      skipErrorHandler: true,
+      params,
+    },
+  ).then((res) => formatOrderResult(res) as API.Response<API.PageResult<Order.TradeRecordsPageListItem>>)
 }
 
 // 追加保证金
@@ -127,7 +135,7 @@ export async function addMargin(body: Order.AddMarginParams) {
   return request<API.Response>('/api/trade-core/coreApi/orders/addMargin', {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }
 
@@ -136,6 +144,6 @@ export async function extractMargin(body: Order.ExtractMarginParams) {
   return request<API.Response>('/api/trade-core/coreApi/orders/extractMargin', {
     method: 'POST',
     data: body,
-    replayProtection: true
+    replayProtection: true,
   })
 }

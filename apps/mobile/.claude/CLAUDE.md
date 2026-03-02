@@ -55,3 +55,4 @@
 
 ./figma.md
 ./layout.md
+./enum-option.md

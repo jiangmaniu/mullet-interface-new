@@ -1,7 +1,9 @@
 import { useMemo } from 'react'
 
+import { OrderTypeEnum } from '@/options/trade/order'
 import { ORDER_TYPE } from '@/v1/constants'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { Order } from '@/v1/services/tradeCore/order/typings'
 
 import useQuote from './useQoute'
 import useSpSl from './useSpSl'
@@ -50,7 +52,7 @@ export default function useOrderParams() {
       }[orderType]
 
       // 订单类型
-      orderParams.type = type as API.OrderType
+      orderParams.type = type as OrderTypeEnum
     }
 
     return orderParams

@@ -189,7 +189,7 @@ function handleErrorResponse(status: number, data: any, skipErrorHandler?: boole
   statusText = errorMessage || statusText
 
   if (status !== 401) {
-    statusText && !skipErrorHandler && toast.error(statusText, 2)
+    statusText && !skipErrorHandler && toast.error(statusText)
   }
 
   return new Error(statusText || 'Unknown Error')

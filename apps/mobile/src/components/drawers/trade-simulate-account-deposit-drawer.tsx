@@ -32,7 +32,6 @@ export const TradeSimulateAccountDepositDrawer = observer(({ account, dailyDepos
   const handleConfirm = async () => {
     setIsConfirming(true);
     try {
-
       const result = await rechargeSimulate({
         accountId: account.id,
         money: singleTimeDepositAmount,

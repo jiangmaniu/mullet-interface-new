@@ -3,12 +3,8 @@ import { action, configure, get, makeObservable, observable, runInAction } from 
 import { stores } from '@/v1/provider/mobxProvider'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import { onLogout, replace } from '@/v1/utils/navigation'
-import {
-  setLocalUserInfo,
-  STORAGE_GET_CONF_INFO,
-  STORAGE_GET_USER_INFO,
-  STORAGE_SET_USER_INFO,
-} from '@/v1/utils/storage'
+import { STORAGE_GET_CONF_INFO } from '@/v1/utils/storage'
+import { useLoginAuthStore } from '@/stores/login-auth'
 
 // 禁用 MobX 严格模式
 configure({ enforceActions: 'never' })
@@ -23,11 +19,6 @@ class UserStore {
   @observable currentUser = {} as User.UserInfo // 当前登录用户信息
   @observable lastUpdateTime = 0 // 最后一次更新时间(时间戳)
 
-  // @action
-  // async initUserInfo() {
-  //   this.currentUser = (await STORAGE_GET_USER_INFO()) || ({} as User.UserInfo)
-  // }
-
   get realAccountList() {
     return this.currentUser.accountList?.filter((item) => !item.isSimulate) ?? []
   }
@@ -40,21 +31,18 @@ class UserStore {
   @action
   fetchUserInfo = async (isRefreshAccount?: boolean) => {
     try {
-      const id = await STORAGE_GET_USER_INFO('user_id')
+      const localUserInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
+
+      const id = localUserInfo?.user_id
       // 查询客户信息
       const clientInfo = await getClientDetail({
         id,
       })
 
-      const localUserInfo = (await STORAGE_GET_USER_INFO()) || {}
-
       const currentUser = {
         ...localUserInfo,
         ...clientInfo, // 用户详细信息
       } as User.UserInfo
-
-      // 更新本地的用户信息
-      await STORAGE_SET_USER_INFO(currentUser)
 
       runInAction(() => {
         this.currentUser = currentUser
@@ -78,9 +66,6 @@ class UserStore {
   // 登录成功回调
   @action
   handleLoginSuccess = async (result: User.UserInfo) => {
-    // 缓存用户信息
-    setLocalUserInfo(result)
-
     // 重新获取用户信息
     this.fetchUserInfo(true).then((res) => {
       const accountList = res?.accountList?.filter((item) => !item.isSimulate)

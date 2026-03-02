@@ -1,3 +1,5 @@
+import type { OrderCompletionTypeEnum, OrderMarginTypeEnum, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
+
 declare namespace Order {
   // 下单
   type CreateOrder = {
@@ -20,7 +22,7 @@ declare namespace Order {
     /**
      * 保证金类型
      */
-    marginType?: API.MarginType
+    marginType?: OrderMarginTypeEnum
     /**
      * 订单数量
      */
@@ -44,7 +46,7 @@ declare namespace Order {
     /**
      * 订单类型
      */
-    type: API.OrderType
+    type: OrderTypeEnum
   }
   // 下单成功响应内容
   type CreateOrderResponse = {
@@ -59,12 +61,12 @@ declare namespace Order {
     /** 手续费 */
     handlingFees: string
     id: string
-    inOut: API.OrderInOut
+    inOut: OrderCompletionTypeEnum
     /** 杠杆倍数 */
     leverageMultiple: number
     /** 限价停损单单价格 */
     limitPrice: number
-    marginType: API.MarginType
+    marginType: OrderMarginTypeEnum
     mode: API.OrderMode
     operatorId: string
     /** 保证金 */
@@ -79,7 +81,7 @@ declare namespace Order {
     tradeAccountId: string
     tradePrice: string
     tradingVolume: string
-    type: API.OrderType
+    type: OrderTypeEnum
     updateTime: string
   }
   // 订单修改
@@ -155,7 +157,7 @@ declare namespace Order {
     /**
      * 保证金类型
      */
-    marginType?: API.MarginType
+    marginType?: OrderMarginTypeEnum
     /**
      * 订单模式
      */
@@ -167,7 +169,7 @@ declare namespace Order {
     /**
      * 状态
      */
-    status?: API.OrderStatus | string
+    status?: OrderStatusEnum | string
     /**
      * 交易品种
      */
@@ -175,7 +177,7 @@ declare namespace Order {
     /**
      * 订单类型
      */
-    type?: API.OrderType | string
+    type?: OrderTypeEnum | string
     /**
      * 开始时间
      */
@@ -219,7 +221,7 @@ declare namespace Order {
     /**
      * 成交方向
      */
-    inOut?: API.OrderInOut
+    inOut?: OrderCompletionTypeEnum
     /**
      * 杠杆倍数
      */
@@ -227,7 +229,7 @@ declare namespace Order {
     /**
      * 保证金类型
      */
-    marginType?: API.MarginType
+    marginType?: OrderMarginTypeEnum
     /**
      * 订单模式
      */
@@ -251,7 +253,7 @@ declare namespace Order {
     /**
      * 状态
      */
-    status?: API.OrderStatus
+    status?: OrderStatusEnum
     /**
      * 止损
      */
@@ -287,7 +289,7 @@ declare namespace Order {
     /**
      * 订单类型
      */
-    type?: API.OrderType
+    type?: OrderTypeEnum
     /**
      * 更新时间
      */
@@ -350,14 +352,12 @@ declare namespace Order {
     /**
      * 订单集合
      */
-    ordersInfo?: Array<
-      OrderPageListItem & {
-        /**
-         * 成交记录集合
-         */
-        tradeRecordsInfo?: TradeRecordsPageListItem[]
-      }
-    >
+    ordersInfo?: (OrderPageListItem & {
+      /**
+       * 成交记录集合
+       */
+      tradeRecordsInfo?: TradeRecordsPageListItem[]
+    })[]
   }
 
   // 持仓单分页-参数
@@ -379,7 +379,7 @@ declare namespace Order {
     /**
      * 保证金类型
      */
-    marginType?: API.MarginType
+    marginType?: OrderMarginTypeEnum
     /**
      * 订单模式
      */
@@ -454,7 +454,7 @@ declare namespace Order {
     /**
      * 保证金类型
      */
-    marginType?: API.MarginType
+    marginType?: OrderMarginTypeEnum
     /**
      * 订单模式
      */
@@ -540,7 +540,7 @@ declare namespace Order {
     /** 强制平仓比例 */
     compelCloseRatio: number
     /** 订单类型 */
-    type?: API.OrderType
+    type?: OrderTypeEnum
     /** 限价价格 */
     limitPrice?: number
     /** 账户组ID */
@@ -561,7 +561,7 @@ declare namespace Order {
     /**
      * 成交方向
      */
-    inOut?: API.OrderInOut
+    inOut?: OrderCompletionTypeEnum
     /**
      * 每页的数量
      */
@@ -583,6 +583,10 @@ declare namespace Order {
   }
   // 成交记录-分页-列表
   type TradeRecordsPageListItem = {
+    /**
+     * 交易签名
+     */
+    signature?: string
     /**
      * 交易账户ID
      */
@@ -626,7 +630,7 @@ declare namespace Order {
     /**
      * 成交方向
      */
-    inOut?: API.OrderInOut
+    inOut?: OrderCompletionTypeEnum
     /**
      * 库存费
      */
@@ -679,6 +683,8 @@ declare namespace Order {
      * 用户名称
      */
     userName?: string
+
+    marginType?: OrderMarginTypeEnum
     /**
      * 配置
      */

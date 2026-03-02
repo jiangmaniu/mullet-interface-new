@@ -6,7 +6,8 @@ import { configureReanimatedLogger, ReanimatedLogLevel } from 'react-native-rean
 import { Providers } from '@/components/providers'
 
 // Suppress Expo Router warnings for files in _ prefixed directories (_comps, _hooks, etc.)
-LogBox.ignoreLogs([/missing the required default export/])
+// Suppress require cycle warnings (e.g. b-number <-> format, values are used inside methods only)
+LogBox.ignoreLogs([/missing the required default export/, /Require cycle:/])
 
 // Disable strict mode warnings from Reanimated
 // These warnings are triggered by third-party libraries (react-native-collapsible-tab-view)

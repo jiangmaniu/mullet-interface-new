@@ -44,6 +44,8 @@ import { getSymbolIsHoliday } from '@/v1/services/tradeCore/holiday'
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { getSymbolTicker } from '@/v1/services/market/symbol'
 import { useLoginAuthStore } from '@/stores/login-auth'
+import { OrderMarginTypeEnum } from '@/options/trade/order'
+import { Order } from '../services/tradeCore/order/typings'
 
 export type UserConfInfo = Record<
   string,
@@ -111,7 +113,7 @@ class TradeStore {
   @observable showBalanceEmptyModal = false // 余额为空弹窗
 
   //  ========= 交易区操作 =========
-  @observable marginType: API.MarginType = 'CROSS_MARGIN' // 交易区保证金类型
+  @observable marginType: OrderMarginTypeEnum = OrderMarginTypeEnum.CROSS_MARGIN // 交易区保证金类型
   @observable buySell: API.TradeBuySell = 'BUY' // 交易区买卖类型
   @observable isBuy = true // 交易区买卖类型
   @observable orderType: ITradeTabsOrderType = 'MARKET_ORDER' // 交易区订单类型
@@ -230,7 +232,7 @@ class TradeStore {
   // =========== 设置交易区操作 ==========
 
   // 设置弹窗选择的保证金类型
-  setMarginType = (marginType: API.MarginType) => {
+  setMarginType = (marginType: OrderMarginTypeEnum) => {
     this.marginType = marginType
   }
 

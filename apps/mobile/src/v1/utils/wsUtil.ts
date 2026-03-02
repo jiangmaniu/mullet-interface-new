@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { toJS } from 'mobx'
+import type { OrderTypeEnum } from '@/options/trade/order'
 import type { IQuoteItem, SymbolWSItem } from '@/v1/stores/ws'
 
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
@@ -8,6 +9,7 @@ import { TRADE_BUY_SELL } from '@/v1/constants/enum'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
 
 import { toFixed } from '.'
+import { Order } from '../services/tradeCore/order/typings'
 import { multiply, subtract } from './float'
 
 /**
@@ -460,7 +462,7 @@ export const calcForceClosePrice = (item: Partial<Order.BgaOrderPageListItem>) =
 }
 
 // 获取配置的手续费
-export const getHandlingFees = (conf: Symbol.SymbolConf, orderType: API.OrderType | string, orderVolume: number) => {
+export const getHandlingFees = (conf: Symbol.SymbolConf, orderType: OrderTypeEnum | string, orderVolume: number) => {
   const feeConfList =
     conf?.transactionFeeConf?.type === 'trade_vol'
       ? conf?.transactionFeeConf?.trade_vol
@@ -488,7 +490,7 @@ type IExpectedForceClosePrice = {
   /** 买卖方向 */
   buySell: API.TradeBuySell
   /** 订单类型 */
-  orderType: API.OrderType | string
+  orderType: OrderTypeEnum | string
 }
 /**
  * 计算下单时的预估强平价
@@ -556,7 +558,7 @@ type IExpectedMargin = {
   /** 买卖方向 */
   buySell: API.TradeBuySell
   /** 订单类型 */
-  orderType: API.OrderType | string
+  orderType: OrderTypeEnum | string
   /** 限价单 用户输入的价格 */
   price?: any
 }

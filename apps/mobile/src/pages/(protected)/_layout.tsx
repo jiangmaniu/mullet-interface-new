@@ -4,7 +4,6 @@ import { Stack } from "expo-router";
 
 export default function ProtectedLayout() {
   return (
-
     <LoginGuard>
       <Initializer>
         <Stack screenOptions={{ headerShown: false }}>
