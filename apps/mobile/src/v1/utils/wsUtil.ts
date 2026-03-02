@@ -2,11 +2,14 @@ import { useCallback } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { toJS } from 'mobx'
 import type { OrderTypeEnum } from '@/options/trade/order'
+import type { TradePositionDirectionEnum } from '@/options/trade/position'
+import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 import type { IQuoteItem, SymbolWSItem } from '@/v1/stores/ws'
 
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { TRADE_BUY_SELL } from '@/v1/constants/enum'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
+import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { toFixed } from '.'
 import { Order } from '../services/tradeCore/order/typings'
@@ -50,7 +53,7 @@ type IExchangeRateParams = {
   /** 盈利货币单位 */
   unit: any
   /** 买卖方向 */
-  buySell: API.TradeBuySell | undefined
+  buySell: TradePositionDirectionEnum | undefined
 }
 // 计算汇率的 useCallback 版本
 export const useCalcExchangeRateCallback = () => {
@@ -389,6 +392,12 @@ export const calcYieldRate = (profit: number | undefined, orderMargin: number | 
   return profit && orderMargin ? (value > 0 ? '+' + value : value) + '%' : ''
 }
 
+export const newCalcYieldRate = (profit?: BNumberValue, orderMargin?: BNumberValue) => {
+  console.log('newCalcYieldRate', profit, orderMargin)
+  const yieldRate = BNumber.from(profit)?.div(orderMargin)
+  return yieldRate?.toString()
+}
+
 /**
  * 计算订单的预估强平价
  * @param item 持仓单Item
@@ -488,7 +497,7 @@ type IExpectedForceClosePrice = {
   /** 订单保证金 */
   orderMargin: number
   /** 买卖方向 */
-  buySell: API.TradeBuySell
+  buySell: TradePositionDirectionEnum
   /** 订单类型 */
   orderType: OrderTypeEnum | string
 }
@@ -556,7 +565,7 @@ type IExpectedMargin = {
   /** 手数 */
   orderVolume: number | string
   /** 买卖方向 */
-  buySell: API.TradeBuySell
+  buySell: TradePositionDirectionEnum
   /** 订单类型 */
   orderType: OrderTypeEnum | string
   /** 限价单 用户输入的价格 */
@@ -677,7 +686,7 @@ export const useGetMaxOpenVolumeCallback = () => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const calcExchangeRate = useCalcExchangeRateCallback()
   return useCallback(
-    ({ buySell }: { buySell: API.TradeBuySell }) => {
+    ({ buySell }: { buySell: TradePositionDirectionEnum }) => {
       const { availableMargin } = getAccountBalance()
       const quote = getCurrentQuote()
       const prepaymentConf = quote?.prepaymentConf
@@ -734,7 +743,7 @@ export const useGetMaxOpenVolumeCallback = () => {
  * @param param0
  * @returns
  */
-// export const getMaxOpenVolume = ({ buySell }: { buySell: API.TradeBuySell }) => {
+// export const getMaxOpenVolume = ({ buySell }: { buySell: TradePositionDirectionEnum }) => {
 //   const { trade } = stores
 //   const getAccountBalance = useGetAccountBalanceCallback()
 //   const { availableMargin } = getAccountBalance()

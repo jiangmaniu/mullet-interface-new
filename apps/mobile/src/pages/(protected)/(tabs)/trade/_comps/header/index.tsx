@@ -20,6 +20,7 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 import { useGetCurrentQuoteCallback, subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { Account } from "@/v1/services/tradeCore/account/typings"
 
 interface TradeHeaderProps {
   symbol: string

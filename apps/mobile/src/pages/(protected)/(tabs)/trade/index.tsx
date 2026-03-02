@@ -194,16 +194,13 @@ const Trade = observer(() => {
         )}
       >
         <CollapsibleTabScene name="positions" label={`持仓(${MOCK_POSITIONS?.length ?? 0})`}>
-          <CollapsibleScrollView>
-
-            <View>123</View>
-          </CollapsibleScrollView>
+          <TradePositions />
         </CollapsibleTabScene>
 
         <CollapsibleTabScene name="orders" label={`挂单(${MOCK_PENDING_ORDERS?.length ?? 0})`}>
           <CollapsibleScrollView>
 
-            <View>123</View>
+            <View><Text>123</Text></View>
           </CollapsibleScrollView>
         </CollapsibleTabScene>
       </CollapsibleTab>

@@ -1,4 +1,5 @@
 import type { OrderCompletionTypeEnum, OrderMarginTypeEnum, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
+import type { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
 
 declare namespace Order {
   // 下单
@@ -10,7 +11,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 杠杆倍数
      */
@@ -51,7 +52,7 @@ declare namespace Order {
   // 下单成功响应内容
   type CreateOrderResponse = {
     bagOrderIds: string
-    buySell: API.TradeBuySell
+    buySell: TradePositionDirectionEnum
     conf: Symbol.SymbolConf
     createReason: API.OrderCreateReason
     createTime: string
@@ -145,7 +146,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 客户ID
      */
@@ -197,7 +198,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 配置
      */
@@ -367,7 +368,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 客户ID
      */
@@ -391,7 +392,7 @@ declare namespace Order {
     /**
      * 状态
      */
-    status: API.BGAStatus
+    status: TradePositionStatusEnum
     /**
      * 交易品种
      */
@@ -410,7 +411,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 平仓价格
      */
@@ -490,7 +491,7 @@ declare namespace Order {
     /**
      * 状态
      */
-    status?: API.BGAStatus
+    status?: TradePositionStatusEnum
     /**
      * 止损
      */
@@ -602,7 +603,7 @@ declare namespace Order {
     /**
      * 订单方向
      */
-    buySell?: API.TradeBuySell
+    buySell?: TradePositionDirectionEnum
     /**
      * 创建时间
      */

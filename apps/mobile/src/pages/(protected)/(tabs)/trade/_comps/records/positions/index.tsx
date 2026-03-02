@@ -1,64 +1,36 @@
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Pressable, View } from 'react-native'
 
-import { useState, useCallback, useEffect } from 'react'
-import { View, Pressable } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Text } from '@/components/ui/text'
-import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
-  IconifyActivity,
-  IconifyCandlestickChart,
-  IconifyMoreHoriz,
-  IconifyNavArrowDownSolid,
-  IconifyNavArrowDown,
-  IconifyUserCircle,
-  IconifyPlusCircle,
-  IconifyPage,
-  IconNavArrowSuperior,
-  IconNavArrowDown,
+  CollapsibleFlatList,
+} from '@/components/ui/collapsible-tab'
+import {
   IconifyNavArrowRight,
 } from '@/components/ui/icons'
-import { EmptyState } from '@/components/states/empty-state'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ScreenHeader } from '@/components/ui/screen-header'
+import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Trans } from '@lingui/react/macro'
-import { IconButton, Button } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import {
-  CollapsibleTab,
-  CollapsibleTabScene,
-  CollapsibleStickyHeader,
-  CollapsibleStickyNavBar,
-  CollapsibleStickyContent,
-  CollapsibleScrollView,
-} from '@/components/ui/collapsible-tab'
-import { Input } from '@/components/ui/input'
-import { t } from '@/locales/i18n'
-import { Switch } from '@/components/ui/switch'
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
-import * as AccordionPrimitive from '@rn-primitives/accordion'
-import {
-  AccountSwitchDrawer,
-  type Account,
-} from '@/components/drawers/account-switch-drawer'
-import { toast } from '@/components/ui/toast'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { KeyboardAwareContainer } from '@/components/ui/keyboard-aware-container'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { observer } from 'mobx-react-lite'
+import { Order } from '@/v1/services/tradeCore/order/typings'
+import {
+  newCalcYieldRate,
+  subscribeCurrentAndPositionSymbol,
+  useCovertProfitCallback,
+} from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
-import { parseRiseAndFallInfo } from '@/helpers/market'
-
+import * as AccordionPrimitive from '@rn-primitives/accordion'
+import { PositionCurrentPrice } from '../../common/position-current-price'
+import { TradePositionDirectionEnum } from '@/options/trade/position'
+import { useI18n } from '@/hooks/use-i18n'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { EmptyState } from '@/components/states/empty-state'
 
 interface Position {
   id: string
@@ -75,7 +47,6 @@ interface Position {
   storageFee: number
 }
 
-
 // Mock positions data
 export const MOCK_POSITIONS: Position[] = [
   {
@@ -83,91 +54,126 @@ export const MOCK_POSITIONS: Position[] = [
     symbol: 'SOL-USDC',
     direction: 'long',
     quantity: 1.0,
-    openPrice: 187.00,
-    markPrice: 186.00,
-    profit: 152.00,
-    profitPercent: 15.00,
+    openPrice: 187.0,
+    markPrice: 186.0,
+    profit: 152.0,
+    profitPercent: 15.0,
     marginRate: 10.04,
-    margin: 10.00,
-    fee: 1.00,
-    storageFee: 1.00,
+    margin: 10.0,
+    fee: 1.0,
+    storageFee: 1.0,
   },
   {
     id: '2',
     symbol: 'SOL-USDC',
     direction: 'short',
     quantity: 1.0,
-    openPrice: 187.00,
-    markPrice: 186.00,
-    profit: 152.00,
-    profitPercent: 15.00,
+    openPrice: 187.0,
+    markPrice: 186.0,
+    profit: 152.0,
+    profitPercent: 15.0,
     marginRate: 10.04,
-    margin: 10.00,
-    fee: 1.00,
-    storageFee: 1.00,
+    margin: 10.0,
+    fee: 1.0,
+    storageFee: 1.0,
   },
 ]
 
-
 export const TradePositions = observer(() => {
-  const [selectedPosition, setSelectedPosition] = useState<Position | null>(null)
-  const [isStopProfitLossDrawerOpen, setIsStopProfitLossDrawerOpen] = useState(false)
+  const { trade } = useStores()
+  const positionList = trade.positionList
+  const currentAccountInfo = trade.currentAccountInfo
+  useEffect(() => {
+    if (!currentAccountInfo.id) return
+    trade.getPositionList(true).catch((err) => { })
+  }, [currentAccountInfo.id])
+
+  const positionListLoading = trade.positionListLoading
+
+  const refetch = async () => {
+    const res = await trade.getPositionList(true)
+    return res.success
+  }
+
+
+  const renderEmpty = () => {
+    if (positionListLoading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      )
+    }
+    return (
+      <View className="py-[60px] items-center">
+        <EmptyState message={<Trans>暂无成交记录</Trans>} />
+      </View>
+    )
+  }
 
   return (
     <>
-      {MOCK_POSITIONS.length === 0 ? (
-        <EmptyState message={<Trans>暂无资产</Trans>} />
-      ) : (
-        MOCK_POSITIONS.map((position) => (
-          <PositionItem
-            key={position.id}
-            position={position}
-            onStopLoss={() => {
-              setSelectedPosition(position)
-              setIsStopProfitLossDrawerOpen(true)
-            }}
-          // onClosePosition={() => handleClosePosition(position)}
-          />
-        ))
-      )}</>
-
+      <CollapsibleFlatList
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 24 }}
+        data={positionList}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item: position }) => <PositionItem position={position} />}
+        ItemSeparatorComponent={() => <View className="h-xl" />}
+        ListEmptyComponent={renderEmpty}
+        onEndReachedThreshold={0.3}
+        refreshing={positionListLoading}
+        onRefresh={() => refetch()}
+        style={{ paddingTop: 16 }}
+      />
+    </>
   )
 })
 
-
 // ============ PositionItem ============
 interface PositionItemProps {
-  position: Position
-  onStopLoss?: () => void
-  onClosePosition?: () => void
+  position: Order.BgaOrderPageListItem
+  // onStopLoss?: () => void
+  // onClosePosition?: () => void
 }
 
-function PositionItemContent({ position, onStopLoss, onClosePosition }: PositionItemProps) {
-  const profitColor = position.profit >= 0 ? 'text-market-rise' : 'text-market-fall'
+const PositionItemContent = observer(({ position }: PositionItemProps) => {
   const { isExpanded } = AccordionPrimitive.useItemContext()
+  const { trade } = useStores()
+  const currentAccountInfo = trade.currentAccountInfo
+  const covertProfit = useCovertProfitCallback(false)
+  const { renderLinguiMsg } = useI18n()
+
+  const calcMargin =
+    position?.marginType === OrderMarginTypeEnum.CROSS_MARGIN ? position?.orderMargin : position?.orderBaseMargin
+  const positionProfit = covertProfit(position)
+  const yieldRate = newCalcYieldRate(positionProfit, calcMargin)
+
+  const profitColor = BNumber.from(positionProfit)?.gt(0)
+    ? 'text-market-rise'
+    : BNumber.from(positionProfit)?.lt(0)
+      ? 'text-market-fall'
+      : 'text-content-1'
 
   return (
     <View className="gap-xl">
       {/* Header with trigger */}
-      <AccordionTrigger className="py-0 px-xl">
+      <AccordionTrigger className="px-xl py-0">
         <Pressable
           onPress={() => {
-            console.log('Pressable')
+            if (!position.symbol) return
+            trade.switchSymbol(position.symbol)
+            subscribeCurrentAndPositionSymbol({ cover: true })
           }}
         >
-          <View className="flex-row items-center gap-[10px] flex-1">
-            <View className="size-[24px] rounded-full bg-button items-center justify-center">
-              <Text className="text-paragraph-p3 text-content-1">S</Text>
-            </View>
+          <View className="flex-1 flex-row items-center gap-[10px]">
+            <AvatarImage source={getImgSource(position.imgUrl)} className="size-6 rounded-full"></AvatarImage>
+
             <Text className="text-important-1 text-content-1">{position.symbol}</Text>
-            <Badge color={position.direction === 'long' ? 'rise' : 'fall'}>
-              <Text>{position.direction === 'long' ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+            <Badge color={position.buySell === TradePositionDirectionEnum.BUY ? 'rise' : 'fall'}>
+              <Text>{position.buySell === TradePositionDirectionEnum.BUY ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
             </Badge>
-            <IconifyNavArrowRight
-              width={16}
-              height={16}
-              className="text-content-1"
-            />
+            <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
           </View>
         </Pressable>
       </AccordionTrigger>
@@ -177,28 +183,26 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
         <View className="flex-row justify-between">
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>浮动盈亏(USDC)</Trans>
+              <Trans>浮动盈亏({currentAccountInfo.currencyUnit})</Trans>
             </Text>
             <Text className={`text-paragraph-p2 ${profitColor}`}>
-              {position.profit >= 0 ? '+' : ''}{position.profit.toFixed(2)}
+              {BNumber.toFormatNumber(positionProfit, { forceSign: true, volScale: currentAccountInfo.currencyDecimal })}
             </Text>
           </View>
           <View className={cn('w-[100px]', !isExpanded && 'items-end')}>
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>收益率(%)</Trans>
+              <Trans>收益率</Trans>
             </Text>
             <Text className={`text-paragraph-p2 ${profitColor}`}>
-              {position.profitPercent >= 0 ? '+' : ''}{position.profitPercent.toFixed(2)}%
+              {BNumber.toFormatPercent(yieldRate, { forceSign: true, isRaw: false })}
             </Text>
           </View>
           {isExpanded && (
             <View className="w-[100px] items-end">
               <Text className="text-paragraph-p3 text-content-4">
-                <Trans>数量(手)</Trans>
+                <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
               </Text>
-              <Text className="text-paragraph-p2 text-content-2">
-                {position.quantity.toFixed(1)}
-              </Text>
+              <Text className="text-paragraph-p2 text-content-2">{BNumber.toFormatNumber(position.orderVolume, { volScale: position.symbolDecimal })}</Text>
             </View>
           )}
         </View>
@@ -210,27 +214,29 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
         <View className="flex-row justify-between">
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>保证金率(%)</Trans>
+              <Trans>保证金率</Trans>
             </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.marginRate.toFixed(2)}%
-            </Text>
+            <Text className="text-paragraph-p3 text-content-1">{BNumber.toFormatPercent(trade.getMarginRateInfo(position)?.marginRate, { isRaw: false })}</Text>
           </View>
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>保证金(USDC)</Trans>
+              <Trans>保证金({currentAccountInfo.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
-              {position.margin.toFixed(2)}
+              {BNumber.toFormatNumber(
+                position.marginType === OrderMarginTypeEnum.CROSS_MARGIN
+                  ? position?.orderBaseMargin
+                  : position?.orderMargin,
+                { volScale: currentAccountInfo.currencyDecimal },
+              )}
             </Text>
           </View>
           <View className="w-[100px] items-end">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>开仓价(USDC)</Trans>
+              <Trans>开仓价</Trans>
             </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.openPrice.toFixed(2)}
-            </Text>
+            <Text className="text-paragraph-p3 text-content-1">{
+              BNumber.toFormatNumber(position.startPrice, { volScale: position.symbolDecimal })}</Text>
           </View>
         </View>
 
@@ -240,37 +246,33 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
             <Text className="text-paragraph-p3 text-content-4">
               <Trans>标记价(USDC)</Trans>
             </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {position.markPrice.toFixed(2)}
-            </Text>
+            <PositionCurrentPrice position={position} className={'text-paragraph-p3'} />
           </View>
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>手续费(USDC)</Trans>
+              <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
-              {position.fee.toFixed(2)}
-            </Text>
+              {BNumber.toFormatNumber(position.handlingFees, { volScale: currentAccountInfo.currencyDecimal })}</Text>
           </View>
           <View className="w-[100px] items-end">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>库存费(USDC)</Trans>
+              <Trans>库存费({currentAccountInfo.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
-              {position.storageFee.toFixed(2)}
-            </Text>
+              {BNumber.toFormatNumber(position.interestFees, { volScale: currentAccountInfo.currencyDecimal })}</Text>
           </View>
         </View>
       </AccordionContent>
 
       {/* Fixed: Action Buttons (always visible) */}
       <View className="px-xl">
-        <View className="flex-row gap-xl">
+        <View className="gap-xl flex-row">
           <Button
             variant="solid"
             size="md"
             className="flex-1"
-            onPress={onStopLoss}
+          // onPress={onStopLoss}
           >
             <Text>
               <Trans>止盈止损</Trans>
@@ -280,7 +282,7 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
             variant="solid"
             size="md"
             className="flex-1"
-            onPress={onClosePosition}
+          // onPress={onClosePosition}
           >
             <Text>
               <Trans>平仓</Trans>
@@ -290,16 +292,16 @@ function PositionItemContent({ position, onStopLoss, onClosePosition }: Position
       </View>
     </View>
   )
-}
+})
 
-function PositionItem({ position, onStopLoss, onClosePosition }: PositionItemProps) {
+function PositionItem({ position }: PositionItemProps) {
   return (
     <Accordion type="multiple" className="border-b-0">
-      <AccordionItem value={position.id} className="border-b-0 py-xl">
+      <AccordionItem value={position.id} className="py-xl border-b-0">
         <PositionItemContent
           position={position}
-          onStopLoss={onStopLoss}
-          onClosePosition={onClosePosition}
+        // onStopLoss={onStopLoss}
+        // onClosePosition={onClosePosition}
         />
       </AccordionItem>
     </Accordion>

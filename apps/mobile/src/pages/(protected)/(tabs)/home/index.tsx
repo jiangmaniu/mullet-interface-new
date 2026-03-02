@@ -22,6 +22,7 @@ import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@
 import { observer } from 'mobx-react-lite'
 import { EmptyState } from '@/components/states/empty-state'
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 
 // ============ HomeHeader ============
 function HomeHeader() {

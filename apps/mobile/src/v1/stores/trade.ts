@@ -45,6 +45,7 @@ import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { getSymbolTicker } from '@/v1/services/market/symbol'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
+import { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
 import { Order } from '../services/tradeCore/order/typings'
 
 export type UserConfInfo = Record<
@@ -114,7 +115,7 @@ class TradeStore {
 
   //  ========= 交易区操作 =========
   @observable marginType: OrderMarginTypeEnum = OrderMarginTypeEnum.CROSS_MARGIN // 交易区保证金类型
-  @observable buySell: API.TradeBuySell = 'BUY' // 交易区买卖类型
+  @observable buySell: TradePositionDirectionEnum = TradePositionDirectionEnum.BUY // 交易区买卖类型
   @observable isBuy = true // 交易区买卖类型
   @observable orderType: ITradeTabsOrderType = 'MARKET_ORDER' // 交易区订单类型
   @observable leverageMultiple = DEFAULT_LEVERAGE_MULTIPLE // 浮动杠杆倍数，默认1
@@ -242,7 +243,7 @@ class TradeStore {
   }
 
   // 设置买卖类型切换
-  setBuySell = (buySell: API.TradeBuySell) => {
+  setBuySell = (buySell: TradePositionDirectionEnum) => {
     this.buySell = buySell
     this.isBuy = buySell === 'BUY'
   }
@@ -1015,7 +1016,7 @@ class TradeStore {
     }
 
     // 查询进行中的订单
-    const res = await getBgaOrderPage({ current: 1, size: 999, status: 'BAG', accountId: this.currentAccountInfo?.id })
+    const res = await getBgaOrderPage({ current: 1, size: 999, status: TradePositionStatusEnum.BAG, accountId: this.currentAccountInfo?.id })
 
     runInAction(() => {
       setTimeout(() => {

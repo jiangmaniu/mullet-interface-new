@@ -1,5 +1,6 @@
 import { renderFallback } from "@mullet/utils/fallback"
 import { BNumber } from "@mullet/utils/number"
+import { Symbol } from "@/v1/services/tradeCore/symbol/typings"
 
 export const parseSymbolLotsVolScale = (symbolConf?: Symbol.SymbolConf) => {
   return BNumber.from(symbolConf?.tradeStep)?.decimalPlaces()

@@ -1,3 +1,5 @@
+import type { TradePositionDirectionEnum } from '@/options/trade/position'
+
 declare namespace Symbol {
   // 新增、修改交易品种
   type SubmitSymbolParams = {
@@ -126,7 +128,7 @@ declare namespace Symbol {
     /**
      * 交易-交易方向
      */
-    tradeBuySell?: API.TradeBuySell
+    tradeBuySell?: TradePositionDirectionEnum
     /**
      * 交易-交易许可
      */
@@ -425,7 +427,7 @@ declare namespace Symbol {
     /**
      * 交易-交易方向
      */
-    tradeBuySell?: API.TradeBuySell
+    tradeBuySell?: TradePositionDirectionEnum
     /**
      * 交易-交易许可
      */

@@ -54,7 +54,9 @@ export const getOrderTypeEnumOption = (option: Partial<EnumOption<OrderTypeEnum>
 // ============ 保证金类型 ============
 
 export enum OrderMarginTypeEnum {
+  /** 全仓 */
   CROSS_MARGIN = 'CROSS_MARGIN',
+  /** 逐仓 */
   ISOLATED_MARGIN = 'ISOLATED_MARGIN',
 }
 

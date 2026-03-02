@@ -1,3 +1,5 @@
+import type { TradePositionDirectionEnum } from '@/options/trade/position'
+
 declare namespace AccountGroup {
   type AccountGroupItem = {
     /**
@@ -266,7 +268,7 @@ declare namespace AccountGroup {
     /**
      * 交易-交易方向
      */
-    tradeBuySell?: API.TradeBuySell
+    tradeBuySell?: TradePositionDirectionEnum
     /**
      * 交易-交易许可
      */

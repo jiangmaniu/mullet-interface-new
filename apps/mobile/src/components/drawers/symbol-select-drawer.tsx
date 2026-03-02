@@ -18,6 +18,7 @@ import { getImgSource } from '@/utils/img'
 import { BNumber } from '@mullet/utils/number'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 
 // ============ Types ============
 interface SymbolSelectDrawerProps {
