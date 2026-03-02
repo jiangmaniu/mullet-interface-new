@@ -1,4 +1,4 @@
-import { View, ScrollView, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import { Text } from '@/components/ui/text'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Switch } from '@/components/ui/switch'

@@ -7,9 +7,13 @@ import { useLingui } from "@lingui/react"
  */
 export const useI18n = () => {
   const { i18n } = useLingui()
-  const renderLinguiMsg = (msg?: MessageDescriptor, fallback?: React.ReactNode) => {
-    if (!msg) return fallback
-    return i18n._(msg)
+
+  const renderLinguiMsg = <T extends MessageDescriptor | undefined>(
+    msg: T,
+    fallback?: React.ReactNode,
+  ): T extends MessageDescriptor ? string : React.ReactNode => {
+    if (!msg) return fallback as T extends MessageDescriptor ? string : React.ReactNode
+    return i18n._(msg) as T extends MessageDescriptor ? string : React.ReactNode
   }
   return { i18n, renderLinguiMsg }
 }

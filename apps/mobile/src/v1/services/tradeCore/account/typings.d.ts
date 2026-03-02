@@ -1,3 +1,5 @@
+import type { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
+
 declare namespace Account {
   // 账号交易品种及配置-集合-参数
   type TradeSymbolListParams = {
@@ -116,10 +118,14 @@ declare namespace Account {
     /** 结束时间 */
     endTime?: string
     /** 资金类型 */
-    type?: API.MoneyType
+    type?: TradeFundFlowTypeEnum
   }
   // 资金变更记录-分页-列表
   type MoneyRecordsPageListItem = {
+    /**
+     * 交易签名
+     */
+    signature?: string
     /**
      * 账户ID
      */
@@ -144,7 +150,7 @@ declare namespace Account {
      * 类型
      */
     newBalance?: number
-    type?: API.MoneyType
+    type?: TradeFundFlowTypeEnum
     remark?: {
       /** 从 */
       fromAccountId: string
@@ -264,7 +270,7 @@ declare namespace Account {
     /**
      * 类型
      */
-    type: API.MoneyType
+    type: TradeFundFlowTypeEnum
   }
   // 交易账户-新增/修改
   type SubmitAccount = {
@@ -337,6 +343,6 @@ declare namespace Account {
     /**
      * 类型
      */
-    type: API.MoneyType
+    type: TradeFundFlowTypeEnum
   }
 }

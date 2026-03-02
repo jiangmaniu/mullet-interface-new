@@ -6,12 +6,20 @@ import { observer } from 'mobx-react-lite'
 import { Text } from '@/components/ui/text'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { AvatarImage } from '@/components/ui/avatar'
 import { EmptyState } from '@/components/states/empty-state'
 import { renderFallback } from '@mullet/utils/fallback'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getBgaOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import { getImgSource } from '@/utils/img'
+import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
+import { cn } from '@/lib/utils'
+import { BNumber } from '@mullet/utils/number'
+import { useI18n } from '@/hooks/use-i18n'
+import { getOrderMarginTypeEnumOption } from '@/options/trade/order'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { TradePositionStatusEnum } from '@/options/trade/position'
 
 const PAGE_SIZE = 10
 
@@ -19,26 +27,78 @@ const PAGE_SIZE = 10
 // Card Component
 // ============================================================================
 
-function PositionCard({ order }: { order: Order.BgaOrderPageListItem }) {
+const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
+  const { trade } = useStores()
+  const currentAccountInfo = trade.currentAccountInfo
+  const lotVolScale = parseSymbolLotsVolScale(order.conf)
+  const { renderLinguiMsg } = useI18n()
 
+  const OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
+    {
+      label: <Trans>盈亏</Trans>,
+      content: <Text className={cn(BNumber.from(order.profit)?.gt(0) ? 'text-market-rise' : BNumber.from(order.profit)?.lt(0) ? 'text-market-fall' : 'text-content-1')}>{BNumber.toFormatNumber(order.profit, { forceSign: true, positive: false, volScale: currentAccountInfo.currencyDecimal, unit: currentAccountInfo.currencyUnit })}</Text>
+    },
+    {
+      label: <Trans>开仓手数/价格</Trans>,
+      content: <>
+        {BNumber.toFormatNumber(order?.orderVolume, {
+          volScale: lotVolScale,
+          unit: renderLinguiMsg(LOTS_UNIT_LABEL)
+        })}
+        {' / '}
+        {BNumber.toFormatNumber(order?.startPrice, {
+          volScale: order?.symbolDecimal
+        })}
+      </>
+    },
+    {
+      label: <Trans>止盈/止损</Trans>,
+      content: <>{BNumber.toFormatNumber(order.takeProfit, { volScale: order.symbolDecimal })}/{BNumber.toFormatNumber(order.stopLoss, { volScale: order.symbolDecimal })}</>
+    },
+    {
+      label: <Trans>保证金类型</Trans>,
+      content: <>{renderLinguiMsg(getOrderMarginTypeEnumOption({ value: order.marginType })?.label, order.marginType ?? <Trans>未知类型</Trans>)}</>
+    },
+    {
+      label: <Trans>开仓时间</Trans>,
+      content: <>{renderFallback(order.createTime)}</>
+    },
+    {
+      label: <Trans>持仓单号</Trans>,
+      content: <>{renderFallback(order.id)}</>
+    },
+    {
+      label: <Trans>交易账号</Trans>,
+      content: <>
+        {renderFallback(order.tradeAccountId)}
+      </>
+    },
+    {
+      label: <Trans>地址</Trans>,
+      content: <>{renderFallback()}</>
+    },
+    {
+      label: <Trans>手续费/库存费</Trans>,
+      content: <>
+        {BNumber.toFormatNumber(order.handlingFees, { unit: currentAccountInfo.currencyUnit, positive: false, volScale: currentAccountInfo.currencyDecimal })}
+        {' / '}
+        {BNumber.toFormatNumber(order.interestFees, { unit: currentAccountInfo.currencyUnit, positive: false, volScale: currentAccountInfo.currencyDecimal })}
+      </>
+    }
+  ]
   return (
     <Card className="bg-background-secondary border border-brand-default">
       <CardContent>
         <View className="gap-medium">
           {/* Header: Symbol and Direction Badge */}
           <View className="flex-row items-center gap-medium">
-            <Avatar className="size-6">
-              <AvatarFallback className="bg-button">
-                <Text className="text-paragraph-p3 text-content-1">
-                  {order.symbol?.charAt(0) ?? 'S'}
-                </Text>
-              </AvatarFallback>
-            </Avatar>
+            <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full">
+            </AvatarImage>
 
             <View className="flex-row items-center gap-medium">
               <Text className="text-paragraph-p2 text-content-1">
-                {renderFallback(order.alias || order.symbol)}
+                {renderFormatSymbolName(order)}
               </Text>
               <Badge color={isBuy ? 'rise' : 'fall'}>
                 <Text className="text-paragraph-p3">
@@ -49,75 +109,23 @@ function PositionCard({ order }: { order: Order.BgaOrderPageListItem }) {
           </View>
 
           {/* Position Details */}
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>浮动盈亏</Trans>
-            </Text>
-            <Text
-              className={`text-paragraph-p3 ${(order.profit ?? 0) >= 0 ? 'text-market-rise' : 'text-market-fall'}`}
-            >
-              {renderFallback(order.profit)} USDC
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>开仓手数/价格</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.orderVolume)} 手/{renderFallback(order.startPrice)}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>止盈/止损</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.takeProfit)}/{renderFallback(order.stopLoss)}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>开仓时间</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.createTime)}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>持仓单号</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.id)}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>交易账号</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.accountId)}
-            </Text>
-          </View>
-
-          <View className="flex-row items-center justify-between">
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>手续费/库存费</Trans>
-            </Text>
-            <Text className="text-paragraph-p3 text-content-1">
-              {renderFallback(order.handlingFees)} USDC/{renderFallback(order.interestFees)} USDC
-            </Text>
-          </View>
+          {
+            OPTIONS.map((item, key) => {
+              return <View key={key} className="flex-row items-center justify-between">
+                <Text className="text-paragraph-p3 text-content-4">
+                  {item.label}
+                </Text>
+                <Text className="text-paragraph-p3 text-content-1">
+                  {item.content}
+                </Text>
+              </View>
+            })
+          }
         </View>
       </CardContent>
     </Card>
   )
-}
+})
 
 // ============================================================================
 // List Component
@@ -142,7 +150,7 @@ export const HistoryPositionList = observer(() => {
         current: pageParam,
         size: PAGE_SIZE,
         accountId: accountId!,
-        status: 'FINISH' as API.BGAStatus,
+        status: TradePositionStatusEnum.FINISH,
       })
       return res.data
     },
