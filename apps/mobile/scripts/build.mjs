@@ -176,6 +176,7 @@ async function main() {
 
   shelljs.env.VERSION_NAME = version
   shelljs.env.VERSION_CODE = versionCode
+  shelljs.env.ENV = env
 
   console.log('')
   console.log(chalk.green(`✨ 开始构建 Mullet... (v${version}, 构建号: ${versionCode})`))
