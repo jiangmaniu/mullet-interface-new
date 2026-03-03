@@ -40,7 +40,7 @@ export function Web2LoginSection() {
       ) {
         console.log('Web2 login: Privy authenticated, logging into backend...')
         try {
-          await loginToBackend()
+          await loginToBackend('web2')
         } catch (error) {
           console.error('Backend login failed:', error)
         } finally {
@@ -60,7 +60,7 @@ export function Web2LoginSection() {
     // 如果已登录 Privy（后端登录失败后重试的场景），直接登录后端
     if (privyUser) {
       try {
-        await loginToBackend()
+        await loginToBackend('web2')
       } catch (error) {
         console.error('Backend login failed:', error)
       } finally {

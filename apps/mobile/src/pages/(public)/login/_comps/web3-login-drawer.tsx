@@ -120,7 +120,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
     try {
       // 签名成功，进行后端登录
       setFlowState('login_backend')
-      const backendSuccess = await loginToBackend()
+      const backendSuccess = await loginToBackend('web3')
 
       if (!backendSuccess) {
         setFlowState('login_failed')

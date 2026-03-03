@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
 
+import type { LoginType } from '@/stores/login-auth'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { stores } from '@/v1/provider/mobxProvider'
 import { login } from '@/v1/services/user'
@@ -23,8 +24,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
 
   const mutation = useMutation({
     mutationKey: ['auth', 'login'],
-    mutationFn: async () => {
-      // 获取 Privy token
+    mutationFn: async (loginType?: LoginType) => {
       const privyToken = await getPrivyAccessToken()
       if (!privyToken) {
         throw new Error('Failed to get Privy token')
@@ -32,7 +32,6 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
 
       console.log('Privy token obtained for backend login')
 
-      // 登录后端（传入 token）
       const userinfo = await login({
         grant_type: 'privy_token',
       })
@@ -40,6 +39,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       useLoginAuthStore.setState({
         accessToken: userinfo.access_token,
         loginInfo: userinfo,
+        loginType: loginType ?? null,
       })
 
       // 重新获取用户信息
