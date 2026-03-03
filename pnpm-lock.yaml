@@ -116,8 +116,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
       '@privy-io/expo':
-        specifier: ^0.63.0
-        version: 0.63.0(8bd24c73c4517eb14b967578318446d6)
+        specifier: ^0.63.7
+        version: 0.63.7(8bd24c73c4517eb14b967578318446d6)
       '@privy-io/expo-native-extensions':
         specifier: ^0.0.6
         version: 0.0.6(expo@55.0.2)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
@@ -324,7 +324,7 @@ importers:
         version: 9.0.0-rc.0(react-native-pager-view@8.0.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(react-native-reanimated@4.2.1(react-native-worklets@0.7.2(@babel/core@7.28.4)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(react-native-worklets@0.7.2(@babel/core@7.28.4)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
       react-native-dev-inspector:
         specifier: ^1.1.0
-        version: 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
+        version: 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
       react-native-fs:
         specifier: ^2.20.0
         version: 2.20.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))
@@ -3978,21 +3978,30 @@ packages:
   '@privy-io/api-base@1.7.3':
     resolution: {integrity: sha512-KAb7P+tfJpUtMYt3R2jrd2cFP4yIby1f/oX1yMU0DhHaKC0xdDPgqoXFkflwiE+5GUARUN1RVP6tUY3AW9RGDA==}
 
+  '@privy-io/api-base@1.8.2':
+    resolution: {integrity: sha512-pEvZ73GnC2OB/w35MGCPhqZ8mnApXgUpXxM0t9qZmNzvDNoMKBLPgysUXouAx7E4jO8REJPuwX70Y1AqJ/51kg==}
+
   '@privy-io/api-types@0.3.4':
     resolution: {integrity: sha512-OWAMriGX/RygQ74vZZDRFns4wFz5/TxvqXFLtEqQVuwTvXjzo6YkrhKR2qbQADnGkU3SXLHEa3Q7iNfoUKuJ+w==}
 
+  '@privy-io/api-types@0.5.0':
+    resolution: {integrity: sha512-OFHallWxGzNjg/f1yCHo9KQp3AkHg3B/BMbSaR073I0t6MKw9Stf9WVzQFhXdYFLE145S/Z0gCWaStMKw8qYOQ==}
+
   '@privy-io/chains@0.0.5':
     resolution: {integrity: sha512-5fOmCOOs7DjGTGnPRv4/2X6/xBKG8fRNrFgNv9ajYdRsKUg86CixszQCYyvZmVxv7XSGrX1oiS1ATAXzfqRmDg==}
+
+  '@privy-io/chains@0.1.2':
+    resolution: {integrity: sha512-h5+1j6t5BEl2t2nZUuY+iOfLox1w+DhdFTld+m09mOQCkFvJRP6Zd/2hgqY7BY95waymREzz5sx1jy9QWb5/nA==}
 
   '@privy-io/ethereum@0.0.4':
     resolution: {integrity: sha512-OrbMDWBM2CBLt4GRcJ2iDaPMRPdkmOy8jc3mPlr9mZdNxqUFDyfcqifAJ3iR26GfGu+7sU2dU315OfOPz++MSw==}
     peerDependencies:
       viem: ^2.42.1
 
-  '@privy-io/ethereum@0.0.5':
-    resolution: {integrity: sha512-e9cuQ0W5HR1z1p296x2L1MSXKF66CkIvYLSwLnB6ml2kyZkXQg38Cwa8yj5euxzURsbQxjZMDtKE2VMQpeiM3A==}
+  '@privy-io/ethereum@0.0.8':
+    resolution: {integrity: sha512-8Mgy5TdvDxb6IqHejnkGfZ6GTXicWTjtbaI4WNF9qlnwggRa+JnLr4jFaL6QTcZllt+Cr/0gnHDf3bRVtgoiaw==}
     peerDependencies:
-      viem: ^2.43.1
+      viem: ^2.46.1
 
   '@privy-io/expo-native-extensions@0.0.6':
     resolution: {integrity: sha512-5kjcCfFQr2V+5GXcJEj4jg1iWbYZ5u55699YcDNzh0TDVTYrI1KQ9YDWG3QJELYVWwhQ1KNCUda1y4WkPcUyhQ==}
@@ -4001,11 +4010,11 @@ packages:
       react: '*'
       react-native: '*'
 
-  '@privy-io/expo@0.63.0':
-    resolution: {integrity: sha512-K8mQ8hvXMSkE4wHWTkeKlZAahu4CzOhpiW0g549EALFpZtDNUGHjoVWzXXpN3PFn19thx5b1TLXw26j9rz8vkQ==}
+  '@privy-io/expo@0.63.7':
+    resolution: {integrity: sha512-Y7XcRW0Do2CvXOUvLS+/Ff78aKyf7oL0KvSL9bIS1VwRO6uudoS77W61EhhFBT0YsFzXRz4YcK/sehodkIeRuw==}
     peerDependencies:
       '@expo-google-fonts/inter': '*'
-      '@privy-io/expo-native-extensions': 0.0.6
+      '@privy-io/expo-native-extensions': 0.0.7
       expo-apple-authentication: '*'
       expo-application: '*'
       expo-clipboard: '*'
@@ -4022,7 +4031,7 @@ packages:
       react-native-safe-area-context: '*'
       react-native-svg: '*'
       react-native-webview: '*'
-      viem: ^2.43.1
+      viem: ^2.46.1
     peerDependenciesMeta:
       '@expo-google-fonts/inter':
         optional: true
@@ -4052,11 +4061,11 @@ packages:
       viem:
         optional: true
 
-  '@privy-io/js-sdk-core@0.58.5':
-    resolution: {integrity: sha512-SvUzeDrG6wTGcAyz3WzdJMGOhAsHBKL3lAbwyWKSWQh4hPryDhgw0Ph/OqNx1hRwAlA8BpBjpLiK9iYf3M0rDQ==}
+  '@privy-io/js-sdk-core@0.60.3':
+    resolution: {integrity: sha512-jlu/MtT3FsBWsnJ5/PMHqkwenKDd/Z8Rr0crDUASCuXB0yyZRSpJvizBVoacnVRHVmggKAIRj+vULTfvsZbQsg==}
     peerDependencies:
       permissionless: ^0.2.47
-      viem: ^2.43.1
+      viem: ^2.46.1
     peerDependenciesMeta:
       permissionless:
         optional: true
@@ -4093,6 +4102,9 @@ packages:
 
   '@privy-io/routes@0.0.4':
     resolution: {integrity: sha512-7rCymSDJBNecJ8Ps8vRcTvPjHu2qAsJzDHndTSyWsFjovtNL2t5AgBUdCffaj2Gn0de0FXNJ23EOJQwzodWOsA==}
+
+  '@privy-io/routes@0.0.7':
+    resolution: {integrity: sha512-87tiO1u3icR/vB/fv0SS9YkfeiDDTx/2GS2EUlC3BN7cU3O/ngAGutuX6977z5x1ps59l85AjekZCPOHMWin6w==}
 
   '@privy-io/urls@0.0.2':
     resolution: {integrity: sha512-v1LpojKGG9iiFO4HS3kDQ9o2WSf3VGLu9pdAwDuXhnKlHEQ+V2sHtrsA0ZNhC33EhufD7ZOcquAbfG7FxKsQXA==}
@@ -10278,6 +10290,7 @@ packages:
     resolution: {integrity: sha512-Quz3MvAwHxVYNXsOByL7xI5EB2WYOeFswqaHIA3qOK3isRWTxiplBEocmmru6XmxDB2L7jDNYtYA4FyimoAFEw==}
     engines: {node: '>=8.17.0'}
     hasBin: true
+    bundledDependencies: []
 
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
@@ -15780,7 +15793,7 @@ snapshots:
       '@types/node': 20.5.1
       chalk: 4.1.2
       cosmiconfig: 8.3.6(typescript@5.9.3)
-      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.9.3))(typescript@5.9.3)
+      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.19.21)(typescript@5.9.3))(typescript@5.9.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -18023,15 +18036,23 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
+  '@privy-io/api-base@1.8.2':
+    dependencies:
+      zod: 3.25.76
+
   '@privy-io/api-types@0.3.4': {}
 
+  '@privy-io/api-types@0.5.0': {}
+
   '@privy-io/chains@0.0.5': {}
+
+  '@privy-io/chains@0.1.2': {}
 
   '@privy-io/ethereum@0.0.4(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12))':
     dependencies:
       viem: 2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
 
-  '@privy-io/ethereum@0.0.5(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+  '@privy-io/ethereum@0.0.8(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
     dependencies:
       viem: 2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6)
 
@@ -18041,11 +18062,11 @@ snapshots:
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
 
-  '@privy-io/expo@0.63.0(8bd24c73c4517eb14b967578318446d6)':
+  '@privy-io/expo@0.63.7(8bd24c73c4517eb14b967578318446d6)':
     dependencies:
-      '@privy-io/api-types': 0.3.4
+      '@privy-io/api-types': 0.5.0
       '@privy-io/expo-native-extensions': 0.0.6(expo@55.0.2)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
-      '@privy-io/js-sdk-core': 0.58.5(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+      '@privy-io/js-sdk-core': 0.60.3(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
       '@scure/base': 1.2.6
       expo-apple-authentication: 55.0.8(expo@55.0.2)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))
       expo-application: 55.0.8(expo@55.0.2)
@@ -18091,13 +18112,13 @@ snapshots:
     optionalDependencies:
       viem: 2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.1.12)
 
-  '@privy-io/js-sdk-core@0.58.5(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
+  '@privy-io/js-sdk-core@0.60.3(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))':
     dependencies:
-      '@privy-io/api-base': 1.7.3
-      '@privy-io/api-types': 0.3.4
-      '@privy-io/chains': 0.0.5
-      '@privy-io/ethereum': 0.0.5(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
-      '@privy-io/routes': 0.0.4
+      '@privy-io/api-base': 1.8.2
+      '@privy-io/api-types': 0.5.0
+      '@privy-io/chains': 0.1.2
+      '@privy-io/ethereum': 0.0.8(viem@2.42.1(bufferutil@4.0.9)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@4.3.6))
+      '@privy-io/routes': 0.0.7
       canonicalize: 2.1.0
       eventemitter3: 5.0.1
       fetch-retry: 6.0.0
@@ -18202,6 +18223,10 @@ snapshots:
   '@privy-io/routes@0.0.4':
     dependencies:
       '@privy-io/api-types': 0.3.4
+
+  '@privy-io/routes@0.0.7':
+    dependencies:
+      '@privy-io/api-types': 0.5.0
 
   '@privy-io/urls@0.0.2': {}
 
@@ -20155,7 +20180,7 @@ snapshots:
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
 
-  '@rn-dev-inspector/metro-plugin@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
+  '@rn-dev-inspector/metro-plugin@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
     dependencies:
       '@babel/core': 7.28.4
       launch-editor: 2.12.0
@@ -24988,7 +25013,7 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.9.3))(typescript@5.9.3):
+  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.19.21)(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
       '@types/node': 20.5.1
       cosmiconfig: 8.3.6(typescript@5.9.3)
@@ -25745,7 +25770,7 @@ snapshots:
       eslint: 9.37.0(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.0.1(eslint@9.37.0(jiti@2.6.1))
@@ -25786,7 +25811,7 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -25939,7 +25964,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1)):
+  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -30419,10 +30444,10 @@ snapshots:
       react-native-worklets: 0.7.2(@babel/core@7.28.4)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
       use-deep-compare: 1.3.0(react@19.2.0)
 
-  react-native-dev-inspector@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0):
+  react-native-dev-inspector@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0):
     dependencies:
       '@rn-dev-inspector/core': 1.1.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
-      '@rn-dev-inspector/metro-plugin': 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+      '@rn-dev-inspector/metro-plugin': 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:

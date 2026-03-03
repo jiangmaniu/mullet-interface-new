@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import bs58 from 'bs58'
 
 import { useAccount, useProvider } from '@/lib/appkit'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { useLoginWithSiws, usePrivy } from '@privy-io/expo'
 
 interface UseWalletAuthOptions {
@@ -65,24 +66,45 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
       const { message } = await generateMessage({
         wallet: { address },
         from: {
-          domain: 'mullet.top',
-          uri: 'https://mullet.top',
+          domain: new URL(EXPO_ENV_CONFIG.WEBSITE_URL).host,
+          uri: EXPO_ENV_CONFIG.WEBSITE_URL,
         },
       })
 
       // 2. 使用 provider 签名消息
       const messageBytes = bs58.encode(new TextEncoder().encode(message))
 
-      const signatureResult = await provider.request(
-        {
-          method: 'solana_signMessage',
-          params: {
-            message: messageBytes,
-            pubkey: address,
-          },
-        },
-        `solana:${chainId}`,
-      )
+      // Phantom on Android 偶现 -32603 (Internal Error)，
+      // 通常因为 WalletConnect session 未完全就绪，重试即可恢复
+      const MAX_SIGN_RETRIES = 2
+      const SIGN_RETRY_DELAY = 1000
+      let signatureResult: any
+      for (let attempt = 0; attempt <= MAX_SIGN_RETRIES; attempt++) {
+        try {
+          signatureResult = await provider.request(
+            {
+              method: 'solana_signMessage',
+              params: {
+                message: messageBytes,
+                pubkey: address,
+              },
+            },
+            `solana:${chainId}`,
+          )
+          break
+        } catch (e: any) {
+          if (e?.code === -32603 && attempt < MAX_SIGN_RETRIES) {
+            console.warn(`solana_signMessage failed with -32603, retrying (${attempt + 1}/${MAX_SIGN_RETRIES})...`)
+            await new Promise((resolve) => setTimeout(resolve, SIGN_RETRY_DELAY))
+            continue
+          }
+          // Phantom 特有的内部错误，重试耗尽后提示用户更换钱包
+          if (e?.code === -32603 && /Unexpected error/i.test(e?.message)) {
+            throw new WalletAuthError('遇到钱包内部错误，请尝试使用其他钱包连接', 'SignatureFailed')
+          }
+          throw e
+        }
+      }
 
       console.log('Signature result:', signatureResult)
 
