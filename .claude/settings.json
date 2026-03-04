@@ -1,5 +1,10 @@
 {
   "enabledPlugins": {
     "upgrading-expo@expo-plugins": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec fastlane match adhoc --env test)"
+    ]
   }
 }

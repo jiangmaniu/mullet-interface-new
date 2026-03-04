@@ -66,11 +66,26 @@ platform :ios do
     UI.message("导出方式: #{export_method}")
     UI.message("签名类型: #{match_type}")
 
-    match(
-      type: match_type,
-      app_identifier: bundle_id,
-      readonly: true
-    )
+    # CI 环境只读（防止意外创建证书），本地环境允许下载
+    # 如果 match 仓库已有证书，会自动下载；如果没有，会报错提示管理员创建
+    is_ci = ENV["CI"] == "true"
+
+    begin
+      match(
+        type: match_type,
+        app_identifier: bundle_id,
+        readonly: is_ci
+      )
+    rescue => e
+      if e.message.include?("No matching provisioning profiles found")
+        UI.error("❌ Match 仓库中缺少 #{match_type} 类型的 provisioning profile")
+        UI.important("请联系管理员运行以下命令生成：")
+        UI.command("bundle exec fastlane match #{match_type} --env #{ENV['APP_ENV']}")
+        raise e
+      else
+        raise e
+      end
+    end
 
     profile_name = ENV["sigh_#{bundle_id}_#{match_type}_profile-name"]
 
