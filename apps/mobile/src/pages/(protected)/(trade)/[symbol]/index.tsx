@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { View, ScrollView, Pressable } from 'react-native'
 import { Route } from 'react-native-tab-view'
 import { useRouter } from 'expo-router'
@@ -361,6 +361,7 @@ const SymbolDepth = observer(() => {
   // const { symbol } = useLocalSearchParams<{ symbol: string }>()
   const { trade } = useStores()
   const symbol = trade.activeSymbolName
+  const [currentIndex, setCurrentIndex] = React.useState(0)
 
   const routes = useMemo<Route[]>(
     () => [
@@ -401,6 +402,8 @@ const SymbolDepth = observer(() => {
         variant="underline"
         size="md"
         tabBarClassName="border-b border-brand-default px-xl"
+        onIndexChange={setCurrentIndex}
+        swipeEnabled={currentIndex !== 0}
       />
 
       <BottomActionBar
