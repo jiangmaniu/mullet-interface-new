@@ -12,22 +12,18 @@ const RealAccountActions = observer(({ account }: { account: User.AccountItem })
   const router = useRouter();
 
   const handlePressDeposit = () => {
-    const isPrivy = true;
-    if (isPrivy) {
-      router.push('/(assets)/deposit/privy');
-      return;
-    }
-    router.push('/(assets)/deposit/wallet')
+    // const isPrivy = true;
+    // if (isPrivy) {
+    //   router.push('/(assets)/deposit/privy');
+    //   return;
+    // }
+    // router.push('/(assets)/deposit/wallet')
+    router.push('/(assets)/deposit')
   }
 
 
   const handlePressWithdraw = () => {
-    const isPrivy = true;
-    if (isPrivy) {
-      router.push('/(assets)/withdraw/privy');
-      return;
-    }
-    router.push('/(assets)/withdraw/wallet');
+    router.push('/(assets)/withdraw');
   }
 
   // const transferHintModalRef = useRef<ModalRef>(null)

@@ -40,6 +40,7 @@ export default ({ config }: { config: ConfigContext }) => {
     WS_URL: process.env.EXPO_PUBLIC_WS_URL!,
     IMG_DOMAIN: process.env.EXPO_PUBLIC_IMG_DOMAIN!,
     WEBSITE_URL: process.env.EXPO_PUBLIC_WEBSITE_URL!,
+    DEPOSIT_API_BASE_URL: process.env.EXPO_PUBLIC_DEPOSIT_API_BASE_URL!,
     // Reown 配置
     REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID!,
   }

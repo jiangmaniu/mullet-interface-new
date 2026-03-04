@@ -5,9 +5,10 @@ import { InputContainer, type InputContainerProps } from '@/components/ui/input-
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { IconSpinner } from './icons';
 
-type Option = { value: string; label: string };
+type Option = { value: string; label: string; icon?: React.ReactNode };
 
 /* ─── Context ─── */
 interface SelectContextValue {
@@ -57,26 +58,31 @@ function Select({ value, onValueChange, children }: SelectProps) {
 /* ─── SelectTrigger ─── */
 type SelectTriggerProps = Omit<InputContainerProps, 'children' | 'value' | 'clean'> & {
   children?: React.ReactNode;
+  loading?: boolean;
 };
 
-function SelectTrigger({ children, className, ...containerProps }: SelectTriggerProps) {
+function SelectTrigger({ children, className, loading, ...containerProps }: SelectTriggerProps) {
   const { value, setOpen } = useSelectContext();
 
   return (
-    <Pressable onPress={() => setOpen(true)}>
+    <Pressable onPress={() => !loading && setOpen(true)} disabled={loading}>
       <View pointerEvents="none">
         <InputContainer
           variant="outlined"
           size="md"
           value={value?.label}
           clean={false}
-          RightContent={<IconifyNavArrowDown width={16} height={16} className="text-content-1" />}
-          className={cn(className)}
+          RightContent={
+            loading ? (
+              <IconSpinner width={14} height={14} className='text-content-1' />
+            ) : (
+              <IconifyNavArrowDown width={16} height={16} className="text-content-1" />
+            )
+          }
+          className={cn(loading && 'opacity-50', className)}
           {...containerProps}
         >
-          <View className="flex-1">
-            {children}
-          </View>
+          <View className="flex-1">{children}</View>
         </InputContainer>
       </View>
     </Pressable>
@@ -87,9 +93,12 @@ function SelectTrigger({ children, className, ...containerProps }: SelectTrigger
 function SelectValue({ placeholder, className }: { placeholder?: string; className?: string }) {
   const { value } = useSelectContext();
   return (
-    <Text className={cn('text-paragraph-p2', value ? 'text-content-1' : 'text-content-4', className)}>
-      {value?.label ?? placeholder}
-    </Text>
+    <View className="flex-row items-center gap-medium">
+      {value?.icon && <View className="shrink-0">{value.icon}</View>}
+      <Text className={cn('text-paragraph-p2', value ? 'text-content-1' : 'text-content-4', className)}>
+        {value?.label ?? placeholder}
+      </Text>
+    </View>
   );
 }
 

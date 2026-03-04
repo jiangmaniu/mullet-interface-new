@@ -33,6 +33,11 @@ import {
   DataTransferBoth,
   ArrowRightTagSolid,
   ChatBubbleWarning,
+  WalletSolid,
+  FlashSolid,
+  CreditCardSolid,
+  NavArrowLeft,
+  Refresh,
 } from 'iconoir-react-native';
 
 export const IconifyActivity = withUniwind(Activity);
@@ -51,6 +56,7 @@ export const IconifyCopy = withUniwind(Copy);
 export const IconifyCoinsSwap = withUniwind(CoinsSwap);
 export const IconifyPlusCircle = withUniwind(PlusCircle);
 export const IconifyNavArrowRight = withUniwind(NavArrowRight);
+export const IconifyNavArrowLeft = withUniwind(NavArrowLeft);
 export const IconifyCheck = withUniwind(Check);
 export const IconifyWarningCircle = withUniwind(WarningCircle);
 export const IconifyXmark = withUniwind(Xmark);
@@ -67,3 +73,7 @@ export const IconifyDownloadCircle = withUniwind(DownloadCircle)
 export const IconifyDataTransferBoth = withUniwind(DataTransferBoth)
 export const IconifyArrowRightTagSolid = withUniwind(ArrowRightTagSolid)
 export const IconifyChatBubbleWarning = withUniwind(ChatBubbleWarning)
+export const IconifyWalletSolid = withUniwind(WalletSolid)
+export const IconifyFlashSolid = withUniwind(FlashSolid)
+export const IconifyCreditCardSolid = withUniwind(CreditCardSolid)
+export const IconifyRefresh = withUniwind(Refresh)

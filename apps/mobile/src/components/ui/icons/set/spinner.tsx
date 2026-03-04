@@ -37,7 +37,8 @@ function SpinnerBar({
 }) {
   const animatedProps = useAnimatedProps(() => {
     "worklet"
-    const step = Math.floor(progress.value) % BARS
+    const raw = Math.floor(progress.value) % BARS
+    const step = BARS - 1 - raw
     const distance = ((index - step) % BARS + BARS) % BARS
     return {
       opacity: 1 - distance * 0.1,
@@ -50,7 +51,7 @@ function SpinnerBar({
   )
 }
 
-export const IconSpinner = ({ animated, ...props }: SvgIconProps & { animated?: boolean }) => {
+export const IconSpinner = ({ animated = true, ...props }: SvgIconProps & { animated?: boolean }) => {
   const progress = useSharedValue(0)
 
   useEffect(() => {

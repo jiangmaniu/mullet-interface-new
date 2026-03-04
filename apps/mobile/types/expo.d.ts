@@ -8,6 +8,7 @@ export type ExpoConfigExtra = {
   WS_URL: string
   IMG_DOMAIN: string
   WEBSITE_URL: string
+  DEPOSIT_API_BASE_URL: string
   // Reown 配置
   REOWN_PROJECT_ID: string
 }
