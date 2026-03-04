@@ -12,7 +12,7 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getOrderPage } from '@/v1/services/tradeCore/order'
 import { getImgSource } from '@/utils/img'
-import { renderFormatSymbolName } from '@/helpers/symbol'
+import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { getOrderStatusEnumOption, getOrderTypeEnumOption, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
 import { useI18n } from '@/hooks/use-i18n'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -28,6 +28,8 @@ const PAGE_SIZE = 10
 const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
   const { renderLinguiMsg } = useI18n()
+
+  const lotsVolScale = parseSymbolLotsVolScale(order.conf)
 
   const { trade } = useStores()
   const currentAccountInfo = trade.currentAccountInfo
@@ -64,18 +66,14 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
     },
     {
       label: <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>,
-      content: BNumber.toFormatNumber(order.orderVolume, { unit: currentAccountInfo.currencyUnit, volScale: currentAccountInfo.currencyDecimal }),
+      content: BNumber.toFormatNumber(order.orderVolume, { volScale: lotsVolScale }),
     },
     ... (
       order.status !== OrderStatusEnum.CANCEL ? [
-        {
-          label: <Trans>订单号</Trans>,
-          content: renderFallback(order.id),
-        },
 
         {
-          label: <Trans>手续费(USDC)</Trans>,
-          content: BNumber.toFormatNumber(order.handlingFees, { unit: currentAccountInfo.currencyUnit, volScale: currentAccountInfo.currencyDecimal }),
+          label: <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>,
+          content: BNumber.toFormatNumber(order.handlingFees, { volScale: currentAccountInfo.currencyDecimal }),
         },
 
         {
