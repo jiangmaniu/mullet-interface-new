@@ -2,6 +2,7 @@
 import 'text-encoding' // needed for @solana/web3.js to work
 import '@walletconnect/react-native-compat'
 
+import { EventEmitter } from 'events'
 import { createAppKit, solana, solanaDevnet } from '@reown/appkit-react-native'
 import { PhantomConnector, SolanaAdapter, SolflareConnector } from '@reown/appkit-solana-react-native'
 import Constants from 'expo-constants'
@@ -9,6 +10,9 @@ import type { Storage } from '@reown/appkit-react-native'
 
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { mmkv } from '@/lib/storage/mmkv'
+
+// 多个组件同时使用 AppKit hooks 会注册大量 disconnect 监听器，提高上限避免警告
+EventEmitter.defaultMaxListeners = 20
 
 const projectId = EXPO_ENV_CONFIG.REOWN_PROJECT_ID
 const appScheme = (Constants.expoConfig?.scheme as string) ?? 'mullet'
