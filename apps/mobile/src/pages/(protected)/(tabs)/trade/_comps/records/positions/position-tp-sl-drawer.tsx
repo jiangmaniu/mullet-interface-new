@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { createContext, useContext, useImperativeHandle, useState } from 'react'
+import { createContext, useContext, useEffect, useImperativeHandle, useLayoutEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useToggle } from 'ahooks'
 import { Actions } from 'ahooks/lib/useToggle'
@@ -16,8 +16,9 @@ import { t } from '@/locales/i18n'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { getImgSource } from '@/utils/img'
 import useSpSl from '@/v1/hooks/trade/useSpSl'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { msg } from '@lingui/core/macro'
+import { RecordModalItem } from '@/v1/stores/trade'
 import { BNumber } from '@mullet/utils/number'
 
 import { PositionCurrentPrice } from '../../common/position-current-price'
@@ -28,18 +29,13 @@ interface PositionTpSlDrawerProps {
 
 const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProps) => {
   const positionInfo = parseTradePositionInfo(position)
-  const [takeProfitPrice, setTakeProfitPrice] = useState('')
-  const [takeProfitPercent, setTakeProfitPercent] = useState('')
-  const [stopLossPrice, setStopLossPrice] = useState('')
-  const [stopLossPercent, setStopLossPercent] = useState('')
-
+  const { trade } = useStores()
+  const currentAccountInfo = trade.currentAccountInfo
   let {
-    d,
-    step,
     setSp,
     setSl,
-    setSpAmount,
-    setSlAmount,
+    sp_scope,
+    sl_scope,
     spValueEstimateRaw, // 使用 formatNum 格式化之前的值
     // spValueEstimate,
     slValueEstimateRaw, // 使用 formatNum 格式化之前的值
@@ -47,10 +43,6 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
     spValuePrice,
     slValuePrice,
     disabledInput: disabled,
-    onSpAdd,
-    onSpMinus,
-    onSlAdd,
-    onSlMinus,
   } = useSpSl()
 
   const handleConfirm = () => {
@@ -58,48 +50,7 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
     // onOpenChange(false)
   }
 
-  // 计算止盈预计盈亏
-  const calculateTakeProfitPL = () => {
-    // const takeProfitPriceNum = parseFloat(takeProfitPrice)
-    // const openPriceNum = parseFloat(openPrice)
-    // if (isNaN(takeProfitPriceNum) || isNaN(openPriceNum)) return '0.00'
-    // const diff = direction === 'long' ? takeProfitPriceNum - openPriceNum : openPriceNum - takeProfitPriceNum
-    // return diff.toFixed(2)
-  }
-
-  // 计算止损预计盈亏
-  const calculateStopLossPL = () => {
-    // const stopLossPriceNum = parseFloat(stopLossPrice)
-    // const openPriceNum = parseFloat(openPrice)
-    // if (isNaN(stopLossPriceNum) || isNaN(openPriceNum)) return '0.00'
-    // const diff = direction === 'long' ? stopLossPriceNum - openPriceNum : openPriceNum - stopLossPriceNum
-    // return diff.toFixed(2)
-  }
-
-  // 根据百分比计算价格
-  const handleTakeProfitPercentChange = (percent: string) => {
-    // setTakeProfitPercent(percent)
-    // const percentNum = parseFloat(percent)
-    // const openPriceNum = parseFloat(openPrice)
-    // if (!isNaN(percentNum) && !isNaN(openPriceNum)) {
-    //   const newPrice =
-    //     direction === 'long' ? openPriceNum * (1 + percentNum / 100) : openPriceNum * (1 - percentNum / 100)
-    //   setTakeProfitPrice(newPrice.toFixed(2))
-    // }
-  }
-
-  const handleStopLossPercentChange = (percent: string) => {
-    // setStopLossPercent(percent)
-    // const percentNum = parseFloat(percent)
-    // const openPriceNum = parseFloat(openPrice)
-    // if (!isNaN(percentNum) && !isNaN(openPriceNum)) {
-    //   const newPrice =
-    //     direction === 'long' ? openPriceNum * (1 - percentNum / 100) : openPriceNum * (1 + percentNum / 100)
-    //   setStopLossPrice(newPrice.toFixed(2))
-    // }
-  }
-
-  const isConfirmDisabled = !takeProfitPrice && !stopLossPrice
+  const isConfirmDisabled = !spValuePrice && !slValuePrice
 
   return (
     <>
@@ -142,12 +93,13 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
           <View className="gap-xl flex-row">
             <View className="flex-1">
               <NumberInput
+                disabled={disabled}
                 labelText={<Trans>止盈触发价</Trans>}
                 displayLabelClassName="bg-special"
                 value={BNumber.from(spValuePrice)?.toFixed()}
                 onValueChange={({ value }, { source }) => {
                   if (source === NumberInputSourceType.EVENT) {
-                    setTakeProfitPrice(value)
+                    setSp(value)
                   }
                 }}
                 keyboardType="decimal-pad"
@@ -156,7 +108,7 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
                 size="md"
               />
             </View>
-            <View className="w-[90px]">
+            {/* <View className="w-[90px]">
               <NumberInput
                 labelText={<Trans>百分比</Trans>}
                 displayLabelClassName="bg-special"
@@ -173,15 +125,28 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
                 variant="outlined"
                 size="md"
               />
-            </View>
+            </View> */}
           </View>
           <View className="flex-row justify-between">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
+              <Trans>范围</Trans>
+              {` ${positionInfo.isBuy ? '≥' : '≤'} `}
+              <Text className="text-content-1 text-paragraph-p3">
+                {BNumber.toFormatNumber(sp_scope, {
+                  volScale: positionInfo.symbolDecimal,
+                })}
+              </Text>
             </Text>
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>预计盈亏</Trans> ≥{' '}
-              {/* <Text className="text-content-1 text-paragraph-p3">{calculateTakeProfitPL()} USDC</Text> */}
+              <Trans>预计盈亏</Trans>
+              <Text className="text-content-1 text-paragraph-p3">
+                {BNumber.toFormatNumber(spValueEstimateRaw, {
+                  volScale: currentAccountInfo.currencyDecimal,
+                  unit: currentAccountInfo.currencyUnit,
+                  positive: false,
+                  forceSign: true,
+                })}
+              </Text>
             </Text>
           </View>
         </View>
@@ -191,12 +156,13 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
           <View className="gap-xl flex-row">
             <View className="flex-1">
               <NumberInput
+                disabled={disabled}
                 labelText={<Trans>止损触发价</Trans>}
                 displayLabelClassName="bg-special"
-                value={stopLossPrice}
+                value={BNumber.from(slValuePrice)?.toFixed()}
                 onValueChange={({ value }, { source }) => {
                   if (source === NumberInputSourceType.EVENT) {
-                    setStopLossPrice(value)
+                    setSl(value)
                   }
                 }}
                 keyboardType="decimal-pad"
@@ -205,7 +171,7 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
                 size="md"
               />
             </View>
-            <View className="w-[90px]">
+            {/* <View className="w-[90px]">
               <NumberInput
                 labelText={<Trans>百分比</Trans>}
                 displayLabelClassName="bg-special"
@@ -222,15 +188,25 @@ const PositionTpSlDrawerContent = observer(({ position }: PositionTpSlDrawerProp
                 variant="outlined"
                 size="md"
               />
-            </View>
+            </View> */}
           </View>
           <View className="flex-row justify-between">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>范围</Trans> ≥ <Text className="text-content-1 text-paragraph-p3">1.17 USDC</Text>
+              <Trans>范围</Trans> {` ${positionInfo.isBuy ? '≤' : '≥'} `}{' '}
+              <Text className="text-content-1 text-paragraph-p3">
+                {BNumber.toFormatNumber(sl_scope, {
+                  volScale: positionInfo.symbolDecimal,
+                })}
+              </Text>
             </Text>
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>预计盈亏</Trans> ≥{' '}
-              {/* <Text className="text-content-1 text-paragraph-p3">{calculateStopLossPL()} USDC</Text> */}
+              <Trans>预计盈亏</Trans>
+              <Text className="text-content-1 text-paragraph-p3">
+                {BNumber.toFormatNumber(slValueEstimateRaw, {
+                  volScale: currentAccountInfo.currencyDecimal,
+                  unit: currentAccountInfo.currencyUnit,
+                })}
+              </Text>
             </Text>
           </View>
         </View>
@@ -269,28 +245,58 @@ const usePositionTpSlDrawerContext = () => {
   return context
 }
 
-export function PositionTpSlDrawer({
-  position,
-  ref,
-}: PositionTpSlDrawerProps & {
-  ref: React.RefObject<Nilable<DrawerRef>>
-}) {
-  const [open, toggleActions] = useToggle()
-  const { toggle, setLeft: setFalse, setRight: setTrue, set: onSet } = toggleActions
+export const PositionTpSlDrawer = observer(
+  ({
+    position,
+    ref,
+  }: PositionTpSlDrawerProps & {
+    ref: React.RefObject<Nilable<DrawerRef>>
+  }) => {
+    const [open, toggleActions] = useToggle()
+    const { toggle, setLeft: setFalse, setRight: setTrue, set: onSet } = toggleActions
+    const { trade } = useStores()
 
-  useImperativeHandle(ref, () => ({
-    open: () => setTrue(),
-    close: () => setFalse(),
-    toggle: () => toggle(),
-  }))
+    useImperativeHandle(ref, () => ({
+      open: () => setTrue(),
+      close: () => setFalse(),
+      toggle: () => toggle(),
+    }))
 
-  return (
-    <PositionTpSlDrawerContext.Provider value={toggleActions}>
-      <Drawer open={open} onOpenChange={onSet}>
-        <DrawerContent>
-          <PositionTpSlDrawerContent position={position} />
-        </DrawerContent>
-      </Drawer>
-    </PositionTpSlDrawerContext.Provider>
-  )
-}
+    useLayoutEffect(() => {
+      if (position) {
+        trade.resetTradeAction({
+          orderVolume: String(position.orderVolume),
+        }) // 重置
+        trade.resetSpSl() // 重置
+        // 持仓列表核心赋值操作 ！！！
+        if (!position.symbol) return
+        console.log('====== 取【当前查看】持仓单数据与行情，计算止盈止损 ======')
+        trade.setActiveSymbolName(position.symbol)
+        trade.setRecordModalItem(position)
+        if (position?.takeProfit) {
+          trade.setSp(position?.takeProfit.toString())
+        }
+
+        if (position?.stopLoss) {
+          trade.setSl(position?.stopLoss.toString())
+        }
+      }
+
+      return () => {
+        trade.resetSpSl()
+        trade.setRecordModalItem({} as RecordModalItem)
+        console.log('【当前查看】持仓单设为空')
+      }
+    }, [position])
+
+    return (
+      <PositionTpSlDrawerContext.Provider value={toggleActions}>
+        <Drawer open={open} onOpenChange={onSet}>
+          <DrawerContent>
+            <PositionTpSlDrawerContent position={position} />
+          </DrawerContent>
+        </Drawer>
+      </PositionTpSlDrawerContext.Provider>
+    )
+  },
+)

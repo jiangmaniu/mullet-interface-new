@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { useAppState } from '@/hooks/use-app-state'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 import { useStores } from '@/v1/provider/mobxProvider'
 
@@ -43,7 +44,7 @@ const Trade = observer(() => {
   // Router
   const router = useRouter()
 
-  const { trade } = useStores()
+  const { trade, user } = useStores()
   const symbol = trade.activeSymbolName
 
   // Safe Area Insets
@@ -140,11 +141,24 @@ const Trade = observer(() => {
   const pendingList = trade.pendingList
   const positionList = trade.positionList
 
+  // 刷新持仓和挂单列表
+  const initData = () => {
+    trade.getPositionList(true)
+    trade.getPendingList()
+
+    // 刷新账户信息
+    user.fetchUserInfo(true)
+  }
+
   useEffect(() => {
     if (!trade.currentAccountInfo.id) return
-    trade.getPendingList()
-    trade.getPositionList()
+    initData()
   }, [trade.currentAccountInfo.id])
+
+  useAppState(() => {
+    // 页面回到前台刷新持仓列表
+    initData()
+  })
 
   return (
     <View className="flex-1">

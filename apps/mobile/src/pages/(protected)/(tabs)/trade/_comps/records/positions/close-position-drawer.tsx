@@ -64,7 +64,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
     setSliderValue(value)
     // 根据百分比计算平仓数量
     const calculatedQuantity = BNumber.fromPercent(value).toPercentRatio().multipliedBy(positionInfo?.orderVolume)
-    const lots = calculatedQuantity?.decimalPlaces(lotsVolScale, BNumber.ROUND_UP)?.toFixed()
+    const lots = calculatedQuantity?.cutDecimalPlaces(lotsVolScale, BNumber.ROUND_UP)?.toFixed()
     console.log('📊 Calculated lots:', lots, 'from', value, '%')
     if (lots) {
       setClosedLots(lots)
@@ -75,9 +75,9 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
     if (source === NumberInputSourceType.EVENT) {
       setClosedLots(value)
 
-      const lots = BNumber.from(value).div(positionInfo?.orderVolume)?.toPercent().decimalPlaces(0)?.toFixed()
-      if (lots) {
-        setSliderValue(Number(lots))
+      const lotsPercent = BNumber.from(value).div(positionInfo?.orderVolume)?.toPercent().cutDecimalPlaces(0)?.toFixed()
+      if (lotsPercent) {
+        setSliderValue(Number(lotsPercent))
       }
     }
   }
@@ -98,7 +98,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
           // 关闭抽屉
           setLeft()
         },
-      }
+      },
     )
   }
 
