@@ -1,135 +1,122 @@
-import React, { useState, createContext, useContext, ComponentProps } from 'react';
-import { LayoutChangeEvent, Pressable, View, ViewStyle } from 'react-native';
-import {
-  Tabs,
-  MaterialTabBar,
-  MaterialTabBarProps,
-  useCurrentTabScrollY,
-} from 'react-native-collapsible-tab-view';
-import { useScroller, useTabsContext } from 'react-native-collapsible-tab-view/src/hooks';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { useThemeColors } from '@/hooks/use-theme-colors';
-import { cn } from '@/lib/utils';
-import { cva, type VariantProps } from 'class-variance-authority';
-import { useResolveClassNames } from 'uniwind';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { ComponentProps, createContext, useContext, useState } from 'react'
+import { LayoutChangeEvent, Pressable, View, ViewStyle } from 'react-native'
+import { MaterialTabBar, MaterialTabBarProps, Tabs, useCurrentTabScrollY } from 'react-native-collapsible-tab-view'
+import { useScroller, useTabsContext } from 'react-native-collapsible-tab-view/src/hooks'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
-  useAnimatedStyle,
-  interpolate,
+  cancelAnimation,
   Extrapolation,
+  interpolate,
+  interpolateColor,
   SharedValue,
   useAnimatedReaction,
+  useAnimatedStyle,
   useSharedValue,
-  cancelAnimation,
   withDecay,
-  interpolateColor,
-} from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+} from 'react-native-reanimated'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { cva } from 'class-variance-authority'
+import * as Haptics from 'expo-haptics'
+import { LinearGradient } from 'expo-linear-gradient'
+import { useResolveClassNames } from 'uniwind'
+import type { VariantProps } from 'class-variance-authority'
 
-type TabVariant = 'solid' | 'outline' | 'underline' | 'text';
-type TabSize = 'sm' | 'md' | 'lg';
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { cn } from '@/lib/utils'
 
-const tabBarVariants = cva(
-  'w-full flex-row items-center',
-  {
-    variants: {
-      variant: {
-        solid: 'gap-medium',
-        outline: 'gap-medium',
-        underline: 'border-b border-brand-default',
-        text: '',
-      },
-      size: {
-        sm: '',
-        md: 'h-10',
-        lg: '',
-      },
-    },
-    defaultVariants: {
-      variant: 'underline',
-      size: 'sm',
-    },
-  }
-);
+type TabVariant = 'solid' | 'outline' | 'underline' | 'text'
+type TabSize = 'sm' | 'md' | 'lg'
 
-const tabItemVariants = cva(
-  'items-center justify-center',
-  {
-    variants: {
-      variant: {
-        solid: 'rounded-small',
-        outline: 'rounded-small',
-        underline: '',
-        text: '',
-      },
-      size: {
-        sm: 'px-2xl py-small',
-        md: 'px-3xl py-medium',
-        lg: 'px-3xl py-xl',
-      },
-      selected: {
-        true: '',
-        false: '',
-      },
+const tabBarVariants = cva('w-full flex-row items-center', {
+  variants: {
+    variant: {
+      solid: 'gap-medium',
+      outline: 'gap-medium',
+      underline: 'border-b border-brand-default',
+      text: '',
     },
-    compoundVariants: [
-      { variant: 'solid', selected: false, className: 'bg-button' },
-      { variant: 'outline', selected: false, className: '' },
-      { variant: 'outline', selected: true, className: 'border border-brand-secondary-2' },
-      { variant: 'underline', selected: false, className: '' },
-      { variant: 'underline', selected: true, className: 'border-b-2 border-brand-primary' }, // Fallback style
-      { variant: 'text', selected: false, className: '' },
-    ],
-    defaultVariants: {
-      variant: 'underline',
-      size: 'sm',
-      selected: false,
+    size: {
+      sm: '',
+      md: 'h-10',
+      lg: '',
     },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'underline',
+    size: 'sm',
+  },
+})
 
-const tabTextVariants = cva(
-  'font-medium',
-  {
-    variants: {
-      variant: {
-        solid: '',
-        outline: '',
-        underline: '',
-        text: '',
-      },
-      size: {
-        sm: 'text-button-1',
-        md: 'text-button-2',
-        lg: 'text-button-2',
-      },
-      selected: {
-        true: '',
-        false: '',
-      },
+const tabItemVariants = cva('items-center justify-center', {
+  variants: {
+    variant: {
+      solid: 'rounded-small',
+      outline: 'rounded-small',
+      underline: '',
+      text: '',
     },
-    defaultVariants: {
-      variant: 'underline',
-      size: 'sm',
-      selected: false,
+    size: {
+      sm: 'px-2xl py-small',
+      md: 'px-3xl py-medium',
+      lg: 'px-3xl py-xl',
     },
-  }
-);
+    selected: {
+      true: '',
+      false: '',
+    },
+  },
+  compoundVariants: [
+    { variant: 'solid', selected: false, className: 'bg-button' },
+    { variant: 'outline', selected: false, className: '' },
+    { variant: 'outline', selected: true, className: 'border border-brand-secondary-2' },
+    { variant: 'underline', selected: false, className: '' },
+    { variant: 'underline', selected: true, className: 'border-b-2 border-brand-primary' }, // Fallback style
+    { variant: 'text', selected: false, className: '' },
+  ],
+  defaultVariants: {
+    variant: 'underline',
+    size: 'sm',
+    selected: false,
+  },
+})
 
+const tabTextVariants = cva('font-medium', {
+  variants: {
+    variant: {
+      solid: '',
+      outline: '',
+      underline: '',
+      text: '',
+    },
+    size: {
+      sm: 'text-button-1',
+      md: 'text-button-2',
+      lg: 'text-button-2',
+    },
+    selected: {
+      true: '',
+      false: '',
+    },
+  },
+  defaultVariants: {
+    variant: 'underline',
+    size: 'sm',
+    selected: false,
+  },
+})
 
 interface CustomTabItemProps {
-  index: number;
-  indexDecimal: SharedValue<number>;
-  label: string;
-  onPress: () => void;
+  index: number
+  indexDecimal: SharedValue<number>
+  label: string
+  onPress: () => void
   // 添加 onLayout 定义，以便 MaterialTabBar 计算指示器位置
-  onLayout?: (event: LayoutChangeEvent) => void;
-  variant: TabVariant;
-  size: TabSize;
-  activeColor: string;
-  inactiveColor: string;
-  scrollEnabled: boolean;
+  onLayout?: (event: LayoutChangeEvent) => void
+  variant: TabVariant
+  size: TabSize
+  activeColor: string
+  inactiveColor: string
+  scrollEnabled: boolean
 }
 
 function CustomTabItem({
@@ -144,28 +131,23 @@ function CustomTabItem({
   inactiveColor,
   scrollEnabled,
 }: CustomTabItemProps) {
-
   // 文字颜色插值动画
   const animatedTextStyle = useAnimatedStyle(() => {
-    const distance = Math.abs(index - indexDecimal.value);
-    const progress = Math.min(distance, 1);
+    const distance = Math.abs(index - indexDecimal.value)
+    const progress = Math.min(distance, 1)
 
-    const color = interpolateColor(
-      progress,
-      [0, 1],
-      [activeColor, inactiveColor]
-    );
+    const color = interpolateColor(progress, [0, 1], [activeColor, inactiveColor])
 
     return {
       color,
-    };
-  });
+    }
+  })
 
   const handlePress = () => {
     // 如果当前 tab 已选中，不触发 onPress 以避免双击滚动到顶部
-    if (Math.abs(index - indexDecimal.value) < 0.5) return;
-    Haptics.selectionAsync();
-    onPress();
+    if (Math.abs(index - indexDecimal.value) < 0.5) return
+    Haptics.selectionAsync()
+    onPress()
   }
 
   return (
@@ -175,14 +157,11 @@ function CustomTabItem({
       onLayout={onLayout}
       className={cn(tabItemVariants({ variant, size, selected: false }), { 'flex-1': !scrollEnabled })}
     >
-      <Animated.Text
-        className={cn(tabTextVariants({ variant, size, selected: false }))}
-        style={animatedTextStyle}
-      >
+      <Animated.Text className={cn(tabTextVariants({ variant, size, selected: false }))} style={animatedTextStyle}>
         {label}
       </Animated.Text>
     </Pressable>
-  );
+  )
 }
 
 // ----------------------------------------------------------------------
@@ -191,19 +170,19 @@ function CustomTabItem({
 
 // Context: CollapsibleStickyNavBar fixed 时向 CollapsibleTab 注册额外高度
 type FixedNavBarContextType = {
-  fixedNavBarHeight: number;
-  setFixedNavBarHeight: (h: number) => void;
-};
-const FixedNavBarContext = createContext<FixedNavBarContextType | undefined>(undefined);
+  fixedNavBarHeight: number
+  setFixedNavBarHeight: (h: number) => void
+}
+const FixedNavBarContext = createContext<FixedNavBarContextType | undefined>(undefined)
 
 type CollapsibleTabProps = Omit<React.ComponentProps<typeof Tabs.Container>, 'renderTabBar'> &
   VariantProps<typeof tabBarVariants> & {
-    tabBarClassName?: string;
-    tabClassName?: string;
-    renderTabBarRight?: () => React.ReactNode;
-    renderTabBarBottom?: () => React.ReactNode;
-    scrollEnabled?: boolean;
-  };
+    tabBarClassName?: string
+    tabClassName?: string
+    renderTabBarRight?: () => React.ReactNode
+    renderTabBarBottom?: () => React.ReactNode
+    scrollEnabled?: boolean
+  }
 
 export function CollapsibleTab({
   variant = 'underline',
@@ -216,43 +195,35 @@ export function CollapsibleTab({
   scrollEnabled = true,
   ...props
 }: CollapsibleTabProps) {
-  const {
-    colorBrandPrimary,
-    textColorContent1,
-    textColorContent4,
-    backgroundColorSecondary,
-  } = useThemeColors();
+  const { colorBrandPrimary, textColorContent1, textColorContent4, backgroundColorSecondary } = useThemeColors()
 
-  const insets = useSafeAreaInsets();
-  const [fixedNavBarHeight, setFixedNavBarHeight] = useState(0);
-  const currentVariant = variant || 'underline';
-  const currentSize = size || 'sm';
+  const insets = useSafeAreaInsets()
+  const [fixedNavBarHeight, setFixedNavBarHeight] = useState(0)
+  const currentVariant = variant || 'underline'
+  const currentSize = size || 'sm'
 
   const renderTabBar = (tabBarProps: MaterialTabBarProps<any>) => {
     return (
       <View>
-        <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), "px-xl", tabBarClassName)}>
+        <View className={cn(tabBarVariants({ variant: currentVariant, size: currentSize }), 'px-xl', tabBarClassName)}>
           <MaterialTabBar
             {...tabBarProps}
             scrollEnabled={scrollEnabled}
-            style={{ flex: 1, height: '100%', backgroundColor: 'transparent' }}
+            style={{ height: '100%', backgroundColor: 'transparent' }}
             contentContainerStyle={{ alignItems: 'center' }}
-
             // 指示器样式配置
             indicatorStyle={
               currentVariant === 'underline'
                 ? {
-                  backgroundColor: colorBrandPrimary,
-                  height: 2,
-                  bottom: 0,
-                  borderRadius: 1, // 圆角更现代
-                }
+                    backgroundColor: colorBrandPrimary,
+                    height: 2,
+                    bottom: 0,
+                    borderRadius: 1, // 圆角更现代
+                  }
                 : { backgroundColor: 'transparent', height: 0 }
             }
-
             activeColor={textColorContent1}
             inactiveColor={textColorContent4}
-
             TabItemComponent={(itemProps) => (
               <CustomTabItem
                 index={itemProps.index}
@@ -260,10 +231,8 @@ export function CollapsibleTab({
                 scrollEnabled={scrollEnabled}
                 label={typeof itemProps.label === 'string' ? itemProps.label : ''}
                 onPress={() => itemProps.onPress(itemProps.name)}
-
                 // 透传 onLayout 给 CustomTabItem
                 onLayout={itemProps.onLayout}
-
                 variant={currentVariant}
                 size={currentSize}
                 activeColor={textColorContent1}
@@ -272,7 +241,7 @@ export function CollapsibleTab({
             )}
           />
           {renderTabBarRight && (
-            <View className='flex-shrink-0 flex-row items-center'>
+            <View className="flex-shrink-0 flex-row items-center">
               <LinearGradient
                 colors={['transparent', backgroundColorSecondary]}
                 start={{ x: 0, y: 0 }}
@@ -286,8 +255,8 @@ export function CollapsibleTab({
         </View>
         {renderTabBarBottom?.()}
       </View>
-    );
-  };
+    )
+  }
 
   const headerContainerStyle = useResolveClassNames('shadow-none elevation-0 bg-secondary')
 
@@ -315,27 +284,39 @@ export function CollapsibleTab({
         {props.children}
       </Tabs.Container>
     </FixedNavBarContext.Provider>
-  );
+  )
 }
 
-export const CollapsibleTabScene = Tabs.Tab;
-export const CollapsibleFlatList = <T,>({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.FlatList<T>>) => <Tabs.FlatList<T> showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
-export const CollapsibleScrollView = ({ showsVerticalScrollIndicator = false, ...props }: ComponentProps<typeof Tabs.ScrollView>) => <Tabs.ScrollView showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />;
-export const CollapsibleSectionList = Tabs.SectionList;
+export const CollapsibleTabScene = Tabs.Tab
+export const CollapsibleFlatList = <T,>({
+  showsVerticalScrollIndicator = false,
+  ...props
+}: ComponentProps<typeof Tabs.FlatList<T>>) => (
+  <Tabs.FlatList<T> showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />
+)
+export const CollapsibleScrollView = ({
+  showsVerticalScrollIndicator = false,
+  ...props
+}: ComponentProps<typeof Tabs.ScrollView>) => (
+  <Tabs.ScrollView showsVerticalScrollIndicator={showsVerticalScrollIndicator} {...props} />
+)
+export const CollapsibleSectionList = Tabs.SectionList
 
 type CollapsibleStickyContextType = {
-  bannerHeight: number;
-  setBannerHeight: (height: number) => void;
-};
+  bannerHeight: number
+  setBannerHeight: (height: number) => void
+}
 
-const CollapsibleStickyContext = createContext<CollapsibleStickyContextType | undefined>(undefined);
+const CollapsibleStickyContext = createContext<CollapsibleStickyContextType | undefined>(undefined)
 
 function useCollapsibleStickyContext() {
-  const context = useContext(CollapsibleStickyContext);
+  const context = useContext(CollapsibleStickyContext)
   if (!context) {
-    throw new Error('CollapsibleStickyHeader compound components must be used within a CollapsibleStickyHeader provider');
+    throw new Error(
+      'CollapsibleStickyHeader compound components must be used within a CollapsibleStickyHeader provider',
+    )
   }
-  return context;
+  return context
 }
 
 export function CollapsibleStickyHeader({
@@ -346,64 +327,64 @@ export function CollapsibleStickyHeader({
   minVelocity = 50,
   deceleration = 0.998,
 }: {
-  children: React.ReactNode;
-  className?: string;
-  style?: ViewStyle;
-  minDistance?: number;
-  minVelocity?: number;
-  deceleration?: number;
+  children: React.ReactNode
+  className?: string
+  style?: ViewStyle
+  minDistance?: number
+  minVelocity?: number
+  deceleration?: number
 }) {
-  const [bannerHeight, setBannerHeight] = useState(0);
+  const [bannerHeight, setBannerHeight] = useState(0)
 
-  const { refMap, focusedTab } = useTabsContext();
-  const scrollTo = useScroller();
-  const scrollY = useCurrentTabScrollY();
-  const initialScrollY = useSharedValue(0);
-  const isGestureActive = useSharedValue(false);
-  const targetScrollY = useSharedValue(0);
+  const { refMap, focusedTab } = useTabsContext()
+  const scrollTo = useScroller()
+  const scrollY = useCurrentTabScrollY()
+  const initialScrollY = useSharedValue(0)
+  const isGestureActive = useSharedValue(false)
+  const targetScrollY = useSharedValue(0)
 
   useAnimatedReaction(
     () => targetScrollY.value,
     (targetY) => {
-      'worklet';
+      'worklet'
       if (!isGestureActive.value) {
-        const currentTab = focusedTab.value;
-        const ref = refMap[currentTab];
+        const currentTab = focusedTab.value
+        const ref = refMap[currentTab]
         if (ref) {
-          scrollTo(ref, 0, Math.max(0, targetY), false, 'momentumScroll');
+          scrollTo(ref, 0, Math.max(0, targetY), false, 'momentumScroll')
         }
       }
     },
     [refMap, focusedTab, scrollTo],
-  );
+  )
 
   const headerPanGesture = Gesture.Pan()
     .minDistance(minDistance)
     .onStart(() => {
-      'worklet';
-      cancelAnimation(targetScrollY);
-      initialScrollY.value = scrollY.value;
-      targetScrollY.value = scrollY.value;
-      isGestureActive.value = true;
+      'worklet'
+      cancelAnimation(targetScrollY)
+      initialScrollY.value = scrollY.value
+      targetScrollY.value = scrollY.value
+      isGestureActive.value = true
     })
     .onUpdate((e) => {
-      'worklet';
+      'worklet'
       if (Math.abs(e.translationY) > Math.abs(e.translationX) || Math.abs(e.translationY) > 10) {
-        const currentTab = focusedTab.value;
-        const ref = refMap[currentTab];
+        const currentTab = focusedTab.value
+        const ref = refMap[currentTab]
         if (ref) {
-          const delta = -e.translationY;
-          const newTargetScrollY = Math.max(0, initialScrollY.value + delta);
-          targetScrollY.value = newTargetScrollY;
-          scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture');
+          const delta = -e.translationY
+          const newTargetScrollY = Math.max(0, initialScrollY.value + delta)
+          targetScrollY.value = newTargetScrollY
+          scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture')
         }
       }
     })
     .onEnd((e) => {
-      'worklet';
-      isGestureActive.value = false;
+      'worklet'
+      isGestureActive.value = false
       if (Math.abs(e.velocityY) > minVelocity) {
-        const velocity = -e.velocityY;
+        const velocity = -e.velocityY
         targetScrollY.value = withDecay(
           {
             velocity,
@@ -411,62 +392,62 @@ export function CollapsibleStickyHeader({
             clamp: [0, Infinity],
           },
           (finished) => {
-            'worklet';
+            'worklet'
             if (finished) {
-              targetScrollY.value = Math.max(0, targetScrollY.value);
+              targetScrollY.value = Math.max(0, targetScrollY.value)
             }
           },
-        );
+        )
       } else {
-        targetScrollY.value = Math.max(0, scrollY.value);
+        targetScrollY.value = Math.max(0, scrollY.value)
       }
     })
     .onFinalize(() => {
-      'worklet';
-      isGestureActive.value = false;
-    });
+      'worklet'
+      isGestureActive.value = false
+    })
 
   return (
     <CollapsibleStickyContext.Provider value={{ bannerHeight, setBannerHeight }}>
       <GestureDetector gesture={headerPanGesture}>
-        <View className={cn("relative", className)} style={style}>
+        <View className={cn('relative', className)} style={style}>
           {children}
         </View>
       </GestureDetector>
     </CollapsibleStickyContext.Provider>
-  );
+  )
 }
 
 export function CollapsibleStickyContent({
   children,
   className,
-  style
+  style,
 }: {
-  children: React.ReactNode;
-  className?: string;
-  style?: ViewStyle;
+  children: React.ReactNode
+  className?: string
+  style?: ViewStyle
 }) {
-  const { setBannerHeight } = useCollapsibleStickyContext();
+  const { setBannerHeight } = useCollapsibleStickyContext()
 
   return (
     <View
       className={className}
       style={style}
       onLayout={(event: LayoutChangeEvent) => {
-        setBannerHeight(event.nativeEvent.layout.height);
+        setBannerHeight(event.nativeEvent.layout.height)
       }}
     >
       {children}
     </View>
-  );
+  )
 }
 
 export interface CollapsibleStickyNavBarProps {
-  zIndex?: number;
-  style?: ViewStyle;
-  children?: React.ReactNode;
-  className?: string;
-  fixed?: boolean;
+  zIndex?: number
+  style?: ViewStyle
+  children?: React.ReactNode
+  className?: string
+  fixed?: boolean
 }
 
 export function CollapsibleStickyNavBar({
@@ -476,60 +457,50 @@ export function CollapsibleStickyNavBar({
   zIndex = 100,
   fixed = false,
 }: CollapsibleStickyNavBarProps) {
-  const { bannerHeight } = useCollapsibleStickyContext();
-  const setFixedNavBarHeight = useContext(FixedNavBarContext)?.setFixedNavBarHeight;
-  const insets = useSafeAreaInsets();
-  const headerHeight = 44 + insets.top;
+  const { bannerHeight } = useCollapsibleStickyContext()
+  const setFixedNavBarHeight = useContext(FixedNavBarContext)?.setFixedNavBarHeight
+  const insets = useSafeAreaInsets()
+  const headerHeight = 44 + insets.top
 
   // fixed 时注册纯导航栏高度（不含 insets）给 CollapsibleTab
   React.useEffect(() => {
     if (fixed && setFixedNavBarHeight) {
-      setFixedNavBarHeight(44);
-      return () => setFixedNavBarHeight(0);
+      setFixedNavBarHeight(44)
+      return () => setFixedNavBarHeight(0)
     }
-  }, [fixed, setFixedNavBarHeight]);
+  }, [fixed, setFixedNavBarHeight])
 
-  const scrollY = useCurrentTabScrollY();
+  const scrollY = useCurrentTabScrollY()
 
   const animatedStyle = useAnimatedStyle(() => {
-    if (bannerHeight === 0) return {};
+    if (bannerHeight === 0) return {}
 
-    const translateY = interpolate(
-      scrollY.value,
-      [0, bannerHeight],
-      [0, bannerHeight],
-      Extrapolation.CLAMP
-    );
+    const translateY = interpolate(scrollY.value, [0, bannerHeight], [0, bannerHeight], Extrapolation.CLAMP)
 
     if (fixed) {
-      return { transform: [{ translateY }] };
+      return { transform: [{ translateY }] }
     }
 
     const opacity = interpolate(
       scrollY.value + insets.top,
       [bannerHeight, bannerHeight + headerHeight],
       [1, 0],
-      Extrapolation.CLAMP
-    );
+      Extrapolation.CLAMP,
+    )
 
     return {
       transform: [{ translateY }],
       opacity,
-    };
-  });
+    }
+  })
 
   const statusBarAnimatedStyle = useAnimatedStyle(() => {
-    if (bannerHeight === 0) return {};
-    const translateY = interpolate(
-      scrollY.value,
-      [0, bannerHeight],
-      [0, bannerHeight],
-      Extrapolation.CLAMP
-    );
+    if (bannerHeight === 0) return {}
+    const translateY = interpolate(scrollY.value, [0, bannerHeight], [0, bannerHeight], Extrapolation.CLAMP)
     return {
       transform: [{ translateY }],
-    };
-  });
+    }
+  })
 
   return (
     <>
@@ -545,9 +516,9 @@ export function CollapsibleStickyNavBar({
             zIndex: zIndex - 1,
           },
           style,
-          statusBarAnimatedStyle
+          statusBarAnimatedStyle,
         ]}
-        className={className || "bg-secondary"}
+        className={className || 'bg-secondary'}
       />
       <Animated.View
         style={[
@@ -559,14 +530,14 @@ export function CollapsibleStickyNavBar({
             height: headerHeight,
             zIndex,
           },
-          animatedStyle
+          animatedStyle,
         ]}
       >
         {children}
       </Animated.View>
     </>
-  );
+  )
 }
 
-export { tabBarVariants, tabItemVariants, tabTextVariants };
-export type { TabVariant, TabSize };
+export { tabBarVariants, tabItemVariants, tabTextVariants }
+export type { TabVariant, TabSize }
