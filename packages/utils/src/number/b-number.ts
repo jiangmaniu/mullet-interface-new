@@ -89,7 +89,11 @@ export class BNumber extends BigNumberBase {
   }
 
   toPercent() {
-    return super.multipliedBy(100)
+    return BNumber.from(super.multipliedBy(100))
+  }
+
+  toPercentRatio() {
+    return BNumber.from(super.div(100))
   }
 
   multipliedBy(n: BNumberValue, base?: number): BNumber
@@ -173,7 +177,7 @@ export class BNumber extends BigNumberBase {
   }
 
   decimalPlaces(): number
-  decimalPlaces(decimalPlaces: number, roundingMode?: BigNumber.RoundingMode): BNumber
+  decimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode): BNumber
   decimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode) {
     if (isUndefined(decimalPlaces)) {
       return super.decimalPlaces()

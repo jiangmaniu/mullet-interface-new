@@ -1,26 +1,28 @@
-import { observer } from "mobx-react-lite"
-
-import { useState, useCallback } from 'react'
-import { View, Pressable } from 'react-native'
+import { observer } from 'mobx-react-lite'
+import { useCallback, useState } from 'react'
+import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Text } from '@/components/ui/text'
+
+import { SymbolSelectDrawer } from '@/components/drawers/symbol-select-drawer'
+import { AvatarImage } from '@/components/ui/avatar'
 import {
   IconifyActivity,
   IconifyCandlestickChart,
   IconifyMoreHoriz,
   IconifyNavArrowDownSolid,
 } from '@/components/ui/icons'
-import { AvatarImage } from '@/components/ui/avatar'
 import { ScreenHeader } from '@/components/ui/screen-header'
+import { Text } from '@/components/ui/text'
+import { parseRiseAndFallInfo } from '@/helpers/market'
+import { renderFormatSymbolName } from '@/helpers/symbol'
 import { cn } from '@/lib/utils'
-import { CommonFeaturesDrawer } from './common-features-drawer'
-import { SymbolSelectDrawer } from '@/components/drawers/symbol-select-drawer'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { Account } from '@/v1/services/tradeCore/account/typings'
+import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useGetCurrentQuoteCallback, subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
-import { parseRiseAndFallInfo } from '@/helpers/market'
-import { Account } from "@/v1/services/tradeCore/account/typings"
+
+import { CommonFeaturesDrawer } from './common-features-drawer'
 
 interface TradeHeaderProps {
   symbol: string
@@ -34,16 +36,18 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
   const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
 
-
-  const handleViewChange = useCallback((view: 'chart' | 'depth') => {
-    if (view === 'chart') {
-      // Already on chart view, do nothing
-      return
-    } else {
-      // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
-      router.push('/SOL-USDC')
-    }
-  }, [router])
+  const handleViewChange = useCallback(
+    (view: 'chart' | 'depth') => {
+      if (view === 'chart') {
+        // Already on chart view, do nothing
+        return
+      } else {
+        // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
+        router.push('/SOL-USDC')
+      }
+    },
+    [router],
+  )
 
   const handleMorePress = () => setIsCommonFeaturesDrawerOpen(true)
 
@@ -51,27 +55,21 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
     <>
       <ScreenHeader
         showBackButton={false}
-        left={
-          <SymbolSelector symbolInfo={symbolInfo} />
-        }
+        left={<SymbolSelector symbolInfo={symbolInfo} />}
         right={
-          <View className="flex-row items-center gap-xl">
-            <View className={cn('flex-row rounded-full border border-brand-default overflow-hidden p-[3px]')}>
+          <View className="gap-xl flex-row items-center">
+            <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
               <Pressable
                 onPress={() => handleViewChange('chart')}
-                className="w-[36px] h-[24px] rounded-full justify-center items-center bg-button"
+                className="bg-button h-[24px] w-[36px] items-center justify-center rounded-full"
               >
                 <IconifyActivity width={22} height={22} className="text-content-1" />
               </Pressable>
               <Pressable
                 onPress={() => handleViewChange('depth')}
-                className="w-[36px] h-[24px] rounded-full justify-center items-center"
+                className="h-[24px] w-[36px] items-center justify-center rounded-full"
               >
-                <IconifyCandlestickChart
-                  width={22}
-                  height={22}
-                  className="text-brand-default"
-                />
+                <IconifyCandlestickChart width={22} height={22} className="text-brand-default" />
               </Pressable>
             </View>
 
@@ -126,24 +124,32 @@ const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
     setIsSymbolSelectDrawerOpen(true)
   }
 
-  const handleSymbolSelect = useCallback((symbolInfo: Account.TradeSymbolListItem) => {
-    trade.switchSymbol(symbolInfo.symbol)
-    subscribeCurrentAndPositionSymbol({ cover: true })
-  }, [trade])
+  const handleSymbolSelect = useCallback(
+    (symbolInfo: Account.TradeSymbolListItem) => {
+      trade.switchSymbol(symbolInfo.symbol)
+      subscribeCurrentAndPositionSymbol({ cover: true })
+    },
+    [trade],
+  )
 
   return (
     <>
-      <View className="flex-row items-center gap-medium">
-        <Pressable
-          onPress={handleSymbolPress}
-          className="flex-row items-center gap-medium"
-        >
+      <View className="gap-medium flex-row items-center">
+        <Pressable onPress={handleSymbolPress} className="gap-medium flex-row items-center">
           <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
-          <Text className="text-paragraph-p1 text-content-1 font-medium">{symbolInfo.symbol}</Text>
-          <Text className={percentChangeInfo.isRise ? 'text-market-rise' : percentChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}>
+          <Text className="text-paragraph-p1 text-content-1 font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
+          <Text
+            className={
+              percentChangeInfo.isRise
+                ? 'text-market-rise'
+                : percentChangeInfo.isFall
+                  ? 'text-market-fall'
+                  : 'text-content-1'
+            }
+          >
             {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
           </Text>
-          <IconifyNavArrowDownSolid width={16} height={16} className='text-content-1' />
+          <IconifyNavArrowDownSolid width={16} height={16} className="text-content-1" />
         </Pressable>
       </View>
 

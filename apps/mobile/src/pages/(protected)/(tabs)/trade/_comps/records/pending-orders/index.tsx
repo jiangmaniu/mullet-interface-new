@@ -1,28 +1,27 @@
-
-
-import { useState, useCallback, useEffect } from 'react'
-import { View, Pressable, ActivityIndicator } from 'react-native'
-import { Text } from '@/components/ui/text'
-import {
-  IconifyNavArrowRight,
-} from '@/components/ui/icons'
-import { EmptyState } from '@/components/states/empty-state'
-import { Badge } from '@/components/ui/badge'
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useStores } from '@/v1/provider/mobxProvider'
-import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
-import { Order } from '@/v1/services/tradeCore/order/typings'
-import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
-import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
-import { useI18n } from '@/hooks/use-i18n'
-import { BNumber } from '@mullet/utils/number'
-import { PositionCurrentPrice } from '../../common/position-current-price'
+import { useEffect, useState } from 'react'
+import { ActivityIndicator, Pressable, View } from 'react-native'
+
+import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
-import { getImgSource } from '@/utils/img'
-import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
-import { toast } from '@/components/ui/toast'
+import { Badge } from '@/components/ui/badge'
+import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
+import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
+import { Text } from '@/components/ui/text'
+import { toast } from '@/components/ui/toast'
+import { renderFormatSymbolName } from '@/helpers/symbol'
+import { useI18n } from '@/hooks/use-i18n'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
+import { getImgSource } from '@/utils/img'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { Order } from '@/v1/services/tradeCore/order/typings'
+import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
+import { BNumber } from '@mullet/utils/number'
+
+import { PositionCurrentPrice } from '../../common/position-current-price'
 
 // ============ PendingOrderItem ============
 interface PendingOrderItemProps {
@@ -38,7 +37,7 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
   return (
     <View className="py-xl gap-xl">
       {/* Header Row */}
-      <View className="flex-row items-center justify-between px-xl">
+      <View className="px-xl flex-row items-center justify-between">
         <Pressable
           onPress={() => {
             if (!order.symbol || activeSymbol === order.symbol) return
@@ -47,18 +46,14 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
             subscribeCurrentAndPositionSymbol({ cover: true })
           }}
         >
-          <View className="flex-row items-center gap-[10px] flex-1">
+          <View className="flex-1 flex-row items-center gap-[10px]">
             <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full"></AvatarImage>
 
-            <Text className="text-important-1 text-content-1">{order.symbol}</Text>
+            <Text className="text-important-1 text-content-1">{renderFormatSymbolName(order)}</Text>
             <Badge color={pendingOrderInfo.isBuy ? 'rise' : 'fall'}>
               <Text>{pendingOrderInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
             </Badge>
-            <IconifyNavArrowRight
-              width={16}
-              height={16}
-              className="text-content-1"
-            />
+            <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
           </View>
         </Pressable>
 
@@ -66,7 +61,7 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
       </View>
 
       {/* Data Row: 数量, 挂单价, 标记价 */}
-      <View className="flex-row justify-between px-xl">
+      <View className="px-xl flex-row justify-between">
         <View className="w-[100px]">
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
@@ -127,7 +122,7 @@ export const TradePendingOrders = observer(() => {
       )
     }
     return (
-      <View className="py-[60px] items-center">
+      <View className="items-center py-[60px]">
         <EmptyState message={<Trans>暂无委托记录</Trans>} />
       </View>
     )
@@ -179,5 +174,4 @@ const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem 
       )}
     </>
   )
-}
-)
+})

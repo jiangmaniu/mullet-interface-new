@@ -393,9 +393,10 @@ export const calcYieldRate = (profit: number | undefined, orderMargin: number | 
 }
 
 export const newCalcYieldRate = (profit?: BNumberValue, orderMargin?: BNumberValue) => {
-  console.log('newCalcYieldRate', profit, orderMargin)
-  const yieldRate = BNumber.from(profit)?.div(orderMargin)
-  return yieldRate?.toString()
+  if (BNumber.from(orderMargin)?.gt(0)) {
+    const yieldRate = BNumber.from(profit)?.div(orderMargin)
+    return yieldRate?.toString()
+  }
 }
 
 /**

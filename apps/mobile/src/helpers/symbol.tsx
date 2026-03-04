@@ -1,6 +1,6 @@
-import { renderFallback } from "@mullet/utils/fallback"
-import { BNumber } from "@mullet/utils/number"
-import { Symbol } from "@/v1/services/tradeCore/symbol/typings"
+import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import { renderFallback } from '@mullet/utils/fallback'
+import { BNumber } from '@mullet/utils/number'
 
 export const parseSymbolLotsVolScale = (symbolConf?: Symbol.SymbolConf) => {
   return BNumber.from(symbolConf?.tradeStep)?.decimalPlaces()
@@ -12,6 +12,5 @@ export const parseSymbolLotsVolScale = (symbolConf?: Symbol.SymbolConf) => {
  * @returns 格式化后的品种名称
  */
 export const renderFormatSymbolName = (symbolInfo: Pick<Symbol.SymbolListItem, 'alias' | 'symbol'>) => {
-  return renderFallback(symbolInfo.alias ?? symbolInfo.symbol)
+  return renderFallback(symbolInfo.alias || symbolInfo.symbol)
 }
-

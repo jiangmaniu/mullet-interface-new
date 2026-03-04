@@ -47,6 +47,8 @@ import { useLoginAuthStore } from '@/stores/login-auth'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
 import { Order } from '../services/tradeCore/order/typings'
+import { Account } from '../services/tradeCore/account/typings'
+import { AccountGroup } from '../services/tradeCore/accountGroup/typings'
 
 export type UserConfInfo = Record<
   string,
@@ -1016,7 +1018,12 @@ class TradeStore {
     }
 
     // 查询进行中的订单
-    const res = await getBgaOrderPage({ current: 1, size: 999, status: TradePositionStatusEnum.BAG, accountId: this.currentAccountInfo?.id })
+    const res = await getBgaOrderPage({
+      current: 1,
+      size: 999,
+      status: TradePositionStatusEnum.BAG,
+      accountId: this.currentAccountInfo?.id,
+    })
 
     runInAction(() => {
       setTimeout(() => {
@@ -1178,7 +1185,6 @@ class TradeStore {
       this.getPendingList()
       // 更新止盈止损列表
       // this.getStopLossProfitList()
-      message.info(t`Cancel Success`)
     }
     return res
   }
