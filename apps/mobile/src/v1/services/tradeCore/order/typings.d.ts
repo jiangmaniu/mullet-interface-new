@@ -1,4 +1,9 @@
-import type { OrderCompletionTypeEnum, OrderMarginTypeEnum, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
+import type {
+  OrderCompletionTypeEnum,
+  OrderMarginTypeEnum,
+  OrderStatusEnum,
+  OrderTypeEnum,
+} from '@/options/trade/order'
 import type { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
 
 declare namespace Order {
@@ -507,7 +512,7 @@ declare namespace Order {
     /**
      * 品种小数位
      */
-    symbolDecimal: number
+    symbolDecimal?: number
     /**
      * 止盈
      */

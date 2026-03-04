@@ -15,6 +15,7 @@ import { renderFallback } from "@mullet/utils/fallback";
 import { Badge } from "@/components/ui/badge";
 import { getAccountSynopsisByLng } from "@/v1/utils/business";
 import { useStores } from "@/v1/provider/mobxProvider";
+import { Account } from "@/v1/services/tradeCore/account/typings";
 
 const PAGE_SIZE = 10;
 

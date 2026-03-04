@@ -6,16 +6,16 @@ import { useGetCurrentQuoteCallback } from "@/v1/utils/wsUtil"
 import { BNumber } from "@mullet/utils/number"
 import { TradePositionDirectionEnum } from "@/options/trade/position"
 
-export const PositionCurrentPrice = observer(({ position, className }: { position: Order.BgaOrderPageListItem, className?: string }) => {
+export const PositionCurrentPrice = observer(({ info, className }: { info: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>, className?: string }) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(position.symbol)
-  const currentPrice = position.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.bid : symbolMarketInfo?.ask
-  const priceDiff = position.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.bidDiff : symbolMarketInfo?.askDiff
+  const symbolMarketInfo = getCurrentQuote(info.symbol)
+  const currentPrice = info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.bid : symbolMarketInfo?.ask
+  const priceDiff = info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.bidDiff : symbolMarketInfo?.askDiff
   const priceDiffColor = BNumber.from(priceDiff).gt(0) ? 'text-market-rise' : BNumber.from(priceDiff).lt(0) ? 'text-market-fall' : 'text-content-1'
 
   return (
     <Text className={cn(priceDiffColor, className)}>
-      {BNumber.toFormatNumber(currentPrice, { volScale: position.symbolDecimal })}
+      {BNumber.toFormatNumber(currentPrice, { volScale: info.symbolDecimal })}
     </Text>
   )
 })

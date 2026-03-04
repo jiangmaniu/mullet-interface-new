@@ -1,39 +1,38 @@
-
-import { useState, useCallback, useEffect } from 'react'
-import { View, Pressable } from 'react-native'
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
+import { useCallback, useEffect, useState } from 'react'
+import { Pressable, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Text } from '@/components/ui/text'
-import {
-  IconifyNavArrowDown,
-  IconifyPage,
-  IconNavArrowSuperior,
-  IconNavArrowDown,
-  IconifyNavArrowRight,
-} from '@/components/ui/icons'
+
 import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
-import { Trans } from '@lingui/react/macro'
 import { IconButton } from '@/components/ui/button'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-  CollapsibleTab,
-  CollapsibleTabScene,
+  CollapsibleScrollView,
+  CollapsibleStickyContent,
   CollapsibleStickyHeader,
   CollapsibleStickyNavBar,
-  CollapsibleStickyContent,
-  CollapsibleScrollView,
+  CollapsibleTab,
+  CollapsibleTabScene,
 } from '@/components/ui/collapsible-tab'
-
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import {
+  IconifyNavArrowDown,
+  IconifyNavArrowRight,
+  IconifyPage,
+  IconNavArrowDown,
+  IconNavArrowSuperior,
+} from '@/components/ui/icons'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Text } from '@/components/ui/text'
+import { useTradeSettingsStore } from '@/stores/trade-settings'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { observer } from 'mobx-react-lite'
+
+import { AccountCard } from './_comps/account-card'
 import { TradeHeader } from './_comps/header'
 import { OrderPanel } from './_comps/order-panel'
-import { AccountCard } from './_comps/account-card'
-import { MOCK_POSITIONS, TradePositions } from './_comps/records/positions'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
-import OrderConfirmationDrawer from './_comps/order-confirmation-drawer'
-import { MOCK_PENDING_ORDERS, TradePendingOrders } from './_comps/records/pending-orders'
+import { TradePendingOrders } from './_comps/records/pending-orders'
+import { TradePositions } from './_comps/records/positions'
 import { SymbolChartView } from './_comps/symbol-chart-view'
 
 const Trade = observer(() => {
@@ -55,8 +54,6 @@ const Trade = observer(() => {
 
   // State
   const [isOrderConfirmDrawerOpen, setIsOrderConfirmDrawerOpen] = useState(false)
-  const [isClosePositionDrawerOpen, setIsClosePositionDrawerOpen] = useState(false)
-  const [isStopProfitLossDrawerOpen, setIsStopProfitLossDrawerOpen] = useState(false)
   const [pendingOrder, setPendingOrder] = useState<{
     side: 'buy' | 'sell'
     price: string
@@ -140,6 +137,15 @@ const Trade = observer(() => {
   //   }
   // }, [selectedPosition])
 
+  const pendingList = trade.pendingList
+  const positionList = trade.positionList
+
+  useEffect(() => {
+    if (!trade.currentAccountInfo.id) return
+    trade.getPendingList()
+    trade.getPositionList()
+  }, [trade.currentAccountInfo.id])
+
   return (
     <View className="flex-1">
       <CollapsibleTab
@@ -155,9 +161,7 @@ const Trade = observer(() => {
         renderHeader={() => (
           <CollapsibleStickyHeader>
             <CollapsibleStickyNavBar fixed>
-              <TradeHeader
-                symbol={symbol}
-              />
+              <TradeHeader symbol={symbol} />
             </CollapsibleStickyNavBar>
 
             <CollapsibleStickyContent>
@@ -193,18 +197,14 @@ const Trade = observer(() => {
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={`持仓(${MOCK_POSITIONS?.length ?? 0})`}>
+        <CollapsibleTabScene name="positions" label={`持仓(${positionList?.length ?? 0})`}>
           <TradePositions />
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={`挂单(${MOCK_PENDING_ORDERS?.length ?? 0})`}>
-          <CollapsibleScrollView>
-
-            <View><Text>123</Text></View>
-          </CollapsibleScrollView>
+        <CollapsibleTabScene name="orders" label={`挂单(${pendingList?.length ?? 0})`}>
+          <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>
-
 
       {/* Order Confirmation Drawer */}
       {/* <OrderConfirmationDrawer
@@ -246,7 +246,6 @@ const Trade = observer(() => {
           onConfirm={handleStopProfitLoss}
         />
       )} */}
-
     </View>
   )
 })

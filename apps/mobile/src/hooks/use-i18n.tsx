@@ -1,5 +1,6 @@
 import { MessageDescriptor } from "@lingui/core"
 import { useLingui } from "@lingui/react"
+import { useLingui as useLinguiMacro } from "@lingui/react/macro"
 
 /**
  * 使用 lingui 的 i18n 钩子
@@ -7,6 +8,7 @@ import { useLingui } from "@lingui/react"
  */
 export const useI18n = () => {
   const { i18n } = useLingui()
+  const { t } = useLinguiMacro()
 
   const renderLinguiMsg = <T extends MessageDescriptor | undefined>(
     msg: T,
@@ -15,5 +17,5 @@ export const useI18n = () => {
     if (!msg) return fallback as T extends MessageDescriptor ? string : React.ReactNode
     return i18n._(msg) as T extends MessageDescriptor ? string : React.ReactNode
   }
-  return { i18n, renderLinguiMsg }
+  return { i18n, renderLinguiMsg, t }
 }

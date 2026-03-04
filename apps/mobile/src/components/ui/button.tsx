@@ -172,7 +172,6 @@ function Button({
   const Comp = asChild ? Slot.Pressable : Pressable;
   const isDisabled = props.disabled
 
-
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size, color, disabled: isDisabled, loading })}>
       <Comp

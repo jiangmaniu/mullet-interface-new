@@ -1,54 +1,58 @@
 
 
 import { useState, useCallback, useEffect } from 'react'
-import { View, Pressable } from 'react-native'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { View, Pressable, ActivityIndicator } from 'react-native'
 import { Text } from '@/components/ui/text'
 import {
-  IconifyNavArrowDown,
-  IconifyPage,
-  IconNavArrowSuperior,
-  IconNavArrowDown,
   IconifyNavArrowRight,
 } from '@/components/ui/icons'
 import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-
-
-interface PendingOrder {
-  id: string
-  symbol: string
-  direction: 'long' | 'short'
-  quantity: number
-  orderPrice: number
-  markPrice: number
-}
+import { useStores } from '@/v1/provider/mobxProvider'
+import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
+import { Order } from '@/v1/services/tradeCore/order/typings'
+import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { useI18n } from '@/hooks/use-i18n'
+import { BNumber } from '@mullet/utils/number'
+import { PositionCurrentPrice } from '../../common/position-current-price'
+import { AvatarImage } from '@/components/ui/avatar'
+import { getImgSource } from '@/utils/img'
+import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
+import { toast } from '@/components/ui/toast'
+import { Spinning } from '@/components/ui/spinning'
 
 // ============ PendingOrderItem ============
 interface PendingOrderItemProps {
-  order: PendingOrder
-  onCancel?: () => void
+  order: Order.OrderPageListItem
 }
 
-function PendingOrderItem({ order, onCancel }: PendingOrderItemProps) {
+const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
+  const { renderLinguiMsg } = useI18n()
+  const pendingOrderInfo = parseTradePendingOrderInfo(order)
+  const { trade } = useStores()
+  const activeSymbol = trade.activeSymbolName
+
   return (
     <View className="py-xl gap-xl">
       {/* Header Row */}
       <View className="flex-row items-center justify-between px-xl">
         <Pressable
           onPress={() => {
-            console.log('Pressable')
+            if (!order.symbol || activeSymbol === order.symbol) return
+
+            trade.switchSymbol(order.symbol)
+            subscribeCurrentAndPositionSymbol({ cover: true })
           }}
         >
           <View className="flex-row items-center gap-[10px] flex-1">
-            <View className="size-[24px] rounded-full bg-button items-center justify-center">
-              <Text className="text-paragraph-p3 text-content-1">S</Text>
-            </View>
+            <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full"></AvatarImage>
+
             <Text className="text-important-1 text-content-1">{order.symbol}</Text>
-            <Badge color={order.direction === 'long' ? 'rise' : 'fall'}>
-              <Text>{order.direction === 'long' ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+            <Badge color={pendingOrderInfo.isBuy ? 'rise' : 'fall'}>
+              <Text>{pendingOrderInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
             </Badge>
             <IconifyNavArrowRight
               width={16}
@@ -57,87 +61,123 @@ function PendingOrderItem({ order, onCancel }: PendingOrderItemProps) {
             />
           </View>
         </Pressable>
-        <Pressable onPress={onCancel}>
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>取消</Trans>
-          </Text>
-        </Pressable>
+
+        <CancelOrderAction order={order} />
       </View>
 
       {/* Data Row: 数量, 挂单价, 标记价 */}
       <View className="flex-row justify-between px-xl">
         <View className="w-[100px]">
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>数量(手)</Trans>
+            <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {order.quantity.toFixed(1)}
+            {BNumber.toFormatNumber(pendingOrderInfo.orderVolume, { volScale: pendingOrderInfo.lotsVolScale })}
           </Text>
         </View>
         <View className="w-[100px]">
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>挂单价(USDC)</Trans>
+            <Trans>挂单价</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {order.orderPrice.toFixed(2)}
+            {BNumber.toFormatNumber(pendingOrderInfo.limitPrice, { volScale: pendingOrderInfo.symbolDecimal })}
           </Text>
         </View>
         <View className="w-[100px] items-end">
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>标记价(USDC)</Trans>
+            <Trans>标记价</Trans>
           </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {order.markPrice.toFixed(2)}
-          </Text>
+          <PositionCurrentPrice info={pendingOrderInfo} className={'text-paragraph-p3'} />
         </View>
       </View>
     </View>
   )
-}
+})
 
 // ============ Main Trade Component ============
 
-
-// Mock pending orders data
-export const MOCK_PENDING_ORDERS: PendingOrder[] = [
-  {
-    id: '1',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-  {
-    id: '2',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-  {
-    id: '3',
-    symbol: 'SOL-USDC',
-    direction: 'long',
-    quantity: 1.0,
-    orderPrice: 187.00,
-    markPrice: 186.00,
-  },
-]
-
 export const TradePendingOrders = observer(() => {
+  const { trade, user } = useStores()
+  const pendingList = trade.pendingList
+  const currentAccountInfo = trade.currentAccountInfo
+  const pendingListLoading = trade.pendingListLoading
+
+  const [refreshing, setRefreshing] = useState(false)
+  useEffect(() => {
+    if (!currentAccountInfo.id) return
+    trade.getPositionList(true)
+  }, [currentAccountInfo.id])
+
+  const onRefresh = async () => {
+    if (refreshing) return
+
+    setRefreshing(true)
+    await trade.getPendingList()
+    // 刷新账户信息
+    await user.fetchUserInfo(true)
+    setRefreshing(false)
+  }
+
+  const renderEmpty = () => {
+    if (pendingListLoading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      )
+    }
+    return (
+      <View className="py-[60px] items-center">
+        <EmptyState message={<Trans>暂无委托记录</Trans>} />
+      </View>
+    )
+  }
+
   return (
-    <>  {MOCK_PENDING_ORDERS.length === 0 ? (
-      <EmptyState message={<Trans>暂无订单</Trans>} />
-    ) : (
-      MOCK_PENDING_ORDERS.map((order) => (
-        <PendingOrderItem
-          key={order.id}
-          order={order}
-          onCancel={() => console.log('Cancel order:', order.id)}
-        />
-      ))
-    )}</>
+    <>
+      <CollapsibleFlatList
+        className="flex-1"
+        contentContainerStyle={{ paddingBottom: 24 }}
+        data={pendingList}
+        keyExtractor={(item) => String(item.id)}
+        renderItem={({ item: order }) => <PendingOrderItem order={order} />}
+        ItemSeparatorComponent={() => <View className="h-xl" />}
+        ListEmptyComponent={renderEmpty}
+        onEndReachedThreshold={0.3}
+        refreshing={pendingListLoading}
+        onRefresh={() => onRefresh()}
+        style={{ paddingTop: 16 }}
+      />
+    </>
   )
 })
+
+const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem }) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const { trade } = useStores()
+
+  const onCancel = async () => {
+    setIsLoading(true)
+    try {
+      await trade.cancelOrder({ id: order.id })
+      toast.success(<Trans>取消成功</Trans>)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      {isLoading ? (
+        <Spinning width={16} height={16} />
+      ) : (
+        <Pressable onPress={onCancel}>
+          <Text className="text-paragraph-p3 text-content-4">
+            <Trans>取消</Trans>
+          </Text>
+        </Pressable>
+      )}
+    </>
+  )
+}
+)
