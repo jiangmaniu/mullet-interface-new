@@ -8,16 +8,21 @@ import { cva } from 'class-variance-authority'
 const inputVariants = cva(
   cn(
     'flex-1 text-paragraph-p2 text-content-1 p-0 m-0', // Reset default padding and margin
-    'h-full w-full bg-transparent outline-none border-none',
+    'w-full bg-transparent outline-none border-none',
     'placeholder:text-transparent'), {
   variants: {
     size: {
       sm: 'leading-[17px]',
       md: 'leading-[20px]',
     },
+    multiline: {
+      true: '',
+      false: 'h-full',
+    },
   },
   defaultVariants: {
     size: 'sm',
+    multiline: false,
   },
 })
 
@@ -26,6 +31,7 @@ export type InputProps = Omit<TextInputProps, 'placeholder'> &
     inputClassName?: string
     onValueChange?: (value: string) => void
     value?: string
+    multiline?: boolean
   }
 
 const Input = React.forwardRef<TextInput, InputProps>(
@@ -38,6 +44,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
       onClean,
       value,
       variant,
+      multiline = false,
       // InputContainer props
       labelText,
       placeholder,
@@ -90,7 +97,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
           ref={ref}
           placeholder=""
           className={cn(
-            inputVariants({ size }),
+            inputVariants({ size, multiline }),
             inputClassName,
           )}
           value={value}
@@ -99,6 +106,9 @@ const Input = React.forwardRef<TextInput, InputProps>(
             onValueChange?.(text)
           }}
           placeholderTextColor="transparent" // Ensure placeholder is hidden for floating label logic
+          multiline={multiline}
+          textAlignVertical={multiline ? 'top' : 'center'}
+          scrollEnabled={false}
           {...inputProps}
         />
       </InputContainer>
