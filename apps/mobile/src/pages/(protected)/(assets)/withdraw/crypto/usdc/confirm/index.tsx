@@ -39,7 +39,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
   }, [])
 
   return (
-    <View className="bg-background-secondary flex-1">
+    <View className="gap-xl flex-1">
       <ScreenHeader content={<Trans>订单确认</Trans>} />
 
       <View className="gap-xl flex-1 px-5">
