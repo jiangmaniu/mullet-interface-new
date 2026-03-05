@@ -2,9 +2,9 @@ import * as React from 'react'
 import { isUndefined } from 'lodash-es'
 import type { NumberInputPrimitiveProps } from './number-input-primitive'
 
+import { cn } from '@/lib/utils'
 import { BNumber } from '@mullet/utils/number'
 
-import { cn } from '@/lib/utils'
 import { InputContainer, InputContainerProps } from './input-container'
 import { NumberInputPrimitive, NumberInputSourceType } from './number-input-primitive'
 
@@ -68,7 +68,7 @@ const NumberInput = ({
         placeholder=" "
         className={cn(
           'peer order-2 flex-1',
-          'text-paragraph-p2 text-content-1 w-full min-w-0 bg-transparent p-0 m-0',
+          'text-paragraph-p2 text-content-1 m-0 w-full min-w-0 bg-transparent p-0',
           {
             'text-status-danger': isError && !props.disabled,
           },

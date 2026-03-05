@@ -64,9 +64,10 @@ export default function useOrderParams() {
     takeProfit,
     leverageMultiple,
     trade.currentAccountInfo?.id,
+    marginType,
     orderType,
     orderPrice,
-    marginType,
+    isBuy,
   ])
 
   return orderParams

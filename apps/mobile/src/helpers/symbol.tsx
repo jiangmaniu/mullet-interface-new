@@ -3,7 +3,7 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 export const parseSymbolLotsVolScale = (symbolConf?: Symbol.SymbolConf) => {
-  return BNumber.from(symbolConf?.tradeStep)?.decimalPlaces()
+  return BNumber.from(symbolConf?.minTrade)?.decimalPlaces()
 }
 
 /**

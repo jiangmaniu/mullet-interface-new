@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
@@ -36,18 +36,15 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
   const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
 
-  const handleViewChange = useCallback(
-    (view: 'chart' | 'depth') => {
-      if (view === 'chart') {
-        // Already on chart view, do nothing
-        return
-      } else {
-        // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
-        router.push('/SOL-USDC')
-      }
-    },
-    [router],
-  )
+  const handleViewChange = (view: 'chart' | 'depth') => {
+    if (view === 'chart') {
+      // Already on chart view, do nothing
+      return
+    } else {
+      // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
+      router.push({ pathname: '/(protected)/(trade)/[symbol]', params: { symbol: symbolInfo.symbol } })
+    }
+  }
 
   const handleMorePress = () => setIsCommonFeaturesDrawerOpen(true)
 
@@ -59,12 +56,12 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
         right={
           <View className="gap-xl flex-row items-center">
             <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
-              <Pressable
-                onPress={() => handleViewChange('chart')}
+              <View
+                // onPress={() => handleViewChange('chart')}
                 className="bg-button h-[24px] w-[36px] items-center justify-center rounded-full"
               >
                 <IconifyActivity width={22} height={22} className="text-content-1" />
-              </Pressable>
+              </View>
               <Pressable
                 onPress={() => handleViewChange('depth')}
                 className="h-[24px] w-[36px] items-center justify-center rounded-full"
@@ -85,20 +82,28 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
                 onOpenChange={setIsCommonFeaturesDrawerOpen}
                 onTradingSettings={() => {
                   setIsCommonFeaturesDrawerOpen(false)
-                  router.push('/(trade)/settings')
+                  router.push({ pathname: '/(protected)/(trade)/settings' })
                 }}
                 onDeposit={() => {
                   setIsCommonFeaturesDrawerOpen(false)
-                  // TODO: 实现入金功能
-                  console.log('Deposit pressed')
+                  router.push({
+                    pathname: '/(protected)/(assets)/deposit',
+                    params: { accountId: trade.currentAccountInfo?.id },
+                  })
                 }}
                 onTransfer={() => {
                   setIsCommonFeaturesDrawerOpen(false)
-                  router.push('/(assets)/transfer')
+                  router.push({
+                    pathname: '/(protected)/(assets)/transfer',
+                    params: { accountId: trade.currentAccountInfo?.id },
+                  })
                 }}
                 onBill={() => {
                   setIsCommonFeaturesDrawerOpen(false)
-                  router.push('/(trade)/records')
+                  router.push({
+                    pathname: '/(protected)/(trade)/records',
+                    params: { tab: 'funding-flow' },
+                  })
                 }}
                 onFavorites={() => {
                   trade.toggleSymbolFavorite(symbolInfo.symbol)

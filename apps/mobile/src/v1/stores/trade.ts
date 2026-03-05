@@ -49,6 +49,7 @@ import { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/t
 import { Order } from '../services/tradeCore/order/typings'
 import { Account } from '../services/tradeCore/account/typings'
 import { AccountGroup } from '../services/tradeCore/accountGroup/typings'
+import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 export type UserConfInfo = Record<
   string,

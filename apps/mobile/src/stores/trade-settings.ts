@@ -1,7 +1,7 @@
-import { mmkv } from '@/lib/storage/mmkv'
 import { Uniwind } from 'uniwind'
 import { create } from 'zustand'
 
+import { mmkv } from '@/lib/storage/mmkv'
 import { KEY_DIRECTION, KEY_ORDER_CONFIRM_CHECKED, KEY_POSITION_CONFIRM_CHECKED } from '@/v1/constants'
 
 // 涨跌颜色方案

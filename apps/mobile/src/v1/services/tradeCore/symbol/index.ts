@@ -1,12 +1,13 @@
 import qs from 'qs'
 
+import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 import { parseJsonFields } from '@/v1/utils'
 import {
   formatMultipleValue,
   transformTradeFeeShow,
   transformTradeInventoryShow,
   transformTradePrepaymentConfShow,
-  transformTradeTimeShow
+  transformTradeTimeShow,
 } from '@/v1/utils/business'
 import { request } from '@/v1/utils/request'
 
@@ -14,7 +15,7 @@ import { request } from '@/v1/utils/request'
 export async function addSymbol(body: Symbol.SubmitSymbolParams) {
   return request<API.Response>('/api/trade-core/coreApi/symbols/add', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -22,14 +23,14 @@ export async function addSymbol(body: Symbol.SubmitSymbolParams) {
 export async function updateSymbol(body: Symbol.SubmitSymbolParams) {
   return request<API.Response>('/api/trade-core/coreApi/symbols/update', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
 // 交易品种-删除
 export async function removeSymbol(body: API.IdParam) {
   return request<API.Response>(`/api/trade-core/coreApi/symbols/remove?${qs.stringify(body)}`, {
-    method: 'POST'
+    method: 'POST',
   })
 }
 
@@ -37,7 +38,7 @@ export async function removeSymbol(body: API.IdParam) {
 export async function getSymbolPageList(params?: API.PageParam) {
   return request<API.Response<API.PageResult<Symbol.SymbolListItem>>>('/api/trade-core/coreApi/symbols/page', {
     method: 'GET',
-    params
+    params,
   })
 }
 
@@ -45,7 +46,7 @@ export async function getSymbolPageList(params?: API.PageParam) {
 export async function getSymbolDetail(params: API.IdParam) {
   return request<API.Response<Symbol.SymbolListItem>>('/api/trade-core/coreApi/symbols/detail', {
     method: 'GET',
-    params
+    params,
   }).then((res) => {
     const data = res?.data || {}
     let symbolConf = data?.symbolConf
@@ -57,7 +58,7 @@ export async function getSymbolDetail(params: API.IdParam) {
         'tradeTimeConf', // 交易时间配置
         'quotationConf', // 报价配置
         'transactionFeeConf', // 手续费配置
-        'holdingCostConf' // 库存费配置
+        'holdingCostConf', // 库存费配置
       ])
 
       // 格式化多选字段，转化为数组
@@ -93,7 +94,7 @@ export async function getSymbolDetail(params: API.IdParam) {
 
       res.data = {
         ...(symbolConf || {}), // 展开方便回显表单字段
-        ...data
+        ...data,
       }
     }
 
@@ -106,6 +107,6 @@ export async function getAllSymbols(params?: API.PageParam) {
   return request<API.Response<Symbol.AllSymbolItem[]>>('/api/trade-core/coreApi/symbols/list', {
     method: 'GET',
     skipErrorHandler: true,
-    params
+    params,
   })
 }
