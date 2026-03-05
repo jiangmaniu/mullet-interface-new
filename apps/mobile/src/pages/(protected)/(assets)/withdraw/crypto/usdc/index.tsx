@@ -7,11 +7,11 @@ import { router } from 'expo-router'
 import type { NumberFormatValues } from 'react-number-format'
 
 import { Button } from '@/components/ui/button'
-import { IconUSDC1 } from '@/components/ui/icons/set/usdc-1'
 import { NumberInputPrimitive } from '@/components/ui/number-input-primitive'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
@@ -34,11 +34,13 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
   const [amount, setAmount] = useState<string>('')
   const [selectedPercent, setSelectedPercent] = useState<string>('')
 
-  const accountBalance = selectedAccount?.money ?? 0
-  const minWithdraw = parseFloat(tokenInfo?.minWithdraw ?? '0')
+  const accountBalance = selectedAccount?.money
+  const minWithdraw = tokenInfo?.minWithdraw
 
-  const amountNum = parseFloat(amount || '0')
-  const isValid = amountNum >= minWithdraw && amountNum <= accountBalance
+  // 是否余额不足
+  const isInsufficientBalance = BNumber.from(amount).gt(accountBalance)
+  // 是否满足最低取现
+  const isValid = BNumber.from(amount).gte(minWithdraw) && BNumber.from(amount).lte(accountBalance)
 
   const handleValueChange = useCallback((values: NumberFormatValues) => {
     setAmount(values.value)
@@ -50,7 +52,10 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
       setSelectedPercent(value)
       const pct = Number(value)
       if (pct > 0) {
-        const calculated = BNumber.from(accountBalance).multipliedBy(pct).dividedBy(100).toString()
+        const calculated = BNumber.from(accountBalance ?? 0)
+          .multipliedBy(pct)
+          .dividedBy(100)
+          .toString()
         setAmount(calculated)
       }
     },
@@ -102,7 +107,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
                 value={amount}
                 onValueChange={handleValueChange}
                 decimalScale={tokenInfo?.displayDecimals}
-                placeholder={BNumber.toFormatNumber(0, { volScale: tokenInfo?.displayDecimals })}
+                placeholder={renderFallbackPlaceholder({ volScale: tokenInfo?.displayDecimals })}
                 placeholderTextColor="#656886"
                 className="text-title-h2 text-content-1 text-center"
               />
@@ -133,9 +138,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
       <SafeAreaView edges={['bottom']}>
         <View className="px-5">
           <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
-            <Text>
-              <Trans>继续</Trans>
-            </Text>
+            <Text>{isInsufficientBalance ? <Trans>余额不足</Trans> : <Trans>继续</Trans>}</Text>
           </Button>
         </View>
       </SafeAreaView>

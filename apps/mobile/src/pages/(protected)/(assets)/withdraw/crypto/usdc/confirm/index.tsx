@@ -1,117 +1,124 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { View } from 'react-native'
+import { useCallback, useMemo } from 'react'
+import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
-import { IconOkxWallet } from '@/components/ui/icons/set/wallet/okx-wallet'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
+import { useAccount, useWalletInfo } from '@/lib/appkit'
+import { formatAddress, renderFallback } from '@mullet/utils/format'
+import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
-import { useWithdrawStore } from '../../../_store'
-
-const MOCK_WALLET_ADDRESS = '0x862D...B22A'
-const COUNTDOWN_SECONDS = 30
-
-const formatCurrency = (num: number): string =>
-  num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+import { useSelectedChainInfo } from '../../../_hooks/use-selected-chain-info'
+import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
 
 const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const withdrawAmount = useWithdrawStore((s) => s.withdrawAmount)
-  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
-  const timerRef = useRef<ReturnType<typeof setInterval>>(null)
-  const amount = parseFloat(withdrawAmount) || 0
-  const formattedAmount = formatCurrency(amount)
+  const { withdrawAddress, withdrawAmount } = useWithdrawState()
+  const { tokenInfo, chainInfo } = useSelectedChainInfo()
 
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+  // Check if withdrawal address matches connected wallet
+  const { address: connectedWalletAddress } = useAccount()
+  const { walletInfo } = useWalletInfo()
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [])
+  const isConnectedWallet = useMemo(() => {
+    if (!connectedWalletAddress || !withdrawAddress) return false
+    return connectedWalletAddress.toLowerCase() === withdrawAddress.toLowerCase()
+  }, [connectedWalletAddress, withdrawAddress])
+
+  const gasFee = 0.0001 // Mock gas fee
+  const serviceFee = 0
+  const estimatedReceive = BNumber.from(withdrawAmount).minus(serviceFee).toString()
 
   const handleConfirmWithdraw = useCallback(() => {
     router.push('/(assets)/withdraw/crypto/usdc/verify')
   }, [])
 
   return (
-    <View className="gap-xl flex-1">
+    <View className="bg-background-secondary flex-1">
       <ScreenHeader content={<Trans>订单确认</Trans>} />
 
-      <View className="gap-xl flex-1">
-        <View className="gap-medium px-5">
-          <Card>
-            <CardContent className="py-medium gap-large">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-paragraph-p2 text-content-4">
-                  <Trans>付</Trans>
-                </Text>
-                <Text className="text-paragraph-p2 text-status-danger">-{formattedAmount} USDC</Text>
-              </View>
+      <View className="gap-xl flex-1 px-5">
+        {/* 付款信息 */}
+        <View className="border-brand-default rounded-small px-xl py-medium border">
+          <View className="gap-xs">
+            <Text className="text-paragraph-p3 text-content-1">
+              <Trans>付</Trans>
+            </Text>
+            <View className="flex-row items-center justify-between">
               <View className="gap-medium flex-row items-center">
-                <IconAppLogoCircle width={24} height={24} />
-                <View>
-                  <Text className="text-paragraph-p2 text-content-1">{selectedAccount?.id ?? '-'}</Text>
-                  <Text className="text-paragraph-p3 text-content-4">{MOCK_WALLET_ADDRESS}</Text>
+                {tokenInfo?.iconUrl && <Image source={{ uri: tokenInfo.iconUrl }} style={{ width: 24, height: 24 }} />}
+                <View className="gap-xs">
+                  <Text className="text-paragraph-p2 text-content-1">{renderFallback(selectedAccount?.id)}</Text>
+                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(withdrawAddress)}</Text>
                 </View>
               </View>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="py-medium gap-large">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-paragraph-p2 text-content-4">
-                  <Trans>收</Trans>
-                </Text>
-                <Text className="text-paragraph-p2 text-status-success">+{formattedAmount} USDC</Text>
-              </View>
-              <View className="gap-medium flex-row items-center">
-                <IconOkxWallet width={24} height={24} />
-                <View>
-                  <Text className="text-paragraph-p2 text-content-1">
-                    <Trans>未知钱包</Trans>
-                  </Text>
-                  <Text className="text-paragraph-p3 text-content-4">{MOCK_WALLET_ADDRESS}</Text>
-                </View>
-              </View>
-            </CardContent>
-          </Card>
+              <Text className="text-paragraph-p2 text-content-1">
+                {BNumber.toFormatNumber(-withdrawAmount, {
+                  positive: false,
+                  unit: tokenInfo?.symbol,
+                  volScale: tokenInfo?.displayDecimals,
+                })}
+              </Text>
+            </View>
+          </View>
         </View>
 
-        <View className="px-5">
-          <Card>
-            <CardContent className="py-medium gap-large">
-              <FeeRow label={<Trans>兑换率</Trans>} value="1：1" />
-              <FeeRow label={<Trans>到账时间</Trans>} value="≈1分钟" />
-              <FeeRow label={<Trans>Gas费</Trans>} value="0.0001 SOL" />
-              <FeeRow label={<Trans>预计到账</Trans>} value={`${formattedAmount} USDC`} />
-              <FeeRow label={<Trans>服务费</Trans>} value="免费" />
-            </CardContent>
-          </Card>
+        {/* 收款信息 */}
+        <View className="border-brand-default rounded-small px-xl py-medium border">
+          <View className="gap-xs">
+            <Text className="text-paragraph-p3 text-content-1">
+              <Trans>收</Trans>
+            </Text>
+            <View className="flex-row items-center justify-between">
+              <View className="gap-medium flex-row items-center">
+                {isConnectedWallet && walletInfo?.icon && (
+                  <Image source={{ uri: walletInfo.icon }} style={{ width: 24, height: 24, borderRadius: 4 }} />
+                )}
+                <View className="gap-xs">
+                  <Text className="text-paragraph-p2 text-content-1">
+                    {isConnectedWallet && walletInfo?.name ? walletInfo.name : <Trans>未知钱包</Trans>}
+                  </Text>
+                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(withdrawAddress)}</Text>
+                </View>
+              </View>
+              <Text className="text-paragraph-p2 text-content-1">
+                {BNumber.toFormatNumber(estimatedReceive, {
+                  positive: false,
+                  forceSign: true,
+                  unit: tokenInfo?.symbol,
+                  volScale: tokenInfo?.displayDecimals,
+                })}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* 交易详情 */}
+        <View className="gap-medium">
+          <InfoRow label={<Trans>兑换率</Trans>} value="1 : 1" />
+          <InfoRow label={<Trans>到账时间</Trans>} value={<Trans>≈1分钟</Trans>} />
+          <InfoRow label={<Trans>Gas费</Trans>} value={`${gasFee} ${chainInfo?.shortName === 'SOL' ? 'SOL' : 'ETH'}`} />
+          <InfoRow
+            label={<Trans>预计到账</Trans>}
+            value={BNumber.toFormatNumber(estimatedReceive, {
+              unit: tokenInfo?.symbol,
+              volScale: tokenInfo?.displayDecimals,
+            })}
+          />
+          <InfoRow label={<Trans>服务费</Trans>} value={<Trans>免费</Trans>} />
         </View>
       </View>
 
       <SafeAreaView edges={['bottom']}>
         <View className="px-5">
-          <Button block size="lg" color="primary" onPress={handleConfirmWithdraw} disabled={countdown <= 0}>
+          <Button block size="lg" color="primary" onPress={handleConfirmWithdraw}>
             <Text>
-              <Trans>确认取现</Trans>
+              <Trans>确定</Trans>
             </Text>
           </Button>
         </View>
@@ -122,11 +129,11 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
 
 export default UsdcWithdrawConfirmScreen
 
-function FeeRow({ label, value }: { label: React.ReactNode; value: string }) {
+function InfoRow({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
   return (
     <View className="flex-row items-center justify-between">
-      <Text className="text-paragraph-p3 text-content-4">{label}</Text>
-      <Text className="text-paragraph-p3 text-content-1">{value}</Text>
+      <Text className="text-paragraph-p2 text-content-4">{label}</Text>
+      <Text className="text-paragraph-p2 text-content-1">{value}</Text>
     </View>
   )
 }
