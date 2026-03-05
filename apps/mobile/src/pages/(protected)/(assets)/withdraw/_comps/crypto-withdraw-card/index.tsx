@@ -2,8 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { Image, View } from 'react-native'
 import { router } from 'expo-router'
 
-import { IconSpinner } from '@/components/ui/icons'
-import { IconBitcoin } from '@/components/ui/icons/set/bitcoin'
+import { IconifyFlashSolid, IconSpinner } from '@/components/ui/icons'
 
 import { useWithdrawSupportedChains } from '../../_hooks/use-supported-chains'
 import { DepositMethodCard } from '../../../deposit/_comps/method-card'
@@ -14,7 +13,7 @@ export function CryptoWithdrawCard() {
 
   return (
     <DepositMethodCard
-      icon={<IconBitcoin width={24} height={24} className="text-content-1" />}
+      icon={<IconifyFlashSolid width={24} height={24} className="text-content-1" />}
       title={<Trans>加密货币取现</Trans>}
       subtitle={<Trans>无限制 · 即时</Trans>}
       rightContent={

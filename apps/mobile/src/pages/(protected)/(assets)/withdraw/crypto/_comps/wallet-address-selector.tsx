@@ -81,7 +81,7 @@ export function WalletSelector() {
 
       {walletMode === 'connected' && isSolanaChain ? (
         <View className="gap-medium flex-row items-center">
-          <Image source={{ uri: walletInfo?.icon }} style={{ width: 24, height: 24, borderRadius: 4 }} />
+          <Image source={{ uri: walletInfo?.icon }} style={{ width: 24, height: 24 }} />
           <View className="flex-1">
             <Text className="text-paragraph-p2 text-content-1">{walletInfo?.name ?? 'Wallet'}</Text>
             <Text className="text-paragraph-p3 text-content-4">{formatAddress(accountAddress)}</Text>

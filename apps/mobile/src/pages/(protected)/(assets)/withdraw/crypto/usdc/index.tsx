@@ -1,12 +1,14 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useState } from 'react'
-import { TextInput, View } from 'react-native'
+import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import type { NumberFormatValues } from 'react-number-format'
 
 import { Button } from '@/components/ui/button'
 import { IconUSDC1 } from '@/components/ui/icons/set/usdc-1'
+import { NumberInputPrimitive } from '@/components/ui/number-input-primitive'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
@@ -29,26 +31,18 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
   const { tokenInfo } = useSelectedChainInfo()
   const selectedAccount = useSelectedWithdrawAccount()
 
-  const [amount, setAmount] = useState<number | null>(null)
-  const [displayText, setDisplayText] = useState('')
+  const [amount, setAmount] = useState<string>('')
   const [selectedPercent, setSelectedPercent] = useState<string>('')
 
-  const isValid = BNumber.from(amount)?.lte(selectedAccount?.money)
+  const accountBalance = selectedAccount?.money ?? 0
+  const minWithdraw = parseFloat(tokenInfo?.minWithdraw ?? '0')
 
-  const handleTextChange = useCallback((text: string) => {
-    const digits = text.replace(/[^0-9.]/g, '')
-    if (digits === '') {
-      setAmount(null)
-      setDisplayText('')
-      setSelectedPercent('')
-      return
-    }
-    const num = parseFloat(digits)
-    if (!isNaN(num)) {
-      setAmount(num)
-      setDisplayText(digits)
-      setSelectedPercent('')
-    }
+  const amountNum = parseFloat(amount || '0')
+  const isValid = amountNum >= minWithdraw && amountNum <= accountBalance
+
+  const handleValueChange = useCallback((values: NumberFormatValues) => {
+    setAmount(values.value)
+    setSelectedPercent('')
   }, [])
 
   const handlePercentChange = useCallback(
@@ -56,24 +50,22 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
       setSelectedPercent(value)
       const pct = Number(value)
       if (pct > 0) {
-        const accountBalance = selectedAccount?.money ?? 0
-        const calculated = Math.floor(((accountBalance * pct) / 100) * 100) / 100
+        const calculated = BNumber.from(accountBalance).multipliedBy(pct).dividedBy(100).toString()
         setAmount(calculated)
-        setDisplayText(calculated.toFixed(2))
       }
     },
-    [selectedAccount?.money],
+    [accountBalance],
   )
 
   const handleConfirmInput = useCallback(() => {
-    if (amount) {
-      setWithdrawAmount(amount.toString())
+    if (amount && isValid) {
+      setWithdrawAmount(amount)
       router.push('/(assets)/withdraw/crypto/usdc/confirm')
     }
-  }, [amount, setWithdrawAmount])
+  }, [amount, isValid, setWithdrawAmount])
 
   return (
-    <View className="flex-1">
+    <View className="gap-xl flex-1">
       <ScreenHeader content={<Trans>加密货币取现</Trans>} />
 
       <View className="gap-xl flex-1 px-5">
@@ -101,18 +93,18 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
         <View className="gap-3xl">
           <View className="gap-large items-center">
             <View className="gap-xs flex-row items-center">
-              <IconUSDC1 width={24} height={24} />
-              <Text className="text-paragraph-p2 text-content-1">USDC</Text>
+              <Image source={{ uri: tokenInfo?.iconUrl }} style={{ width: 24, height: 24 }} />
+              <Text className="text-paragraph-p2 text-content-1">{tokenInfo?.symbol}</Text>
             </View>
 
-            <View className="border-content-5 py-large w-full border-b">
-              <TextInput
-                value={displayText}
-                onChangeText={handleTextChange}
-                keyboardType="decimal-pad"
-                placeholder="0.00"
+            <View className="border-brand-default w-full border-b py-4">
+              <NumberInputPrimitive
+                value={amount}
+                onValueChange={handleValueChange}
+                decimalScale={tokenInfo?.displayDecimals}
+                placeholder={BNumber.toFormatNumber(0, { volScale: tokenInfo?.displayDecimals })}
                 placeholderTextColor="#656886"
-                className="text-title-h2 text-content-5 p-0 text-center"
+                className="text-title-h2 text-content-1 text-center"
               />
             </View>
           </View>
