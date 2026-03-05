@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Image, Pressable, View } from 'react-native'
 
 import { IconifyEdit } from '@/components/ui/icons'
-import { IconifyRefreshDouble, IconifyWalletSolid } from '@/components/ui/icons/iconify'
+import { IconifyRefreshDouble } from '@/components/ui/icons/iconify'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { SOLANA_CHAIN_ID } from '@/constants/config/deposit'
@@ -30,10 +30,11 @@ export function WalletSelector() {
   const { walletInfo } = useWalletInfo()
 
   // 判断钱包账户链是否是 Solana 链
-  const walletAccountChainIsSolana = accountNamespace?.toLowerCase() === 'solana'
+  const walletAccountChainIsSolana = accountNamespace?.toUpperCase() === SOLANA_CHAIN_ID.toUpperCase()
+  const isSelectedChainSolana = selectedChainId?.toUpperCase() === SOLANA_CHAIN_ID.toUpperCase()
 
-  // 判断是否是 Solana 链（只有 Solana 链才显示切换按钮）
-  const isSolanaChain = walletAccountChainIsSolana && selectedChainId === SOLANA_CHAIN_ID
+  // 判断是否是 Solana 链：钱包账户链是 Solana 链，且选中的链是 Solana 链（只有 Solana 链才显示切换按钮）
+  const isSolanaChain = walletAccountChainIsSolana && isSelectedChainSolana
 
   // 只有 web3 登录且是 Solana 链时才显示切换按钮
   const showSwitchButton = isWeb3Login && isSolanaChain
@@ -49,11 +50,9 @@ export function WalletSelector() {
   }, [showSwitchButton, accountAddress, setWithdrawAddress])
 
   const handleSwitchWallet = () => {
-    if (showSwitchButton) {
-      setWalletMode(walletMode === 'connected' ? 'manual' : 'connected')
-      if (showSwitchButton && accountAddress) {
-        setWithdrawAddress(accountAddress)
-      }
+    setWalletMode(walletMode === 'connected' ? 'manual' : 'connected')
+    if (showSwitchButton && accountAddress) {
+      setWithdrawAddress(accountAddress)
     }
   }
 
