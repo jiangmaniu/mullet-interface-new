@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Pressable, View } from 'react-native'
 import { router } from 'expo-router'
 
@@ -11,16 +11,10 @@ import { Text } from '@/components/ui/text'
 import { AccountSelection } from './_comps/account-selector'
 import { BankWithdrawCard } from './_comps/bank-withdraw-card'
 import { CryptoWithdrawCard } from './_comps/crypto-withdraw-card/index'
-import { useWithdrawStore } from './_store'
+import { useSelectedWithdrawAccount } from './_hooks/use-selected-account'
 
 const WithdrawScreen = observer(function WithdrawScreen() {
-  const withdrawSourceAccount = useWithdrawStore((s) => s.withdrawSourceAccount)
-  const reset = useWithdrawStore((s) => s.reset)
-
-  // 离开提现模块时重置状态
-  useEffect(() => {
-    return () => reset()
-  }, [reset])
+  const selectedAccount = useSelectedWithdrawAccount()
 
   return (
     <View className="flex-1">
@@ -31,7 +25,7 @@ const WithdrawScreen = observer(function WithdrawScreen() {
             onPress={() =>
               router.push({
                 pathname: '/(protected)/(assets)/bills',
-                params: { tab: 'withdraw', accountId: withdrawSourceAccount?.id },
+                params: { tab: 'withdraw', accountId: selectedAccount?.id },
               })
             }
           >

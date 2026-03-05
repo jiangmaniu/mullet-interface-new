@@ -76,7 +76,7 @@ export default function VerifyScreen() {
             {code.map((digit, index) => (
               <TextInput
                 key={index}
-                ref={(ref) => (inputRefs.current[index] = ref)}
+                // ref={(ref) => (inputRefs.current[index] = ref)}
                 value={digit}
                 onChangeText={(text) => handleCodeChange(text, index)}
                 onKeyPress={(e) => handleKeyPress(e, index)}

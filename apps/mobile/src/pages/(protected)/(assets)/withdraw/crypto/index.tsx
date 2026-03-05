@@ -10,23 +10,19 @@ import { Text } from '@/components/ui/text'
 import { SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 import { BNumber } from '@mullet/utils/number'
 
-import { useWithdrawSupportedChains } from '../_hooks/use-supported-chains'
-import { useWithdrawStore } from '../_store'
+import { useSelectedWithdrawAccount } from '../_hooks/use-selected-account'
+import { useSelectedChainInfo } from '../_hooks/use-selected-chain-info'
+import { useWithdrawState } from '../_hooks/use-withdraw-state'
 import { TokenChainSelector } from './_comps/token-chain-selector'
 import { WalletSelector } from './_comps/wallet-address-selector'
 
 const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
-  const withdrawSourceAccount = useWithdrawStore((s) => s.withdrawSourceAccount)
-  const selectedTokenSymbol = useWithdrawStore((s) => s.selectedTokenSymbol)
-  const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
-  const withdrawAddress = useWithdrawStore((s) => s.withdrawAddress)
-  const { data: supportedChains } = useWithdrawSupportedChains()
-  const selectedChainInfo = supportedChains?.find((c) => c.chainId === selectedChainId)
-  const selectedTokenInfo = selectedChainInfo?.supportedTokens.find((t) => t.symbol === selectedTokenSymbol)
-  const selectedAccount = withdrawSourceAccount
+  const selectedAccount = useSelectedWithdrawAccount()
+  const { selectedTokenSymbol, selectedChainId, withdrawAddress } = useWithdrawState()
+  const { chainInfo, tokenInfo } = useSelectedChainInfo()
 
   // 判断是否可以提交：必须有代币、链、且有地址
-  const canSubmit = selectedTokenSymbol && selectedChainId && selectedChainInfo && withdrawAddress.trim().length > 0
+  const canSubmit = selectedTokenSymbol && selectedChainId && chainInfo && withdrawAddress.trim().length > 0
 
   const handleConfirm = () => {
     // 判断是否为 Solana 链
@@ -63,9 +59,9 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
             <Text className="text-paragraph-p3 text-content-4">
               <Trans>
                 最低取现
-                {BNumber.toFormatNumber(selectedChainInfo?.minWithdraw, {
-                  unit: selectedTokenInfo?.symbol,
-                  volScale: selectedTokenInfo?.displayDecimals,
+                {BNumber.toFormatNumber(chainInfo?.minWithdraw, {
+                  unit: tokenInfo?.symbol,
+                  volScale: tokenInfo?.displayDecimals,
                 })}
               </Trans>
             </Text>
@@ -82,7 +78,7 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
         <View className="py-3xl px-5">
           <Button block size="lg" color="primary" onPress={handleConfirm} disabled={!canSubmit}>
             <Text>
-              <Trans>确定</Trans>
+              <Trans>继续</Trans>
             </Text>
           </Button>
         </View>

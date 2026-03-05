@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 
@@ -14,28 +14,54 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { getAccountSynopsisByLng } from '@/v1/utils/business'
 import { BNumber } from '@mullet/utils/number'
 
+import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
 export const AccountSelection = observer(function AccountSelection() {
   const { user, trade } = useStores()
-  const withdrawSourceAccount = useWithdrawStore((s) => s.withdrawSourceAccount)
-  const setWithdrawSourceAccount = useWithdrawStore((s) => s.setWithdrawSourceAccount)
+  const params = useLocalSearchParams<{ accountId?: string }>()
+
+  const setSelectedAccountId = useWithdrawStore((s) => s.setSelectedAccountId)
+  const selectedAccountId = useWithdrawStore((s) => s.selectedAccountId)
+
+  const selectedAccount = useSelectedWithdrawAccount()
   const drawerRef = useRef<DrawerRef>(null)
 
-  const accountList = useMemo(() => user.realAccountList ?? [], [user.realAccountList])
-  const { accountId } = useLocalSearchParams<{ accountId?: string }>()
-
-  // 初始化源账户
+  // 使用 ref 保存最新的 setter 函数
+  const setSelectedAccountIdRef = useRef(setSelectedAccountId)
   useEffect(() => {
-    if (accountList.length === 0 || withdrawSourceAccount) return
-    const account = accountId
-      ? (accountList.find((a) => a.id === accountId) ?? accountList[0])
-      : (accountList.find((a) => a.id === trade.currentAccountInfo?.id) ?? accountList[0])
-    if (account) setWithdrawSourceAccount(account)
-  }, [accountId, accountList, trade.currentAccountInfo?.id, withdrawSourceAccount, setWithdrawSourceAccount])
+    setSelectedAccountIdRef.current = setSelectedAccountId
+  }, [setSelectedAccountId])
 
-  const selectedAccount = withdrawSourceAccount
+  // 初始化选中的账户
+  useEffect(() => {
+    // 如果已经有选中的账户，不再初始化
+    if (selectedAccountId) return
+
+    // 优先使用路由参数中的 accountId
+    if (params.accountId) {
+      const account = user.realAccountList.find((a) => a.id === params.accountId)
+      if (account) {
+        setSelectedAccountIdRef.current(account.id)
+        return
+      }
+    }
+
+    // Fallback 到当前交易账户
+    if (trade.currentAccountInfo?.id) {
+      const account = user.realAccountList.find((a) => a.id === trade.currentAccountInfo?.id)
+      if (account) {
+        setSelectedAccountIdRef.current(account.id)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.accountId, selectedAccountId])
+
   const synopsis = selectedAccount ? getAccountSynopsisByLng(selectedAccount.synopsis) : null
+
+  const handleSelectAccount = (account: User.AccountItem) => {
+    setSelectedAccountIdRef.current(account.id)
+  }
 
   return (
     <>
@@ -82,7 +108,7 @@ export const AccountSelection = observer(function AccountSelection() {
       <RealAccountSelectionDrawer
         ref={drawerRef}
         selectedAccountId={selectedAccount?.id}
-        onSelect={setWithdrawSourceAccount}
+        onSelect={handleSelectAccount}
       />
     </>
   )

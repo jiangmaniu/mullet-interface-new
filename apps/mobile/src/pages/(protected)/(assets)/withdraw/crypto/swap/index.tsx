@@ -16,7 +16,7 @@ import { TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { observer } from 'mobx-react-lite';
 import { SignatureStatusModal, type SignatureStatus } from '../../../deposit/_comps/wallet-deposit-card/signature-status-modal';
-import { useWithdrawStore } from '../../_store';
+import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account';
 
 type PageMode = 'input' | 'confirm';
 
@@ -39,7 +39,7 @@ const formatCurrency = (num: number): string =>
 	num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
-	const withdrawSourceAccount = useWithdrawStore((s) => s.withdrawSourceAccount);
+	const selectedAccount = useSelectedWithdrawAccount();
 	const [mode, setMode] = useState<PageMode>('input');
 	const [sendAmount, setSendAmount] = useState<number | null>(null);
 	const [sendDisplayText, setSendDisplayText] = useState('');
@@ -49,8 +49,6 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
 	const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle');
 	const [showSignatureModal, setShowSignatureModal] = useState(false);
 	const timerRef = useRef<ReturnType<typeof setInterval>>(null);
-
-	const selectedAccount = withdrawSourceAccount;
 	const receiveAmount = sendAmount ? sendAmount * 150 : 0;
 	const isValid = (sendAmount ?? 0) > 0 && (sendAmount ?? 0) <= MOCK_BALANCE;
 

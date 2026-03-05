@@ -1,6 +1,3 @@
-import { Stack } from 'expo-router';
+import Layout from '@/pages/(protected)/(assets)/withdraw/_layout'
 
-/** 出金模块 Layout */
-export default function WithdrawLayout() {
-	return <Stack screenOptions={{ headerShown: false }} />;
-}
+export default Layout

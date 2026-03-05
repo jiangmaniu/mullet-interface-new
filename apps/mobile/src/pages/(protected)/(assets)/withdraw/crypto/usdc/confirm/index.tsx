@@ -12,6 +12,7 @@ import { IconOkxWallet } from '@/components/ui/icons/set/wallet/okx-wallet'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 
+import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../../_store'
 
 const MOCK_WALLET_ADDRESS = '0x862D...B22A'
@@ -21,12 +22,10 @@ const formatCurrency = (num: number): string =>
   num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() {
-  const withdrawSourceAccount = useWithdrawStore((s) => s.withdrawSourceAccount)
+  const selectedAccount = useSelectedWithdrawAccount()
   const withdrawAmount = useWithdrawStore((s) => s.withdrawAmount)
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const timerRef = useRef<ReturnType<typeof setInterval>>(null)
-
-  const selectedAccount = withdrawSourceAccount
   const amount = parseFloat(withdrawAmount) || 0
   const formattedAmount = formatCurrency(amount)
 

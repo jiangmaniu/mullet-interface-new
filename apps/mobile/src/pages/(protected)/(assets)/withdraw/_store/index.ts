@@ -11,15 +11,15 @@ interface WithdrawState {
 	// 提现地址
 	withdrawAddress: string;
 
-	// 源账户
-	withdrawSourceAccount: User.AccountItem | null;
+	// 选中的账户ID
+	selectedAccountId: string | number | null;
 
 	// Actions
 	setSelectedTokenSymbol: (tokenSymbol: string) => void;
 	setSelectedChainId: (chainId: string) => void;
 	setWithdrawAmount: (amount: string) => void;
 	setWithdrawAddress: (address: string) => void;
-	setWithdrawSourceAccount: (account: User.AccountItem | null) => void;
+	setSelectedAccountId: (accountId: string | number | null) => void;
 
 	// 重置状态（离开提现流程时调用）
 	reset: () => void;
@@ -30,7 +30,7 @@ const initialState = {
 	selectedChainId: '',
 	withdrawAmount: '',
 	withdrawAddress: '',
-	withdrawSourceAccount: null,
+	selectedAccountId: null,
 };
 
 export const useWithdrawStore = create<WithdrawState>((set) => ({
@@ -40,7 +40,7 @@ export const useWithdrawStore = create<WithdrawState>((set) => ({
 	setSelectedChainId: (chainId) => set({ selectedChainId: chainId }),
 	setWithdrawAmount: (amount) => set({ withdrawAmount: amount }),
 	setWithdrawAddress: (address) => set({ withdrawAddress: address }),
-	setWithdrawSourceAccount: (account) => set({ withdrawSourceAccount: account }),
+	setSelectedAccountId: (accountId) => set({ selectedAccountId: accountId }),
 
-	reset: () => set(initialState),
+	reset: () => set({ ...initialState }),
 }));
