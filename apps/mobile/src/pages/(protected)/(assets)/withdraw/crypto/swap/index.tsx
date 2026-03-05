@@ -122,7 +122,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
 		setShowSignatureModal(false);
 		setSignatureStatus('idle');
 		if (signatureStatus === 'success') {
-			router.push('/(assets)/withdraw/crypto/verify');
+			router.push('/(assets)/withdraw/crypto/usdc/verify');
 		}
 	}, [signatureStatus]);
 

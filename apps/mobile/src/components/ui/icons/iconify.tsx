@@ -19,6 +19,7 @@ import {
   Filter,
   FlashSolid,
   HomeSimple,
+  MailIn,
   MoreHoriz,
   NavArrowDown,
   NavArrowDownSolid,
@@ -80,3 +81,4 @@ export const IconifyCreditCardSolid = withUniwind(CreditCardSolid)
 export const IconifyRefresh = withUniwind(Refresh)
 export const IconifyEdit = withUniwind(Edit)
 export const IconifyRefreshDouble = withUniwind(RefreshDouble)
+export const IconifyEmailIn = withUniwind(MailIn)
