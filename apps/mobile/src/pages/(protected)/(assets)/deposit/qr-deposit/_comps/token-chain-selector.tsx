@@ -6,9 +6,9 @@ import { useEffect, useMemo } from 'react';
 import { Image, View } from 'react-native';
 
 export function TokenChainSelector() {
-	const selectedToken = useDepositStore((s) => s.selectedToken);
+	const selectedTokenSymbol = useDepositStore((s) => s.selectedTokenSymbol);
 	const selectedChainId = useDepositStore((s) => s.selectedChainId);
-	const setSelectedToken = useDepositStore((s) => s.setSelectedToken);
+	const setSelectedTokenSymbol = useDepositStore((s) => s.setSelectedTokenSymbol);
 	const setSelectedChainId = useDepositStore((s) => s.setSelectedChainId);
 
 	// 获取所有链列表（包含每个链支持的代币）
@@ -33,20 +33,20 @@ export function TokenChainSelector() {
 
 	// 初始化默认选择的代币（第一个）
 	useEffect(() => {
-		if (availableTokens.length > 0 && !selectedToken) {
-			setSelectedToken(availableTokens[0].symbol);
+		if (availableTokens.length > 0 && !selectedTokenSymbol) {
+			setSelectedTokenSymbol(availableTokens[0].symbol);
 		}
-	}, [availableTokens, selectedToken, setSelectedToken]);
+	}, [availableTokens, selectedTokenSymbol, setSelectedTokenSymbol]);
 
 	// 当选择的链改变时，检查当前代币是否支持，不支持则选择第一个
 	useEffect(() => {
 		if (selectedChainId && availableTokens.length > 0) {
-			const isTokenSupported = availableTokens.some((t) => t.symbol === selectedToken);
+			const isTokenSupported = availableTokens.some((t) => t.symbol === selectedTokenSymbol);
 			if (!isTokenSupported) {
-				setSelectedToken(availableTokens[0].symbol);
+				setSelectedTokenSymbol(availableTokens[0].symbol);
 			}
 		}
-	}, [selectedChainId, selectedToken, availableTokens, setSelectedToken]);
+	}, [selectedChainId, selectedTokenSymbol, availableTokens, setSelectedTokenSymbol]);
 
 	// 处理 Select 组件的 Option 类型
 	const handleChainChange = (option: Option) => {
@@ -54,7 +54,7 @@ export function TokenChainSelector() {
 	};
 
 	const handleTokenChange = (option: Option) => {
-		setSelectedToken(option.value);
+		setSelectedTokenSymbol(option.value);
 	};
 
 	// 从全局配置中获取代币图标 URL
@@ -67,16 +67,16 @@ export function TokenChainSelector() {
 	const selectedChain = chains?.find((c) => c.chainId === selectedChainId);
 	const selectedChainOption: Option = {
 		value: selectedChainId,
-		label: selectedChain?.displayName || selectedChainId,
+		label: selectedChain?.displayName ?? selectedChainId,
 		icon: selectedChain?.iconUrl ? (
 			<Image source={{ uri: selectedChain.iconUrl }} style={{ width: 16, height: 16 }} />
 		) : undefined,
 	};
 
-	const selectedTokenIconUrl = getTokenIconUrl(selectedToken);
+	const selectedTokenIconUrl = getTokenIconUrl(selectedTokenSymbol);
 	const selectedTokenOption: Option = {
-		value: selectedToken,
-		label: selectedToken,
+		value: selectedTokenSymbol,
+		label: selectedTokenSymbol,
 		icon: selectedTokenIconUrl ? (
 			<Image source={{ uri: selectedTokenIconUrl }} style={{ width: 16, height: 16 }} />
 		) : undefined,

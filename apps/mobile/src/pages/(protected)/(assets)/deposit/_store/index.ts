@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface DepositState {
 	// 选择的代币和链
-	selectedToken: string;
+	selectedTokenSymbol: string;
 	selectedChainId: string;
 
 	// 目标账户
@@ -13,7 +13,7 @@ interface DepositState {
 	depositWalletAddress: string | null;
 
 	// Actions
-	setSelectedToken: (token: string) => void;
+	setSelectedTokenSymbol: (tokenSymbol: string) => void;
 	setSelectedChainId: (chainId: string) => void;
 	setDepositTargetAccount: (account: User.AccountItem | null) => void;
 	setTradeAccountId: (id: string) => void;
@@ -24,7 +24,7 @@ interface DepositState {
 }
 
 const initialState = {
-	selectedToken: '',
+	selectedTokenSymbol: '',
 	selectedChainId: '',
 	depositTargetAccount: null,
 	tradeAccountId: '',
@@ -34,7 +34,7 @@ const initialState = {
 export const useDepositStore = create<DepositState>((set) => ({
 	...initialState,
 
-	setSelectedToken: (token) => set({ selectedToken: token }),
+	setSelectedTokenSymbol: (tokenSymbol) => set({ selectedTokenSymbol: tokenSymbol }),
 	setSelectedChainId: (chainId) => set({ selectedChainId: chainId }),
 	setDepositTargetAccount: (account) => set({ depositTargetAccount: account }),
 	setTradeAccountId: (id) => set({ tradeAccountId: id }),

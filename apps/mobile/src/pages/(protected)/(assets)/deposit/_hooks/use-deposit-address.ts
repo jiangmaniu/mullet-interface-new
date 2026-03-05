@@ -28,29 +28,24 @@ export interface DepositAddressInfo {
   tips: string[]
 }
 
-interface DepositAddressResponse {
-  success: boolean
-  data: DepositAddressInfo
-}
-
 /**
  * 获取用户在指定链上的充值地址
- * @param chain - 链 chainId（如 SOL / ETH / TRON）
+ * @param chainId - 链 chainId（如 SOL / ETH / TRON）
  * @param tradeAccountId - 交易账户 ID
  */
-export function useDepositAddress(chain: string, tradeAccountId: string) {
+export function useDepositAddress(chainId: string, tradeAccountId: string) {
   return useQuery({
-    queryKey: ['deposit', 'address', chain, tradeAccountId],
+    queryKey: ['deposit', 'address', chainId, tradeAccountId],
     queryFn: async () => {
-      const response = await depositRequest<DepositAddressResponse>('/api/deposit/address', {
+      const response = await depositRequest<DepositAddressInfo>('/api/deposit/address', {
         method: 'GET',
         params: {
-          chain,
+          chain: chainId,
           tradeAccountId,
         },
       })
       return response.data
     },
-    enabled: !!chain && !!tradeAccountId, // 只有当两个参数都存在时才执行查询
+    enabled: !!chainId && !!tradeAccountId, // 只有当两个参数都存在时才执行查询
   })
 }

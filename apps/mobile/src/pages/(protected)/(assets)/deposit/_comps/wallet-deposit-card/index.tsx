@@ -69,7 +69,7 @@ export function WalletDepositCard() {
 				icon={walletMethodIcon}
 				title={
 					isWalletConnected ? (
-						<Text className="text-paragraph-p2 text-content-1">{formatAddress(depositWalletAddress) || '-'}</Text>
+						<Text className="text-paragraph-p2 text-content-1">{depositWalletAddress ? formatAddress(depositWalletAddress) : '-'}</Text>
 					) : (
 						<Trans>直连钱包转入</Trans>
 					)

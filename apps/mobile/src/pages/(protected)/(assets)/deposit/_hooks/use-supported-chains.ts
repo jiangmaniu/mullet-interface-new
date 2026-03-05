@@ -21,20 +21,17 @@ export interface ChainInfo {
   supportedTokens: ChainTokenInfo[]
 }
 
-interface ChainsResponse {
-  success: boolean
-  data: ChainInfo[]
-}
-
 /**
  * 获取支持的链列表（包含每个链支持的代币）
+ * @param tokenSymbol 可选，按币种过滤（USDC / USDT）
  */
-export function useSupportedChains() {
+export function useSupportedChains(tokenSymbol?: string) {
   return useQuery({
-    queryKey: ['deposit', 'chains'],
+    queryKey: ['deposit', 'chains', tokenSymbol],
     queryFn: async () => {
-      const response = await depositRequest<ChainsResponse>('/api/deposit/supportedChains', {
+      const response = await depositRequest<ChainInfo[]>('/api/deposit/supportedChains', {
         method: 'GET',
+        params: tokenSymbol ? { token: tokenSymbol } : undefined,
       })
       return response.data
     },
