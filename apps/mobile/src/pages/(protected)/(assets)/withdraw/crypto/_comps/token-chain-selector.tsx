@@ -4,28 +4,27 @@ import type { Option } from '@/components/ui/select'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-import { useDepositSupportedChains } from '../../_hooks/use-supported-chains'
-import { useDepositSupportedTokens } from '../../_hooks/use-supported-tokens'
-import { useDepositStore } from '../../_store'
+import { useWithdrawSupportedChains } from '../../_hooks/use-supported-chains'
+import { useWithdrawSupportedTokens } from '../../_hooks/use-supported-tokens'
+import { useWithdrawStore } from '../../_store'
 
 export function TokenChainSelector() {
-  const selectedTokenSymbol = useDepositStore((s) => s.selectedTokenSymbol)
-  const selectedChainId = useDepositStore((s) => s.selectedChainId)
-  const setSelectedTokenSymbol = useDepositStore((s) => s.setSelectedTokenSymbol)
-  const setSelectedChainId = useDepositStore((s) => s.setSelectedChainId)
+  const selectedTokenSymbol = useWithdrawStore((s) => s.selectedTokenSymbol)
+  const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
+  const setSelectedTokenSymbol = useWithdrawStore((s) => s.setSelectedTokenSymbol)
+  const setSelectedChainId = useWithdrawStore((s) => s.setSelectedChainId)
 
   // 获取所有链列表（包含每个链支持的代币）
-  const { data: chains, isLoading: isLoadingChains } = useDepositSupportedChains()
+  const { data: chains, isLoading: isLoadingChains } = useWithdrawSupportedChains()
 
-  // 获取入金代币配置（用于获取代币图标）
-  const { data: tokens } = useDepositSupportedTokens()
+  // 获取出金代币配置（用于获取代币图标）
+  const { data: tokens } = useWithdrawSupportedTokens()
 
-  // 根据选中的链，从链的 supportedTokens 中获取可用代币列表
+  // 根据选中的链，计算可用的代币列表
   const availableTokens = useMemo(() => {
-    if (!selectedChainId || !chains) return []
-    const selectedChain = chains.find((c) => c.chainId === selectedChainId)
+    const selectedChain = chains?.find((c) => c.chainId === selectedChainId)
     return selectedChain?.supportedTokens || []
-  }, [selectedChainId, chains])
+  }, [chains, selectedChainId])
 
   // 初始化默认选择的链（第一个）
   useEffect(() => {
@@ -60,7 +59,7 @@ export function TokenChainSelector() {
     setSelectedTokenSymbol(option.value)
   }
 
-  // 从入金代币配置中获取代币图标 URL
+  // 从出金代币配置中获取代币图标 URL
   const getTokenIconUrl = (symbol: string) => {
     const tokenConfig = tokens?.find((t) => t.symbol === symbol)
     return tokenConfig?.iconUrl
@@ -86,7 +85,7 @@ export function TokenChainSelector() {
   }
 
   return (
-    <View className="gap-2xl">
+    <View className="gap-xl">
       {/* 网络选择器 */}
       <Select value={selectedChainOption} onValueChange={handleChainChange}>
         <SelectTrigger placeholder="选择网络" loading={isLoadingChains}>

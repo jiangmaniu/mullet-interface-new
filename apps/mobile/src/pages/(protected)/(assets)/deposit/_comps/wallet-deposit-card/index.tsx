@@ -12,7 +12,7 @@ import { DepositMethodCard } from '../method-card';
 import { ConnectWalletDrawer } from './connect-wallet-drawer';
 import { useAccount, useWalletInfo } from '@/lib/appkit';
 import { useDepositStore } from '../../_store';
-import { useLoginAuthStore } from '@/stores/login-auth';
+import { LoginType, useLoginAuthStore } from '@/stores/login-auth';
 
 export function WalletDepositCard() {
 	const [isConnectWalletOpen, setIsConnectWalletOpen] = useState(false);
@@ -30,11 +30,11 @@ export function WalletDepositCard() {
 
 	// Web3 登录：同步全局钱包到入金钱包；Web2 为 null，需在 ConnectWalletDrawer 中连接
 	useEffect(() => {
-		if (loginType === 'web3' || (loginType === null && isGlobalWalletConnected)) {
+		if (loginType === LoginType.Web3 || (loginType === null && isGlobalWalletConnected)) {
 			if (isGlobalWalletConnected && globalWalletAddress) {
 				setDepositWalletAddress(globalWalletAddress);
 			}
-		} else if (loginType === 'web2') {
+		} else if (loginType === LoginType.Web2) {
 			setDepositWalletAddress(null);
 		}
 	}, [loginType, isGlobalWalletConnected, globalWalletAddress, setDepositWalletAddress]);

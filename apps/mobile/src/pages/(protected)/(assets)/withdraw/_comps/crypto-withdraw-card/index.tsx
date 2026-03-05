@@ -3,19 +3,19 @@ import { Image, View } from 'react-native'
 import { router } from 'expo-router'
 
 import { IconSpinner } from '@/components/ui/icons'
-import { IconifyFlashSolid } from '@/components/ui/icons/iconify'
+import { IconBitcoin } from '@/components/ui/icons/set/bitcoin'
 
-import { useDepositSupportedChains } from '../../_hooks/use-supported-chains'
-import { DepositMethodCard } from '../method-card'
+import { useWithdrawSupportedChains } from '../../_hooks/use-supported-chains'
+import { DepositMethodCard } from '../../../deposit/_comps/method-card'
 
-export function QrDepositCard() {
-  const { data: chains, isLoading } = useDepositSupportedChains()
-  const chainIcons = chains?.slice(0, 6) || []
+export function CryptoWithdrawCard() {
+  const { data: chains, isLoading } = useWithdrawSupportedChains()
+  const chainIcons = chains?.slice(0, 6) ?? []
 
   return (
     <DepositMethodCard
-      icon={<IconifyFlashSolid width={24} height={24} className="text-content-1" />}
-      title={<Trans>扫码转入</Trans>}
+      icon={<IconBitcoin width={24} height={24} className="text-content-1" />}
+      title={<Trans>加密货币取现</Trans>}
       subtitle={<Trans>无限制 · 即时</Trans>}
       rightContent={
         <View className="pr-xs flex-row items-center">
@@ -30,7 +30,7 @@ export function QrDepositCard() {
           )}
         </View>
       }
-      onPress={() => router.push('/(assets)/deposit/qr-deposit')}
+      onPress={() => router.push('/(assets)/withdraw/crypto')}
     />
   )
 }

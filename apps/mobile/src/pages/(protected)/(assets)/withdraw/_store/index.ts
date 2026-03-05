@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface WithdrawState {
 	// 选择的代币和链
-	selectedToken: string;
+	selectedTokenSymbol: string;
 	selectedChainId: string;
 
 	// 提现金额
@@ -15,7 +15,7 @@ interface WithdrawState {
 	withdrawSourceAccount: User.AccountItem | null;
 
 	// Actions
-	setSelectedToken: (token: string) => void;
+	setSelectedTokenSymbol: (tokenSymbol: string) => void;
 	setSelectedChainId: (chainId: string) => void;
 	setWithdrawAmount: (amount: string) => void;
 	setWithdrawAddress: (address: string) => void;
@@ -26,7 +26,7 @@ interface WithdrawState {
 }
 
 const initialState = {
-	selectedToken: '',
+	selectedTokenSymbol: '',
 	selectedChainId: '',
 	withdrawAmount: '',
 	withdrawAddress: '',
@@ -36,7 +36,7 @@ const initialState = {
 export const useWithdrawStore = create<WithdrawState>((set) => ({
 	...initialState,
 
-	setSelectedToken: (token) => set({ selectedToken: token }),
+	setSelectedTokenSymbol: (tokenSymbol) => set({ selectedTokenSymbol: tokenSymbol }),
 	setSelectedChainId: (chainId) => set({ selectedChainId: chainId }),
 	setWithdrawAmount: (amount) => set({ withdrawAmount: amount }),
 	setWithdrawAddress: (address) => set({ withdrawAddress: address }),
