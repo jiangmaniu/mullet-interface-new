@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
-import { useLogin } from '@privy-io/expo/ui'
-import { usePrivy } from '@privy-io/expo'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 
-import { cn } from '@/lib/utils'
 import { IconMail } from '@/components/ui/icons/set'
+import { cn } from '@/lib/utils'
+import { LoginType } from '@/stores/login-auth'
+import { usePrivy } from '@privy-io/expo'
+import { useLogin } from '@privy-io/expo/ui'
+
 import { useBackendLogin } from '../_hooks/use-backend-login'
 
 export function Web2LoginSection() {
@@ -17,11 +19,7 @@ export function Web2LoginSection() {
   const loginTriggeredRef = useRef(false)
 
   // 后端登录 hook
-  const {
-    loginToBackend,
-    isLoading: isBackendLoading,
-    error: backendError,
-  } = useBackendLogin({})
+  const { loginToBackend, isLoading: isBackendLoading, error: backendError } = useBackendLogin({})
 
   // 重置登录状态
   const resetLoginState = useCallback(() => {
@@ -32,15 +30,10 @@ export function Web2LoginSection() {
   // 监听 Privy 登录成功后，自动登录后端
   useEffect(() => {
     const handlePrivyLoginSuccess = async () => {
-      if (
-        privyReady &&
-        privyUser &&
-        loginTriggeredRef.current &&
-        !isBackendLoading
-      ) {
+      if (privyReady && privyUser && loginTriggeredRef.current && !isBackendLoading) {
         console.log('Web2 login: Privy authenticated, logging into backend...')
         try {
-          await loginToBackend('web2')
+          await loginToBackend(LoginType.Web2)
         } catch (error) {
           console.error('Backend login failed:', error)
         } finally {
@@ -60,7 +53,7 @@ export function Web2LoginSection() {
     // 如果已登录 Privy（后端登录失败后重试的场景），直接登录后端
     if (privyUser) {
       try {
-        await loginToBackend('web2')
+        await loginToBackend(LoginType.Web2)
       } catch (error) {
         console.error('Backend login failed:', error)
       } finally {
@@ -85,11 +78,16 @@ export function Web2LoginSection() {
         onPress={handleWeb2Login}
         disabled={isLoading}
         className={cn(
-          'flex-row', 'items-center',
-          'gap-medium', 'px-xl', 'py-medium',
+          'flex-row',
+          'items-center',
+          'gap-medium',
+          'px-xl',
+          'py-medium',
           'w-full',
-          'border', 'border-brand-default', 'rounded-small',
-          'active:opacity-80'
+          'border',
+          'border-brand-default',
+          'rounded-small',
+          'active:opacity-80',
         )}
       >
         {isLoading ? (
@@ -97,19 +95,15 @@ export function Web2LoginSection() {
         ) : (
           <>
             <IconMail width={24} height={24} color="#FFFFFF" />
-            <Text className={cn('text-white', 'text-paragraph-p2')}>
-              电子邮箱登录/注册
-            </Text>
+            <Text className={cn('text-white', 'text-paragraph-p2')}>电子邮箱登录/注册</Text>
           </>
         )}
       </Pressable>
       {backendError && (
-        <Text className={cn('text-center', 'mt-medium', 'text-red-500', 'text-paragraph-p3')}>
-          {backendError}
-        </Text>
+        <Text className={cn('text-center', 'mt-medium', 'text-red-500', 'text-paragraph-p3')}>{backendError}</Text>
       )}
     </View>
   )
 }
 
-export default Web2LoginSection;
+export default Web2LoginSection

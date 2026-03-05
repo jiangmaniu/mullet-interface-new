@@ -3,7 +3,10 @@ import { createJSONStorage, persist } from 'zustand/middleware'
 
 import { mmkvStorage } from '@/lib/storage/mmkv'
 
-export type LoginType = 'web2' | 'web3'
+export enum LoginType {
+  Web2 = 'web2',
+  Web3 = 'web3',
+}
 
 interface LoginAuthState {
   accessToken?: string

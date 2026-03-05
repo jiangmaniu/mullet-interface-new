@@ -16,6 +16,7 @@ import { IconSpecialFail, IconSpecialSuccess } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
 import { useAccount, useAppKit, useAppKitState, useProvider } from '@/lib/appkit'
 import { cn } from '@/lib/utils'
+import { LoginType } from '@/stores/login-auth'
 
 import { useBackendLogin } from '../_hooks/use-backend-login'
 import { useWalletAuth, WalletAuthError } from '../_hooks/use-wallet-auth'
@@ -120,7 +121,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
     try {
       // 签名成功，进行后端登录
       setFlowState('login_backend')
-      const backendSuccess = await loginToBackend('web3')
+      const backendSuccess = await loginToBackend(LoginType.Web3)
 
       if (!backendSuccess) {
         setFlowState('login_failed')
