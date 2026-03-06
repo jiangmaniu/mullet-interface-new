@@ -1,26 +1,27 @@
 // React & React Native
-import { View, ScrollView, Pressable } from 'react-native'
-import { useState, useMemo, useCallback, useEffect } from 'react'
+import { Trans, useLingui } from '@lingui/react/macro'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
 // 第三方库
 import { useRouter } from 'expo-router'
-import { Trans, useLingui } from '@lingui/react/macro'
-import { BNumber } from '@mullet/utils/number'
 
+import { EmptyState } from '@/components/states/empty-state'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { IconDepth, IconDepthTB, IconifySearch } from '@/components/ui/icons'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 // 项目内部模块
 import { Text } from '@/components/ui/text'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { EmptyState } from '@/components/states/empty-state'
+import { parseRiseAndFallInfo } from '@/helpers/market'
+import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
-import { parseRiseAndFallInfo } from '@/helpers/market'
+import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { Account } from '@/v1/services/tradeCore/account/typings'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { BNumber } from '@mullet/utils/number'
 
 // 相对路径导入
 import { HighlightText } from './_comps/highlight-text'
@@ -33,42 +34,35 @@ const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
  * 根据预定义的热门品种列表，从所有品种中筛选出匹配的品种
  */
 function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
-  const hotSymbolsLower = HOT_SYMBOL_LIST.map(s => s.toLowerCase())
-  return symbolListAll.filter(item =>
-    hotSymbolsLower.some(hot => item.alias?.toLowerCase().includes(hot))
-  )
+  const hotSymbolsLower = HOT_SYMBOL_LIST.map((s) => s.toLowerCase())
+  return symbolListAll.filter((item) => hotSymbolsLower.some((hot) => item.alias?.toLowerCase().includes(hot)))
 }
 
 /**
  * 计算匹配权重
  * 根据搜索字符在品种名称和别名中出现的次数计算匹配分数
  */
-function calculateMatchScore(
-  item: Account.TradeSymbolListItem,
-  searchChars: string[]
-): number {
+function calculateMatchScore(item: Account.TradeSymbolListItem, searchChars: string[]): number {
   const searchText = `${item.symbol} ${item.alias || ''}`.toLowerCase()
-  return searchChars.filter(char =>
-    searchText.includes(char.toLowerCase())
-  ).length
+  return searchChars.filter((char) => searchText.includes(char.toLowerCase())).length
 }
 
 /**
  * 搜索并排序品种
  * 如果没有搜索关键词，返回热门品种；否则根据匹配权重排序
  */
-function searchAndSortSymbols(
-  symbolListAll: Account.TradeSymbolListItem[],
-  searchQuery: string
-) {
-  const searchChars = searchQuery.trim().split('').filter(c => c.trim())
+function searchAndSortSymbols(symbolListAll: Account.TradeSymbolListItem[], searchQuery: string) {
+  const searchChars = searchQuery
+    .trim()
+    .split('')
+    .filter((c) => c.trim())
 
   if (searchChars.length === 0) {
     return getHotSymbols(symbolListAll)
   }
 
   return symbolListAll
-    .map(item => ({ item, score: calculateMatchScore(item, searchChars) }))
+    .map((item) => ({ item, score: calculateMatchScore(item, searchChars) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .map(({ item }) => item)
@@ -76,16 +70,16 @@ function searchAndSortSymbols(
 
 // ============ SearchAssetRow ============
 function SearchAssetRow({
-  symbol,
+  symbolInfo,
   searchChars,
-  onSelect
+  onSelect,
 }: {
-  symbol: Account.TradeSymbolListItem
+  symbolInfo: Account.TradeSymbolListItem
   searchChars: string[]
   onSelect: () => void
 }) {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbol.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   return (
@@ -93,17 +87,13 @@ function SearchAssetRow({
       <View className="gap-medium flex-1 flex-row items-center">
         <Avatar className="size-6 flex-shrink-0">
           <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol.symbol[0]}</Text>
+            <Text className="text-content-1">{symbolInfo.symbol[0]}</Text>
           </AvatarFallback>
         </Avatar>
         <View>
+          <HighlightText text={symbolInfo.symbol} searchChars={searchChars} className="text-paragraph-p2 text-content-1" />
           <HighlightText
-            text={symbol.symbol}
-            searchChars={searchChars}
-            className="text-paragraph-p2 text-content-1"
-          />
-          <HighlightText
-            text={symbol.name || symbol.alias || ''}
+            text={symbolInfo.alias || ''}
             searchChars={searchChars}
             className="text-paragraph-p3 text-content-4"
           />
@@ -113,7 +103,7 @@ function SearchAssetRow({
       <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
         <View className="flex-1">
           <Text className="text-paragraph-p1 text-content-1">
-            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbol.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
         <View className="flex-1 items-end">
@@ -124,7 +114,7 @@ function SearchAssetRow({
                 ? 'text-market-rise'
                 : percentChangeInfo.isFall
                   ? 'text-market-fall'
-                  : 'text-content-1'
+                  : 'text-content-1',
             )}
           >
             {BNumber.toFormatPercent(symbolMarketInfo.percent, { forceSign: true, isRaw: false })}
@@ -137,33 +127,35 @@ function SearchAssetRow({
 
 // ============ SearchAssetTradeRow ============
 function SearchAssetTradeRow({
-  symbol,
+  symbolInfo,
   searchChars,
-  onSelect
+  onSelect,
 }: {
-  symbol: Account.TradeSymbolListItem
+  symbolInfo: Account.TradeSymbolListItem
   searchChars: string[]
   onSelect: () => void
 }) {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbol.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
       <View className="gap-medium flex-1 flex-row items-center">
         <Avatar className="size-6 flex-shrink-0">
           <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol.symbol[0]}</Text>
+            <Text className="text-content-1">{symbolInfo.symbol[0]}</Text>
           </AvatarFallback>
         </Avatar>
+
+        <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
         <View>
           <HighlightText
-            text={symbol.symbol}
+            text={renderFormatSymbolName(symbolInfo)}
             searchChars={searchChars}
             className="text-paragraph-p2 text-content-1"
           />
           <HighlightText
-            text={symbol.name || symbol.alias || ''}
+            text={symbolInfo.remark ?? ''}
             searchChars={searchChars}
             className="text-paragraph-p3 text-content-4"
           />
@@ -174,21 +166,21 @@ function SearchAssetTradeRow({
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo.bid, { volScale: symbol.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo.bid, { volScale: symbolInfo.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
-            最高 {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbol.symbolDecimal })}
+            最高 {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-fall">
-              {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbol.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">
-            最低 {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbol.symbolDecimal })}
+            最低 {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
       </View>
@@ -219,6 +211,8 @@ export default function SearchPage() {
     trade.getSymbolList()
   }, [])
 
+  console.log(trade.symbolListAll)
+
   // 使用真实数据进行搜索和排序
   const filteredSymbols = useMemo(() => {
     return searchAndSortSymbols(trade.symbolListAll, debouncedQuery)
@@ -226,19 +220,25 @@ export default function SearchPage() {
 
   // 提取搜索字符用于高亮显示（Task 4 会使用）
   const searchChars = useMemo(() => {
-    return debouncedQuery.trim().split('').filter(c => c.trim())
+    return debouncedQuery
+      .trim()
+      .split('')
+      .filter((c) => c.trim())
   }, [debouncedQuery])
 
-  const handleSelect = useCallback((symbol: string) => {
-    trade.switchSymbol(symbol)
-    router.push(`/trade/${symbol}`)
-  }, [router, trade])
+  const handleSelect = useCallback(
+    (symbol: string) => {
+      trade.switchSymbol(symbol)
+      router.push(`/trade/${symbol}`)
+    },
+    [router, trade],
+  )
 
   return (
-    <View className="flex-1 bg-secondary">
+    <View className="bg-secondary flex-1">
       <SafeAreaView edges={['top']}>
         {/* Search Header */}
-        <View className="flex-row items-center gap-[10px] px-xl py-1.5 mb-1.5">
+        <View className="px-xl mb-1.5 flex-row items-center gap-[10px] py-1.5">
           <View className="flex-1">
             <Input
               placeholder={t`查询`}
@@ -248,9 +248,7 @@ export default function SearchPage() {
               value={searchQuery}
               onValueChange={setSearchQuery}
               autoFocus
-              LeftContent={
-                <IconifySearch width={20} height={20} />
-              }
+              LeftContent={<IconifySearch width={20} height={20} />}
             />
           </View>
           <Pressable onPress={() => router.back()}>
@@ -261,11 +259,11 @@ export default function SearchPage() {
         </View>
 
         {/* Section Header */}
-        <View className="flex-row items-center justify-between p-xl">
+        <View className="p-xl flex-row items-center justify-between">
           <Text className="text-important-1 text-content-1">
             {searchChars.length > 0 ? <Trans>搜索结果</Trans> : <Trans>热门品种</Trans>}
           </Text>
-          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
+          <Tabs value={viewMode} onValueChange={setViewMode} className="">
             <TabsList variant="icon" size="sm">
               <TabsTrigger value="list" className="size-5">
                 <IconDepthTB
@@ -291,30 +289,25 @@ export default function SearchPage() {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {filteredSymbols.length === 0 ? (
           <View className="py-[96px]">
-            <EmptyState
-              message={<Trans>暂无搜索内容</Trans>}
-              iconWidth={107}
-              iconHeight={76}
-              className="gap-2xl"
-            />
+            <EmptyState message={<Trans>暂无搜索内容</Trans>} iconWidth={107} iconHeight={76} className="gap-2xl" />
           </View>
         ) : (
           filteredSymbols.map((item) =>
             viewMode === 'trade' ? (
               <SearchAssetTradeRow
                 key={item.symbol}
-                symbol={item}
+                symbolInfo={item}
                 searchChars={searchChars}
                 onSelect={() => handleSelect(item.symbol)}
               />
             ) : (
               <SearchAssetRow
                 key={item.symbol}
-                symbol={item}
+                symbolInfo={item}
                 searchChars={searchChars}
                 onSelect={() => handleSelect(item.symbol)}
               />
-            )
+            ),
           )
         )}
       </ScrollView>
