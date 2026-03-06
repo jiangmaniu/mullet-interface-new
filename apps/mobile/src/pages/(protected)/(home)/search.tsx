@@ -3,6 +3,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useRouter } from 'expo-router'
 import { Trans, useLingui } from '@lingui/react/macro'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { BNumber } from '@mullet/utils/number'
 
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -13,7 +14,9 @@ import { AreaChart, ChartData } from '@/components/trading-view'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/states/empty-state'
+import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 
 // Mock data
 const SYMBOLS = [
