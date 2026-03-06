@@ -1,27 +1,29 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { router } from 'expo-router'
 
-import { Button } from '@/components/ui/button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
+import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../../_hooks/use-selected-chain-info'
 import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { Web2Confirm } from './_comps/web2-confirm'
+import { Web3Confirm } from './_comps/web3-confirm'
 
 const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
   const { withdrawAddress, withdrawAmount } = useWithdrawState()
   const { tokenInfo, chainInfo } = useSelectedChainInfo()
+  const loginType = useLoginAuthStore((s) => s.loginType)
 
-  // Check if withdrawal address matches connected wallet
+  // Web3 wallet state
   const { address: connectedWalletAddress } = useAccount()
   const { walletInfo } = useWalletInfo()
 
@@ -33,10 +35,6 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
   const gasFee = 0.0001 // Mock gas fee
   const serviceFee = 0
   const estimatedReceive = BNumber.from(withdrawAmount).minus(serviceFee).toString()
-
-  const handleConfirmWithdraw = useCallback(() => {
-    router.push('/(assets)/withdraw/crypto/usdc/verify')
-  }, [])
 
   return (
     <View className="gap-xl flex-1">
@@ -115,13 +113,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
       </View>
 
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
-          <Button block size="lg" color="primary" onPress={handleConfirmWithdraw}>
-            <Text>
-              <Trans>确定</Trans>
-            </Text>
-          </Button>
-        </View>
+        <View className="px-5">{loginType === LoginType.Web3 ? <Web3Confirm /> : <Web2Confirm />}</View>
       </SafeAreaView>
     </View>
   )

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
+import { useWithdrawSupportedChains } from '../_apis/use-supported-chains'
 import { useWithdrawStore } from '../_store'
-import { useWithdrawSupportedChains } from './use-supported-chains'
 
 /**
  * 获取当前选中的链信息和代币信息

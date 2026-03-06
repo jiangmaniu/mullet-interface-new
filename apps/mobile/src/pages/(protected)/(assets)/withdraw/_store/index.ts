@@ -42,5 +42,5 @@ export const useWithdrawStore = create<WithdrawState>((set) => ({
 	setWithdrawAddress: (address) => set({ withdrawAddress: address }),
 	setSelectedAccountId: (accountId) => set({ selectedAccountId: accountId }),
 
-	reset: () => set({ ...initialState }),
+	reset: () => set((state) => ({ ...initialState, selectedAccountId: state.selectedAccountId })),
 }));

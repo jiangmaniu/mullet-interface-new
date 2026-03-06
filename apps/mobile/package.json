@@ -94,6 +94,7 @@
     "react-native": "0.83.2",
     "react-native-awesome-slider": "^2.9.0",
     "react-native-collapsible-tab-view": "^9.0.0-rc.0",
+    "react-native-confirmation-code-field": "^8.0.1",
     "react-native-dev-inspector": "^1.1.0",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.30.0",

@@ -19,7 +19,7 @@ export default function WithdrawLayout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="crypto/index" />
       <Stack.Screen name="crypto/usdc/index" />
-      <Stack.Screen name="crypto/usdc/verify/index" />
+      <Stack.Screen name="crypto/verify/index" />
       <Stack.Screen name="crypto/usdc/confirm/index" />
       <Stack.Screen name="crypto/swap/index" />
     </Stack>

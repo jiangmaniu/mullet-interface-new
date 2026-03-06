@@ -4,7 +4,7 @@ import { router } from 'expo-router'
 
 import { IconifyFlashSolid, IconSpinner } from '@/components/ui/icons'
 
-import { useWithdrawSupportedChains } from '../../_hooks/use-supported-chains'
+import { useWithdrawSupportedChains } from '../../_apis/use-supported-chains'
 import { DepositMethodCard } from '../../../deposit/_comps/method-card'
 
 export function CryptoWithdrawCard() {

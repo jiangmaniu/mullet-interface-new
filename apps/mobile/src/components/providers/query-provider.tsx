@@ -1,8 +1,8 @@
-import { QueryClient, QueryClientProvider, onlineManager, focusManager } from '@tanstack/react-query'
+import { useReactQueryDevTools } from '@dev-plugins/react-query'
 import NetInfo from '@react-native-community/netinfo'
+import { focusManager, onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { AppState, AppStateStatus, Platform } from 'react-native'
-import { useReactQueryDevTools } from '@dev-plugins/react-query';
 
 // 配置 onlineManager 以使用 NetInfo 检测网络状态
 onlineManager.setEventListener((setOnline) => {
@@ -18,8 +18,8 @@ const createQueryClient = () =>
       queries: {
         // 在 React Native 中，通常不需要在窗口聚焦时重新获取
         refetchOnWindowFocus: false,
-        // 失败后重试 2 次
-        retry: 2,
+        // 失败后重试 3 次
+        retry: 3,
         // 数据过期时间 5 分钟
         staleTime: 5 * 60 * 1000,
         // 缓存时间 10 分钟
@@ -47,7 +47,7 @@ export function QueryProvider({ children }: PropsWithChildren) {
     return () => subscription.remove()
   }, [])
 
-  useReactQueryDevTools(queryClient);
+  useReactQueryDevTools(queryClient)
 
   return (
     <QueryClientProvider client={queryClient}>

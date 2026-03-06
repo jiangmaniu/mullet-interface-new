@@ -7,7 +7,11 @@ import { router } from 'expo-router'
 import type { NumberFormatValues } from 'react-number-format'
 
 import { Button } from '@/components/ui/button'
-import { NumberInputPrimitive } from '@/components/ui/number-input-primitive'
+import {
+  NumberInputPrimitive,
+  NumberInputSourceInfo,
+  NumberInputSourceType,
+} from '@/components/ui/number-input-primitive'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
@@ -42,9 +46,11 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
   // 是否满足最低取现
   const isValid = BNumber.from(amount).gte(minWithdraw) && BNumber.from(amount).lte(accountBalance)
 
-  const handleValueChange = useCallback((values: NumberFormatValues) => {
-    setAmount(values.value)
-    setSelectedPercent('')
+  const handleValueChange = useCallback((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
+    if (source === NumberInputSourceType.EVENT) {
+      setAmount(values.value)
+      setSelectedPercent('')
+    }
   }, [])
 
   const handlePercentChange = useCallback(

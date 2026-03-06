@@ -4,8 +4,8 @@ import type { Option } from '@/components/ui/select'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-import { useWithdrawSupportedChains } from '../../_hooks/use-supported-chains'
-import { useWithdrawSupportedTokens } from '../../_hooks/use-supported-tokens'
+import { useWithdrawSupportedChains } from '../../_apis/use-supported-chains'
+import { useWithdrawSupportedTokens } from '../../_apis/use-supported-tokens'
 import { useWithdrawStore } from '../../_store'
 
 export function TokenChainSelector() {

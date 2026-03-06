@@ -1,4 +1,3 @@
-import { toast } from '@/components/ui/toast'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { i18n } from '@lingui/core'
 import { getAccessToken } from '@privy-io/expo'
@@ -12,8 +11,6 @@ interface DepositRequestConfig {
   data?: any
   /** 自定义 headers */
   headers?: Record<string, string>
-  /** 是否跳过错误提示 */
-  skipErrorHandler?: boolean
   /** 请求超时时间(ms) */
   timeout?: number
   /** 是否需要 Privy Authorization（默认 true） */
@@ -22,6 +19,8 @@ interface DepositRequestConfig {
 
 interface DepositResponse<T = any> {
   success: boolean
+  code: number
+  msg: string
   data: T
 }
 
@@ -77,12 +76,14 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeout: numb
  * 自动处理：
  * 1. baseURL 设置为 DEPOSIT_API_BASE_URL
  * 2. Authorization header 设置为 Bearer <Privy Access Token>
- * 3. 错误处理和 toast 提示
- * 4. 超时控制
+ * 3. 超时控制
+ *
+ * 错误处理：
+ * - 所有错误都会抛出 Error，由上层捕获并决定是否显示 toast
+ * - Error.message 包含用户友好的错误信息
  */
 export async function depositRequest<T = any>(url: string, config?: DepositRequestConfig): Promise<DepositResponse<T>> {
   const needPrivyAuth = config?.needPrivyAuth !== false // 默认需要认证
-  const skipErrorHandler = config?.skipErrorHandler ?? false
   const timeout = config?.timeout ?? DEFAULT_TIMEOUT
 
   try {
@@ -148,41 +149,26 @@ export async function depositRequest<T = any>(url: string, config?: DepositReque
       throw new Error('Invalid JSON response')
     }
 
+    // 处理 HTTP 错误状态码
+    if (!response.ok || data.code !== 200) {
+      throw data
+    }
+
     console.log('✅ Deposit API Response:', response.status, data)
 
-    // 处理 HTTP 错误状态码
-    if (!response.ok) {
-      const errorMessage = `HTTP Error ${response.status}`
-      if (!skipErrorHandler) {
-        toast.error(errorMessage)
-      }
-      throw new Error(errorMessage)
-    }
-
-    // 处理业务错误码
-    if (data.success === false) {
-      const errorMessage = (data?.data as { message?: string })?.message || 'Request failed'
-      if (!skipErrorHandler) {
-        toast.error(errorMessage)
-      }
-      throw new Error(errorMessage)
-    }
-
     // 返回数据
-    return data as unknown as DepositResponse<T>
+    return data
   } catch (error: any) {
     console.error('❌ Deposit API Error:', error.message)
 
-    // 处理特定错误
+    // 处理特定错误，统一错误信息格式
     if (error.message === 'Request Timeout') {
-      !skipErrorHandler && toast.error('Request Timeout')
+      throw new Error('Request Timeout')
     } else if (error.message?.includes('Network request failed')) {
-      !skipErrorHandler && toast.error('Network error, please retry')
-    } else if (!skipErrorHandler && error.message !== 'Authentication failed') {
-      // Authentication failed 已经在上面处理过了，不重复提示
-      toast.error(error.message)
+      throw new Error('Network error, please retry')
     }
 
+    // 其他错误直接抛出
     throw error
   }
 }
