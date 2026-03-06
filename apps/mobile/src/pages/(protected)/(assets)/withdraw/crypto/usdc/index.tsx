@@ -11,7 +11,7 @@ import { NumberInputPrimitive } from '@/components/ui/number-input-primitive'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
-import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
+import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
@@ -130,7 +130,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
             <Text className="text-paragraph-p3 text-content-4">
               <Trans>接收地址</Trans>
             </Text>
-            <Text className="text-paragraph-p3 text-content-1">{withdrawAddress || '-'}</Text>
+            <Text className="text-paragraph-p3 text-content-1">{renderFallback(withdrawAddress)}</Text>
           </View>
         </View>
       </View>
