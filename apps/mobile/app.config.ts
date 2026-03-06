@@ -43,6 +43,8 @@ export default ({ config }: { config: ConfigContext }) => {
     DEPOSIT_API_BASE_URL: process.env.EXPO_PUBLIC_DEPOSIT_API_BASE_URL!,
     // Reown 配置
     REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID!,
+    // Solana 网络配置
+    SOLANA_CLUSTER: (process.env.EXPO_PUBLIC_SOLANA_CLUSTER as 'devnet' | 'testnet' | 'mainnet-beta') || 'mainnet-beta',
   }
 
   // 从 WEBSITE_URL 提取域名，用于 iOS associatedDomains
@@ -120,8 +122,8 @@ export default ({ config }: { config: ConfigContext }) => {
         'expo-splash-screen',
         {
           image: './public/images/splash-icon.png',
-          imageWidth: 200,
-          resizeMode: 'contain',
+          imageWidth: 320, // 在容器内显示更大尺寸
+          resizeMode: 'contain', // 保持完整显示
           backgroundColor: '#060717',
         },
       ],

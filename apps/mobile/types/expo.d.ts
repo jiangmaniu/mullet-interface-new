@@ -11,4 +11,6 @@ export type ExpoConfigExtra = {
   DEPOSIT_API_BASE_URL: string
   // Reown 配置
   REOWN_PROJECT_ID: string
+  // Solana 网络配置
+  SOLANA_CLUSTER: 'devnet' | 'testnet' | 'mainnet-beta'
 }

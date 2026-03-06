@@ -3,7 +3,7 @@ import 'text-encoding' // needed for @solana/web3.js to work
 import '@walletconnect/react-native-compat'
 
 import { EventEmitter } from 'events'
-import { createAppKit, solana, solanaDevnet } from '@reown/appkit-react-native'
+import { createAppKit, solana, solanaDevnet, solanaTestnet } from '@reown/appkit-react-native'
 import { PhantomConnector, SolanaAdapter, SolflareConnector } from '@reown/appkit-solana-react-native'
 import Constants from 'expo-constants'
 import type { Storage } from '@reown/appkit-react-native'
@@ -16,6 +16,15 @@ EventEmitter.defaultMaxListeners = 20
 
 const projectId = EXPO_ENV_CONFIG.REOWN_PROJECT_ID
 const appScheme = (Constants.expoConfig?.scheme as string) ?? 'mullet'
+
+// 根据环境变量选择 Solana 网络
+const solanaCluster = EXPO_ENV_CONFIG.SOLANA_CLUSTER
+const networkMap = {
+  'mainnet-beta': solana,
+  devnet: solanaDevnet,
+  testnet: solanaTestnet,
+}
+const selectedNetwork = networkMap[solanaCluster]
 
 // Solana adapter
 const solanaAdapter = new SolanaAdapter()
@@ -48,8 +57,8 @@ const storage: Storage = {
 // 创建 AppKit 实例
 export const appKit = createAppKit({
   projectId,
-  networks: [solana, solanaDevnet],
-  defaultNetwork: solana,
+  networks: [selectedNetwork],
+  defaultNetwork: selectedNetwork,
   adapters: [solanaAdapter],
   storage,
   debug: true,
@@ -76,8 +85,8 @@ export const appKit = createAppKit({
     socials: false, // 禁用社交媒体登录 (Email, Google, Apple, etc.)
     showWallets: false, // 显示钱包选项
   },
-  // 添加 Phantom 和 Solflare 连接器
-  extraConnectors: [new PhantomConnector({ cluster: 'devnet' }), new SolflareConnector({ cluster: 'devnet' })],
+  // 添加 Phantom 和 Solflare 连接器，使用环境变量配置的集群
+  extraConnectors: [new PhantomConnector({ cluster: solanaCluster }), new SolflareConnector({ cluster: solanaCluster })],
 })
 
 export { solanaAdapter }
