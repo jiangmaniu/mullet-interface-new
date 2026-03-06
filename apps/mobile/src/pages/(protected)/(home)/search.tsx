@@ -85,13 +85,13 @@ function SearchAssetRow({
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
       <View className="gap-medium flex-1 flex-row items-center">
-        <Avatar className="size-6 flex-shrink-0">
-          <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbolInfo.symbol[0]}</Text>
-          </AvatarFallback>
-        </Avatar>
+        <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
         <View>
-          <HighlightText text={symbolInfo.symbol} searchChars={searchChars} className="text-paragraph-p2 text-content-1" />
+          <HighlightText
+            text={symbolInfo.symbol}
+            searchChars={searchChars}
+            className="text-paragraph-p2 text-content-1"
+          />
           <HighlightText
             text={symbolInfo.alias || ''}
             searchChars={searchChars}
@@ -141,12 +141,6 @@ function SearchAssetTradeRow({
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
       <View className="gap-medium flex-1 flex-row items-center">
-        <Avatar className="size-6 flex-shrink-0">
-          <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbolInfo.symbol[0]}</Text>
-          </AvatarFallback>
-        </Avatar>
-
         <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
         <View>
           <HighlightText
@@ -170,7 +164,7 @@ function SearchAssetTradeRow({
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
-            最高 {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbolInfo.symbolDecimal })}
+            <Trans>最高</Trans> {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
         <View className="gap-xs flex-1">
@@ -180,7 +174,7 @@ function SearchAssetTradeRow({
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">
-            最低 {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbolInfo.symbolDecimal })}
+            <Trans>最低</Trans> {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
       </View>
