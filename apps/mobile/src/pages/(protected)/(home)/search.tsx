@@ -17,6 +17,7 @@ import { EmptyState } from '@/components/states/empty-state'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 
 // Mock data
 const SYMBOLS = [
@@ -73,6 +74,17 @@ const SYMBOLS = [
     lowPrice: '2,270.00',
   },
 ]
+
+// 热门品种列表
+const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
+
+// 筛选热门品种
+function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
+  const hotSymbolsLower = HOT_SYMBOL_LIST.map(s => s.toLowerCase())
+  return symbolListAll.filter(item =>
+    hotSymbolsLower.some(hot => item.alias?.toLowerCase().includes(hot))
+  )
+}
 
 function generateMockData(count: number, startValue: number): ChartData[] {
   const data = []
