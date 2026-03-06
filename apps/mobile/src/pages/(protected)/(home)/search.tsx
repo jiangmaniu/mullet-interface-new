@@ -28,7 +28,10 @@ import { HighlightText } from './_comps/highlight-text'
 // 热门品种列表
 const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
 
-// 筛选热门品种
+/**
+ * 筛选热门品种
+ * 根据预定义的热门品种列表，从所有品种中筛选出匹配的品种
+ */
 function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
   const hotSymbolsLower = HOT_SYMBOL_LIST.map(s => s.toLowerCase())
   return symbolListAll.filter(item =>
@@ -36,7 +39,10 @@ function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
   )
 }
 
-// 计算匹配权重
+/**
+ * 计算匹配权重
+ * 根据搜索字符在品种名称和别名中出现的次数计算匹配分数
+ */
 function calculateMatchScore(
   item: Account.TradeSymbolListItem,
   searchChars: string[]
@@ -47,7 +53,10 @@ function calculateMatchScore(
   ).length
 }
 
-// 搜索并排序品种
+/**
+ * 搜索并排序品种
+ * 如果没有搜索关键词，返回热门品种；否则根据匹配权重排序
+ */
 function searchAndSortSymbols(
   symbolListAll: Account.TradeSymbolListItem[],
   searchQuery: string
@@ -63,18 +72,6 @@ function searchAndSortSymbols(
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .map(({ item }) => item)
-}
-
-function generateMockData(count: number, startValue: number) {
-  const data = []
-  let time = 1642425322
-  let value = startValue
-  for (let i = 0; i < count; i++) {
-    data.push({ time, value })
-    time += 86400
-    value += (Math.random() - 0.5) * 5
-  }
-  return data
 }
 
 // ============ SearchAssetRow ============
