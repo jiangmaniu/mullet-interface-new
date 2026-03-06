@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
-import { AreaChart, ChartData } from '@/components/trading-view'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { EmptyState } from '@/components/states/empty-state'
@@ -116,7 +115,7 @@ function searchAndSortSymbols(
     .map(({ item }) => item)
 }
 
-function generateMockData(count: number, startValue: number): ChartData[] {
+function generateMockData(count: number, startValue: number) {
   const data = []
   let time = 1642425322
   let value = startValue
@@ -129,35 +128,59 @@ function generateMockData(count: number, startValue: number): ChartData[] {
 }
 
 // ============ SearchAssetRow ============
-function SearchAssetRow({ symbol, onSelect }: { symbol: typeof SYMBOLS[0]; onSelect: () => void }) {
-  const isPositive = symbol.change >= 0
-  const { colorMarketRise, colorMarketFall } = useThemeColors()
+function SearchAssetRow({
+  symbol,
+  searchChars,
+  onSelect
+}: {
+  symbol: Account.TradeSymbolListItem
+  searchChars: string[]
+  onSelect: () => void
+}) {
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbol.symbol)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   return (
-    <Pressable onPress={onSelect} className="flex-row items-center p-xl gap-xl">
-      <View className="flex-row items-center gap-medium flex-1">
+    <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
+      <View className="gap-medium flex-1 flex-row items-center">
         <Avatar className="size-6 flex-shrink-0">
           <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol.avatar}</Text>
+            <Text className="text-content-1">{symbol.symbol[0]}</Text>
           </AvatarFallback>
         </Avatar>
         <View>
-          <Text className="text-paragraph-p2 text-content-1">{symbol.symbol}</Text>
-          <Text className="text-paragraph-p3 text-content-4">{symbol.name}</Text>
+          <HighlightText
+            text={symbol.symbol}
+            searchChars={searchChars}
+            className="text-paragraph-p2 text-content-1"
+          />
+          <HighlightText
+            text={symbol.name || symbol.alias || ''}
+            searchChars={searchChars}
+            className="text-paragraph-p3 text-content-4"
+          />
         </View>
       </View>
 
-      <View className="flex-row flex-shrink-0 gap-xl w-[192px]">
-        <View className="w-[60px] h-8 items-center justify-center overflow-hidden">
-          <AreaChart
-            data={symbol.chartData}
-            lineColor={isPositive ? colorMarketRise : colorMarketFall}
-          />
+      <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
+        <View className="flex-1">
+          <Text className="text-paragraph-p1 text-content-1">
+            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbol.symbolDecimal })}
+          </Text>
         </View>
         <View className="flex-1 items-end">
-          <Text className="text-paragraph-p1 text-content-1">{symbol.price}</Text>
-          <Text className={cn('text-paragraph-p2', isPositive ? 'text-market-rise' : 'text-market-fall')}>
-            {isPositive ? '+' : ''}{symbol.change.toFixed(2)}%
+          <Text
+            className={cn(
+              'text-paragraph-p2',
+              percentChangeInfo.isRise
+                ? 'text-market-rise'
+                : percentChangeInfo.isFall
+                  ? 'text-market-fall'
+                  : 'text-content-1'
+            )}
+          >
+            {BNumber.toFormatPercent(symbolMarketInfo.percent, { forceSign: true, isRaw: false })}
           </Text>
         </View>
       </View>
@@ -166,33 +189,60 @@ function SearchAssetRow({ symbol, onSelect }: { symbol: typeof SYMBOLS[0]; onSel
 }
 
 // ============ SearchAssetTradeRow ============
-function SearchAssetTradeRow({ symbol, onSelect }: { symbol: typeof SYMBOLS[0]; onSelect: () => void }) {
+function SearchAssetTradeRow({
+  symbol,
+  searchChars,
+  onSelect
+}: {
+  symbol: Account.TradeSymbolListItem
+  searchChars: string[]
+  onSelect: () => void
+}) {
+  const getCurrentQuote = useGetCurrentQuoteCallback()
+  const symbolMarketInfo = getCurrentQuote(symbol.symbol)
+
   return (
-    <Pressable onPress={onSelect} className="flex-row items-center p-xl gap-xl">
-      <View className="flex-row items-center gap-medium flex-1">
+    <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
+      <View className="gap-medium flex-1 flex-row items-center">
         <Avatar className="size-6 flex-shrink-0">
           <AvatarFallback className="bg-brand-default">
-            <Text className="text-content-1">{symbol.avatar}</Text>
+            <Text className="text-content-1">{symbol.symbol[0]}</Text>
           </AvatarFallback>
         </Avatar>
         <View>
-          <Text className="text-paragraph-p2 text-content-1">{symbol.symbol}</Text>
-          <Text className="text-paragraph-p3 text-content-4">{symbol.name}</Text>
+          <HighlightText
+            text={symbol.symbol}
+            searchChars={searchChars}
+            className="text-paragraph-p2 text-content-1"
+          />
+          <HighlightText
+            text={symbol.name || symbol.alias || ''}
+            searchChars={searchChars}
+            className="text-paragraph-p3 text-content-4"
+          />
         </View>
       </View>
 
-      <View className="flex-row flex-shrink-0 gap-xl w-[192px]">
+      <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
         <View className="gap-xs flex-1">
-          <View className="bg-market-rise/15 border border-market-rise rounded-small flex-col items-center justify-center h-[24px]">
-            <Text className="text-paragraph-p2 text-market-rise">{symbol.buyPrice}</Text>
+          <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
+            <Text className="text-paragraph-p2 text-market-rise">
+              {BNumber.toFormatNumber(symbolMarketInfo.bid, { volScale: symbol.symbolDecimal })}
+            </Text>
           </View>
-          <Text className="text-paragraph-p3 text-content-4">最高 {symbol.highPrice}</Text>
+          <Text className="text-paragraph-p3 text-content-4">
+            最高 {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbol.symbolDecimal })}
+          </Text>
         </View>
         <View className="gap-xs flex-1">
-          <View className="bg-market-fall/15 border border-market-fall rounded-small flex-col items-center justify-center h-[24px]">
-            <Text className="text-paragraph-p2 text-market-fall">{symbol.sellPrice}</Text>
+          <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
+            <Text className="text-paragraph-p2 text-market-fall">
+              {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbol.symbolDecimal })}
+            </Text>
           </View>
-          <Text className="text-content-4 text-paragraph-p3 text-right">最低 {symbol.lowPrice}</Text>
+          <Text className="text-content-4 text-paragraph-p3 text-right">
+            最低 {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbol.symbolDecimal })}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -298,9 +348,9 @@ export default function SearchPage() {
         ) : (
           filteredSymbols.map((item) =>
             viewMode === 'trade' ? (
-              <SearchAssetTradeRow key={item.id} symbol={item} onSelect={handleSelect} />
+              <SearchAssetTradeRow key={item.symbol} symbol={item} searchChars={searchChars} onSelect={handleSelect} />
             ) : (
-              <SearchAssetRow key={item.id} symbol={item} onSelect={handleSelect} />
+              <SearchAssetRow key={item.symbol} symbol={item} searchChars={searchChars} onSelect={handleSelect} />
             )
           )
         )}
