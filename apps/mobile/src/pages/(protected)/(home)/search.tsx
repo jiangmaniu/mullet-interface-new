@@ -257,7 +257,7 @@ export default function SearchPage() {
           <Text className="text-important-1 text-content-1">
             {searchChars.length > 0 ? <Trans>搜索结果</Trans> : <Trans>热门品种</Trans>}
           </Text>
-          <Tabs value={viewMode} onValueChange={setViewMode} className="">
+          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
             <TabsList variant="icon" size="sm">
               <TabsTrigger value="list" className="size-5">
                 <IconDepthTB
