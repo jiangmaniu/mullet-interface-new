@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native'
+import { Platform, Text, View } from 'react-native'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/drawer'
 import { IconSpecialFail, IconSpecialSuccess } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
-import { useAccount, useAppKit, useAppKitState, useProvider } from '@/lib/appkit'
+import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
 import { cn } from '@/lib/utils'
 import { LoginType } from '@/stores/login-auth'
 
@@ -177,6 +177,12 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
             resetSteps()
             setStep1({ status: 'error', error: error.message })
             return
+          } else if (error.type === 'WalletDisconnected') {
+            // OKX 钱包端断开连接，重置状态并显示错误，让用户点击重试
+            disconnectWallet()
+            resetSteps()
+            setStep1({ status: 'error', error: error.message })
+            return
           } else if (error.type === 'WalletConnectError') {
             disconnectWallet()
             resetSteps()
@@ -200,12 +206,15 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
 
   // 第一步：连接钱包
   const handleConnectWallet = useCallback(async () => {
-    // if (isConnected && address) {
-    //   setStep1({ status: 'completed' })
-    //   // 继续第二步
-    //   handleSign()
-    //   return
-    // }
+    // iOS 上如果是从错误状态重试（如钱包断开连接），需要先关闭 Drawer 再打开 AppKit
+    if (Platform.OS === 'ios' && step1.status === 'error') {
+      handleClose()
+      // 延迟打开 AppKit，确保 Drawer 完全关闭
+      setTimeout(() => {
+        open({ view: 'Connect' })
+      }, 300)
+      return
+    }
 
     setFlowState('connecting')
     setStep1({ status: 'loading' })
@@ -217,7 +226,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       setStep1({ status: 'error', error: '打开钱包失败' })
       setFlowState('idle')
     }
-  }, [open])
+  }, [open, step1.status, handleClose])
 
   // 用 ref 保存最新的 handleSign，避免 useEffect 因函数重建而无限循环
   const handleSignRef = useRef(handleSign)

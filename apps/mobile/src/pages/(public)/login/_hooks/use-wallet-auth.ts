@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import bs58 from 'bs58'
 
-import { useAccount, useProvider } from '@/lib/appkit'
+import { useAccount, useAppKit, useProvider } from '@/lib/appkit'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { useLoginWithSiws, usePrivy } from '@privy-io/expo'
 
@@ -17,9 +17,16 @@ export class WalletAuthError extends Error {
     | 'WalletConnectError'
     | 'SignatureFailed'
     | 'UnknownSignatureError'
+    | 'WalletDisconnected' // OKX 钱包端断开连接
   constructor(
     message: string,
-    type: 'UserRejected' | 'WalletNotConnected' | 'WalletConnectError' | 'SignatureFailed' | 'UnknownSignatureError',
+    type:
+      | 'UserRejected'
+      | 'WalletNotConnected'
+      | 'WalletConnectError'
+      | 'SignatureFailed'
+      | 'UnknownSignatureError'
+      | 'WalletDisconnected',
   ) {
     super(message)
     this.name = 'WalletAuthError'
@@ -47,6 +54,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
   const { user: privyUser } = usePrivy()
   const { address, chainId } = useAccount()
   const { provider } = useProvider()
+  const { disconnect } = useAppKit()
 
   const mutation = useMutation({
     mutationKey: ['auth', 'wallet-sign'],
@@ -130,19 +138,31 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
     onSuccess: () => {
       onSuccess?.()
     },
-    onError: (err: any) => {
+    onError: async (err: any) => {
       console.error('Wallet auth failed:', err)
 
-      if (err?.code === 5000) {
-        // okx 错误码
-        const errorMessage = err.message as string
-        if (['请先断开 DApp，再重新连接'].includes(errorMessage)) {
-          // 提示用户需要重新连接（"请先断开 DApp，再重新连接"）
-          throw new WalletAuthError('请重新接钱包', 'WalletConnectError')
-        } else if (['User Reject'].includes(errorMessage)) {
-          // 用户拒绝
-          throw new WalletAuthError('用户拒绝签名', 'UserRejected')
+      // OKX 钱包端断开连接错误（错误码 117）
+      if (err?.code === 117 || (err?.code === 5000 && err?.message?.includes('请先断开 DApp，再重新连接'))) {
+        console.log('检测到 OKX 钱包端断开连接，主动断开并提示重新连接')
+
+        // 主动断开前端连接状态
+        try {
+          disconnect()
+        } catch (disconnectErr) {
+          console.error('断开连接失败:', disconnectErr)
         }
+
+        // 抛出错误，提示用户重新连接
+        const error = new WalletAuthError('钱包连接已断开，请重新连接钱包', 'WalletDisconnected')
+        onError?.(error.message)
+        throw error
+      }
+
+      // OKX 用户拒绝签名
+      if (err?.code === 5000 && err?.message === 'User Reject') {
+        const error = new WalletAuthError('用户拒绝签名', 'UserRejected')
+        onError?.(error.message)
+        throw error
       }
 
       onError?.(err.message || '验证失败')
