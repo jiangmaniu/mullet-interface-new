@@ -1,79 +1,29 @@
+// React & React Native
 import { View, ScrollView, Pressable } from 'react-native'
 import { useState, useMemo, useCallback, useEffect } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+
+// 第三方库
 import { useRouter } from 'expo-router'
 import { Trans, useLingui } from '@lingui/react/macro'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { BNumber } from '@mullet/utils/number'
 
+// 项目内部模块
 import { Text } from '@/components/ui/text'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { IconifySearch, IconDepth, IconDepthTB } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
+import { EmptyState } from '@/components/states/empty-state'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
-import { EmptyState } from '@/components/states/empty-state'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { HighlightText } from './_comps/highlight-text'
 
-// Mock data
-const SYMBOLS = [
-  {
-    id: 'SOL-USDC',
-    symbol: 'SOL-USDC',
-    name: 'Solana',
-    price: '148.00',
-    change: 1.45,
-    avatar: 'S',
-    chartData: generateMockData(20, 140),
-    buyPrice: '186.00',
-    sellPrice: '186.00',
-    highPrice: '180.00',
-    lowPrice: '180.00',
-  },
-  {
-    id: 'XAU-USDC',
-    symbol: 'XAU-USDC',
-    name: '现货黄金',
-    price: '148.00',
-    change: -1.45,
-    avatar: 'X',
-    chartData: generateMockData(20, 148),
-    buyPrice: '486.00',
-    sellPrice: '486.00',
-    highPrice: '480.00',
-    lowPrice: '480.00',
-  },
-  {
-    id: 'BTC-USDC',
-    symbol: 'BTC-USDC',
-    name: 'Bitcoin',
-    price: '43,250.00',
-    change: 2.15,
-    avatar: 'B',
-    chartData: generateMockData(20, 43000),
-    buyPrice: '198,652.0',
-    sellPrice: '198,186.00',
-    highPrice: '198,280.0',
-    lowPrice: '198,280.0',
-  },
-  {
-    id: 'ETH-USDC',
-    symbol: 'ETH-USDC',
-    name: 'Ethereum',
-    price: '2,280.50',
-    change: -1.23,
-    avatar: 'E',
-    chartData: generateMockData(20, 2200),
-    buyPrice: '2,285.00',
-    sellPrice: '2,276.00',
-    highPrice: '2,290.00',
-    lowPrice: '2,270.00',
-  },
-]
+// 相对路径导入
+import { HighlightText } from './_comps/highlight-text'
 
 // 热门品种列表
 const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
@@ -282,9 +232,10 @@ export default function SearchPage() {
     return debouncedQuery.trim().split('').filter(c => c.trim())
   }, [debouncedQuery])
 
-  const handleSelect = useCallback(() => {
-    router.back()
-  }, [router])
+  const handleSelect = useCallback((symbol: string) => {
+    trade.switchSymbol(symbol)
+    router.push(`/trade/${symbol}`)
+  }, [router, trade])
 
   return (
     <View className="flex-1 bg-secondary">
@@ -315,7 +266,7 @@ export default function SearchPage() {
         {/* Section Header */}
         <View className="flex-row items-center justify-between p-xl">
           <Text className="text-important-1 text-content-1">
-            <Trans>热门品种</Trans>
+            {searchChars.length > 0 ? <Trans>搜索结果</Trans> : <Trans>热门品种</Trans>}
           </Text>
           <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
             <TabsList variant="icon" size="sm">
@@ -342,15 +293,30 @@ export default function SearchPage() {
       {/* Asset List */}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {filteredSymbols.length === 0 ? (
-          <View className='py-[96px]'>
-            <EmptyState message={< Trans > 暂无内容</Trans >} iconWidth={107} iconHeight={76} className='gap-2xl' />
+          <View className="py-[96px]">
+            <EmptyState
+              message={<Trans>暂无搜索内容</Trans>}
+              iconWidth={107}
+              iconHeight={76}
+              className="gap-2xl"
+            />
           </View>
         ) : (
           filteredSymbols.map((item) =>
             viewMode === 'trade' ? (
-              <SearchAssetTradeRow key={item.symbol} symbol={item} searchChars={searchChars} onSelect={handleSelect} />
+              <SearchAssetTradeRow
+                key={item.symbol}
+                symbol={item}
+                searchChars={searchChars}
+                onSelect={() => handleSelect(item.symbol)}
+              />
             ) : (
-              <SearchAssetRow key={item.symbol} symbol={item} searchChars={searchChars} onSelect={handleSelect} />
+              <SearchAssetRow
+                key={item.symbol}
+                symbol={item}
+                searchChars={searchChars}
+                onSelect={() => handleSelect(item.symbol)}
+              />
             )
           )
         )}
