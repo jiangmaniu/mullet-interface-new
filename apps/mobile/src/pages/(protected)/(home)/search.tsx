@@ -18,6 +18,7 @@ import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { Account } from '@/v1/services/tradeCore/account/typings'
+import { HighlightText } from './_comps/highlight-text'
 
 // Mock data
 const SYMBOLS = [
@@ -84,6 +85,35 @@ function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
   return symbolListAll.filter(item =>
     hotSymbolsLower.some(hot => item.alias?.toLowerCase().includes(hot))
   )
+}
+
+// 计算匹配权重
+function calculateMatchScore(
+  item: Account.TradeSymbolListItem,
+  searchChars: string[]
+): number {
+  const searchText = `${item.symbol} ${item.alias || ''}`.toLowerCase()
+  return searchChars.filter(char =>
+    searchText.includes(char.toLowerCase())
+  ).length
+}
+
+// 搜索并排序品种
+function searchAndSortSymbols(
+  symbolListAll: Account.TradeSymbolListItem[],
+  searchQuery: string
+) {
+  const searchChars = searchQuery.trim().split('').filter(c => c.trim())
+
+  if (searchChars.length === 0) {
+    return getHotSymbols(symbolListAll)
+  }
+
+  return symbolListAll
+    .map(item => ({ item, score: calculateMatchScore(item, searchChars) }))
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item)
 }
 
 function generateMockData(count: number, startValue: number): ChartData[] {
@@ -174,22 +204,33 @@ export default function SearchPage() {
   const router = useRouter()
   const { t } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
   const { trade } = useStores()
+
+  // 防抖处理搜索输入
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
   }, [])
 
+  // 使用真实数据进行搜索和排序
   const filteredSymbols = useMemo(() => {
-    if (!searchQuery) return SYMBOLS
-    const query = searchQuery.toLowerCase()
-    return SYMBOLS.filter(
-      s => s.symbol.toLowerCase().includes(query) || s.name.toLowerCase().includes(query)
-    )
-  }, [searchQuery])
+    return searchAndSortSymbols(trade.symbolListAll, debouncedQuery)
+  }, [trade.symbolListAll, debouncedQuery])
+
+  // 提取搜索字符用于高亮显示（Task 4 会使用）
+  const searchChars = useMemo(() => {
+    return debouncedQuery.trim().split('').filter(c => c.trim())
+  }, [debouncedQuery])
 
   const handleSelect = useCallback(() => {
     router.back()
