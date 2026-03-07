@@ -202,12 +202,21 @@ const RealAccountGroupList = observer(() => {
 	const { trade } = useStores();
 
 	const accountGroupList = trade.accountGroupList.filter(AccountGroup => !AccountGroup.isSimulate)
+	const isLoading = !!trade.accountGroupListLoading && accountGroupList.length === 0
 
 	useLayoutEffect(() => {
 		if (!trade.accountGroupList || trade.accountGroupList.length === 0) {
 			trade.getAccountGroupList()
 		}
 	}, [trade.accountGroupList])
+
+	if (isLoading) {
+		return (
+			<View className="py-3xl items-center">
+				<ActivityIndicator />
+			</View>
+		)
+	}
 
 	return (
 		<>
@@ -228,12 +237,21 @@ const SimulateAccountGroupList = observer(() => {
 	const { trade } = useStores();
 
 	const accountGroupList = trade.accountGroupList.filter(AccountGroup => AccountGroup.isSimulate)
+	const isLoading = !!trade.accountGroupListLoading && accountGroupList.length === 0
 
 	useLayoutEffect(() => {
 		if (!trade.accountGroupList || trade.accountGroupList.length === 0) {
 			trade.getAccountGroupList()
 		}
 	}, [trade.accountGroupList])
+
+	if (isLoading) {
+		return (
+			<View className="py-3xl items-center">
+				<ActivityIndicator />
+			</View>
+		)
+	}
 
 	return (
 		<>
