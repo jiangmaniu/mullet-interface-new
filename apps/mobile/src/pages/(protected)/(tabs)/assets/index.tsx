@@ -12,10 +12,13 @@ import { observer } from 'mobx-react-lite';
 import { TradeAccountOverviewCard } from './_comps/trade-account-overview-card.tsx';
 import { TradeAccountActions } from './_comps/trade-account-actions.tsx';
 import { RealAccountList, SimulateAccountList } from './_comps/account-list';
+import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count';
+import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge';
 
 export default observer(function AssetsScreen() {
   const { textColorContent1 } = useThemeColors();
   const { tab } = useLocalSearchParams<{ tab?: string }>();
+  const { data: unreadCount = 0 } = useUnreadCount();
 
   const renderHeader = () => {
     return (
@@ -26,8 +29,9 @@ export default observer(function AssetsScreen() {
             content={<Trans>资产</Trans>}
             right={
               <View className="flex-row items-center gap-4">
-                <Pressable onPress={() => { }}>
+                <Pressable onPress={() => router.push('/notifications')} className="relative">
                   <IconifyBell width={22} height={22} color={textColorContent1} />
+                  <NotificationBadge count={unreadCount} />
                 </Pressable>
                 <Pressable onPress={() => router.push('/settings')}>
                   <IconifySettings width={22} height={22} color={textColorContent1} />

@@ -30,11 +30,14 @@ import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
+import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
+import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
 
 // ============ HomeHeader ============
 function HomeHeader() {
   const searchIconStyle = useResolveClassNames('text-content-4')
   const router = useRouter()
+  const { data: unreadCount = 0 } = useUnreadCount()
 
   return (
     <SafeAreaView edges={['top']}>
@@ -48,8 +51,9 @@ function HomeHeader() {
             <Trans>查询</Trans>
           </Text>
         </Pressable>
-        <Pressable className="size-[22px] items-center justify-center" onPress={() => router.push('/notifications')}>
+        <Pressable className="size-[22px] items-center justify-center relative" onPress={() => router.push('/notifications')}>
           <IconifyBell width={22} height={22} />
+          <NotificationBadge count={unreadCount} />
         </Pressable>
       </View>
     </SafeAreaView>
