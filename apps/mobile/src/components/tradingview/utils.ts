@@ -5,6 +5,7 @@ import { Base64 } from 'js-base64'
 
 import { LOCALE_ZH_CN } from '@/locales/i18n'
 import { Config } from '@/v1/platform/config'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 
 export interface SymbolInfo {
   symbol: string

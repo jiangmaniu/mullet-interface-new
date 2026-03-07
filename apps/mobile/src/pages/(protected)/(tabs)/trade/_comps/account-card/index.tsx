@@ -1,7 +1,8 @@
-import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
+
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
 
 import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'

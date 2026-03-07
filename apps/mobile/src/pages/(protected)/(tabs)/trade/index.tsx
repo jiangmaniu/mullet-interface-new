@@ -1,7 +1,8 @@
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useToggle } from 'ahooks'
 import { useRouter } from 'expo-router'
 
 import { IconButton } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/collapsible-tab'
 import { IconifyPage } from '@/components/ui/icons'
 import { useAppState } from '@/hooks/use-app-state'
+import { useTradeSettingsStore } from '@/stores/trade-settings'
 import { useStores } from '@/v1/provider/mobxProvider'
 
 import { AccountCard } from './_comps/account-card'
@@ -26,8 +28,8 @@ import { SymbolChartView } from './_comps/symbol-chart-view'
 const Trade = observer(() => {
   // Router
   const router = useRouter()
-
   const { trade, user } = useStores()
+
   const symbol = trade.activeSymbolName
 
   // Safe Area Insets
@@ -35,6 +37,11 @@ const Trade = observer(() => {
 
   const pendingList = trade.pendingList
   const positionList = trade.positionList
+
+  const chartPosition = useTradeSettingsStore((state) => state.chartPosition)
+
+  // 图表展开/隐藏状态
+  const [isChartVisible, setIsChartVisible] = useState(true)
 
   // 刷新持仓和挂单列表
   const initData = () => {
@@ -55,13 +62,25 @@ const Trade = observer(() => {
     initData()
   })
 
+  // 动态计算 minHeaderHeight
+  // 基础高度：44 + insets.top
+  // 图表在顶部时：需要加上图表高度（展开：233px，隐藏：40px）
+  const minHeaderHeight = (() => {
+    const baseHeight = 44 + insets.top
+    if (chartPosition === 'bottom') {
+      return baseHeight
+    }
+    // 图表在顶部
+    return baseHeight + (isChartVisible ? 233 : 40)
+  })()
+
   return (
     <View className="flex-1">
       <CollapsibleTab
         variant="underline"
         size="md"
         tabBarClassName="px-xl"
-        minHeaderHeight={44 + insets.top}
+        minHeaderHeight={minHeaderHeight}
         renderTabBarRight={() => (
           <IconButton onPress={() => router.push('/(trade)/records')}>
             <IconifyPage width={22} height={22} />
@@ -75,24 +94,17 @@ const Trade = observer(() => {
 
             <CollapsibleStickyContent>
               {/* K-Line Chart - 顶部位置 */}
-              <SymbolChartView />
+              {chartPosition !== 'bottom' && (
+                <SymbolChartView isVisible={isChartVisible} onToggle={setIsChartVisible} />
+              )}
 
               {/* Account Card */}
               <View className="pt-xl px-xl">
                 <AccountCard />
               </View>
 
-              {/* Order Panel */}
-              <OrderPanel />
-
-              {/* K-Line Chart - 底部位置 */}
-              {/* {chartPosition === 'bottom' && (
-                <KLineChart
-                  isVisible={isChartVisible}
-                  onToggle={handleChartToggle}
-                  symbol="SOL-USDC"
-                />
-              )} */}
+              {/* Order Panel - 底部图表模式下需要为图表预留空间 */}
+              <OrderPanel chartPosition={chartPosition} />
             </CollapsibleStickyContent>
           </CollapsibleStickyHeader>
         )}
@@ -105,6 +117,13 @@ const Trade = observer(() => {
           <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>
+
+      {/* K-Line Chart - 固定在提交按钮上方 */}
+      {chartPosition === 'bottom' && (
+        <View className="absolute bottom-0 left-0 right-0 z-10">
+          <SymbolChartView />
+        </View>
+      )}
     </View>
   )
 })

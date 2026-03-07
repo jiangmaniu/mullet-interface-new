@@ -1,5 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Checkbox } from '@/components/ui/checkbox'
 import { IconifyArrowDownCircleSolid, IconifyArrowUpCircleSolid } from '@/components/ui/icons'
@@ -12,16 +13,19 @@ import { cn } from '@/lib/utils'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 
 export default function TradeSettingsScreen() {
-  const { setColorScheme, setOrderConfirmation, setCloseConfirmation, setChartPosition } = useTradeSettingsStore()
+  const setColorScheme = useTradeSettingsStore((state) => state.setColorScheme)
+  const setOrderConfirmation = useTradeSettingsStore((state) => state.setOrderConfirmation)
+  const setCloseConfirmation = useTradeSettingsStore((state) => state.setCloseConfirmation)
+  const setChartPosition = useTradeSettingsStore((state) => state.setChartPosition)
 
-  const { colorScheme, orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore((state) => {
-    return {
+  const { colorScheme, orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore(
+    useShallow((state) => ({
       colorScheme: state.colorScheme,
       orderConfirmation: state.orderConfirmation,
       closeConfirmation: state.closeConfirmation,
       chartPosition: state.chartPosition,
-    }
-  })
+    })),
+  )
 
   return (
     <View className="bg-secondary gap-xl flex-1">

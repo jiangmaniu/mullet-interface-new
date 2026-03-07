@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useLayoutEffect, useState } from 'react';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, ActivityIndicator } from 'react-native';
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { ScreenHeader } from '@/components/ui/screen-header';
@@ -16,6 +16,7 @@ import { toast } from '@/components/ui/toast';
 import { observer } from 'mobx-react-lite';
 import { getAccountSynopsisByLng } from '@/v1/utils/business';
 import { useLocalSearchParams, router } from 'expo-router';
+import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings';
 
 interface AccountGroupCardProps {
 	accountGroup: AccountGroup.AccountGroupItem;

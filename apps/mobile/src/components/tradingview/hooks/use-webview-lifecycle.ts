@@ -3,6 +3,7 @@ import type { IEnv } from '@/v1/env'
 import type { WebView } from 'react-native-webview'
 
 import { useAppState } from '@/hooks/use-app-state'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 import { STORAGE_GET_TRADINGVIEW_RELOAD_TIME, STORAGE_SET_TRADINGVIEW_RELOAD_TIME } from '@/v1/utils/storage'
 import { BridgeIncoming } from '@mullet/trading-view'
 

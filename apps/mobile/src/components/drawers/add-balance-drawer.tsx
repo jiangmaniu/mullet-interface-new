@@ -1,13 +1,14 @@
-import { View } from 'react-native'
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerRef } from '@/components/ui/drawer'
-import { Card, CardContent } from '@/components/ui/card'
-import { Text } from '@/components/ui/text'
-import { IconifyNavArrowRight } from '@/components/ui/icons'
-import { Trans } from '@lingui/react/macro'
-import { useToggle } from 'ahooks'
 import { RefObject, useImperativeHandle } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, View } from 'react-native'
+
+import { useToggle } from 'ahooks'
 import { useRouter } from 'expo-router'
+import { Trans } from '@lingui/react/macro'
+
+import { Card, CardContent } from '@/components/ui/card'
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerRef } from '@/components/ui/drawer'
+import { IconifyNavArrowRight } from '@/components/ui/icons'
+import { Text } from '@/components/ui/text'
 
 export type AddBalanceDrawerRef = DrawerRef
 

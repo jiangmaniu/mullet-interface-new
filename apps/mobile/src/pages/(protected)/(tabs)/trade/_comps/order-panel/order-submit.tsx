@@ -46,7 +46,7 @@ export const OrderSubmit = observer(() => {
         </Text>
       </Button>
 
-      <OrderConfirmDrawer ref={orderConfirmDrawerRef} />
+      <OrderConfirmDrawer ref={orderConfirmDrawerRef} onConfirm={handleSubmitOrder} />
     </View>
   )
 })

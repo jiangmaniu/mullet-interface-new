@@ -1,18 +1,20 @@
-import { useStores } from "@/v1/provider/mobxProvider"
+import React, { useRef } from 'react';
+import { View, Pressable } from 'react-native';
+
+import { Trans } from '@lingui/react/macro';
 import { observer } from "mobx-react-lite"
+
+import { AddBalanceDrawer, AddBalanceDrawerRef } from "@/components/drawers/add-balance-drawer";
+import { TradeSimulateAccountDepositDrawer, TradeSimulateAccountDepositDrawerRef } from "@/components/drawers/trade-simulate-account-deposit-drawer";
+import { EmptyState } from "@/components/states/empty-state";
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { IconifyCopy, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons';
 import { Text } from '@/components/ui/text';
-import { Trans } from '@lingui/react/macro';
-import React, { useRef } from 'react';
-import { View, Pressable } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
-import { EmptyState } from "@/components/states/empty-state";
+import { useStores } from "@/v1/provider/mobxProvider"
 import { getAccountSynopsisByLng } from "@/v1/utils/business";
 import { BNumber } from "@mullet/utils/number";
-import { AddBalanceDrawer, AddBalanceDrawerRef } from "@/components/drawers/add-balance-drawer";
-import { TradeSimulateAccountDepositDrawer, TradeSimulateAccountDepositDrawerRef } from "@/components/drawers/trade-simulate-account-deposit-drawer";
 
 export const RealAccountList = observer(() => {
   const { user } = useStores()

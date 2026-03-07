@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 
+import { ChartPosition } from '@/stores/trade-settings'
 import { useStores } from '@/v1/provider/mobxProvider'
 
 import { OrderAmount } from './order-amount'
@@ -12,9 +13,11 @@ import { OrderTpSl } from './order-tp-sl'
 import { OrderType } from './order-type'
 
 // ============ OrderPanel ============
-interface OrderPanelProps {}
+interface OrderPanelProps {
+  chartPosition?: ChartPosition
+}
 
-export const OrderPanel = observer(({}: OrderPanelProps) => {
+export const OrderPanel = observer(({ chartPosition }: OrderPanelProps) => {
   const { trade } = useStores()
   const activeSymbolName = trade.activeSymbolName
 
@@ -24,7 +27,7 @@ export const OrderPanel = observer(({}: OrderPanelProps) => {
   }
 
   return (
-    <View className="px-xl gap-xl">
+    <View className="px-xl gap-xl" style={{ paddingBottom: chartPosition === 'bottom' ? 243 : 0 }}>
       {/* Order Type Tabs */}
       <OrderType />
 
