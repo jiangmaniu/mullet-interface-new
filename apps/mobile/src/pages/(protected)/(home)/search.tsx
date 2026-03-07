@@ -1,5 +1,6 @@
 // React & React Native
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -50,7 +51,7 @@ function calculateMatchScore(item: Account.TradeSymbolListItem, searchChars: str
 
 /**
  * 搜索并排序品种
- * 如果没有搜索关键词，返回热门品种；否则根据匹配权重排序
+ * 如果没有搜索关键词,返回热门品种；否则根据匹配权重排序
  */
 function searchAndSortSymbols(symbolListAll: Account.TradeSymbolListItem[], searchQuery: string) {
   const searchChars = searchQuery
@@ -69,8 +70,39 @@ function searchAndSortSymbols(symbolListAll: Account.TradeSymbolListItem[], sear
     .map(({ item }) => item)
 }
 
+// ============ SymbolInfoCell ============
+/**
+ * Symbol 信息展示组件
+ * 用于展示品种的图标、名称和描述，支持搜索高亮
+ */
+function SymbolInfoCell({
+  symbolInfo,
+  searchChars,
+}: {
+  symbolInfo: Account.TradeSymbolListItem
+  searchChars: string[]
+}) {
+  return (
+    <View className="gap-medium flex-1 flex-row">
+      <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
+      <View className="flex-1">
+        <HighlightText
+          text={renderFormatSymbolName(symbolInfo)}
+          searchChars={searchChars}
+          className="text-paragraph-p2 text-content-1"
+        />
+        <HighlightText
+          text={symbolInfo.remark ?? ''}
+          searchChars={searchChars}
+          className="text-paragraph-p3 text-content-4 flex-wrap"
+        />
+      </View>
+    </View>
+  )
+}
+
 // ============ SearchAssetRow ============
-function SearchAssetRow({
+const SearchAssetRow = observer(function SearchAssetRow({
   symbolInfo,
   searchChars,
   onSelect,
@@ -85,29 +117,15 @@ function SearchAssetRow({
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
-      <View className="gap-medium flex-1 flex-row">
-        <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
-        <View className="flex-1">
-          <HighlightText
-            text={renderFormatSymbolName(symbolInfo)}
-            searchChars={searchChars}
-            className="text-paragraph-p2 text-content-1"
-          />
-          <HighlightText
-            text={symbolInfo.remark ?? ''}
-            searchChars={searchChars}
-            className="text-paragraph-p3 text-content-4"
-          />
-        </View>
-      </View>
+      <SymbolInfoCell symbolInfo={symbolInfo} searchChars={searchChars} />
 
-      <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
+      <View className="min-w-[150px] flex-shrink-0 flex-row gap-2">
         <View className="flex-1">
           <Text className="text-paragraph-p1 text-content-1">
             {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo.symbolDecimal })}
           </Text>
         </View>
-        <View className="flex-1 items-end">
+        <View className="items-end">
           <Text
             className={cn(
               'text-paragraph-p2',
@@ -124,10 +142,10 @@ function SearchAssetRow({
       </View>
     </Pressable>
   )
-}
+})
 
 // ============ SearchAssetTradeRow ============
-function SearchAssetTradeRow({
+const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
   symbolInfo,
   searchChars,
   onSelect,
@@ -141,21 +159,7 @@ function SearchAssetTradeRow({
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
-      <View className="gap-medium flex-1 flex-row">
-        <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
-        <View>
-          <HighlightText
-            text={renderFormatSymbolName(symbolInfo)}
-            searchChars={searchChars}
-            className="text-paragraph-p2 text-content-1"
-          />
-          <HighlightText
-            text={symbolInfo.remark ?? ''}
-            searchChars={searchChars}
-            className="text-paragraph-p3 text-content-4"
-          />
-        </View>
-      </View>
+      <SymbolInfoCell symbolInfo={symbolInfo} searchChars={searchChars} />
 
       <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
         <View className="gap-xs flex-1">
@@ -181,12 +185,11 @@ function SearchAssetTradeRow({
       </View>
     </Pressable>
   )
-}
+})
 
 // ============ Main Search Page ============
-export default function SearchPage() {
+const SearchPage = observer(function SearchPage() {
   const router = useRouter()
-  const { t } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
@@ -198,6 +201,7 @@ export default function SearchPage() {
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   console.log(trade.symbolListAll)
@@ -232,7 +236,7 @@ export default function SearchPage() {
         <View className="px-xl mb-1.5 flex-row items-center gap-[10px] py-1.5">
           <View className="flex-1">
             <Input
-              placeholder={t`查询`}
+              placeholder={<Trans>查询</Trans>}
               className="h-8"
               size="sm"
               hideLabel
@@ -306,4 +310,6 @@ export default function SearchPage() {
       </ScrollView>
     </View>
   )
-}
+})
+
+export default SearchPage
