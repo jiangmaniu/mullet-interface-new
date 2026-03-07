@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
+import { USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
@@ -99,7 +100,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
                 </View>
               </View>
               <Text className="text-paragraph-p2 text-content-1">
-                {BNumber.toFormatNumber(estimatedReceive, {
+                {BNumber.toFormatNumber(withdrawAmount, {
                   positive: false,
                   forceSign: true,
                   unit: tokenInfo?.symbol,
@@ -112,20 +113,42 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
 
         {/* 交易详情 */}
         <View className="gap-medium">
-          <InfoRow label={<Trans>兑换率</Trans>} value="1 : 1" />
-          <InfoRow label={<Trans>到账时间</Trans>} value={estimateData?.estimatedTime || <Trans>≈1分钟</Trans>} />
+          <InfoRow
+            label={<Trans>兑换率</Trans>}
+            value="1 : 1"
+            // TODO: 兑换率计算
+            // value={`1 : ${BNumber.toFormatNumber(
+            //   BNumber.from(estimateData?.estimatedReceiveAmount)?.dividedBy(withdrawAmount),
+            //   {
+            //     volScale: 2,
+            //   },
+            // )}`}
+          />
+
+          <InfoRow label={<Trans>到账时间</Trans>} value={estimateData?.estimatedTime} />
           <InfoRow
             label={<Trans>Gas费</Trans>}
-            value={`${networkFee} ${estimateData?.feeToken || (chainInfo?.shortName === 'SOL' ? 'SOL' : 'ETH')}`}
+            value={`${estimateData?.networkFee} ${estimateData?.feeToken} ≈ ${estimateData?.networkFeeUsdc} ${USDC_TOKEN_SYMBOL}`}
           />
           <InfoRow
             label={<Trans>预计到账</Trans>}
-            value={BNumber.toFormatNumber(estimatedReceive, {
+            value={BNumber.toFormatNumber(estimateData?.estimatedReceiveAmount, {
               unit: tokenInfo?.symbol,
               volScale: tokenInfo?.displayDecimals,
             })}
           />
-          <InfoRow label={<Trans>服务费</Trans>} value={<Trans>免费</Trans>} />
+          <InfoRow
+            label={<Trans>服务费</Trans>}
+            value={
+              BNumber.from(estimateData?.serviceFee)?.eq(0) ? (
+                <Trans>免费</Trans>
+              ) : (
+                BNumber.toFormatNumber(estimateData?.serviceFee, {
+                  unit: USDC_TOKEN_SYMBOL,
+                })
+              )
+            }
+          />
         </View>
       </View>
 
