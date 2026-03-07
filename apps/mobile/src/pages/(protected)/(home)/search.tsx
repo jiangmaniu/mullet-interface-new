@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 // 相对路径导入
@@ -86,14 +86,14 @@ function SearchAssetRow({
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
       <View className="gap-medium flex-1 flex-row items-center">
         <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
-        <View>
+        <View className="flex-1">
           <HighlightText
-            text={symbolInfo.symbol}
+            text={renderFormatSymbolName(symbolInfo)}
             searchChars={searchChars}
             className="text-paragraph-p2 text-content-1"
           />
           <HighlightText
-            text={symbolInfo.alias || ''}
+            text={symbolInfo.remark ?? ''}
             searchChars={searchChars}
             className="text-paragraph-p3 text-content-4"
           />
@@ -223,7 +223,9 @@ export default function SearchPage() {
   const handleSelect = useCallback(
     (symbol: string) => {
       trade.switchSymbol(symbol)
-      router.push(`/trade/${symbol}`)
+      subscribeCurrentAndPositionSymbol({ cover: true })
+
+      router.push(`/${symbol}`)
     },
     [router, trade],
   )
@@ -257,25 +259,27 @@ export default function SearchPage() {
           <Text className="text-important-1 text-content-1">
             {searchChars.length > 0 ? <Trans>搜索结果</Trans> : <Trans>热门品种</Trans>}
           </Text>
-          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-shrink-0">
-            <TabsList variant="icon" size="sm">
-              <TabsTrigger value="list" className="size-5">
-                <IconDepthTB
-                  width={12}
-                  height={12}
-                  color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1}
-                />
-              </TabsTrigger>
-              <TabsTrigger value="trade" className="size-5">
-                <IconDepth
-                  width={12}
-                  height={12}
-                  color={viewMode === 'trade' ? colorMarketFall : colorBrandSecondary1}
-                  primaryColor={viewMode === 'trade' ? colorMarketRise : colorBrandSecondary1}
-                />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <View>
+            <Tabs value={viewMode} onValueChange={setViewMode} className="">
+              <TabsList variant="icon" size="sm">
+                <TabsTrigger value="list" className="size-5">
+                  <IconDepthTB
+                    width={12}
+                    height={12}
+                    color={viewMode === 'list' ? colorMarketFall : colorBrandSecondary1}
+                  />
+                </TabsTrigger>
+                <TabsTrigger value="trade" className="size-5">
+                  <IconDepth
+                    width={12}
+                    height={12}
+                    color={viewMode === 'trade' ? colorMarketFall : colorBrandSecondary1}
+                    primaryColor={viewMode === 'trade' ? colorMarketRise : colorBrandSecondary1}
+                  />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </View>
         </View>
       </SafeAreaView>
 
