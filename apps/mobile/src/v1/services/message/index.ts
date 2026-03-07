@@ -1,5 +1,5 @@
-import { removeOrderMessageFieldNames } from '@/utils/business'
-import { request } from '@/utils/request'
+import { removeOrderMessageFieldNames } from '@/v1/utils/business'
+import { request } from '@/v1/utils/request'
 
 // 获取我接收的消息列表
 export async function getMyMessageList(
