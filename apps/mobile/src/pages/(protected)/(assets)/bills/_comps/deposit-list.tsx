@@ -1,88 +1,156 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Trans } from "@lingui/react/macro";
 import { observer } from "mobx-react-lite"
-import React from "react";
-import { ScrollView, View } from "react-native";
-import { AccountTypeBadge, BillsCardRow, BillsCardStatusBadge, MetaMaskIcon } from "./card-row";
-import { DepositRecord } from "..";
-import { Text } from "@/components/ui/text";
+import { Card, CardContent } from '@/components/ui/card';
+import { Text } from '@/components/ui/text';
+import { Trans } from '@lingui/react/macro';
+import React from 'react';
+import { ActivityIndicator, FlatList, View } from 'react-native';
+import { BillsCardRow } from "./card-row";
+import { useBillsScreenContext } from "../index";
+import { useFundFlowHistory, FundFlowHistoryItem } from "../_apis/use-fund-flow-history";
+import { EmptyState } from "@/components/states/empty-state";
+import { BNumber } from "@mullet/utils/number";
+import { renderFallback } from "@mullet/utils/fallback";
+import { useStores } from "@/v1/provider/mobxProvider";
 
-const MOCK_DEPOSITS: DepositRecord[] = [
-  {
-    id: '1',
-    amount: '0.10',
-    currency: 'USDC',
-    status: 'success',
-    toAccount: '4563155256',
-    toAccountType: 'STP',
-    fromAddress: '0x862D...B22A',
-    fromAddressLabel: 'MetaMask',
-    orderNumber: '844564126145498456',
-    time: '2026-01-01 12:00:00',
-  },
-  {
-    id: '2',
-    amount: '0.10',
-    currency: 'USDC',
-    status: 'failed',
-    toAccount: '4563155256',
-    toAccountType: 'STP',
-    fromAddress: '0x862D...B22A',
-    fromAddressLabel: 'MetaMask',
-    orderNumber: '844564126145498456',
-    time: '2026-01-01 12:00:00',
-  },
-];
+const PAGE_SIZE = 20;
 
-export const DepositList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
-  return (
-    <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 24 }}>
-      <View className="gap-xl px-xl pt-xl">
-        {accountSelector}
-        {MOCK_DEPOSITS.map((record) => (
-          <DepositCard key={record.id} record={record} />
-        ))}
+export const DepositList = observer(({
+  accountSelector,
+}: {
+  accountSelector: React.ReactNode;
+}) => {
+  const { selectedAccount } = useBillsScreenContext();
+  const { user } = useStores();
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useFundFlowHistory(
+    {
+      userId: String(user.currentUser.id!),
+      tradeAccountId: selectedAccount?.id,
+      type: 'deposit',
+    },
+    PAGE_SIZE
+  );
+
+  // 合并所有页数据并去重
+  const records = React.useMemo(() => {
+    if (!data?.pages) return [];
+    const all = data.pages.flatMap(page => page?.data ?? []);
+    // 使用 Map 去重，保留最新的记录（后面的覆盖前面的）
+    const recordMap = new Map<number, FundFlowHistoryItem>();
+    all.forEach(item => {
+      if (item.id != null) {
+        recordMap.set(item.id, item);
+      }
+    });
+    return Array.from(recordMap.values());
+  }, [data]);
+
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
+
+  const renderItem = ({ item }: { item: FundFlowHistoryItem }) => (
+    <DepositCard record={item} />
+  );
+
+  const renderFooter = () => {
+    if (isFetchingNextPage) {
+      return (
+        <View className="py-xl items-center">
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    if (!hasNextPage && records.length > 0) {
+      return (
+        <View className="py-xl items-center">
+          <Text className="text-paragraph-p3 text-content-4"><Trans>没有更多了</Trans></Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  const renderEmpty = () => {
+    if (isLoading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      );
+    }
+    return (
+      <View className="py-[60px] items-center">
+        <EmptyState message={<Trans>暂无入金记录</Trans>} />
       </View>
-    </ScrollView>
-  )
+    );
+  };
+
+  return (
+    <FlatList
+      className="flex-1"
+      contentContainerStyle={{ paddingBottom: 24 }}
+      data={records}
+      keyExtractor={(item) => String(item.id)}
+      renderItem={renderItem}
+      ListHeaderComponent={
+        <View className="pt-xl pb-xl">
+          {accountSelector}
+        </View>
+      }
+      ItemSeparatorComponent={() => <View className="h-xl" />}
+      ListFooterComponent={renderFooter}
+      ListEmptyComponent={renderEmpty}
+      onEndReached={handleEndReached}
+      onEndReachedThreshold={0.3}
+      onRefresh={() => refetch()}
+      refreshing={isRefetching && !isFetchingNextPage}
+      style={{ paddingHorizontal: 16 }}
+    />
+  );
 })
 
-// Deposit Card Component
-function DepositCard({ record }: { record: DepositRecord }) {
+// 充值卡片组件
+const DepositCard = observer(({ record }: { record: FundFlowHistoryItem }) => {
+  const { selectedAccount } = useBillsScreenContext();
+
   return (
     <Card>
-      <CardContent className="gap-xs">
+      <CardContent className="gap-medium">
         <BillsCardRow
           label={<Trans>入金金额</Trans>}
-          value={`${record.amount} ${record.currency}`}
+          value={`${BNumber.toFormatNumber(record.amount, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal })}`}
         />
         <BillsCardRow
           label={<Trans>入金状态</Trans>}
-          valueComponent={<BillsCardStatusBadge status={record.status} />}
+          value={renderFallback(record.status)}
         />
         <BillsCardRow
           label={<Trans>收款账户</Trans>}
-          valueComponent={
-            <View className="flex-row items-center gap-xs">
-              <AccountTypeBadge type={record.toAccountType} />
-              <Text className="text-paragraph-p3 text-content-1">{record.toAccount}</Text>
-            </View>
-          }
+          value={renderFallback(record.tradeAccountId)}
         />
         <BillsCardRow
-          label={<Trans>转入地址</Trans>}
-          valueComponent={
-            <View className="flex-row items-center gap-xs">
-              <MetaMaskIcon width={18} height={18} />
-              <Text className="text-paragraph-p3 text-content-1">
-                {record.fromAddressLabel}({record.fromAddress})
-              </Text>
-            </View>
-          }
+          label={<Trans>时间</Trans>}
+          value={renderFallback(record.createTime)}
         />
-        <BillsCardRow label={<Trans>单号</Trans>} value={record.orderNumber} />
-        <BillsCardRow label={<Trans>时间</Trans>} value={record.time} />
+        {record.remark && (
+          <BillsCardRow
+            label={<Trans>备注</Trans>}
+            value={record.remark}
+          />
+        )}
       </CardContent>
     </Card>
   );
-}
+})
+
