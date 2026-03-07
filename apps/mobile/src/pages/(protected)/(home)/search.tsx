@@ -4,10 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 // 第三方库
+import { useDebounce } from 'ahooks'
 import { useRouter } from 'expo-router'
 
 import { EmptyState } from '@/components/states/empty-state'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { AvatarImage } from '@/components/ui/avatar'
 import { IconDepth, IconDepthTB, IconifySearch } from '@/components/ui/icons'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -27,7 +28,7 @@ import { BNumber } from '@mullet/utils/number'
 import { HighlightText } from './_comps/highlight-text'
 
 // 热门品种列表
-const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
+const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD', 'EURJPY', 'USDJPY']
 
 /**
  * 筛选热门品种
@@ -187,18 +188,12 @@ export default function SearchPage() {
   const router = useRouter()
   const { t } = useLingui()
   const [searchQuery, setSearchQuery] = useState('')
-  const [debouncedQuery, setDebouncedQuery] = useState('')
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
   const { trade } = useStores()
 
-  // 防抖处理搜索输入
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [searchQuery])
+  // 使用 ahooks 的 useDebounce 进行防抖处理
+  const debouncedQuery = useDebounce(searchQuery, { wait: 300 })
 
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
