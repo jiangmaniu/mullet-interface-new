@@ -85,7 +85,7 @@ function SearchAssetRow({
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
-      <View className="gap-medium flex-1 flex-row items-center">
+      <View className="gap-medium flex-1 flex-row">
         <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
         <View className="flex-1">
           <HighlightText
@@ -141,7 +141,7 @@ function SearchAssetTradeRow({
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
-      <View className="gap-medium flex-1 flex-row items-center">
+      <View className="gap-medium flex-1 flex-row">
         <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
         <View>
           <HighlightText
