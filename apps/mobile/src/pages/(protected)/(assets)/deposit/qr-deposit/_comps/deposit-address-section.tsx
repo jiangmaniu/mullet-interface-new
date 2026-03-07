@@ -29,7 +29,7 @@ export function DepositAddressSection() {
     isLoading,
     isError,
     refetch,
-  } = useDepositAddress(selectedChainId, selectedAccount?.id || '')
+  } = useDepositAddress(selectedChainId, selectedAccount?.id)
 
   const address = depositAddressInfo?.address
 

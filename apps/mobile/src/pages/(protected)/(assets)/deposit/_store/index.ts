@@ -6,7 +6,7 @@ interface DepositState {
   selectedChainId: string
 
   // 选中的账户ID
-  selectedAccountId: string | number | null
+  selectedAccountId: string | null
 
   // 存款地址
   depositWalletAddress: string | null
@@ -14,7 +14,7 @@ interface DepositState {
   // Actions
   setSelectedTokenSymbol: (tokenSymbol: string) => void
   setSelectedChainId: (chainId: string) => void
-  setSelectedAccountId: (accountId: string | number | null) => void
+  setSelectedAccountId: (accountId: string | null) => void
   setDepositWalletAddress: (address: string | null) => void
 
   // 重置状态（离开存款流程时调用）
