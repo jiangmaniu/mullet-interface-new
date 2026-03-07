@@ -122,9 +122,14 @@ export default ({ config }: { config: ConfigContext }) => {
         'expo-splash-screen',
         {
           image: './public/images/splash-icon.png',
-          imageWidth: 320, // 在容器内显示更大尺寸
           resizeMode: 'contain', // 保持完整显示
           backgroundColor: '#060717',
+          ios: {
+            imageWidth: 200, // 在容器内显示更大尺寸
+          },
+          android: {
+            imageWidth: 190, // 在容器内显示更大尺寸
+          },
         },
       ],
       'expo-secure-store',
