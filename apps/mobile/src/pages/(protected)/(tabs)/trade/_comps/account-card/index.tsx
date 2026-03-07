@@ -76,16 +76,15 @@ export const AccountCard = observer(({}: AccountCardProps) => {
                     volScale: currentAccountInfo.currencyDecimal,
                   })}
                 </Text>
-                <Pressable
+                <IconButton
+                  color="primary"
                   onPress={(e) => {
                     e.stopPropagation()
                     addBalanceDrawerRef.current?.open()
                   }}
                 >
-                  <IconButton color="primary">
-                    <IconifyPlusCircle width={14} height={14} />
-                  </IconButton>
-                </Pressable>
+                  <IconifyPlusCircle width={14} height={14} />
+                </IconButton>
               </View>
             </View>
           </CardContent>
