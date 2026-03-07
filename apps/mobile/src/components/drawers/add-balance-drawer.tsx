@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react'
+import { useImperativeHandle } from 'react'
 import { Pressable, View } from 'react-native'
 
 import { useToggle } from 'ahooks'
@@ -14,10 +14,10 @@ export type AddBalanceDrawerRef = DrawerRef
 
 interface AddBalanceDrawerProps {
   accountInfo: User.AccountItem
+  ref?: React.Ref<AddBalanceDrawerRef>
 }
 
-export const AddBalanceDrawer = forwardRef<AddBalanceDrawerRef, AddBalanceDrawerProps>(
-  ({ accountInfo }, ref) => {
+export const AddBalanceDrawer = ({ accountInfo, ref }: AddBalanceDrawerProps) => {
   const [open, { toggle, setLeft: setClose, setRight: setOpen }] = useToggle(false)
   const router = useRouter()
 
@@ -86,6 +86,4 @@ export const AddBalanceDrawer = forwardRef<AddBalanceDrawerRef, AddBalanceDrawer
       </DrawerContent>
     </Drawer>
   )
-})
-
-AddBalanceDrawer.displayName = 'AddBalanceDrawer'
+}
