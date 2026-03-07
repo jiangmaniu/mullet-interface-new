@@ -1,13 +1,14 @@
 import qs from 'qs'
 
+import { onBackendLogout } from '@/hooks/use-logout'
+import { getCurrentRouteName } from '@/v1/utils/navigation'
 import { request } from '@/v1/utils/request'
-import { getCurrentRouteName, onLogout } from '@/v1/utils/navigation'
 
 // 客户用户-新增
 export async function addClient(body: Customer.AddOrUpdateParams) {
   return request<API.Response>('/api/trade-crm/crmApi/client/submit', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -15,7 +16,7 @@ export async function addClient(body: Customer.AddOrUpdateParams) {
 export async function updateClient(body: Customer.AddOrUpdateParams) {
   return request<API.Response>('/api/trade-crm/crmApi/client/update', {
     method: 'POST',
-    data: body
+    data: body,
   })
 }
 
@@ -23,7 +24,7 @@ export async function updateClient(body: Customer.AddOrUpdateParams) {
 export async function getClientList(params?: API.PageParam) {
   return request<API.Response<API.PageResult<Customer.ListItem>>>('/api/trade-crm/crmApi/client/list', {
     method: 'GET',
-    params
+    params,
   })
 }
 
@@ -32,11 +33,11 @@ export async function getClientDetail(params: API.IdParam) {
   return request<API.Response<Customer.ListItem>>('/api/trade-crm/crmApi/client/detail', {
     method: 'GET',
     skipErrorHandler: true,
-    params
+    params,
   }).then((res) => {
     if (res?.code !== 200) {
       if (getCurrentRouteName() !== 'Welcome') {
-        onLogout()
+        onBackendLogout()
       }
       return {}
     }
@@ -60,6 +61,6 @@ export async function getClientDetail(params: API.IdParam) {
 // 客户用户-删除
 export async function removeClient(body: { ids?: string }) {
   return request<API.Response>(`/api/trade-crm/crmApi/client/remove?${qs.stringify(body)}`, {
-    method: 'POST'
+    method: 'POST',
   })
 }

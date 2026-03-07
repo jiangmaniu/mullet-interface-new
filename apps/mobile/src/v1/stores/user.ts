@@ -1,10 +1,11 @@
-import { action, configure, get, makeObservable, observable, runInAction } from 'mobx'
+import { action, configure, makeObservable, observable, runInAction } from 'mobx'
 
 import { stores } from '@/v1/provider/mobxProvider'
 import { getClientDetail } from '@/v1/services/crm/customer'
-import { onLogout, replace } from '@/v1/utils/navigation'
+import { replace } from '@/v1/utils/navigation'
 import { STORAGE_GET_CONF_INFO } from '@/v1/utils/storage'
 import { useLoginAuthStore } from '@/stores/login-auth'
+import { onBackendLogout } from '@/hooks/use-logout'
 
 // 禁用 MobX 严格模式
 configure({ enforceActions: 'never' })
@@ -58,7 +59,7 @@ class UserStore {
 
       return currentUser
     } catch (error) {
-      onLogout()
+      onBackendLogout()
     }
     return undefined
   }

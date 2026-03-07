@@ -257,20 +257,6 @@ export function reset(routeName: string, params = {}) {
 }
 
 /**
- * 退出登录
- * @param noRequestLogout 不请求退出接口
- */
-export const onLogout = async (noRequestLogout?: boolean) => {
-  await STORAGE_REMOVE_CONF_INFO()
-  await STORAGE_REMOVE_ENV()
-  await STORAGE_REMOVE_AUTHORIZED()
-  await useLoginAuthStore.getState().logout()
-  setTimeout(() => {
-    replace('Welcome')
-  }, 50)
-}
-
-/**
  * 拦截系统返回功能
  * @param onGoBackCallback 回调
  * @param deps

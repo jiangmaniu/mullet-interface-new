@@ -240,15 +240,28 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
   useEffect(() => {
     if (visible) {
       if (isConnected && address) {
-        // 钱包已连接，标记第一步完成并自动开始签名
+        // 钱包已连接，标记第一步完成
         setStep1({ status: 'completed' })
-        handleSignRef.current()
+
+        // 如果 Privy 也已登录，直接标记第二步完成并调用后端登录
+        if (isPrivyLoggedIn) {
+          setStep2({ status: 'completed' })
+          setFlowState('login_backend')
+          loginToBackend(LoginType.Web3).catch((error) => {
+            console.error('Backend login failed:', error)
+            setFlowState('login_failed')
+            setErrorMessage(backendError || '登录失败，请重试')
+          })
+        } else {
+          // 否则开始签名流程
+          handleSignRef.current()
+        }
       } else if (Platform.OS !== 'ios') {
         // Android: 未连接时自动打开 AppKit 连接钱包（Android 支持 Modal 叠加）
         handleConnectWalletRef.current()
       }
     }
-  }, [visible, isConnected, address])
+  }, [visible, isConnected, address, isPrivyLoggedIn, loginToBackend, backendError])
 
   // 监听钱包连接成功事件（仅在 Drawer 可见时处理）
   useAppKitEventSubscription(
