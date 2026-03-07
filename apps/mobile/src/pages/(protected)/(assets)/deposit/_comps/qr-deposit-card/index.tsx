@@ -5,7 +5,7 @@ import { router } from 'expo-router'
 import { IconSpinner } from '@/components/ui/icons'
 import { IconifyFlashSolid } from '@/components/ui/icons/iconify'
 
-import { useDepositSupportedChains } from '../../_hooks/use-supported-chains'
+import { useDepositSupportedChains } from '../../_apis/use-supported-chains'
 import { DepositMethodCard } from '../method-card'
 
 export function QrDepositCard() {

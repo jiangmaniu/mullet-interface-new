@@ -4,15 +4,12 @@ import type { Option } from '@/components/ui/select'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-import { useDepositSupportedChains } from '../../_hooks/use-supported-chains'
-import { useDepositSupportedTokens } from '../../_hooks/use-supported-tokens'
-import { useDepositStore } from '../../_store'
+import { useDepositSupportedChains } from '../../_apis/use-supported-chains'
+import { useDepositSupportedTokens } from '../../_apis/use-supported-tokens'
+import { useTokenChainSelection } from '../../_hooks/use-deposit-state'
 
 export function TokenChainSelector() {
-  const selectedTokenSymbol = useDepositStore((s) => s.selectedTokenSymbol)
-  const selectedChainId = useDepositStore((s) => s.selectedChainId)
-  const setSelectedTokenSymbol = useDepositStore((s) => s.setSelectedTokenSymbol)
-  const setSelectedChainId = useDepositStore((s) => s.setSelectedChainId)
+  const { selectedTokenSymbol, selectedChainId, setSelectedTokenSymbol, setSelectedChainId } = useTokenChainSelection()
 
   // 获取所有链列表（包含每个链支持的代币）
   const { data: chains, isLoading: isLoadingChains } = useDepositSupportedChains()

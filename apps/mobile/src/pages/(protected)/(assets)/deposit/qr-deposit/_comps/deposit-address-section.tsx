@@ -9,26 +9,29 @@ import { Button } from '@/components/ui/button'
 import { IconifyCopy, IconifyRefresh } from '@/components/ui/icons/iconify'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
+import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
-import { useDepositAddress } from '../../_hooks/use-deposit-address'
-import { useDepositStore } from '../../_store'
+import { useDepositAddress } from '../../_apis/use-deposit-address'
+import { useDepositState } from '../../_hooks/use-deposit-state'
+import { useSelectedDepositAccount } from '../../_hooks/use-selected-account'
 
 /**
  * 充值地址和注意事项组合组件
  * 统一管理 useDepositAddress 接口调用
  */
 export function DepositAddressSection() {
-  const selectedChainId = useDepositStore((s) => s.selectedChainId)
-  const selectedTokenSymbol = useDepositStore((s) => s.selectedTokenSymbol)
-  const depositTargetAccount = useDepositStore((s) => s.depositTargetAccount)
+  const { selectedChainId, selectedTokenSymbol } = useDepositState()
+  const selectedAccount = useSelectedDepositAccount()
 
-  // 获取充值地址信息（包含 address 和 tips）
-  const tradeAccountId = depositTargetAccount?.id?.toString() || ''
-  const { data: depositAddressInfo, isLoading, isError, refetch } = useDepositAddress(selectedChainId, tradeAccountId)
+  const {
+    data: depositAddressInfo,
+    isLoading,
+    isError,
+    refetch,
+  } = useDepositAddress(selectedChainId, selectedAccount?.id || '')
 
   const address = depositAddressInfo?.address
-  const chainDisplayName = depositAddressInfo?.displayName || selectedChainId // 网络显示名称
 
   // 从 supportedTokens 中找到当前选中币种的 minDeposit
   const selectedTokenInfo = depositAddressInfo?.supportedTokens?.find((token) => token.symbol === selectedTokenSymbol)
@@ -135,7 +138,7 @@ export function DepositAddressSection() {
             <Text className="text-paragraph-p3 text-content-4">
               2.{' '}
               <Trans>
-                请勿转入{chainDisplayName}
+                请勿转入{renderFallback(depositAddressInfo?.displayName)}
                 网络下不支持的币种，不支持的币种充值到该地址一律销毁处理;详情可查看对应网络支持的币种
               </Trans>
             </Text>

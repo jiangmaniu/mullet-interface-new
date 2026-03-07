@@ -11,15 +11,14 @@ import { useEffect, useState } from 'react';
 import { DepositMethodCard } from '../method-card';
 import { ConnectWalletDrawer } from './connect-wallet-drawer';
 import { useAccount, useWalletInfo } from '@/lib/appkit';
-import { useDepositStore } from '../../_store';
+import { useDepositAddress } from '../../_hooks/use-deposit-state';
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth';
 
 export function WalletDepositCard() {
 	const [isConnectWalletOpen, setIsConnectWalletOpen] = useState(false);
 
 	// 从 store 读取状态
-	const depositWalletAddress = useDepositStore((s) => s.depositWalletAddress);
-	const setDepositWalletAddress = useDepositStore((s) => s.setDepositWalletAddress);
+	const { depositWalletAddress, setDepositWalletAddress } = useDepositAddress();
 	const loginType = useLoginAuthStore((s) => s.loginType);
 
 	// 监听全局钱包状态

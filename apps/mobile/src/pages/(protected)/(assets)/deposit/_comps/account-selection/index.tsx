@@ -6,7 +6,8 @@ import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
 import { getAccountSynopsisByLng } from '@/v1/utils/business';
 import { BNumber } from '@mullet/utils/number';
-import { useDepositStore } from '../../_store';
+import { useDepositState, useDepositActions } from '../../_hooks/use-deposit-state';
+import { useSelectedDepositAccount } from '../../_hooks/use-selected-account';
 import { useStores } from '@/v1/provider/mobxProvider';
 import { useLocalSearchParams } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -16,8 +17,9 @@ import { RealAccountSelectionDrawer } from '@/components/drawers/real-account-se
 
 export const DepositAccountSelector = observer(function DepositAccountSelector() {
 	const { user, trade } = useStores();
-	const depositTargetAccount = useDepositStore((s) => s.depositTargetAccount);
-	const setDepositTargetAccount = useDepositStore((s) => s.setDepositTargetAccount);
+	const { selectedAccountId } = useDepositState();
+	const { setSelectedAccountId } = useDepositActions();
+	const selectedAccount = useSelectedDepositAccount();
 	const drawerRef = useRef<DrawerRef>(null);
 
 	const accountList = useMemo(() => user.realAccountList ?? [], [user.realAccountList]);
@@ -25,14 +27,13 @@ export const DepositAccountSelector = observer(function DepositAccountSelector()
 
 	// 初始化目标账户
 	useEffect(() => {
-		if (accountList.length === 0 || depositTargetAccount) return;
+		if (accountList.length === 0 || selectedAccountId) return;
 		const account = accountId
 			? accountList.find((a) => a.id === accountId) ?? accountList[0]
 			: accountList.find((a) => a.id === trade.currentAccountInfo?.id) ?? accountList[0];
-		if (account) setDepositTargetAccount(account);
-	}, [accountId, accountList, trade.currentAccountInfo?.id, depositTargetAccount, setDepositTargetAccount]);
+		if (account) setSelectedAccountId(account.id);
+	}, [accountId, accountList, trade.currentAccountInfo?.id, selectedAccountId, setSelectedAccountId]);
 
-	const selectedAccount = depositTargetAccount;
 	const synopsis = selectedAccount ? getAccountSynopsisByLng(selectedAccount.synopsis) : null;
 
 	return (
@@ -78,7 +79,7 @@ export const DepositAccountSelector = observer(function DepositAccountSelector()
 			<RealAccountSelectionDrawer
 				ref={drawerRef}
 				selectedAccountId={selectedAccount?.id}
-				onSelect={(account) => setDepositTargetAccount(account)}
+				onSelect={(account) => setSelectedAccountId(account.id)}
 			/>
 		</>
 	);

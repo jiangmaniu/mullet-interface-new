@@ -1,7 +1,8 @@
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
-import { useDepositStore } from './_store';
+import { useDepositState, useDepositActions } from './_hooks/use-deposit-state';
+import { useSelectedDepositAccount } from './_hooks/use-selected-account';
 import { router } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
@@ -13,8 +14,8 @@ import { IconRecord } from '@/components/ui/icons';
 import { WalletDepositCard } from './_comps/wallet-deposit-card';
 
 const DepositScreen = observer(function DepositScreen() {
-	const depositTargetAccount = useDepositStore((s) => s.depositTargetAccount);
-	const reset = useDepositStore((s) => s.reset);
+	const selectedAccount = useSelectedDepositAccount();
+	const { reset } = useDepositActions();
 
 	// 离开入金模块时重置状态
 	useEffect(() => {
@@ -26,7 +27,7 @@ const DepositScreen = observer(function DepositScreen() {
 			<ScreenHeader
 				content={<Trans>存款</Trans>}
 				right={
-					<Pressable onPress={() => router.push({ pathname: '/(protected)/(assets)/bills', params: { tab: 'deposit', accountId: depositTargetAccount?.id } })}>
+					<Pressable onPress={() => router.push({ pathname: '/(protected)/(assets)/bills', params: { tab: 'deposit', accountId: selectedAccount?.id } })}>
 						<IconRecord width={24} height={24} className="text-content-1" />
 					</Pressable>}
 			/>
