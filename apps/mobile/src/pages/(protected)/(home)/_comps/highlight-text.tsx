@@ -1,4 +1,5 @@
 import { Text } from '@/components/ui/text'
+import { cn } from '@/lib/utils'
 
 interface HighlightTextProps {
   text: string
@@ -12,11 +13,11 @@ export function HighlightText({ text, searchChars, className }: HighlightTextPro
   }
 
   return (
-    <Text className={className}>
+    <Text className={cn('')}>
       {text.split('').map((char, index) => {
-        const isMatch = searchChars.some(c => c.toLowerCase() === char.toLowerCase())
+        const isMatch = searchChars.some((c) => c.toLowerCase() === char.toLowerCase())
         return (
-          <Text key={index} className={isMatch ? 'text-brand-default' : ''}>
+          <Text key={index} className={cn(className, isMatch ? 'text-brand-primary' : '')}>
             {char}
           </Text>
         )
