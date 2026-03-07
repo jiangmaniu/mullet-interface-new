@@ -11,6 +11,7 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 import { EmptyState } from "@/components/states/empty-state";
 import { getAccountSynopsisByLng } from "@/v1/utils/business";
 import { BNumber } from "@mullet/utils/number";
+import { AddBalanceDrawer, AddBalanceDrawerRef } from "@/components/drawers/add-balance-drawer";
 import { TradeSimulateAccountDepositDrawer, TradeSimulateAccountDepositDrawerRef } from "@/components/drawers/trade-simulate-account-deposit-drawer";
 
 export const RealAccountList = observer(() => {
@@ -41,12 +42,13 @@ type RealAccountRowProps = {
 const RealAccountRow = observer(({ account,
 }: RealAccountRowProps) => {
   const { textColorContent1, colorBrandSecondary1, colorBrandPrimary } = useThemeColors()
+  const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const synopsis = getAccountSynopsisByLng(account.synopsis)
 
   return (
-    // <Pressable onPress={onPress}>
-    <Card>
-      <CardContent className='gap-xs'>
+    <>
+      <Card>
+        <CardContent className='gap-xs'>
         {/* Header: User & Badges */}
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-medium">
@@ -70,7 +72,10 @@ const RealAccountRow = observer(({ account,
           <View className="flex-row items-center gap-xs">
             <Text className="text-paragraph-p3 text-content-1">{BNumber.toFormatNumber(account.money, { unit: account.currencyUnit, volScale: account.currencyDecimal })}</Text>
 
-            <Pressable onPress={() => { }}>
+            <Pressable onPress={(e) => {
+              e.stopPropagation()
+              addBalanceDrawerRef.current?.open()
+            }}>
               <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
             </Pressable>
           </View>
@@ -88,7 +93,13 @@ const RealAccountRow = observer(({ account,
         </View>
       </CardContent>
     </Card>
-    // </Pressable>
+
+    {/* Add Balance Drawer */}
+    <AddBalanceDrawer
+      ref={addBalanceDrawerRef}
+      accountInfo={account}
+    />
+    </>
   )
 })
 
