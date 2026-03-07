@@ -32,6 +32,7 @@ export async function refreshToken() {
   }
   return request<User.UserInfo>(`/api/blade-auth/oauth/token?${stringify(body)}`, {
     method: 'POST',
+    skipAllErrorHandler: true, // 避免 401 错误触发无限循环
   }).then((res) => {
     if (res?.access_token) {
       useLoginAuthStore.getState().setLoginInfo(res)

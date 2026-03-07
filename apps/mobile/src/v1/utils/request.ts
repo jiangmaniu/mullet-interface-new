@@ -1,15 +1,32 @@
 import { Base64 } from 'js-base64'
 
 import { toast } from '@/components/ui/toast'
-import { handle401Error } from '@/lib/auth-handler'
+import { handle401Error, setCancelAllRequestsCallback } from '@/lib/auth-handler'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
 
-// import { onLogout } from './navigation'
 import { STORAGE_GET_TRADER_SERVER } from './storage'
+
+// 全局请求管理器
+const pendingRequests = new Map<string, AbortController>()
+
+/**
+ * 取消所有正在进行的请求
+ */
+function cancelAllPendingRequests() {
+  console.log(`Cancelling ${pendingRequests.size} pending requests...`)
+  pendingRequests.forEach((controller, requestId) => {
+    controller.abort()
+    console.log(`Cancelled request: ${requestId}`)
+  })
+  pendingRequests.clear()
+}
+
+// 注入取消请求的回调到 auth-handler
+setCancelAllRequestsCallback(cancelAllPendingRequests)
 
 interface IRequestConfig extends RequestInit {
   /** 接口是否需要客户端鉴权 */
@@ -158,7 +175,7 @@ async function handleResponse<T>(
 }
 
 // 处理错误响应
-function handleErrorResponse(status: number, data: any, skipErrorHandler?: boolean): Error {
+async function handleErrorResponse(status: number, data: any, skipErrorHandler?: boolean): Promise<Error> {
   const errorMessage = data?.msg || data?.message || data?.error_description || data?.error
   let statusText: string | undefined
 
@@ -167,10 +184,11 @@ function handleErrorResponse(status: number, data: any, skipErrorHandler?: boole
       statusText = data?.msg ?? 'Bad Request'
       break
     case 401:
-      // 重新去登录
-      // onLogout(true)
+      // 注意：这个 case 实际上不会被执行到
+      // 因为 401 错误在主请求函数中已经被统一处理了
+      // 保留这个 case 只是为了代码完整性
       console.log('====error.response===', { status, data })
-      statusText = data?.msg ?? 'Bad Request'
+      statusText = data?.msg ?? 'Unauthorized'
       break
     case 413:
       statusText = 'Payload Too Large'
@@ -188,6 +206,7 @@ function handleErrorResponse(status: number, data: any, skipErrorHandler?: boole
 
   statusText = errorMessage || statusText
 
+  // 401 错误不在这里显示 toast，由统一的 401 处理流程决定
   if (status !== 401) {
     statusText && !skipErrorHandler && toast.error(statusText)
   }
@@ -195,14 +214,23 @@ function handleErrorResponse(status: number, data: any, skipErrorHandler?: boole
   return new Error(statusText || 'Unknown Error')
 }
 
-// 带超时的 fetch
-async function fetchWithTimeout(url: string, options: RequestInit, timeout: number): Promise<Response> {
+// 带超时的 fetch，支持全局请求管理
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit,
+  timeout: number,
+  requestId: string,
+): Promise<Response> {
   const controller = new AbortController()
+
+  // 注册到全局请求管理器
+  pendingRequests.set(requestId, controller)
+
   const timeoutId = setTimeout(() => {
     controller.abort()
   }, timeout)
 
-  console.log('🔄 Fetching:', url)
+  console.log('🔄 Fetching:', url, `[${requestId}]`)
 
   try {
     // 显式构建 fetch 配置，避免展开运算符问题
@@ -215,15 +243,46 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeout: numb
 
     const response = await fetch(url, fetchOptions)
     clearTimeout(timeoutId)
-    console.log('✅ Fetch success:', url, response.status)
+    console.log('✅ Fetch success:', url, response.status, `[${requestId}]`)
     return response
   } catch (error: any) {
     clearTimeout(timeoutId)
-    console.log('❌ Fetch error:', url, error?.message)
+    console.log('❌ Fetch error:', url, error?.message, `[${requestId}]`)
     if (error?.name === 'AbortError') {
-      throw new Error('Request Timeout')
+      throw new Error('Request Timeout or Cancelled')
     }
     throw error
+  } finally {
+    // 从全局请求管理器中移除
+    pendingRequests.delete(requestId)
+  }
+}
+
+/**
+ * 统一的 401 错误处理函数
+ * @returns true 如果应该重试请求，false 如果需要重新登录
+ */
+async function handle401<T>(
+  url: string,
+  config: IRequestConfig | undefined,
+  resolve: (value: T | PromiseLike<T>) => void,
+  reject: (reason?: any) => void,
+): Promise<void> {
+  console.log('401 error detected, attempting auto re-auth...')
+  const shouldRetry = await handle401Error()
+
+  if (shouldRetry) {
+    // 重新认证成功，重试请求
+    console.log('Re-auth successful, retrying request...')
+    try {
+      const retryResult = await request<T>(url, config)
+      resolve(retryResult)
+    } catch (retryError) {
+      reject(retryError)
+    }
+  } else {
+    // 需要重新登录，不重试请求
+    reject(new Error('Authentication required'))
   }
 }
 
@@ -271,8 +330,11 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
 
       console.log('Fetch Config:', fullUrl, method)
 
+      // 生成唯一的请求 ID
+      const requestId = `${method}-${url}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
+
       // 执行请求
-      const response = await fetchWithTimeout(fullUrl, fetchConfig, config?.timeout || DEFAULT_TIMEOUT)
+      const response = await fetchWithTimeout(fullUrl, fetchConfig, config?.timeout || DEFAULT_TIMEOUT, requestId)
 
       // 处理响应
       const { data, status, ok } = await handleResponse<any>(response, config)
@@ -287,32 +349,19 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
       // 处理非成功状态码
       if (!ok) {
         // 处理 401 错误 - 自动重新认证
-        if (status === 401 && !config?.skipAllErrorHandler) {
-          console.log('401 error detected, attempting auto re-auth...')
-          const shouldRetry = await handle401Error()
-          if (shouldRetry) {
-            // 重新认证成功，重试请求
-            console.log('Re-auth successful, retrying request...')
-            try {
-              const retryResult = await request<T>(url, config)
-              resolve(retryResult)
-              return
-            } catch (retryError) {
-              reject(retryError)
-              return
-            }
-          } else {
-            // 需要重新登录，不重试请求
-            reject(new Error('Authentication required'))
-            return
-          }
+        // 排除登录接口本身，避免登录失败时触发自动重新认证
+        const isLoginEndpoint = ['api/blade-auth/oauth/token'].some((item) => requestUrl.includes(item))
+        if (status === 401 && !config?.skipAllErrorHandler && !isLoginEndpoint) {
+          await handle401<T>(url, config, resolve, reject)
+          return
         }
 
         if (config?.skipAllErrorHandler) {
           reject(new Error('skipAllErrorHandler'))
           return
         }
-        const error = handleErrorResponse(status, data, skipErrorHandler)
+
+        const error = await handleErrorResponse(status, data, skipErrorHandler)
 
         reject(error)
         return
@@ -342,24 +391,8 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
 
         // 处理响应体中的 401 错误码
         if (code === 401 && !config?.skipAllErrorHandler) {
-          console.log('401 code in response body, attempting auto re-auth...')
-          const shouldRetry = await handle401Error()
-          if (shouldRetry) {
-            // 重新认证成功，重试请求
-            console.log('Re-auth successful, retrying request...')
-            try {
-              const retryResult = await request<T>(url, config)
-              resolve(retryResult)
-              return
-            } catch (retryError) {
-              reject(retryError)
-              return
-            }
-          } else {
-            // 需要重新登录，不重试请求
-            reject(new Error('Authentication required'))
-            return
-          }
+          await handle401<T>(url, config, resolve, reject)
+          return
         }
       }
 
@@ -371,6 +404,12 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
       console.log('Request Error:', error.message, error)
 
       if (config?.skipAllErrorHandler) {
+        reject(error)
+        return
+      }
+
+      // 请求被取消时不显示错误提示（通常是因为认证失败导致的批量取消）
+      if (error.message === 'Request Timeout or Cancelled') {
         reject(error)
         return
       }
