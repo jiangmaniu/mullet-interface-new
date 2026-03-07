@@ -1,4 +1,4 @@
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, TextInput, View } from 'react-native'
@@ -17,7 +17,7 @@ import { useSendOtp } from '../../_apis/use-send-otp'
 import { useSolanaTransfer } from '../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../_hooks/use-selected-chain-info'
-import { useWithdrawState } from '../../_hooks/use-withdraw-state'
+import { useWithdrawActions, useWithdrawState } from '../../_hooks/use-withdraw-state'
 import { WithdrawSuccessModal } from '../usdc/_comps/withdraw-success-modal'
 
 const CODE_LENGTH = 6
@@ -31,10 +31,11 @@ const VerifyScreen = observer(function VerifyScreen() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const { reset } = useWithdrawActions()
 
   // 出金相关数据
   const selectedAccount = useSelectedWithdrawAccount()
-  const { withdrawAddress, withdrawAmount } = useWithdrawState()
+  const { withdrawAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
   const { tokenInfo } = useSelectedChainInfo()
   const { mutate: transfer, isPending: isTransferring } = useSolanaTransfer()
 
@@ -131,17 +132,19 @@ const VerifyScreen = observer(function VerifyScreen() {
         },
         onError: (error: any) => {
           console.error('Transfer failed:', error)
-          setCode('') // 清空验证码
           toast.error(error?.msg || <Trans>提现失败</Trans>)
+          router.back()
         },
       },
     )
   }, [code, selectedAccount, withdrawAddress, withdrawAmount, tokenInfo, transfer])
 
-  const handleCloseSuccessModal = useCallback(() => {
+  const handleCloseSuccessModal = () => {
     setShowSuccessModal(false)
-    router.replace('/(tabs)/assets')
-  }, [])
+    const accountId = selectedAccountId
+    reset() // 重置 store 状态
+    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } }) // 跳转到 提现 页面
+  }
 
   const isCodeComplete = code.length === CODE_LENGTH
   const isLoading = isSending || isTransferring

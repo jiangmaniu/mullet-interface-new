@@ -11,6 +11,7 @@ import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
+import { useWithdrawEstimate } from '../../../_apis/use-withdraw-estimate'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../../_hooks/use-selected-chain-info'
 import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
@@ -27,13 +28,26 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
   const { address: connectedWalletAddress } = useAccount()
   const { walletInfo } = useWalletInfo()
 
+  // 获取出金手续费估算
+  const { data: estimateData } = useWithdrawEstimate(
+    {
+      amount: BNumber.from(withdrawAmount).toNumber(),
+      toChain: chainInfo?.chainId || '',
+      token: tokenInfo?.symbol || '',
+    },
+    !!withdrawAmount && !!chainInfo?.chainId && !!tokenInfo?.symbol,
+  )
+
   const isConnectedWallet = useMemo(() => {
     if (!connectedWalletAddress || !withdrawAddress) return false
     return connectedWalletAddress.toLowerCase() === withdrawAddress.toLowerCase()
   }, [connectedWalletAddress, withdrawAddress])
 
-  const gasFee = 0.0001 // Mock gas fee
+  // 网络手续费
+  const networkFee = estimateData?.networkFee
+  /** 服务费 */
   const serviceFee = 0
+  /** 预计到账 */
   const estimatedReceive = BNumber.from(withdrawAmount).minus(serviceFee).toString()
 
   return (
@@ -99,8 +113,11 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
         {/* 交易详情 */}
         <View className="gap-medium">
           <InfoRow label={<Trans>兑换率</Trans>} value="1 : 1" />
-          <InfoRow label={<Trans>到账时间</Trans>} value={<Trans>≈1分钟</Trans>} />
-          <InfoRow label={<Trans>Gas费</Trans>} value={`${gasFee} ${chainInfo?.shortName === 'SOL' ? 'SOL' : 'ETH'}`} />
+          <InfoRow label={<Trans>到账时间</Trans>} value={estimateData?.estimatedTime || <Trans>≈1分钟</Trans>} />
+          <InfoRow
+            label={<Trans>Gas费</Trans>}
+            value={`${networkFee} ${estimateData?.feeToken || (chainInfo?.shortName === 'SOL' ? 'SOL' : 'ETH')}`}
+          />
           <InfoRow
             label={<Trans>预计到账</Trans>}
             value={BNumber.toFormatNumber(estimatedReceive, {

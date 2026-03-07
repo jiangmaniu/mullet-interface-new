@@ -1,7 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { useCallback } from 'react'
 import { View } from 'react-native'
-import { router } from 'expo-router'
 
 import { Button } from '@/components/ui/button'
 import { IconSpecialSuccess } from '@/components/ui/icons'
@@ -11,7 +9,7 @@ import { formatAddress } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedChainInfo } from '../../../_hooks/use-selected-chain-info'
-import { useWithdrawActions, useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
 
 interface WithdrawSuccessModalProps {
   visible: boolean
@@ -21,17 +19,10 @@ interface WithdrawSuccessModalProps {
 export function WithdrawSuccessModal({ visible, onClose }: WithdrawSuccessModalProps) {
   // 从 store 获取数据
   const { withdrawAddress, withdrawAmount } = useWithdrawState()
-  const { reset } = useWithdrawActions()
   const { tokenInfo } = useSelectedChainInfo()
 
-  const handleConfirm = useCallback(() => {
-    onClose()
-    reset() // 重置 store 状态
-    router.replace('/(tabs)/assets/withdraw') // 跳转到 提现 页面
-  }, [onClose, reset])
-
   return (
-    <Modal visible={visible} onClose={onClose}>
+    <Modal visible={visible} onClose={onClose} closeOnBackdropPress={false}>
       <ModalContent>
         <ModalHeader>
           <ModalTitle>
@@ -74,7 +65,7 @@ export function WithdrawSuccessModal({ visible, onClose }: WithdrawSuccessModalP
 
         <ModalFooter>
           {/* 确定按钮 */}
-          <Button block size="lg" color="primary" onPress={handleConfirm}>
+          <Button block size="lg" color="primary" onPress={onClose}>
             <Text>
               <Trans>确定</Trans>
             </Text>
