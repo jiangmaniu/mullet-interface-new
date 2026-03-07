@@ -6,7 +6,7 @@ import { IconifyEdit } from '@/components/ui/icons'
 import { IconifyRefreshDouble } from '@/components/ui/icons/iconify'
 import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
-import { SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
 import { formatAddress } from '@mullet/utils/format'
@@ -30,8 +30,8 @@ export function WalletSelector() {
   const { walletInfo } = useWalletInfo()
 
   // 判断钱包账户链是否是 Solana 链
-  const walletAccountChainIsSolana = accountNamespace?.toUpperCase() === SOLANA_CHAIN_ID.toUpperCase()
-  const isSelectedChainSolana = selectedChainId?.toUpperCase() === SOLANA_CHAIN_ID.toUpperCase()
+  const walletAccountChainIsSolana = accountNamespace?.toUpperCase() === WITHDRAW_SOLANA_CHAIN_ID.toUpperCase()
+  const isSelectedChainSolana = selectedChainId?.toUpperCase() === WITHDRAW_SOLANA_CHAIN_ID.toUpperCase()
 
   // 判断是否是 Solana 链：钱包账户链是 Solana 链，且选中的链是 Solana 链（只有 Solana 链才显示切换按钮）
   const isSolanaChain = walletAccountChainIsSolana && isSelectedChainSolana

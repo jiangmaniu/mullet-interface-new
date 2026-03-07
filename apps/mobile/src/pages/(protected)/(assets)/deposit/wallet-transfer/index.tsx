@@ -1,83 +1,168 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { IconUSDC1 } from '@/components/ui/icons/set/usdc-1';
-import { IconUsdcSol } from '@/components/ui/icons/set/usdc-sol';
-import { ScreenHeader } from '@/components/ui/screen-header';
-import { Text } from '@/components/ui/text';
-import { Trans } from '@lingui/react/macro';
-import { router } from 'expo-router';
-import { Pressable, View } from 'react-native';
+import { Trans } from '@lingui/react/macro'
+import { useMemo, useState } from 'react'
+import { Image, Pressable, ScrollView, View } from 'react-native'
+import { router } from 'expo-router'
+
+import { RefreshControl } from '@/components/pull-to-refresh/refresh-control'
+import { EmptyState } from '@/components/states/empty-state'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { IconSpinner } from '@/components/ui/icons'
+import { ScreenHeader } from '@/components/ui/screen-header'
+import { Text } from '@/components/ui/text'
+import { DEPOSIT_SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
+import { renderFallback } from '@mullet/utils/fallback'
+import { BNumber } from '@mullet/utils/number'
+
+import { useSolanaWalletBalance } from '../_apis/use-solana-wallet-balance'
+import { useDepositSupportedTokens } from '../_apis/use-supported-tokens'
+import { useDepositAddress } from '../_hooks/use-deposit-state'
+import { useSelectedDepositAccount } from '../_hooks/use-selected-account'
 
 interface WalletAsset {
-	id: string;
-	symbol: string;
-	name: string;
-	balance: string;
-	balanceUsd: string;
-	icon: React.ReactNode;
-	status: 'available' | 'insufficient';
-	statusLabel?: string;
+  symbol: string
+  displayName: string
+  balance: string // 代币数量
+  balanceUsd: string // USD 估值
+  iconUrl?: string
+  isInsufficientBalance: boolean // 是否余额不足
 }
 
-const MOCK_ASSETS: WalletAsset[] = [
-	{ id: 'sol', symbol: 'SOL', name: 'SOLANA', balance: '153,568.00 USDC', balanceUsd: '$153,568.00', icon: <IconUsdcSol width={24} height={24} />, status: 'available' },
-	{ id: 'usdc-1', symbol: 'USDC', name: 'USDC', balance: '153,568.00 USDC', balanceUsd: '$153,568.00', icon: <IconUSDC1 width={24} height={24} />, status: 'available' },
-	{ id: 'usdc-2', symbol: 'USDC', name: 'USDC', balance: '153,568.00 USDC', balanceUsd: '$153,568.00', icon: <IconUSDC1 width={24} height={24} />, status: 'available', statusLabel: '无法使用' },
-	{ id: 'usdc-3', symbol: 'USDC', name: 'USDC', balance: '0.00 USDC', balanceUsd: '$0.00', icon: <IconUSDC1 width={24} height={24} />, status: 'insufficient', statusLabel: '余额不足' },
-];
-
 export default function WalletTransferScreen() {
-	return (
-		<View className="flex-1 gap-xl">
-			<ScreenHeader content={<Trans>钱包转入</Trans>} />
-			<View className="flex-1 gap-xl">
-				<View className="px-5">
-					<Text className="text-paragraph-p2 text-content-4">
-						<Trans>余额：</Trans>≈0.00 USD
-					</Text>
-				</View>
-				<View className="px-5 gap-xl">
-					{MOCK_ASSETS.map((asset) => (
-						<AssetRow key={asset.id} asset={asset} />
-					))}
-				</View>
-			</View>
-		</View>
-	);
+  const { depositWalletAddress } = useDepositAddress()
+  const selectedAccount = useSelectedDepositAccount()
+  const [refreshing, setRefreshing] = useState(false)
+
+  // 查询钱包余额（列表页面,使用默认 30 秒轮询）
+  const {
+    data: balanceData,
+    isLoading: isLoadingBalance,
+    refetch: refetchBalance,
+  } = useSolanaWalletBalance(depositWalletAddress ?? undefined)
+
+  // 查询代币配置（获取图标）
+  const {
+    data: tokensConfig,
+    isLoading: isLoadingTokens,
+    refetch: refetchTokens,
+  } = useDepositSupportedTokens(DEPOSIT_SOLANA_CHAIN_ID)
+
+  // 转换 API 数据为组件所需格式
+  const assetsRendered: WalletAsset[] = useMemo(() => {
+    if (!balanceData || !tokensConfig) return []
+
+    return balanceData.balances.map((tokenBalance) => {
+      const tokenConfig = tokensConfig.find((t) => t.symbol === tokenBalance.symbol)
+
+      return {
+        symbol: renderFallback(tokenConfig?.symbol),
+        displayName: renderFallback(tokenConfig?.symbol),
+        iconUrl: tokenConfig?.iconUrl,
+        balance: BNumber.toFormatNumber(tokenBalance.amount, {
+          volScale: tokenConfig?.displayDecimals,
+          unit: tokenConfig?.symbol,
+        }),
+        balanceUsd: BNumber.toFormatNumber(tokenBalance.usdValue, {
+          volScale: selectedAccount?.currencyDecimal,
+          unit: selectedAccount?.currencyUnit,
+        }),
+        isInsufficientBalance: BNumber.from(tokenBalance.amount).lt(tokenBalance.minAmount),
+      }
+    })
+  }, [balanceData, tokensConfig, selectedAccount])
+
+  // 总余额显示
+  const totalBalanceText = useMemo(() => {
+    return BNumber.toFormatNumber(balanceData?.totalUsdValue, {
+      volScale: selectedAccount?.currencyDecimal,
+      unit: selectedAccount?.currencyUnit,
+    })
+  }, [balanceData, selectedAccount])
+
+  const isLoading = isLoadingBalance || isLoadingTokens
+
+  // 下拉刷新处理
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      await Promise.all([refetchBalance(), refetchTokens()])
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
+  return (
+    <View className="gap-xl flex-1">
+      <ScreenHeader content={<Trans>钱包转入</Trans>} />
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-xl"
+        nestedScrollEnabled
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+      >
+        {isLoading ? (
+          <View className="py-xl items-center">
+            <IconSpinner width={24} height={24} className="text-content-4" />
+          </View>
+        ) : (
+          <>
+            <View className="px-5">
+              <Text className="text-paragraph-p2 text-content-4">
+                <Trans>余额：{totalBalanceText}</Trans>
+              </Text>
+            </View>
+            <View className="gap-xl px-5">
+              {assetsRendered.length > 0 ? (
+                assetsRendered.map((asset) => <AssetRow key={asset.symbol} asset={asset} />)
+              ) : (
+                <EmptyState message={<Trans>暂无资产</Trans>} className="py-20" />
+              )}
+            </View>
+          </>
+        )}
+      </ScrollView>
+    </View>
+  )
 }
 
 function AssetRow({ asset }: { asset: WalletAsset }) {
-	const disabled = asset.status === 'insufficient' || asset.statusLabel === '无法使用';
+  const disabled = asset.isInsufficientBalance
 
-	const handlePress = () => {
-		if (asset.symbol === 'USDC') {
-			router.push('/(assets)/deposit/wallet-transfer/usdc');
-		} else {
-			router.push('/(assets)/deposit/wallet-transfer/swap');
-		}
-	};
+  const handlePress = () => {
+    if (asset.symbol.toUpperCase() === USDC_TOKEN_SYMBOL.toUpperCase()) {
+      router.push('/(assets)/deposit/wallet-transfer/usdc')
+    } else {
+      router.push('/(assets)/deposit/wallet-transfer/swap')
+    }
+  }
 
-	return (
-		<Pressable disabled={disabled} onPress={handlePress}>
-			<Card className="rounded-small" style={disabled ? { opacity: 0.5 } : undefined}>
-				<CardContent className="py-medium px-xl flex-row items-center justify-between">
-					<View className="flex-row items-center gap-medium">
-						{asset.icon}
-						<View className="gap-xs">
-							<Text className="text-paragraph-p2 text-content-1">{asset.name}</Text>
-							<Text className="text-paragraph-p3 text-content-4">{asset.balance}</Text>
-						</View>
-					</View>
-					<View className="flex-row items-center gap-small">
-						{asset.statusLabel && (
-							<Badge color="default">
-								<Text>{asset.statusLabel}</Text>
-							</Badge>
-						)}
-						<Text className="text-paragraph-p2 text-content-1">{asset.balanceUsd}</Text>
-					</View>
-				</CardContent>
-			</Card>
-		</Pressable>
-	);
+  return (
+    <Pressable disabled={disabled} onPress={handlePress}>
+      <Card className="rounded-small" style={disabled ? { opacity: 0.5 } : undefined}>
+        <CardContent className="py-medium px-xl flex-row items-center justify-between">
+          <View className="gap-medium flex-row items-center">
+            {asset.iconUrl ? (
+              <Image source={{ uri: asset.iconUrl }} style={{ width: 24, height: 24, borderRadius: 12 }} />
+            ) : (
+              <View style={{ width: 24, height: 24 }} />
+            )}
+            <View className="gap-xs">
+              <Text className="text-paragraph-p2 text-content-1">{asset.displayName}</Text>
+              <Text className="text-paragraph-p3 text-content-4">{asset.balance}</Text>
+            </View>
+          </View>
+          <View className="gap-small flex-row items-center">
+            {disabled && (
+              <Badge color="default">
+                <Text>
+                  <Trans>余额不足</Trans>
+                </Text>
+              </Badge>
+            )}
+            <Text className="text-paragraph-p2 text-content-1">{asset.balanceUsd}</Text>
+          </View>
+        </CardContent>
+      </Card>
+    </Pressable>
+  )
 }

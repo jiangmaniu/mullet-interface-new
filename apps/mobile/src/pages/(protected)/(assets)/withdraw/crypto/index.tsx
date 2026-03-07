@@ -7,7 +7,7 @@ import { router } from 'expo-router'
 import { Button } from '@/components/ui/button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
-import { SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
+import { USDC_TOKEN_SYMBOL, WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../_hooks/use-selected-account'
@@ -26,7 +26,7 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
 
   const handleConfirm = () => {
     // 判断是否为 Solana 链
-    const isSolanaChain = selectedChainId === SOLANA_CHAIN_ID
+    const isSolanaChain = selectedChainId === WITHDRAW_SOLANA_CHAIN_ID
 
     if (isSolanaChain) {
       // Solana 链：USDC 走钱包转账，非 USDC 走 Swap
