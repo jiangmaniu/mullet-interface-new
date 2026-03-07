@@ -247,7 +247,7 @@ export default function SearchPage() {
               LeftContent={<IconifySearch width={20} height={20} />}
             />
           </View>
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.back()} className="items-center justify-center">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>取消</Trans>
             </Text>
