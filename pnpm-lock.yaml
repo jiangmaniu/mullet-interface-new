@@ -105,16 +105,19 @@ importers:
         version: 5.2.2(react-hook-form@7.65.0(react@19.2.0))
       '@lingui/core':
         specifier: ^5.5.1
-        version: 5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
+        version: 5.5.1(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
       '@lingui/react':
         specifier: ^5.5.1
-        version: 5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
+        version: 5.5.1(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
       '@mullet/trading-view':
         specifier: workspace:*
         version: link:../../packages/trading-view
       '@mullet/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      '@mullet/web3':
+        specifier: workspace:*
+        version: link:../../packages/web3
       '@privy-io/expo':
         specifier: ^0.63.7
         version: 0.63.7(8bd24c73c4517eb14b967578318446d6)
@@ -150,7 +153,7 @@ importers:
         version: 2.0.1(2c51bf22b02b346e7864aea9b1a714aa)
       '@reown/appkit-solana-react-native':
         specifier: ^2.0.1
-        version: 2.0.1(@walletconnect/react-native-compat@2.23.4(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(@react-native-community/netinfo@11.5.2(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(expo-application@55.0.8(expo@55.0.2))(react-native-get-random-values@1.11.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(encoding@0.1.13)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
+        version: 2.0.1(@walletconnect/react-native-compat@2.23.4(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(@react-native-community/netinfo@11.5.2(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(expo-application@55.0.8(expo@55.0.2))(react-native-get-random-values@1.11.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@rn-primitives/accordion':
         specifier: ^1.2.0
         version: 1.2.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.0(react@19.2.0))(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
@@ -178,6 +181,12 @@ importers:
       '@sdcx/pull-to-refresh':
         specifier: ^1.1.1
         version: 1.1.1(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
+      '@solana/spl-token':
+        specifier: ^0.4.14
+        version: 0.4.14(@solana/web3.js@1.98.4(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@solana/web3.js':
+        specifier: ^1.98.4
+        version: 1.98.4(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@tanstack/react-query':
         specifier: ^5.90.3
         version: 5.90.3(react@19.2.0)
@@ -330,7 +339,7 @@ importers:
         version: 8.0.1(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
       react-native-dev-inspector:
         specifier: ^1.1.0
-        version: 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
+        version: 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
       react-native-fs:
         specifier: ^2.20.0
         version: 2.20.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))
@@ -430,7 +439,7 @@ importers:
         version: 5.7.0(typescript@5.9.3)
       '@lingui/macro':
         specifier: ^5.7.0
-        version: 5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
+        version: 5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
       '@lingui/metro-transformer':
         specifier: ^5.7.0
         version: 5.7.0(@expo/metro-config@55.0.9(bufferutil@4.0.9)(expo@55.0.2)(typescript@5.9.3)(utf-8-validate@5.0.10))(babel-plugin-macros@3.1.0)(expo@55.0.2)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(typescript@5.9.3)
@@ -10302,6 +10311,7 @@ packages:
     resolution: {integrity: sha512-Quz3MvAwHxVYNXsOByL7xI5EB2WYOeFswqaHIA3qOK3isRWTxiplBEocmmru6XmxDB2L7jDNYtYA4FyimoAFEw==}
     engines: {node: '>=8.17.0'}
     hasBin: true
+    bundledDependencies: []
 
   jsonfile@4.0.0:
     resolution: {integrity: sha512-m6F1R3z8jjlf2imQHS2Qez5sjKWQzbuuhuJ/FKYFRZvPE3PuHcSMVZzfsLhGVOkfd20obL5SWEBew5ShlquNxg==}
@@ -15815,7 +15825,7 @@ snapshots:
       '@types/node': 20.5.1
       chalk: 4.1.2
       cosmiconfig: 8.3.6(typescript@5.9.3)
-      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.9.3))(typescript@5.9.3)
+      cosmiconfig-typescript-loader: 4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.19.21)(typescript@5.9.3))(typescript@5.9.3)
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       lodash.uniq: 4.5.0
@@ -17412,12 +17422,12 @@ snapshots:
       '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       babel-plugin-macros: 3.1.0
 
-  '@lingui/core@5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)':
+  '@lingui/core@5.5.1(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@lingui/message-utils': 5.7.0
+      '@lingui/message-utils': 5.5.1
     optionalDependencies:
-      '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
+      '@lingui/babel-plugin-lingui-macro': 5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       babel-plugin-macros: 3.1.0
 
   '@lingui/core@5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)':
@@ -17457,12 +17467,12 @@ snapshots:
       - supports-color
       - typescript
 
-  '@lingui/macro@5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
+  '@lingui/macro@5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
     dependencies:
-      '@lingui/core': 5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
-      '@lingui/react': 5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
+      '@lingui/core': 5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
+      '@lingui/react': 5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)
     optionalDependencies:
-      '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
+      '@lingui/babel-plugin-lingui-macro': 5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       babel-plugin-macros: 3.1.0
     transitivePeerDependencies:
       - react
@@ -17492,15 +17502,6 @@ snapshots:
       - supports-color
       - typescript
 
-  '@lingui/react@5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
-    dependencies:
-      '@babel/runtime': 7.28.4
-      '@lingui/core': 5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
-      react: 19.2.0
-    optionalDependencies:
-      '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
-      babel-plugin-macros: 3.1.0
-
   '@lingui/react@5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.3)':
     dependencies:
       '@babel/runtime': 7.28.4
@@ -17510,13 +17511,22 @@ snapshots:
       '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       babel-plugin-macros: 3.1.0
 
-  '@lingui/react@5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
+  '@lingui/react@5.5.1(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
     dependencies:
       '@babel/runtime': 7.28.4
-      '@lingui/core': 5.7.0(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
+      '@lingui/core': 5.5.1(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
       react: 19.2.0
     optionalDependencies:
-      '@lingui/babel-plugin-lingui-macro': 5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3)
+      '@lingui/babel-plugin-lingui-macro': 5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3)
+      babel-plugin-macros: 3.1.0
+
+  '@lingui/react@5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)(react@19.2.0)':
+    dependencies:
+      '@babel/runtime': 7.28.4
+      '@lingui/core': 5.7.0(@lingui/babel-plugin-lingui-macro@5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0)
+      react: 19.2.0
+    optionalDependencies:
+      '@lingui/babel-plugin-lingui-macro': 5.7.0(babel-plugin-macros@3.1.0)(typescript@5.9.3)
       babel-plugin-macros: 3.1.0
 
   '@lingui/swc-plugin@5.6.1(@lingui/core@5.5.1(@lingui/babel-plugin-lingui-macro@5.5.1(babel-plugin-macros@3.1.0)(typescript@5.9.3))(babel-plugin-macros@3.1.0))(next@16.0.7(@babel/core@7.28.4)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(sass@1.97.3))':
@@ -19911,10 +19921,10 @@ snapshots:
       - valtio
       - zod
 
-  '@reown/appkit-solana-react-native@2.0.1(@walletconnect/react-native-compat@2.23.4(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(@react-native-community/netinfo@11.5.2(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(expo-application@55.0.8(expo@55.0.2))(react-native-get-random-values@1.11.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(encoding@0.1.13)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@reown/appkit-solana-react-native@2.0.1(@walletconnect/react-native-compat@2.23.4(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(@react-native-community/netinfo@11.5.2(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(expo-application@55.0.8(expo@55.0.2))(react-native-get-random-values@1.11.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@reown/appkit-common-react-native': 2.0.1(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
-      '@solana/spl-token': 0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
+      '@solana/spl-token': 0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
       '@walletconnect/react-native-compat': 2.23.4(@react-native-async-storage/async-storage@2.2.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(@react-native-community/netinfo@11.5.2(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0))(expo-application@55.0.8(expo@55.0.2))(react-native-get-random-values@1.11.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))
       bs58: 6.0.0
@@ -20202,7 +20212,7 @@ snapshots:
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
 
-  '@rn-dev-inspector/metro-plugin@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
+  '@rn-dev-inspector/metro-plugin@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
     dependencies:
       '@babel/core': 7.28.4
       launch-editor: 2.12.0
@@ -21223,7 +21233,7 @@ snapshots:
     transitivePeerDependencies:
       - fastestsmallesttextencoderdecoder
 
-  '@solana/spl-token-group@0.0.7(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(typescript@5.9.3)':
+  '@solana/spl-token-group@0.0.7(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)':
     dependencies:
       '@solana/codecs': 2.0.0-rc.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -21239,7 +21249,7 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - typescript
 
-  '@solana/spl-token-metadata@0.1.6(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(typescript@5.9.3)':
+  '@solana/spl-token-metadata@0.1.6(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)':
     dependencies:
       '@solana/codecs': 2.0.0-rc.1(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
@@ -21255,12 +21265,12 @@ snapshots:
       - fastestsmallesttextencoderdecoder
       - typescript
 
-  '@solana/spl-token@0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)':
+  '@solana/spl-token@0.4.13(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(encoding@0.1.13)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)(utf-8-validate@5.0.10)':
     dependencies:
       '@solana/buffer-layout': 4.0.1
       '@solana/buffer-layout-utils': 0.2.0(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
-      '@solana/spl-token-group': 0.0.7(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(typescript@5.9.3)
-      '@solana/spl-token-metadata': 0.1.6(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(typescript@5.9.3)
+      '@solana/spl-token-group': 0.0.7(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
+      '@solana/spl-token-metadata': 0.1.6(@solana/web3.js@1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10))(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.3)
       '@solana/web3.js': 1.98.2(bufferutil@4.0.9)(encoding@0.1.13)(typescript@5.9.3)(utf-8-validate@5.0.10)
       buffer: 6.0.3
     transitivePeerDependencies:
@@ -25040,7 +25050,7 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.5.1)(typescript@5.9.3))(typescript@5.9.3):
+  cosmiconfig-typescript-loader@4.4.0(@types/node@20.5.1)(cosmiconfig@8.3.6(typescript@5.9.3))(ts-node@10.9.2(@types/node@20.19.21)(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
       '@types/node': 20.5.1
       cosmiconfig: 8.3.6(typescript@5.9.3)
@@ -25797,7 +25807,7 @@ snapshots:
       eslint: 9.37.0(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.37.0(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.0.1(eslint@9.37.0(jiti@2.6.1))
@@ -25838,7 +25848,7 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -25991,7 +26001,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1)(eslint@9.37.0(jiti@2.6.1)):
+  eslint-plugin-import@2.32.0(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)))(eslint@9.37.0(jiti@2.6.1)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -30476,10 +30486,10 @@ snapshots:
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
 
-  react-native-dev-inspector@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0):
+  react-native-dev-inspector@1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0):
     dependencies:
       '@rn-dev-inspector/core': 1.1.0(react-native@0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10))(react@19.2.0)
-      '@rn-dev-inspector/metro-plugin': 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
+      '@rn-dev-inspector/metro-plugin': 1.1.0(@babel/core@7.28.4)(metro-config@0.83.3)(metro@0.83.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       react: 19.2.0
       react-native: 0.83.2(@babel/core@7.28.4)(@types/react@19.2.14)(bufferutil@4.0.9)(react@19.2.0)(utf-8-validate@5.0.10)
     transitivePeerDependencies:

@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { TextInput, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import type { Option } from '@/components/ui/select'
-import type { SignatureStatus } from '../../_comps/wallet-deposit-card/signature-status-modal'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -19,8 +18,11 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { renderFallback } from '@mullet/utils/fallback'
 
-import { SignatureStatusModal } from '../../_comps/wallet-deposit-card/signature-status-modal'
+import { SignatureFailModal } from '../_comps/signature-fail-modal'
+import { SignatureSuccessModal } from '../_comps/signature-success-modal'
 import { useSelectedDepositAccount } from '../../_hooks/use-selected-account'
+
+export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
 type PageMode = 'input' | 'confirm'
 
@@ -220,15 +222,14 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
           </View>
         </SafeAreaView>
 
-        <SignatureStatusModal
-          visible={showSignatureModal}
-          status={signatureStatus}
+        <SignatureSuccessModal
+          visible={showSignatureModal && signatureStatus === 'success'}
+          onClose={handleCloseSignatureModal}
+        />
+        <SignatureFailModal
+          visible={showSignatureModal && signatureStatus === 'failed'}
           onClose={handleCloseSignatureModal}
           onRetry={handleRetrySignature}
-          sendAmount={formattedSendAmount}
-          sendToken={selectedToken.value}
-          receiveAmount={formattedReceiveAmount}
-          receiveToken="USDC"
         />
       </View>
     )

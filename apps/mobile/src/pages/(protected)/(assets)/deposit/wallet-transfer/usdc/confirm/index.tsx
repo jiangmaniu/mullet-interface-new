@@ -1,10 +1,9 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import type { SignatureStatus } from '../../../_comps/wallet-deposit-card/signature-status-modal'
 
 import { Button } from '@/components/ui/button'
 import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
@@ -14,12 +13,16 @@ import { useWalletInfo } from '@/lib/appkit'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
+import { SignatureFailModal } from '../../_comps/signature-fail-modal'
+import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
-import { SignatureStatusModal } from '../../../_comps/wallet-deposit-card/signature-status-modal'
+import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
 const COUNTDOWN_SECONDS = 30
+
+export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
 const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   const { fromWalletAddress, toWalletAddress, depositAmount } = useDepositState()
@@ -28,16 +31,12 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 
   // Web3 wallet state
   const { walletInfo } = useWalletInfo()
+  const { transferToken } = useSolanaTransfer()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
   const [showSignatureModal, setShowSignatureModal] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-
-  // const isConnectedWallet = useMemo(() => {
-  //   if (!connectedWalletAddress || !toWalletAddress) return false
-  //   return connectedWalletAddress.toLowerCase() === toWalletAddress.toLowerCase()
-  // }, [connectedWalletAddress, toWalletAddress])
 
   const formattedAmount = BNumber.toFormatNumber(depositAmount, {
     volScale: selectedTokenConfig?.displayDecimals,
@@ -60,14 +59,27 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     }
   }, [])
 
-  const handleConfirmTransfer = useCallback(() => {
+  const handleConfirmTransfer = useCallback(async () => {
+    if (!toWalletAddress) {
+      console.error('No to address')
+      return
+    }
+
     setShowSignatureModal(true)
     setSignatureStatus('signing')
-    // Mock: 模拟签名过程
-    setTimeout(() => {
+
+    try {
+      await transferToken({
+        fromAddress: fromWalletAddress,
+        toAddress: toWalletAddress,
+        amount: depositAmount,
+      })
       setSignatureStatus('success')
-    }, 3000)
-  }, [])
+    } catch (error) {
+      console.error('Transaction failed:', error)
+      setSignatureStatus('failed')
+    }
+  }, [transferToken, fromWalletAddress, toWalletAddress, depositAmount])
 
   const handleRetrySignature = useCallback(() => {
     setSignatureStatus('signing')
@@ -168,23 +180,27 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
       {/* 底部按钮 */}
       <SafeAreaView edges={['bottom']}>
         <View className="px-5">
-          <Button block size="lg" color="primary" onPress={handleConfirmTransfer} disabled={countdown <= 0}>
-            <Text>
-              <Trans>确定</Trans>
-            </Text>
+          <Button
+            block
+            size="lg"
+            color="primary"
+            onPress={handleConfirmTransfer}
+            disabled={signatureStatus === 'signing'}
+            loading={signatureStatus === 'signing'}
+          >
+            <Text>{signatureStatus === 'signing' ? <Trans>等待签名</Trans> : <Trans>确定</Trans>}</Text>
           </Button>
         </View>
       </SafeAreaView>
 
-      <SignatureStatusModal
-        visible={showSignatureModal}
-        status={signatureStatus}
+      <SignatureSuccessModal
+        visible={showSignatureModal && signatureStatus === 'success'}
+        onClose={handleCloseSignatureModal}
+      />
+      <SignatureFailModal
+        visible={showSignatureModal && signatureStatus === 'failed'}
         onClose={handleCloseSignatureModal}
         onRetry={handleRetrySignature}
-        sendAmount={formattedAmount}
-        sendToken={selectedTokenConfig?.symbol ?? 'USDC'}
-        receiveAmount={formattedAmount}
-        receiveToken={selectedTokenConfig?.symbol ?? 'USDC'}
       />
     </View>
   )

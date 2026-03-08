@@ -6,11 +6,11 @@ interface DepositState {
   selectedChainId: string
 
   // 选中的账户ID
-  selectedAccountId: string | null
+  selectedAccountId?: string
 
   // 充值地址
-  fromWalletAddress: string | null // 用户的 Web3 钱包地址
-  toWalletAddress: string | null // 平台的充值地址
+  fromWalletAddress?: string // 用户的 Web3 钱包地址
+  toWalletAddress?: string // 平台的充值地址
 
   // 充值金额
   depositAmount: string
@@ -18,9 +18,9 @@ interface DepositState {
   // Actions
   setSelectedTokenSymbol: (tokenSymbol: string) => void
   setSelectedChainId: (chainId: string) => void
-  setSelectedAccountId: (accountId: string | null) => void
-  setFromWalletAddress: (address: string | null) => void
-  setToWalletAddress: (address: string | null) => void
+  setSelectedAccountId: (accountId: string) => void
+  setFromWalletAddress: (address: string) => void
+  setToWalletAddress: (address: string) => void
   setDepositAmount: (amount: string) => void
 
   // 重置状态（离开存款流程时调用）
@@ -30,9 +30,9 @@ interface DepositState {
 const initialState = {
   selectedTokenSymbol: '',
   selectedChainId: '',
-  selectedAccountId: null,
-  fromWalletAddress: null,
-  toWalletAddress: null,
+  selectedAccountId: undefined,
+  fromWalletAddress: undefined,
+  toWalletAddress: undefined,
   depositAmount: '',
 }
 
