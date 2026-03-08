@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
 import { View } from 'react-native'
+import { router } from 'expo-router'
 
 import { IconifyWalletSolid } from '@/components/ui/icons/iconify'
 import { IconArbitrum } from '@/components/ui/icons/set/arbitrum'
@@ -10,15 +11,11 @@ import { IconOkxWallet } from '@/components/ui/icons/set/wallet/okx-wallet'
 import { DepositMethodCard } from '../method-card'
 import { ConnectWalletDrawer } from './connect-wallet-drawer'
 
-interface UnconnectedWalletCardProps {
-  onConnected: () => void
-}
-
 /**
  * 未连接钱包卡片
  * 显示连接提示,点击打开连接抽屉
  */
-export function UnconnectedWalletCard({ onConnected }: UnconnectedWalletCardProps) {
+export function UnconnectedWalletCard() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   const handlePress = () => {
@@ -27,7 +24,7 @@ export function UnconnectedWalletCard({ onConnected }: UnconnectedWalletCardProp
 
   const handleConnected = () => {
     setIsDrawerOpen(false)
-    onConnected()
+    router.push('/(assets)/deposit/wallet-transfer')
   }
 
   return (

@@ -58,7 +58,7 @@ export interface SolanaWalletBalanceResponse {
  * @param options.enabled - 是否启用查询，默认 true
  */
 export function useSolanaWalletBalance(
-  address?: string,
+  address?: string | null,
   options?: {
     refetchInterval?: number | false
     enabled?: boolean

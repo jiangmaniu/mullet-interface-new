@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Image, Pressable, ScrollView, View } from 'react-native'
 import { router } from 'expo-router'
 
@@ -11,12 +11,14 @@ import { IconSpinner } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
+import { useAccount } from '@/lib/appkit'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useDepositAddress } from '../_apis/use-deposit-address'
 import { useSolanaWalletBalance } from '../_apis/use-solana-wallet-balance'
 import { useDepositSupportedTokens } from '../_apis/use-supported-tokens'
-import { useDepositAddress } from '../_hooks/use-deposit-state'
+import { useDepositActions, useDepositState } from '../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../_hooks/use-selected-account'
 
 interface WalletAsset {
@@ -29,16 +31,35 @@ interface WalletAsset {
 }
 
 export default function WalletTransferScreen() {
-  const { depositWalletAddress } = useDepositAddress()
+  const { fromWalletAddress } = useDepositState()
+  const { setToWalletAddress, setFromWalletAddress } = useDepositActions()
   const selectedAccount = useSelectedDepositAccount()
   const [refreshing, setRefreshing] = useState(false)
+  const { address: currentWalletAddress } = useAccount()
+
+  // 获取充值地址
+  const { data: depositAddressInfo } = useDepositAddress(DEPOSIT_SOLANA_CHAIN_ID, selectedAccount?.id ?? '')
+
+  // 当获取到充值地址时，存储到 deposit store
+  useEffect(() => {
+    if (depositAddressInfo?.address) {
+      setToWalletAddress(depositAddressInfo.address)
+    }
+  }, [depositAddressInfo?.address, setToWalletAddress])
+
+  // 当获取到当前钱包地址时，存储到 deposit store
+  useEffect(() => {
+    if (currentWalletAddress) {
+      setFromWalletAddress(currentWalletAddress)
+    }
+  }, [currentWalletAddress, setFromWalletAddress])
 
   // 查询钱包余额（列表页面,使用默认 30 秒轮询）
   const {
     data: balanceData,
     isLoading: isLoadingBalance,
     refetch: refetchBalance,
-  } = useSolanaWalletBalance(depositWalletAddress ?? undefined)
+  } = useSolanaWalletBalance(fromWalletAddress)
 
   // 查询代币配置（获取图标）
   const {
@@ -71,14 +92,6 @@ export default function WalletTransferScreen() {
     })
   }, [balanceData, tokensConfig, selectedAccount])
 
-  // 总余额显示
-  const totalBalanceText = useMemo(() => {
-    return BNumber.toFormatNumber(balanceData?.totalUsdValue, {
-      volScale: selectedAccount?.currencyDecimal,
-      unit: selectedAccount?.currencyUnit,
-    })
-  }, [balanceData, selectedAccount])
-
   const isLoading = isLoadingBalance || isLoadingTokens
 
   // 下拉刷新处理
@@ -108,7 +121,13 @@ export default function WalletTransferScreen() {
           <>
             <View className="px-5">
               <Text className="text-paragraph-p2 text-content-4">
-                <Trans>余额：{totalBalanceText}</Trans>
+                <Trans>
+                  余额：
+                  {BNumber.toFormatNumber(balanceData?.totalUsdValue, {
+                    volScale: selectedAccount?.currencyDecimal,
+                    unit: selectedAccount?.currencyUnit,
+                  })}
+                </Trans>
               </Text>
             </View>
             <View className="gap-xl px-5">
@@ -126,9 +145,13 @@ export default function WalletTransferScreen() {
 }
 
 function AssetRow({ asset }: { asset: WalletAsset }) {
+  const { setSelectedTokenSymbol } = useDepositActions()
+
+  // 是否禁用
   const disabled = asset.isInsufficientBalance
 
   const handlePress = () => {
+    setSelectedTokenSymbol(asset.symbol)
     if (asset.symbol.toUpperCase() === USDC_TOKEN_SYMBOL.toUpperCase()) {
       router.push('/(assets)/deposit/wallet-transfer/usdc')
     } else {

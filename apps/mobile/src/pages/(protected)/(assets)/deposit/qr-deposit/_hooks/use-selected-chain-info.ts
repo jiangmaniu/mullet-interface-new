@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
-import { useDepositSupportedChains } from '../_apis/use-supported-chains'
-import { useDepositStore } from '../_store'
+import { useDepositSupportedChains } from '../../_apis/use-supported-chains'
+import { useDepositStore } from '../../_store'
 
 /**
  * 获取当前选中的链信息和代币信息

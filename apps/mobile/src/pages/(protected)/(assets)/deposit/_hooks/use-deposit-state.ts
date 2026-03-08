@@ -7,13 +7,17 @@ export function useDepositState() {
   const selectedTokenSymbol = useDepositStore((s) => s.selectedTokenSymbol)
   const selectedChainId = useDepositStore((s) => s.selectedChainId)
   const selectedAccountId = useDepositStore((s) => s.selectedAccountId)
-  const depositWalletAddress = useDepositStore((s) => s.depositWalletAddress)
+  const fromWalletAddress = useDepositStore((s) => s.fromWalletAddress)
+  const toWalletAddress = useDepositStore((s) => s.toWalletAddress)
+  const depositAmount = useDepositStore((s) => s.depositAmount)
 
   return {
     selectedTokenSymbol,
     selectedChainId,
     selectedAccountId,
-    depositWalletAddress,
+    fromWalletAddress,
+    toWalletAddress,
+    depositAmount,
   }
 }
 
@@ -24,14 +28,18 @@ export function useDepositActions() {
   const setSelectedTokenSymbol = useDepositStore((s) => s.setSelectedTokenSymbol)
   const setSelectedChainId = useDepositStore((s) => s.setSelectedChainId)
   const setSelectedAccountId = useDepositStore((s) => s.setSelectedAccountId)
-  const setDepositWalletAddress = useDepositStore((s) => s.setDepositWalletAddress)
+  const setFromWalletAddress = useDepositStore((s) => s.setFromWalletAddress)
+  const setToWalletAddress = useDepositStore((s) => s.setToWalletAddress)
+  const setDepositAmount = useDepositStore((s) => s.setDepositAmount)
   const reset = useDepositStore((s) => s.reset)
 
   return {
     setSelectedTokenSymbol,
     setSelectedChainId,
     setSelectedAccountId,
-    setDepositWalletAddress,
+    setFromWalletAddress,
+    setToWalletAddress,
+    setDepositAmount,
     reset,
   }
 }
@@ -50,18 +58,5 @@ export function useTokenChainSelection() {
     selectedChainId,
     setSelectedTokenSymbol,
     setSelectedChainId,
-  }
-}
-
-/**
- * 获取充值地址状态及其 actions
- */
-export function useDepositAddress() {
-  const depositWalletAddress = useDepositStore((s) => s.depositWalletAddress)
-  const setDepositWalletAddress = useDepositStore((s) => s.setDepositWalletAddress)
-
-  return {
-    depositWalletAddress,
-    setDepositWalletAddress,
   }
 }

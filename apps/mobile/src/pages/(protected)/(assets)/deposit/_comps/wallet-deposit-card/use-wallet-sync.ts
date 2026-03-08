@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useAccount } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
 
-import { useDepositAddress } from '../../_hooks/use-deposit-state'
+import { useDepositActions, useDepositState } from '../../_hooks/use-deposit-state'
 
 /**
  * 钱包地址同步 hook
@@ -13,7 +13,8 @@ import { useDepositAddress } from '../../_hooks/use-deposit-state'
  * - Web2: 清空地址,需要手动连接
  */
 export function useWalletSync() {
-  const { depositWalletAddress, setDepositWalletAddress } = useDepositAddress()
+  const { fromWalletAddress } = useDepositState()
+  const { setFromWalletAddress } = useDepositActions()
   const loginType = useLoginAuthStore((s) => s.loginType)
   const { isConnected: isGlobalWalletConnected, address: globalWalletAddress } = useAccount()
 
@@ -21,18 +22,18 @@ export function useWalletSync() {
     // Web3 登录或未知登录类型但已连接钱包：同步全局钱包地址
     if (loginType === LoginType.Web3 || (loginType === null && isGlobalWalletConnected)) {
       if (isGlobalWalletConnected && globalWalletAddress) {
-        setDepositWalletAddress(globalWalletAddress)
+        setFromWalletAddress(globalWalletAddress)
       }
     }
     // Web2 登录：清空地址,需要在 ConnectWalletDrawer 中手动连接
     else if (loginType === LoginType.Web2) {
-      setDepositWalletAddress(null)
+      setFromWalletAddress(null)
     }
-  }, [loginType, isGlobalWalletConnected, globalWalletAddress, setDepositWalletAddress])
+  }, [loginType, isGlobalWalletConnected, globalWalletAddress, setFromWalletAddress])
 
   return {
-    depositWalletAddress,
-    isWalletConnected: !!depositWalletAddress,
+    fromWalletAddress,
+    isWalletConnected: !!fromWalletAddress,
     loginType,
   }
 }
