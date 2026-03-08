@@ -36,7 +36,7 @@ export function SignatureFailModal({ visible, onClose, onRetry }: SignatureFailM
         <ModalFooter>
           <Button color="primary" size="lg" block onPress={onRetry}>
             <Text className="text-button-2 text-content-foreground">
-              <Trans>重新连接</Trans>
+              <Trans>重新签名</Trans>
             </Text>
           </Button>
         </ModalFooter>
