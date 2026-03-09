@@ -9,12 +9,16 @@ import shelljs from 'shelljs'
  * Mullet Build Script
  *
  * 交互模式: node scripts/build.mjs
- * 命令行模式: node scripts/build.mjs <ios|android> <dev|test|prod> [--dist=local|adhoc|testflight]
+ * 命令行模式: node scripts/build.mjs <ios|android> <dev|test|prod> [--dist=local|adhoc|testflight] [--clean|--no-clean]
  *
  * iOS 分发方式:
  *   --dist=local       本地直装 (development 签名)
  *   --dist=adhoc       AdHoc 分发 (ad-hoc 签名，可直接发 ipa)
  *   --dist=testflight  上传 TestFlight (app-store 签名)
+ *
+ * 清理选项:
+ *   --clean            清理构建缓存 (默认)
+ *   --no-clean         不清理构建缓存
  */
 
 const __filename = fileURLToPath(import.meta.url)
@@ -63,7 +67,15 @@ async function parseArgs() {
       }
     }
 
-    return { platform, env, iosDist }
+    // 解析 --clean / --no-clean 参数
+    let clean = true // 默认清理
+    if (flags.includes('--no-clean')) {
+      clean = false
+    } else if (flags.includes('--clean')) {
+      clean = true
+    }
+
+    return { platform, env, iosDist, clean }
   }
 
   // 交互模式
@@ -108,11 +120,22 @@ async function parseArgs() {
         }
       },
     },
+    {
+      name: 'clean',
+      type: 'select',
+      message: chalk.magentaBright('是否清理构建缓存？'),
+      default: true,
+      choices: [
+        { name: '是', value: true },
+        { name: '否', value: false },
+      ],
+    },
   ])
 
   return {
     platform: answers.platform,
     env: answers.env,
+    clean: answers.clean,
     iosDist: answers.iosDist || 'local',
   }
 }
@@ -158,7 +181,7 @@ function organizeArtifacts(platform, env, version) {
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist } = await parseArgs()
+  const { platform, env, iosDist, clean } = await parseArgs()
 
   // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
@@ -182,9 +205,10 @@ async function main() {
   console.log(chalk.green(`✨ 开始构建 Mullet... (v${version}, 构建号: ${versionCode})`))
   console.log('')
 
-  // Step 1: Prebuild (always clean)
+  // Step 1: Prebuild
   console.log(chalk.magentaBright(' [1/4] 执行 expo prebuild... '))
-  run(`pnpm expo-prebuild ${env} --platform ${platform} --clean`)
+  const cleanFlag = clean ? '--clean' : ''
+  run(`pnpm expo-prebuild ${env} --platform ${platform} ${cleanFlag}`.trim())
 
   // Restore Android signing config (prebuild --clean deletes android/)
   if (platform === 'android') {

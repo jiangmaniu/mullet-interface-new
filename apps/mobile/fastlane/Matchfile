@@ -10,5 +10,5 @@ app_identifier([
   "com.mullet.app.test"
 ])
 
-team_id("NJX3V5USJP")
-username("1968304304@qq.com")
+team_id(ENV["TEAM_ID"])
+username(ENV["APPLE_ID"])

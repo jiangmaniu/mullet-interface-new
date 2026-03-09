@@ -2,9 +2,10 @@ default_platform(:ios)
 
 before_all do
   ensure_env_vars(
-    env_vars: ["APP_ENV"]
+    env_vars: ["APP_ENV", "APPLE_ID", "TEAM_ID", "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"]
   )
   UI.message("当前构建环境: #{ENV['APP_ENV']}")
+  UI.message("Apple ID: #{ENV['APPLE_ID']}")
 end
 
 # ============================================
