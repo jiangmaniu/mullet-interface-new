@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 
 import { Button } from '@/components/ui/button'
-import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { useWalletInfo } from '@/lib/appkit'
@@ -146,7 +145,9 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
             </Text>
             <View className="flex-row items-center justify-between">
               <View className="gap-medium flex-row items-center">
-                <IconAppLogoCircle width={24} height={24} />
+                {selectedTokenConfig?.iconUrl && (
+                  <Image source={{ uri: selectedTokenConfig?.iconUrl }} style={{ width: 24, height: 24 }} />
+                )}
                 <View className="gap-xs">
                   <Text className="text-paragraph-p2 text-content-1">{renderFallback(selectedAccount?.id)}</Text>
                   <Text className="text-paragraph-p3 text-content-4">{formatAddress(toWalletAddress)}</Text>

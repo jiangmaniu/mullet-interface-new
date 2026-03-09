@@ -7,7 +7,6 @@ import { router } from 'expo-router'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { useWalletInfo } from '@/lib/appkit'
@@ -177,7 +176,9 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
             </Text>
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
-                <IconAppLogoCircle width={24} height={24} />
+                {usdcTokenConfig?.iconUrl && (
+                  <Image source={{ uri: usdcTokenConfig?.iconUrl }} style={{ width: 24, height: 24 }} />
+                )}
                 <View className="gap-1">
                   <Text className="text-paragraph-p2 text-content-1">{renderFallback(selectedAccount?.id)}</Text>
                   <Text className="text-paragraph-p3 text-content-4">{formatAddress(toWalletAddress)}</Text>
