@@ -30,7 +30,7 @@ const PERCENT_OPTIONS = [
 ]
 
 const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
-  const { withdrawAddress } = useWithdrawState()
+  const { toWalletAddress } = useWithdrawState()
   const { setWithdrawAmount } = useWithdrawAmount()
   const { tokenInfo } = useSelectedChainInfo()
   const selectedAccount = useSelectedWithdrawAccount()
@@ -136,7 +136,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
             <Text className="text-paragraph-p3 text-content-4">
               <Trans>接收地址</Trans>
             </Text>
-            <Text className="text-paragraph-p3 text-content-1">{renderFallback(withdrawAddress)}</Text>
+            <Text className="text-paragraph-p3 text-content-1">{renderFallback(toWalletAddress)}</Text>
           </View>
         </View>
       </View>

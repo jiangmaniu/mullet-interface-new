@@ -18,7 +18,7 @@ interface WithdrawSuccessModalProps {
 
 export function WithdrawSuccessModal({ visible, onClose }: WithdrawSuccessModalProps) {
   // 从 store 获取数据
-  const { withdrawAddress, withdrawAmount } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount } = useWithdrawState()
   const { tokenInfo } = useSelectedChainInfo()
 
   return (
@@ -43,10 +43,10 @@ export function WithdrawSuccessModal({ visible, onClose }: WithdrawSuccessModalP
           </View>
 
           {/* 转账详情 */}
-          {withdrawAddress && withdrawAmount && (
+          {toWalletAddress && withdrawAmount && (
             <View className="gap-xs items-center justify-center">
               <Text className="text-paragraph-p3 text-content-4">
-                <Trans>向{formatAddress(withdrawAddress)} 转入</Trans>
+                <Trans>向{formatAddress(toWalletAddress)} 转入</Trans>
               </Text>
               <Text className="text-paragraph-p2 text-content-1">
                 {BNumber.toFormatNumber(withdrawAmount, {

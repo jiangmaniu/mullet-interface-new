@@ -18,11 +18,11 @@ import { WalletSelector } from './_comps/wallet-address-selector'
 
 const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const { selectedTokenSymbol, selectedChainId, withdrawAddress } = useWithdrawState()
+  const { selectedTokenSymbol, selectedChainId, toWalletAddress } = useWithdrawState()
   const { chainInfo, tokenInfo } = useSelectedChainInfo()
 
   // 判断是否可以提交：必须有代币、链、且有地址
-  const canSubmit = selectedTokenSymbol && selectedChainId && chainInfo && withdrawAddress.trim().length > 0
+  const canSubmit = selectedTokenSymbol && selectedChainId && chainInfo && toWalletAddress.trim().length > 0
 
   const handleConfirm = () => {
     // 判断是否为 Solana 链

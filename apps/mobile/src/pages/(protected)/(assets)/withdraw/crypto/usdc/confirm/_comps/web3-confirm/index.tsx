@@ -18,7 +18,7 @@ import { useWithdrawActions, useWithdrawState } from '../../../../../_hooks/use-
  */
 export function Web3Confirm() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const { withdrawAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
   const { tokenInfo } = useSelectedChainInfo()
   const { reset } = useWithdrawActions()
 
@@ -29,8 +29,14 @@ export function Web3Confirm() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const handleConfirm = useCallback(() => {
+    // toWalletAddress 应该已经有值
+    if (!toWalletAddress) {
+      toast.error(<Trans>请输入钱包地址</Trans>)
+      return
+    }
+
     // TODO: 暂时直接出金，后续再实现签名验证
-    if (!selectedAccount?.id || !withdrawAddress || !withdrawAmount || !tokenInfo) {
+    if (!selectedAccount?.id || !withdrawAmount || !tokenInfo) {
       toast.error(<Trans>缺少必要参数</Trans>)
       return
     }
@@ -38,7 +44,7 @@ export function Web3Confirm() {
     transfer(
       {
         tradeAccountId: selectedAccount.id,
-        toAddress: withdrawAddress,
+        toAddress: toWalletAddress,
         token: tokenInfo.symbol,
         amount: withdrawAmount,
         walletSignature: '',
@@ -54,7 +60,7 @@ export function Web3Confirm() {
         },
       },
     )
-  }, [selectedAccount, withdrawAddress, withdrawAmount, tokenInfo, transfer])
+  }, [selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer])
 
   const handleCloseModal = () => {
     setShowSuccessModal(false)

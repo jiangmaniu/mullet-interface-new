@@ -7,14 +7,16 @@ export function useWithdrawState() {
   const selectedTokenSymbol = useWithdrawStore((s) => s.selectedTokenSymbol)
   const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
   const withdrawAmount = useWithdrawStore((s) => s.withdrawAmount)
-  const withdrawAddress = useWithdrawStore((s) => s.withdrawAddress)
+  const fromWalletAddress = useWithdrawStore((s) => s.fromWalletAddress)
+  const toWalletAddress = useWithdrawStore((s) => s.toWalletAddress)
   const selectedAccountId = useWithdrawStore((s) => s.selectedAccountId)
 
   return {
     selectedTokenSymbol,
     selectedChainId,
     withdrawAmount,
-    withdrawAddress,
+    fromWalletAddress,
+    toWalletAddress,
     selectedAccountId,
   }
 }
@@ -26,7 +28,8 @@ export function useWithdrawActions() {
   const setSelectedTokenSymbol = useWithdrawStore((s) => s.setSelectedTokenSymbol)
   const setSelectedChainId = useWithdrawStore((s) => s.setSelectedChainId)
   const setWithdrawAmount = useWithdrawStore((s) => s.setWithdrawAmount)
-  const setWithdrawAddress = useWithdrawStore((s) => s.setWithdrawAddress)
+  const setFromWalletAddress = useWithdrawStore((s) => s.setFromWalletAddress)
+  const setToWalletAddress = useWithdrawStore((s) => s.setToWalletAddress)
   const setSelectedAccountId = useWithdrawStore((s) => s.setSelectedAccountId)
   const reset = useWithdrawStore((s) => s.reset)
 
@@ -34,7 +37,8 @@ export function useWithdrawActions() {
     setSelectedTokenSymbol,
     setSelectedChainId,
     setWithdrawAmount,
-    setWithdrawAddress,
+    setFromWalletAddress,
+    setToWalletAddress,
     setSelectedAccountId,
     reset,
   }
@@ -61,12 +65,12 @@ export function useTokenChainSelection() {
  * 获取提现地址状态及其 actions
  */
 export function useWithdrawAddress() {
-  const withdrawAddress = useWithdrawStore((s) => s.withdrawAddress)
-  const setWithdrawAddress = useWithdrawStore((s) => s.setWithdrawAddress)
+  const toWalletAddress = useWithdrawStore((s) => s.toWalletAddress)
+  const setToWalletAddress = useWithdrawStore((s) => s.setToWalletAddress)
 
   return {
-    withdrawAddress,
-    setWithdrawAddress,
+    toWalletAddress,
+    setToWalletAddress,
   }
 }
 

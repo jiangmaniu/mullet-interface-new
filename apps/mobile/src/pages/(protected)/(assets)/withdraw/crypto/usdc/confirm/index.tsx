@@ -21,7 +21,7 @@ import { Web3Confirm } from './_comps/web3-confirm'
 
 const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const { withdrawAddress, withdrawAmount } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount, fromWalletAddress } = useWithdrawState()
   const { tokenInfo, chainInfo } = useSelectedChainInfo()
   const loginType = useLoginAuthStore((s) => s.loginType)
 
@@ -40,16 +40,9 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
   )
 
   const isConnectedWallet = useMemo(() => {
-    if (!connectedWalletAddress || !withdrawAddress) return false
-    return connectedWalletAddress.toLowerCase() === withdrawAddress.toLowerCase()
-  }, [connectedWalletAddress, withdrawAddress])
-
-  // 网络手续费
-  const networkFee = estimateData?.networkFee
-  /** 服务费 */
-  const serviceFee = 0
-  /** 预计到账 */
-  const estimatedReceive = BNumber.from(withdrawAmount).minus(serviceFee).toString()
+    if (!connectedWalletAddress || !toWalletAddress) return false
+    return connectedWalletAddress.toLowerCase() === toWalletAddress.toLowerCase()
+  }, [connectedWalletAddress, toWalletAddress])
 
   return (
     <View className="gap-xl flex-1">
@@ -67,7 +60,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
                 {tokenInfo?.iconUrl && <Image source={{ uri: tokenInfo.iconUrl }} style={{ width: 24, height: 24 }} />}
                 <View className="gap-xs">
                   <Text className="text-paragraph-p2 text-content-1">{renderFallback(selectedAccount?.id)}</Text>
-                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(withdrawAddress)}</Text>
+                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(fromWalletAddress)}</Text>
                 </View>
               </View>
               <Text className="text-paragraph-p2 text-content-1">
@@ -96,7 +89,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
                   <Text className="text-paragraph-p2 text-content-1">
                     {isConnectedWallet && walletInfo?.name ? walletInfo.name : <Trans>未知钱包</Trans>}
                   </Text>
-                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(withdrawAddress)}</Text>
+                  <Text className="text-paragraph-p3 text-content-4">{formatAddress(toWalletAddress)}</Text>
                 </View>
               </View>
               <Text className="text-paragraph-p2 text-content-1">

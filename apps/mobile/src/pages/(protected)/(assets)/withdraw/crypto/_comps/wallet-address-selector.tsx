@@ -18,15 +18,15 @@ type WalletMode = 'connected' | 'manual'
 export function WalletSelector() {
   // 从 store 读取状态
   const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
-  const withdrawAddress = useWithdrawStore((s) => s.withdrawAddress)
-  const setWithdrawAddress = useWithdrawStore((s) => s.setWithdrawAddress)
+  const toWalletAddress = useWithdrawStore((s) => s.toWalletAddress)
+  const setToWalletAddress = useWithdrawStore((s) => s.setToWalletAddress)
 
   // 获取用户登录类型
   const loginType = useLoginAuthStore((s) => s.loginType)
   const isWeb3Login = loginType === LoginType.Web3
 
   // 获取当前连接的钱包信息
-  const { address: accountAddress, namespace: accountNamespace } = useAccount()
+  const { address: currentWalletAddress, namespace: accountNamespace } = useAccount()
   const { walletInfo } = useWalletInfo()
 
   // 判断钱包账户链是否是 Solana 链
@@ -44,16 +44,20 @@ export function WalletSelector() {
 
   useEffect(() => {
     setWalletMode(showSwitchButton ? 'connected' : 'manual')
-    if (showSwitchButton && accountAddress) {
-      setWithdrawAddress(accountAddress)
+    if (showSwitchButton && currentWalletAddress) {
+      setToWalletAddress(currentWalletAddress)
     }
-  }, [showSwitchButton, accountAddress, setWithdrawAddress])
+  }, [showSwitchButton, currentWalletAddress, setToWalletAddress])
 
   const handleSwitchWallet = () => {
     setWalletMode(walletMode === 'connected' ? 'manual' : 'connected')
-    if (showSwitchButton && accountAddress) {
-      setWithdrawAddress(accountAddress)
+    if (showSwitchButton && currentWalletAddress) {
+      setToWalletAddress(currentWalletAddress)
     }
+  }
+
+  const handleAddressChange = (address: string) => {
+    setToWalletAddress(address)
   }
 
   return (
@@ -84,7 +88,7 @@ export function WalletSelector() {
           <Image source={{ uri: walletInfo?.icon }} style={{ width: 24, height: 24 }} />
           <View className="flex-1">
             <Text className="text-paragraph-p2 text-content-1">{walletInfo?.name ?? 'Wallet'}</Text>
-            <Text className="text-paragraph-p3 text-content-4">{formatAddress(accountAddress)}</Text>
+            <Text className="text-paragraph-p3 text-content-4">{formatAddress(currentWalletAddress)}</Text>
           </View>
         </View>
       ) : (
@@ -92,8 +96,8 @@ export function WalletSelector() {
           multiline
           size="md"
           placeholder={<Trans>请输入钱包地址</Trans>}
-          value={withdrawAddress}
-          onChangeText={setWithdrawAddress}
+          value={toWalletAddress}
+          onChangeText={handleAddressChange}
         />
       )}
     </View>

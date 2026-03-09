@@ -35,7 +35,7 @@ const VerifyScreen = observer(function VerifyScreen() {
 
   // 出金相关数据
   const selectedAccount = useSelectedWithdrawAccount()
-  const { withdrawAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
   const { tokenInfo } = useSelectedChainInfo()
   const { mutate: transfer, isPending: isTransferring } = useSolanaTransfer()
 
@@ -112,7 +112,7 @@ const VerifyScreen = observer(function VerifyScreen() {
     if (code.length !== CODE_LENGTH) return
 
     // 验证成功后调用出金接口
-    if (!selectedAccount?.id || !withdrawAddress || !withdrawAmount || !tokenInfo) {
+    if (!selectedAccount?.id || !toWalletAddress || !withdrawAmount || !tokenInfo) {
       toast.error(<Trans>缺少必要参数</Trans>)
       return
     }
@@ -120,7 +120,7 @@ const VerifyScreen = observer(function VerifyScreen() {
     transfer(
       {
         tradeAccountId: selectedAccount.id,
-        toAddress: withdrawAddress,
+        toAddress: toWalletAddress,
         token: tokenInfo.symbol,
         amount: withdrawAmount,
         verifyCode: code,
@@ -137,7 +137,7 @@ const VerifyScreen = observer(function VerifyScreen() {
         },
       },
     )
-  }, [code, selectedAccount, withdrawAddress, withdrawAmount, tokenInfo, transfer])
+  }, [code, selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer])
 
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false)

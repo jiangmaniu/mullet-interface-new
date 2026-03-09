@@ -4,21 +4,35 @@ import type { Option } from '@/components/ui/select'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
+import { useDepositAddress } from '../../../deposit/_apis/use-deposit-address'
 import { useWithdrawSupportedChains } from '../../_apis/use-supported-chains'
 import { useWithdrawSupportedTokens } from '../../_apis/use-supported-tokens'
+import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
 export function TokenChainSelector() {
+  const selectedAccount = useSelectedWithdrawAccount()
   const selectedTokenSymbol = useWithdrawStore((s) => s.selectedTokenSymbol)
   const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
   const setSelectedTokenSymbol = useWithdrawStore((s) => s.setSelectedTokenSymbol)
   const setSelectedChainId = useWithdrawStore((s) => s.setSelectedChainId)
+  const setFromWalletAddress = useWithdrawStore((s) => s.setFromWalletAddress)
 
   // 获取所有链列表（包含每个链支持的代币）
   const { data: chains, isLoading: isLoadingChains } = useWithdrawSupportedChains()
 
   // 获取出金代币配置（用于获取代币图标）
   const { data: tokens } = useWithdrawSupportedTokens()
+
+  // 获取交易账户的充值地址（用于获取钱包地址）
+  const { data: depositAddressData } = useDepositAddress(selectedChainId, selectedAccount?.id ?? '')
+
+  // 当获取到钱包地址时，存储到 withdraw store
+  useEffect(() => {
+    if (depositAddressData?.address) {
+      setFromWalletAddress(depositAddressData.address)
+    }
+  }, [depositAddressData, setFromWalletAddress])
 
   // 根据选中的链，计算可用的代币列表
   const availableTokens = useMemo(() => {
