@@ -11,4 +11,4 @@ app_identifier([
 ])
 
 team_id(ENV["TEAM_ID"])
-username(ENV["APPLE_ID"])
+# username 不在此处设置，由 Fastfile 根据是否需要验证证书来决定
