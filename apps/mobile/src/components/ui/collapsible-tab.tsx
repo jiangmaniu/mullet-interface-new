@@ -360,6 +360,8 @@ export function CollapsibleStickyHeader({
 
   const headerPanGesture = Gesture.Pan()
     .minDistance(minDistance)
+    .activeOffsetY([-10, 10]) // 垂直方向移动超过 10px 才激活
+    .failOffsetX([-10, 10]) // 横向移动超过 10px 则失败，让内部 ScrollView 处理
     .onStart(() => {
       'worklet'
       cancelAnimation(targetScrollY)
@@ -369,15 +371,13 @@ export function CollapsibleStickyHeader({
     })
     .onUpdate((e) => {
       'worklet'
-      if (Math.abs(e.translationY) > Math.abs(e.translationX) || Math.abs(e.translationY) > 10) {
-        const currentTab = focusedTab.value
-        const ref = refMap[currentTab]
-        if (ref) {
-          const delta = -e.translationY
-          const newTargetScrollY = Math.max(0, initialScrollY.value + delta)
-          targetScrollY.value = newTargetScrollY
-          scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture')
-        }
+      const currentTab = focusedTab.value
+      const ref = refMap[currentTab]
+      if (ref) {
+        const delta = -e.translationY
+        const newTargetScrollY = Math.max(0, initialScrollY.value + delta)
+        targetScrollY.value = newTargetScrollY
+        scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture')
       }
     })
     .onEnd((e) => {
