@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 // 项目内部模块
 import { Text } from '@/components/ui/text'
+import { HOT_SYMBOL_LIST } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
@@ -27,9 +28,6 @@ import { BNumber } from '@mullet/utils/number'
 
 // 相对路径导入
 import { HighlightText } from './_comps/highlight-text'
-
-// 热门品种列表
-const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD', 'EURJPY', 'USDJPY']
 
 /**
  * 筛选热门品种

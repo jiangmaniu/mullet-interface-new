@@ -1,37 +1,39 @@
 import { Trans, useLingui } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import React, { useCallback, useLayoutEffect, useState } from 'react'
-import { Pressable, ScrollView, View } from 'react-native'
+import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
+import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useRouter } from 'expo-router'
 import { useResolveClassNames } from 'uniwind'
 
 import { EmptyState } from '@/components/states/empty-state'
-import { AreaChart, ChartData } from '@/components/trading-view'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Card, CardContent } from '@/components/ui/card'
+import { AreaChart } from '@/components/trading-view'
+import { AvatarImage } from '@/components/ui/avatar'
 import {
   CollapsibleFlatList,
   CollapsibleStickyContent,
   CollapsibleStickyHeader,
-  CollapsibleStickyNavBar,
   CollapsibleTab,
   CollapsibleTabScene,
 } from '@/components/ui/collapsible-tab'
 import { IconDepth, IconDepthTB, IconifyBell, IconifySearch } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
+import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
+import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
 import { getImgSource } from '@/utils/img'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
-import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
+
+import { MarketOverview } from './_comps/market-overview'
+import { useSymbolKline } from './_hooks/use-symbol-kline'
 
 // ============ HomeHeader ============
 function HomeHeader() {
@@ -51,7 +53,10 @@ function HomeHeader() {
             <Trans>查询</Trans>
           </Text>
         </Pressable>
-        <Pressable className="size-[22px] items-center justify-center relative" onPress={() => router.push('/notifications')}>
+        <Pressable
+          className="relative size-[22px] items-center justify-center"
+          onPress={() => router.push('/notifications')}
+        >
           <IconifyBell width={22} height={22} />
           <NotificationBadge count={unreadCount} />
         </Pressable>
@@ -60,88 +65,20 @@ function HomeHeader() {
   )
 }
 
-// ============ MarketCard ============
-interface MarketCardProps {
-  symbol: string
-  price: string
-  change: number
-  data: ChartData[]
-}
-
-function MarketCard({ symbol, price, change, data }: MarketCardProps) {
-  const isPositive = change >= 0
-  const { colorStatusSuccess, colorStatusDanger } = useThemeColors()
-  const changeColor = (isPositive ? colorStatusSuccess : colorStatusDanger) as string
-
-  return (
-    <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
-      <CardContent className="gap-medium">
-        <View className="flex-row items-center">
-          <Avatar className="bg-primary mr-2 size-[18px]">
-            <AvatarFallback className="bg-transparent">
-              <Text className="!text-paragraph-p3 text-content-1">{symbol[0]}</Text>
-            </AvatarFallback>
-          </Avatar>
-          <Text className="text-content-1 text-sm font-medium">{symbol}</Text>
-        </View>
-
-        <View>
-          <Text className="text-content-1 text-sm font-medium">{price}</Text>
-          <Text style={{ color: changeColor }} className="text-paragraph-p3">
-            {isPositive ? '+' : ''}
-            {change.toFixed(2)}%
-          </Text>
-        </View>
-
-        {/* Mini Chart */}
-        <View className="h-[60px] w-full overflow-hidden" pointerEvents="none">
-          <AreaChart
-            data={data}
-            lineColor={changeColor}
-            lineWidth={1}
-            topColor={`${changeColor}99`}
-            bottomColor={`${changeColor}00`}
-          />
-        </View>
-      </CardContent>
-    </Card>
-  )
-}
-
-// ============ MarketOverview ============
-function MarketOverview() {
-  const generateMockData = (count: number, startValue: number) => {
-    const data = []
-    let time = 1642425322
-    let value = startValue
-    for (let i = 0; i < count; i++) {
-      data.push({ time, value })
-      time += 86400
-      value += (Math.random() - 0.5) * 5
-    }
-    return data
-  }
-
-  const mockData1 = React.useMemo(() => generateMockData(50, 40), [])
-  const mockData2 = mockData1.map((d) => ({ ...d, value: d.value * 1.2 }))
-  const mockData3 = mockData1.map((d) => ({ ...d, value: d.value * 0.8 }))
-
-  return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
-      <MarketCard symbol="SOL-USDC" price="142.00" change={1.56} data={mockData1} />
-      <MarketCard symbol="BTC-USDC" price="91,988.00" change={-1.56} data={mockData2} />
-      <MarketCard symbol="ETH-USDC" price="3,200.00" change={-0.85} data={mockData3} />
-    </ScrollView>
-  )
-}
-
 const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
   return (
     <View className="gap-medium flex-1 flex-row items-center">
       <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
-      <View>
-        <Text className="text-paragraph-p2 text-content-1">{symbolInfo.symbol}</Text>
-        <Text className="text-paragraph-p3 text-content-4">{symbolInfo.alias}</Text>
+      <View className="flex-1">
+        <Text className="text-paragraph-p2 text-content-1">{symbolInfo.alias}</Text>
+        <Tooltip title={<Trans>提示</Trans>}>
+          <TooltipTrigger className="no-underline">
+            <Text className="text-paragraph-p3 text-content-4" numberOfLines={1}>
+              {symbolInfo.remark}
+            </Text>
+          </TooltipTrigger>
+          <TooltipContent>{symbolInfo.remark}</TooltipContent>
+        </Tooltip>
       </View>
     </View>
   )
@@ -159,11 +96,13 @@ const MarketRow = observer(
 
     return (
       <Pressable onPress={handlePress}>
-        {viewMode === ViewMode.Market ? (
+        {/* 使用 display 控制显示/隐藏，避免重新挂载组件 */}
+        <View style={{ display: viewMode === ViewMode.Market ? 'flex' : 'none' }}>
           <AssetMarketRow symbolInfo={symbolInfo} />
-        ) : (
+        </View>
+        <View style={{ display: viewMode === ViewMode.Price ? 'flex' : 'none' }}>
           <AssetPriceRow symbolInfo={symbolInfo} />
-        )}
+        </View>
       </Pressable>
     )
   },
@@ -177,19 +116,39 @@ interface AssetMarketRowProps {
 const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
-  // const { colorMarketRise, colorMarketFall } = useThemeColors()
+  const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
   const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.askDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+
+  // 获取 K线历史数据
+  const { data: chartData = [], isLoading } = useSymbolKline(symbolInfo.symbol)
+
+  // 使用 useMemo 避免图表因行情数据变更而重绘
+  const memoizedChartData = useMemo(() => chartData, [chartData])
+
+  // 图表颜色
+  const chartColor = percentChangeInfo.isRise
+    ? colorMarketRise
+    : percentChangeInfo.isFall
+      ? colorMarketFall
+      : textColorContent1
 
   return (
     <View className="p-xl gap-xl flex-row items-center">
       <SymbolInfoCell symbolInfo={symbolInfo} />
 
       <View className="gap-xl w-[192px] flex-shrink-0 flex-row">
-        {/* <View className="w-[60px] h-8 items-center justify-center overflow-hidden">
-          <AreaChart data={generateMockData(20, 91000)} lineColor={askPriceChangeInfo.isRise ? colorMarketRise : colorMarketFall} />
-        </View> */}
-        <View>
+        {/* K线图表 */}
+        <View className="h-8 w-[70px] items-center justify-center overflow-hidden">
+          {isLoading ? (
+            // 加载骨架屏
+            <View className="bg-content-5/10 h-full w-full rounded-xs" />
+          ) : memoizedChartData.length > 0 ? (
+            <AreaChart data={memoizedChartData} lineColor={chartColor} lineWidth={1} />
+          ) : null}
+        </View>
+
+        <View className="flex-1 items-end">
           <Text
             className={cn(
               'text-paragraph-p1',
@@ -202,8 +161,6 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
           >
             {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
-        </View>
-        <View className="flex-1 items-end">
           <Text
             className={cn(
               'text-paragraph-p2',
@@ -222,19 +179,6 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
   )
 })
 
-// ============ Mock Data ============
-function generateMockData(count: number, startValue: number): ChartData[] {
-  const data: ChartData[] = []
-  let time = 1642425322
-  let value = startValue
-  for (let i = 0; i < count; i++) {
-    data.push({ time, value })
-    time += 86400
-    value += (Math.random() - 0.5) * 5
-  }
-  return data
-}
-
 function AssetTradeHeader({ viewMode }: { viewMode: ViewMode }) {
   return (
     <View className="py-medium px-xl mt-xl flex-row items-center justify-between">
@@ -243,10 +187,16 @@ function AssetTradeHeader({ viewMode }: { viewMode: ViewMode }) {
       </Text>
       <View className="gap-xl flex-shrink-0 flex-row">
         <Text className="text-paragraph-p3 text-content-5 w-[90px]">
-          {viewMode === ViewMode.Market ? <Trans>价格</Trans> : <Trans>买价</Trans>}
+          {viewMode === ViewMode.Market ? <Trans>走势</Trans> : <Trans>买价</Trans>}
         </Text>
         <Text className="text-paragraph-p3 text-content-5 w-[90px] text-right">
-          {viewMode === ViewMode.Market ? <Trans>涨跌幅</Trans> : <Trans>卖价</Trans>}
+          {viewMode === ViewMode.Market ? (
+            <>
+              <Trans>价格</Trans>/<Trans>涨跌幅</Trans>
+            </>
+          ) : (
+            <Trans>卖价</Trans>
+          )}
         </Text>
       </View>
     </View>
@@ -352,43 +302,46 @@ export default function Index() {
 
   return (
     <View className="bg-secondary flex-1">
-      <CollapsibleTab
-        variant="underline"
-        size="md"
-        initialTabName={initialTab?.value}
-        renderHeader={renderHeader}
-        renderTabBarRight={() => (
-          <Tabs value={viewMode} onValueChange={setViewMode} className="flex-none">
-            <TabsList variant="icon" size="sm">
-              <TabsTrigger value={ViewMode.Market} className="size-5">
-                <IconDepthTB
-                  width={12}
-                  height={12}
-                  color={viewMode === ViewMode.Market ? colorMarketFall : colorBrandSecondary1}
-                />
-              </TabsTrigger>
-              <TabsTrigger value={ViewMode.Price} className="size-5">
-                <IconDepth
-                  width={12}
-                  height={12}
-                  color={viewMode === ViewMode.Price ? colorMarketFall : colorBrandSecondary1}
-                  primaryColor={viewMode === ViewMode.Price ? colorMarketRise : colorBrandSecondary1}
-                />
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
-        renderTabBarBottom={() => <AssetTradeHeader viewMode={viewMode} />}
-      >
-        {SYMBOL_CATEGORY_OPTIONS.map((categoryOption) => {
-          const label = i18n._(categoryOption.label)
-          return (
-            <CollapsibleTabScene key={categoryOption.value} name={categoryOption.value} label={label}>
-              <AssetTabListContent viewMode={viewMode} categoryOption={categoryOption} />
-            </CollapsibleTabScene>
-          )
-        })}
-      </CollapsibleTab>
+      <View className="flex-1">
+        <CollapsibleTab
+          variant="underline"
+          size="md"
+          minHeaderHeight={100}
+          initialTabName={initialTab?.value}
+          renderHeader={renderHeader}
+          renderTabBarRight={() => (
+            <Tabs value={viewMode} onValueChange={setViewMode} className="flex-none">
+              <TabsList variant="icon" size="sm">
+                <TabsTrigger value={ViewMode.Market} className="size-5">
+                  <IconDepthTB
+                    width={12}
+                    height={12}
+                    color={viewMode === ViewMode.Market ? colorMarketFall : colorBrandSecondary1}
+                  />
+                </TabsTrigger>
+                <TabsTrigger value={ViewMode.Price} className="size-5">
+                  <IconDepth
+                    width={12}
+                    height={12}
+                    color={viewMode === ViewMode.Price ? colorMarketFall : colorBrandSecondary1}
+                    primaryColor={viewMode === ViewMode.Price ? colorMarketRise : colorBrandSecondary1}
+                  />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          )}
+          renderTabBarBottom={() => <AssetTradeHeader viewMode={viewMode} />}
+        >
+          {SYMBOL_CATEGORY_OPTIONS.map((categoryOption) => {
+            const label = i18n._(categoryOption.label)
+            return (
+              <CollapsibleTabScene key={categoryOption.value} name={categoryOption.value} label={label}>
+                <AssetTabListContent viewMode={viewMode} categoryOption={categoryOption} />
+              </CollapsibleTabScene>
+            )
+          })}
+        </CollapsibleTab>
+      </View>
     </View>
   )
 }

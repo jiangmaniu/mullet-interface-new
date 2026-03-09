@@ -14,6 +14,8 @@ import { uniqueObjectArray } from '@/v1/utils'
 import mitt from '@/v1/utils/mitt'
 import { useLoginAuthStore } from '@/stores/login-auth'
 import type Reactotron from 'reactotron-react-native'
+import { Account } from '../services/tradeCore/account/typings'
+import { Symbol } from '../services/tradeCore/symbol/typings'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
