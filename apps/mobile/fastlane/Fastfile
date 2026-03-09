@@ -2,10 +2,19 @@ default_platform(:ios)
 
 before_all do
   ensure_env_vars(
-    env_vars: ["APP_ENV", "APPLE_ID", "TEAM_ID", "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"]
+    env_vars: ["APP_ENV", "TEAM_ID"]
   )
   UI.message("当前构建环境: #{ENV['APP_ENV']}")
-  UI.message("Apple ID: #{ENV['APPLE_ID']}")
+
+  # 仅在需要验证证书时检查 Apple ID
+  if ENV["VERIFY_CERTIFICATES"] == "true"
+    ensure_env_vars(
+      env_vars: ["APPLE_ID", "FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD"]
+    )
+    UI.message("Apple ID: #{ENV['APPLE_ID']}")
+  else
+    UI.message("跳过证书验证,无需 Apple ID")
+  end
 end
 
 # ============================================
@@ -71,12 +80,24 @@ platform :ios do
     # 如果 match 仓库已有证书，会自动下载；如果没有，会报错提示管理员创建
     is_ci = ENV["CI"] == "true"
 
+    # 默认不提供 username，跳过证书验证以提高构建速度
+    # 如需验证证书状态，设置 VERIFY_CERTIFICATES=true 并提供 APPLE_ID
+    match_options = {
+      type: match_type,
+      app_identifier: bundle_id,
+      readonly: is_ci
+    }
+
+    # 仅在需要验证证书时提供 username（会触发登录验证）
+    if ENV["VERIFY_CERTIFICATES"] == "true" && ENV["APPLE_ID"]
+      match_options[:username] = ENV["APPLE_ID"]
+      UI.message("将验证证书有效性（使用 Apple ID: #{ENV['APPLE_ID']}）")
+    else
+      UI.message("跳过证书验证，直接从 Match 仓库下载")
+    end
+
     begin
-      match(
-        type: match_type,
-        app_identifier: bundle_id,
-        readonly: is_ci
-      )
+      match(match_options)
     rescue => e
       if e.message.include?("No matching provisioning profiles found")
         UI.error("❌ Match 仓库中缺少 #{match_type} 类型的 provisioning profile")

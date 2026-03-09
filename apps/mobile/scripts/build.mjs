@@ -9,7 +9,7 @@ import shelljs from 'shelljs'
  * Mullet Build Script
  *
  * 交互模式: node scripts/build.mjs
- * 命令行模式: node scripts/build.mjs <ios|android> <dev|test|prod> [--dist=local|adhoc|testflight] [--clean|--no-clean]
+ * 命令行模式: node scripts/build.mjs <ios|android> <dev|test|prod> [选项]
  *
  * iOS 分发方式:
  *   --dist=local       本地直装 (development 签名)
@@ -19,6 +19,11 @@ import shelljs from 'shelljs'
  * 清理选项:
  *   --clean            清理构建缓存 (默认)
  *   --no-clean         不清理构建缓存
+ *
+ * 证书验证:
+ *   --verify-certificates              验证证书有效性（需要登录 Apple Developer）
+ *   --apple-id=<email>                 Apple ID (与 --verify-certificates 一起使用)
+ *   --apple-password=<app-password>    Apple 专用密码 (与 --verify-certificates 一起使用)
  */
 
 const __filename = fileURLToPath(import.meta.url)
@@ -75,7 +80,24 @@ async function parseArgs() {
       clean = true
     }
 
-    return { platform, env, iosDist, clean }
+    // 解析 --verify-certificates 参数
+    const verifyCertificates = flags.includes('--verify-certificates')
+
+    // 解析 --apple-id 和 --apple-password 参数
+    let appleId = null
+    let applePassword = null
+
+    const appleIdFlag = flags.find((f) => f.startsWith('--apple-id='))
+    if (appleIdFlag) {
+      appleId = appleIdFlag.split('=')[1]
+    }
+
+    const applePasswordFlag = flags.find((f) => f.startsWith('--apple-password='))
+    if (applePasswordFlag) {
+      applePassword = applePasswordFlag.split('=')[1]
+    }
+
+    return { platform, env, iosDist, clean, verifyCertificates, appleId, applePassword }
   }
 
   // 交互模式
@@ -130,6 +152,53 @@ async function parseArgs() {
         { name: '否', value: false },
       ],
     },
+    {
+      name: 'verifyCertificates',
+      type: 'select',
+      message: chalk.magentaBright('是否验证证书有效性？（需要登录 Apple Developer）'),
+      default: false,
+      when: (ans) => ans.platform === 'ios',
+      choices: [
+        { name: '是', value: true },
+        { name: '否', value: false },
+      ],
+    },
+    {
+      name: 'appleId',
+      type: 'input',
+      message: chalk.magentaBright('请输入您的 Apple ID:'),
+      when: (ans) => {
+        if (ans.verifyCertificates) {
+          console.log('')
+          console.log(chalk.gray('  💡 提示: 专用密码获取方式'))
+          console.log(chalk.gray('     1. 访问 https://appleid.apple.com'))
+          console.log(chalk.gray('     2. 登录后进入"安全"部分'))
+          console.log(chalk.gray('     3. 点击"App 专用密码" → "生成密码"'))
+          console.log(chalk.gray('     4. 格式: xxxx-xxxx-xxxx-xxxx'))
+          console.log('')
+          return true
+        }
+        return false
+      },
+      validate: (input) => {
+        if (!input || !input.includes('@')) {
+          return '请输入有效的 Apple ID (邮箱格式)'
+        }
+        return true
+      },
+    },
+    {
+      name: 'applePassword',
+      type: 'password',
+      message: chalk.magentaBright('请输入 Apple 专用密码:'),
+      when: (ans) => ans.verifyCertificates,
+      validate: (input) => {
+        if (!input || input.length < 4) {
+          return '请输入有效的专用密码'
+        }
+        return true
+      },
+    },
   ])
 
   return {
@@ -137,6 +206,9 @@ async function parseArgs() {
     env: answers.env,
     clean: answers.clean,
     iosDist: answers.iosDist || 'local',
+    verifyCertificates: answers.verifyCertificates || false,
+    appleId: answers.appleId,
+    applePassword: answers.applePassword,
   }
 }
 
@@ -181,7 +253,7 @@ function organizeArtifacts(platform, env, version) {
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist, clean } = await parseArgs()
+  const { platform, env, iosDist, clean, verifyCertificates, appleId, applePassword } = await parseArgs()
 
   // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
@@ -200,6 +272,17 @@ async function main() {
   shelljs.env.VERSION_NAME = version
   shelljs.env.VERSION_CODE = versionCode
   shelljs.env.ENV = env
+
+  // 如果用户选择验证证书，设置环境变量并使用用户输入的凭证
+  if (verifyCertificates) {
+    shelljs.env.VERIFY_CERTIFICATES = 'true'
+    if (appleId) {
+      shelljs.env.APPLE_ID = appleId
+    }
+    if (applePassword) {
+      shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
+    }
+  }
 
   console.log('')
   console.log(chalk.green(`✨ 开始构建 Mullet... (v${version}, 构建号: ${versionCode})`))
@@ -264,13 +347,13 @@ async function main() {
   if (platform === 'ios' && iosDist === 'testflight') {
     console.log('')
     console.log(chalk.cyan.bold(' 🚀 TestFlight 上传已提交'))
-    console.log(chalk.gray('    构建正在 App Store Connect 中处理，通常需要 15-30 分钟'))
-    console.log(chalk.gray('    处理完成后测试人员会自动收到通知'))
-    console.log(chalk.gray(`    查看状态: ${chalk.underline('https://appstoreconnect.apple.com')}`))
+    console.log(chalk.white('    构建正在 App Store Connect 中处理，通常需要 15-30 分钟'))
+    console.log(chalk.white('    处理完成后测试人员会自动收到通知'))
+    console.log(chalk.white(`    查看状态: ${chalk.underline('https://appstoreconnect.apple.com')}`))
   } else if (platform === 'ios' && iosDist === 'adhoc') {
     console.log('')
     console.log(chalk.cyan.bold(' 📦 AdHoc IPA 已生成'))
-    console.log(chalk.gray('    可通过蒲公英、fir.im 等平台分发给测试人员'))
+    console.log(chalk.white('    可通过蒲公英、fir.im 等平台分发给测试人员'))
   }
 
   console.log('')
