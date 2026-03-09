@@ -54,7 +54,7 @@ export default ({ config }: { config: ConfigContext }) => {
     ...config,
     name: displayName[env] ?? `Mullet (${env})`,
     slug: 'mullet',
-    version: '1.0.0',
+    version: '0.0.1',
     orientation: 'portrait',
     icon: './public/images/icon.png',
     scheme: `mullet${schemeSuffix[env] ?? ''}`,
