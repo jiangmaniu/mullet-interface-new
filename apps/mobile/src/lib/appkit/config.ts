@@ -1,7 +1,3 @@
-// 必须放在最前面，处理 polyfills
-import 'text-encoding' // needed for @solana/web3.js to work
-import '@walletconnect/react-native-compat'
-
 import { EventEmitter } from 'events'
 import { createAppKit, solana, solanaDevnet, solanaTestnet } from '@reown/appkit-react-native'
 import { PhantomConnector, SolanaAdapter, SolflareConnector } from '@reown/appkit-solana-react-native'
@@ -86,7 +82,10 @@ export const appKit = createAppKit({
     showWallets: false, // 显示钱包选项
   },
   // 添加 Phantom 和 Solflare 连接器，使用环境变量配置的集群
-  extraConnectors: [new PhantomConnector({ cluster: solanaCluster }), new SolflareConnector({ cluster: solanaCluster })],
+  extraConnectors: [
+    new PhantomConnector({ cluster: solanaCluster }),
+    new SolflareConnector({ cluster: solanaCluster }),
+  ],
 })
 
 export { solanaAdapter }

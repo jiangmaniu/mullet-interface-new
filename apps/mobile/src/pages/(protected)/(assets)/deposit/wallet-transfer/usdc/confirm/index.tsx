@@ -8,14 +8,18 @@ import { router } from 'expo-router'
 import { Button } from '@/components/ui/button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
-import { useAppKitConnection, useAppKitSolanaProvider, useWalletInfo } from '@/lib/appkit'
+import {
+  // useAppKitConnection,
+  //  useAppKitSolanaProvider,
+  useWalletInfo,
+} from '@/lib/appkit'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
-import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
+// import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
@@ -30,10 +34,10 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 
   // Web3 wallet state
   const { walletInfo } = useWalletInfo()
-  const { connection } = useAppKitConnection()
-  const { walletProvider } = useAppKitSolanaProvider()
+  // const { connection } = useAppKitConnection()
+  // const { walletProvider } = useAppKitSolanaProvider()
 
-  const { transferToken } = useSolanaTransfer()
+  // const { transferToken } = useSolanaTransfer()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
@@ -73,26 +77,26 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     try {
       if (!selectedTokenConfig) return
 
-      await transferToken(
-        {
-          fromAddress: fromWalletAddress,
-          toAddress: toWalletAddress,
-          amount: depositAmount,
-          mintAddress: selectedTokenConfig.contractAddress,
-          decimals: selectedTokenConfig.decimals,
-        },
-        {
-          // memoContent: {
-          //   app: 'betta',
-          //   userId: selectedAccount?.id,
-          //   token: selectedTokenConfig.symbol,
-          //   amount: depositAmount.toString(),
-          //   ts: Date.now()
-          // },
-          walletProvider,
-          connection,
-        },
-      )
+      // await transferToken(
+      //   {
+      //     fromAddress: fromWalletAddress,
+      //     toAddress: toWalletAddress,
+      //     amount: depositAmount,
+      //     mintAddress: selectedTokenConfig.contractAddress,
+      //     decimals: selectedTokenConfig.decimals,
+      //   },
+      //   {
+      //     // memoContent: {
+      //     //   app: 'betta',
+      //     //   userId: selectedAccount?.id,
+      //     //   token: selectedTokenConfig.symbol,
+      //     //   amount: depositAmount.toString(),
+      //     //   ts: Date.now()
+      //     // },
+      //     walletProvider,
+      //     connection,
+      //   },
+      // )
       setSignatureStatus('success')
     } catch (error) {
       console.error('Transaction failed:', error)
