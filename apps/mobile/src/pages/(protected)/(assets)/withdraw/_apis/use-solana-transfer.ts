@@ -21,7 +21,7 @@ type SolanaTransferParams = SolanaTransferBaseParams &
 /**
  * Solana 链上转账
  */
-export function useSolanaTransfer() {
+export function useSolanaWithdraw() {
   return useMutation({
     mutationFn: async ({
       tradeAccountId,

@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 
 import { WithdrawSuccessModal } from '../../../_comps/withdraw-success-modal'
-import { useSolanaTransfer } from '../../../../../_apis/use-solana-transfer'
+import { useSolanaWithdraw } from '../../../../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../../../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../../../../_hooks/use-selected-chain-info'
 import { useWithdrawActions, useWithdrawState } from '../../../../../_hooks/use-withdraw-state'
@@ -23,7 +23,7 @@ export function Web3Confirm() {
   const { reset } = useWithdrawActions()
 
   // Solana transfer mutation
-  const { mutate: transfer, isPending: isTransferring } = useSolanaTransfer()
+  const { mutate: transfer, isPending: isTransferring } = useSolanaWithdraw()
 
   // Status modal state
   const [showSuccessModal, setShowSuccessModal] = useState(false)

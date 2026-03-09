@@ -17,7 +17,6 @@ import { BNumber } from '@mullet/utils/number'
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
-import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
 import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
 import { useSwapQuote } from '../../../_apis/use-swap-quote'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
@@ -35,7 +34,6 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
 
   // Web3 wallet state
   const { walletInfo } = useWalletInfo()
-  const { transferToken } = useSolanaTransfer()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
@@ -99,17 +97,12 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     setSignatureStatus('signing')
 
     try {
-      await transferToken({
-        fromAddress: fromWalletAddress,
-        toAddress: toWalletAddress,
-        amount: depositAmount,
-      })
       setSignatureStatus('success')
     } catch (error) {
       console.error('Transaction failed:', error)
       setSignatureStatus('failed')
     }
-  }, [transferToken, fromWalletAddress, toWalletAddress, depositAmount])
+  }, [toWalletAddress])
 
   const handleRetrySignature = useCallback(() => {
     setSignatureStatus('signing')

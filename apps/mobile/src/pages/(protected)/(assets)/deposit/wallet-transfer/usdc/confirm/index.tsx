@@ -8,7 +8,7 @@ import { router } from 'expo-router'
 import { Button } from '@/components/ui/button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
-import { useWalletInfo } from '@/lib/appkit'
+import { useAppKitConnection, useAppKitSolanaProvider, useWalletInfo } from '@/lib/appkit'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
@@ -30,6 +30,9 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 
   // Web3 wallet state
   const { walletInfo } = useWalletInfo()
+  const { connection } = useAppKitConnection()
+  const { walletProvider } = useAppKitSolanaProvider()
+
   const { transferToken } = useSolanaTransfer()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
@@ -58,7 +61,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     }
   }, [])
 
-  const handleConfirmTransfer = useCallback(async () => {
+  const handleConfirmTransfer = async () => {
     if (!toWalletAddress) {
       console.error('No to address')
       return
@@ -68,17 +71,34 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     setSignatureStatus('signing')
 
     try {
-      await transferToken({
-        fromAddress: fromWalletAddress,
-        toAddress: toWalletAddress,
-        amount: depositAmount,
-      })
+      if (!selectedTokenConfig) return
+
+      await transferToken(
+        {
+          fromAddress: fromWalletAddress,
+          toAddress: toWalletAddress,
+          amount: depositAmount,
+          mintAddress: selectedTokenConfig.contractAddress,
+          decimals: selectedTokenConfig.decimals,
+        },
+        {
+          // memoContent: {
+          //   app: 'betta',
+          //   userId: selectedAccount?.id,
+          //   token: selectedTokenConfig.symbol,
+          //   amount: depositAmount.toString(),
+          //   ts: Date.now()
+          // },
+          walletProvider,
+          connection,
+        },
+      )
       setSignatureStatus('success')
     } catch (error) {
       console.error('Transaction failed:', error)
       setSignatureStatus('failed')
     }
-  }, [transferToken, fromWalletAddress, toWalletAddress, depositAmount])
+  }
 
   const handleRetrySignature = useCallback(() => {
     setSignatureStatus('signing')
