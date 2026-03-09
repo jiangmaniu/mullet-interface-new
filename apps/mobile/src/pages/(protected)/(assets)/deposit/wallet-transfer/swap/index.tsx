@@ -53,11 +53,35 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
   const [receiveAmount, setReceiveAmount] = useState<string>('')
   const [selectedPercent, setSelectedPercent] = useState<string>('')
   const [selectedQuickAmount, setSelectedQuickAmount] = useState<string>('')
-  const [editingField, setEditingField] = useState<'send' | 'receive'>('send')
+  const [editingField, setEditingField] = useState<'send' | 'receive' | null>(null)
+  const [latestQuoteData, setLatestQuoteData] = useState<any>(null) // 保存最新的询价结果
+
+  // 初始化查询参数：用于获取汇率
+  const initQuoteParams = useMemo(() => {
+    if (!selectedTokenConfig || !usdcTokenConfig) {
+      return null
+    }
+    // 使用 200 个 token 作为基准查询汇率
+    const decimals = selectedTokenConfig.displayDecimals
+    const amountInSmallestUnit = BNumber.from(200).multipliedBy(Math.pow(10, decimals)).toFixed(0)
+    return {
+      fromToken: selectedTokenConfig.symbol,
+      toToken: usdcTokenConfig.symbol,
+      amount: amountInSmallestUnit,
+      fromAddress: fromWalletAddress,
+    }
+  }, [selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
 
   // 正向查询参数：sendAmount -> receiveAmount
   const forwardQuoteParams = useMemo(() => {
-    if (!sendAmount || BNumber.from(sendAmount).lte(0) || !selectedTokenConfig || !usdcTokenConfig) {
+    // 只有在编辑 send 字段时才触发查询
+    if (
+      editingField !== 'send' ||
+      !sendAmount ||
+      BNumber.from(sendAmount).lte(0) ||
+      !selectedTokenConfig ||
+      !usdcTokenConfig
+    ) {
       return null
     }
     const decimals = selectedTokenConfig.displayDecimals
@@ -68,22 +92,13 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
       amount: amountInSmallestUnit,
       fromAddress: fromWalletAddress,
     }
-  }, [sendAmount, selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
+  }, [editingField, sendAmount, selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
 
-  // 反向查询参数：receiveAmount -> sendAmount
-  const reverseQuoteParams = useMemo(() => {
-    if (!receiveAmount || BNumber.from(receiveAmount).lte(0) || !selectedTokenConfig || !usdcTokenConfig) {
-      return null
-    }
-    const decimals = usdcTokenConfig.displayDecimals
-    const amountInSmallestUnit = BNumber.from(receiveAmount).multipliedBy(Math.pow(10, decimals)).toFixed(0)
-    return {
-      fromToken: usdcTokenConfig.symbol,
-      toToken: selectedTokenConfig.symbol,
-      amount: amountInSmallestUnit,
-      fromAddress: fromWalletAddress,
-    }
-  }, [receiveAmount, selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
+  // 初始化查询（获取汇率）
+  const { data: initQuoteData } = useSwapQuote(initQuoteParams, {
+    enabled: !!initQuoteParams,
+    refetchInterval: 30000,
+  })
 
   // 正向查询
   const {
@@ -91,19 +106,26 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
     isLoading: isForwardQuoting,
     refetch: refetchForwardQuote,
   } = useSwapQuote(forwardQuoteParams, {
-    enabled: editingField === 'send' && !!forwardQuoteParams,
+    enabled: !!forwardQuoteParams,
     refetchInterval: 30000,
   })
 
-  // 反向查询
-  const { data: reverseQuoteData, isLoading: isReverseQuoting } = useSwapQuote(reverseQuoteParams, {
-    enabled: editingField === 'receive' && !!reverseQuoteParams,
-    refetchInterval: 30000,
-  })
+  // 当前使用的询价数据（优先使用 forwardQuoteData，如果没有则使用 initQuoteData）
+  const quoteData = forwardQuoteData || initQuoteData
+  const isQuoting = isForwardQuoting
 
-  // 当前使用的询价数据
-  const quoteData = editingField === 'send' ? forwardQuoteData : reverseQuoteData
-  const isQuoting = editingField === 'send' ? isForwardQuoting : isReverseQuoting
+  // 保存最新的询价结果
+  useEffect(() => {
+    if (initQuoteData) {
+      setLatestQuoteData(initQuoteData)
+    }
+  }, [initQuoteData])
+
+  useEffect(() => {
+    if (forwardQuoteData) {
+      setLatestQuoteData(forwardQuoteData)
+    }
+  }, [forwardQuoteData])
 
   // 是否余额不足
   const isInsufficientBalance = BNumber.from(sendAmount).gt(selectedTokenBalance?.amount)
@@ -112,28 +134,13 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
 
   // 正向查询：更新 receiveAmount
   useEffect(() => {
-    if (!forwardQuoteData?.expectedOutputAmount || !usdcTokenConfig || editingField !== 'send') {
+    if (!forwardQuoteData?.expectedOutputAmount || !usdcTokenConfig) {
       return
     }
     const decimals = usdcTokenConfig.displayDecimals
     const result = BNumber.from(forwardQuoteData.expectedOutputAmount).dividedBy(Math.pow(10, decimals)).toString()
     setReceiveAmount(result)
-  }, [forwardQuoteData, editingField, usdcTokenConfig])
-
-  // 反向查询：更新 sendAmount
-  useEffect(() => {
-    if (!reverseQuoteData || !selectedTokenConfig || editingField !== 'receive') {
-      return
-    }
-    const decimals = selectedTokenConfig.displayDecimals
-
-    const result = BNumber.from(reverseQuoteData.inputAmount)
-      .dividedBy(Math.pow(10, decimals))
-      .plus(reverseQuoteData.estimatedFeeUSD) // +服务费
-      .plus(reverseQuoteData.estimatedGasUSD) // +gas费
-      .toString()
-    setSendAmount(result)
-  }, [reverseQuoteData, editingField, selectedTokenConfig])
+  }, [forwardQuoteData, usdcTokenConfig])
 
   // 处理发送金额变化（防抖 300ms）
   const handleSendAmountChange = useMemo(
@@ -164,13 +171,17 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
           setSelectedPercent('')
           setSelectedQuickAmount('')
 
-          // 如果清空了 receiveAmount，也清空 sendAmount
+          // 根据最新汇率反推 sendAmount（不触发查询）
           if (!values.value || values.value === '0') {
             setSendAmount('')
+          } else if (latestQuoteData) {
+            const rate = BNumber.from(latestQuoteData.expectedOutputAmount).dividedBy(latestQuoteData.inputAmount)
+            const calculatedSendAmount = BNumber.from(values.value).dividedBy(rate).toString()
+            setSendAmount(calculatedSendAmount)
           }
         }
       }, 300),
-    [],
+    [latestQuoteData],
   )
 
   // 处理百分比选择
@@ -192,12 +203,22 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
   )
 
   // 处理快捷金额选择
-  const handleQuickAmountChange = useCallback((value: string) => {
-    setEditingField('receive')
-    setSelectedQuickAmount(value)
-    setSelectedPercent('')
-    setReceiveAmount(value)
-  }, [])
+  const handleQuickAmountChange = useCallback(
+    (value: string) => {
+      setEditingField('receive')
+      setSelectedQuickAmount(value)
+      setSelectedPercent('')
+      setReceiveAmount(value)
+
+      // 根据最新汇率反推 sendAmount（不触发查询）
+      if (latestQuoteData) {
+        const rate = BNumber.from(latestQuoteData.expectedOutputAmount).dividedBy(latestQuoteData.inputAmount)
+        const calculatedSendAmount = BNumber.from(value).dividedBy(rate).toString()
+        setSendAmount(calculatedSendAmount)
+      }
+    },
+    [latestQuoteData],
+  )
 
   const handleConfirmInput = useCallback(() => {
     if (sendAmount && isValid) {
