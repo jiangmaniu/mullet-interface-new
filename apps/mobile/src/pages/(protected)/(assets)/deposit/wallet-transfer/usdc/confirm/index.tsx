@@ -20,7 +20,7 @@ import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
-const COUNTDOWN_SECONDS = 30
+// const COUNTDOWN_SECONDS = 30
 
 export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
@@ -47,7 +47,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     enabled: !!connection && !!fromWalletAddress && !!toWalletAddress && !!selectedTokenConfig,
   })
 
-  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
+  // const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
   const [showSignatureModal, setShowSignatureModal] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -57,21 +57,21 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   })
 
   // 倒计时
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
+  // useEffect(() => {
+  //   timerRef.current = setInterval(() => {
+  //     setCountdown((prev) => {
+  //       if (prev <= 1) {
+  //         if (timerRef.current) clearInterval(timerRef.current)
+  //         return 0
+  //       }
+  //       return prev - 1
+  //     })
+  //   }, 1000)
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [])
+  //   return () => {
+  //     if (timerRef.current) clearInterval(timerRef.current)
+  //   }
+  // }, [])
 
   const handleConfirmTransfer = async () => {
     if (!toWalletAddress) {
@@ -134,7 +134,9 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
       <ScreenHeader
         content={
           <Text className="text-important-1 text-content-1">
-            <Trans>订单确认</Trans> <Text className="text-status-danger">{countdown}S</Text>
+            <Trans>订单确认</Trans>
+            {/* <Text className="text-status-danger">{countdown}S 
+            </Text/}>*/}
           </Text>
         }
       />
@@ -203,13 +205,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
           <InfoRow label={<Trans>到账时间</Trans>} value="≈1分钟" />
           <InfoRow
             label={<Trans>Gas费</Trans>}
-            value={
-              isLoadingGasFee ? (
-                <Trans>计算中...</Trans>
-              ) : (
-                `${BNumber.toFormatNumber(estimatedFee, { volScale: 4 })} SOL`
-              )
-            }
+            value={isLoadingGasFee ? <Trans>计算中...</Trans> : `${BNumber.toFormatNumber(estimatedFee)} SOL`}
           />
           <InfoRow
             label={<Trans>预计到账</Trans>}
