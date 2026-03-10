@@ -1,6 +1,8 @@
 import { Buffer } from 'buffer'
+import bs58 from 'bs58'
 import type { EnhancedSolanaProvider } from '@/lib/appkit/use-solana-provider'
 
+import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 import { createMemoInstruction } from '@solana/spl-memo'
 import {
@@ -17,6 +19,7 @@ import { Connection, PublicKey, Transaction } from '@solana/web3.js'
  * 封装了获取钱包连接、构建交易、签名并发送的完整流程
  */
 export function useSolanaTransfer() {
+  const { saveContext } = useWalletCallback()
   /**
    * 执行 SPL 代币代币转账
    */
@@ -136,16 +139,33 @@ export function useSolanaTransfer() {
 
       // 使用 provider 的 signTransaction 方法签名交易
       console.log('-> 正在请求钱包签名交易...')
-      const signedTransactionBase64 = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
-      console.log('✅ 交易签名成功')
+      // 保存上下文
+      saveContext(WalletActionType.SignTransaction)
 
-      if (!signedTransactionBase64) {
-        throw new Error('签名失败')
+      const signatureResult = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
+      console.log('✅ 钱包返回签名:', signatureResult)
+
+      if (!signatureResult) {
+        throw new Error('签名失败：钱包未返回签名')
       }
+
+      // 钱包返回的是 base58 编码的签名字符串，需要解码后添加到交易中
+      const signatureBytes = bs58.decode(signatureResult)
+
+      // 将签名添加到交易的 signatures 数组中
+      // Solana Transaction 的第一个签名位置是 feePayer 的签名
+      transaction.signatures[0] = {
+        publicKey: fromTokenAccountPublicKey,
+        signature: Buffer.from(signatureBytes),
+      }
+
+      // 序列化已签名的交易
+      const signedTransaction = transaction.serialize()
+      console.log('✅ 交易签名完成，准备发送')
+
       // 将签名后的交易发送到链上
       console.log('-> 正在发送交易到链上...')
-      const signedTransactionBuffer = Buffer.from(signedTransactionBase64, 'base64')
-      const txSignature = await connection.sendRawTransaction(signedTransactionBuffer, {
+      const txSignature = await connection.sendRawTransaction(signedTransaction, {
         skipPreflight: false,
         preflightCommitment: 'confirmed',
       })

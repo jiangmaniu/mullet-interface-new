@@ -48,6 +48,7 @@ export function useSolanaProvider() {
   /**
    * 签名交易
    * @param transaction - 序列化的交易（base64）
+   * @returns 签名后的交易（base64）
    */
   const signTransaction = useCallback(
     async (transaction: string): Promise<string | undefined> => {
@@ -64,6 +65,8 @@ export function useSolanaProvider() {
         },
         `${chainNamespace}:${chainId}`,
       )) as { signature?: string }
+
+      console.log('[signTransaction] 返回结果:', result)
 
       return result?.signature
     },
