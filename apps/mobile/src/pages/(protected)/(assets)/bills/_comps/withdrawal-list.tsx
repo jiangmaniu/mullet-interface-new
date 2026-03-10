@@ -8,19 +8,27 @@ import { BillsCardRow } from "./card-row";
 import { useBillsScreenContext } from "../index";
 import { useFundFlowHistory, FundFlowHistoryItem } from "../_apis/use-fund-flow-history";
 import { EmptyState } from "@/components/states/empty-state";
-import { BNumber } from "@mullet/utils/number";
 import { renderFallback } from "@mullet/utils/fallback";
 import { useStores } from "@/v1/provider/mobxProvider";
+import { DepositEventTypeEnum, getDepositEventTypeEnumOption } from "@/options/deposit/event";
+import { useI18n } from "@/hooks/use-i18n";
+import { format } from 'date-fns';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 export const WithdrawalList = observer(({
   accountSelector,
 }: {
   accountSelector: React.ReactNode;
 }) => {
-  const { selectedAccount } = useBillsScreenContext();
+  const { dateRange } = useBillsScreenContext();
   const { user } = useStores();
+
+  // 格式化时间为 API 需要的格式
+  const formatDateTime = (date: Date | null) => {
+    if (!date) return undefined;
+    return format(date, 'yyyy-MM-dd HH:mm:ss');
+  };
 
   const {
     data,
@@ -33,8 +41,9 @@ export const WithdrawalList = observer(({
   } = useFundFlowHistory(
     {
       userId: String(user.currentUser.id!),
-      tradeAccountId: selectedAccount?.id,
-      type: 'withdrawal',
+      eventType: DepositEventTypeEnum.WITHDRAWAL_COMPLETED,
+      startTime: formatDateTime(dateRange.startDate),
+      endTime: formatDateTime(dateRange.endDate),
     },
     PAGE_SIZE
   );
@@ -122,33 +131,41 @@ export const WithdrawalList = observer(({
 
 // 提现卡片组件
 const WithdrawalCard = observer(({ record }: { record: FundFlowHistoryItem }) => {
-  const { selectedAccount } = useBillsScreenContext();
+  const { renderLinguiMsg } = useI18n();
 
   return (
     <Card>
       <CardContent className="gap-medium">
         <BillsCardRow
+          label={<Trans>事件类型</Trans>}
+          value={renderLinguiMsg(getDepositEventTypeEnumOption({ value: record.eventType })?.label, <Trans>未知类型</Trans>)}
+        />
+        <BillsCardRow
           label={<Trans>出金金额</Trans>}
-          value={`${BNumber.toFormatNumber(record.amount, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal })}`}
+          value={record.amount ? `${record.amount} ${record.token ?? 'USDC'}` : '-'}
         />
         <BillsCardRow
-          label={<Trans>出金状态</Trans>}
-          value={renderFallback(record.status)}
+          label={<Trans>链</Trans>}
+          value={renderFallback(record.chain)}
         />
         <BillsCardRow
-          label={<Trans>转出账户</Trans>}
-          value={renderFallback(record.tradeAccountId)}
+          label={<Trans>操作前余额</Trans>}
+          value={record.balanceBefore ? `${record.balanceBefore} USDC` : '-'}
         />
         <BillsCardRow
-          label={<Trans>时间</Trans>}
-          value={renderFallback(record.createTime)}
+          label={<Trans>操作后余额</Trans>}
+          value={record.balanceAfter ? `${record.balanceAfter} USDC` : '-'}
         />
-        {record.remark && (
+        {record.txHash && (
           <BillsCardRow
-            label={<Trans>备注</Trans>}
-            value={record.remark}
+            label={<Trans>交易哈希</Trans>}
+            value={`${record.txHash.slice(0, 6)}...${record.txHash.slice(-4)}`}
           />
         )}
+        <BillsCardRow
+          label={<Trans>时间</Trans>}
+          value={renderFallback(record.createdAt)}
+        />
       </CardContent>
     </Card>
   );

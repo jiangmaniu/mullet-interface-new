@@ -125,7 +125,7 @@ const BillsScreen = observer(() => {
 		<BillsScreenContext.Provider value={{ selectedAccount, setSelectedAccount, dateRange }}>
 			<ScreenHeader
 				showBackButton={true}
-				content={<Trans>账单</Trans>}
+				content={<Trans>出入金流水</Trans>}
 				right={
 					<Pressable onPress={handleFilterPress}>
 						<IconifyFilter width={22} height={22} className='text-content-1' />
