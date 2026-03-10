@@ -16,6 +16,8 @@ import Animated, {
 	withTiming,
 } from 'react-native-reanimated';
 import { IconifyNavArrowLeft } from '@/components/ui/icons';
+import { usePathname } from 'expo-router';
+import { useLoginAuthStore } from '@/stores/login-auth';
 
 type ConnectWalletState = 'idle' | 'connecting' | 'signing' | 'signature_failed';
 
@@ -29,14 +31,18 @@ export function ConnectWalletDrawer({ visible, onClose, onConnected }: ConnectWa
 	const [state, setState] = useState<ConnectWalletState>('idle');
 	const { open } = useAppKit();
 	const { isConnected, address } = useAccount();
+	const pathname = usePathname();
+	const { setRedirectTo } = useLoginAuthStore();
 
 	// 当抽屉打开时，自动触发钱包连接
 	useEffect(() => {
 		if (visible && !isConnected) {
+			// 保存当前路径，钱包返回后会跳转回来
+			setRedirectTo(pathname);
 			setState('connecting');
 			open();
 		}
-	}, [visible, isConnected, open]);
+	}, [visible, isConnected, open, pathname, setRedirectTo]);
 
 	// 监听连接状态变化
 	useEffect(() => {
