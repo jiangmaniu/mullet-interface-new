@@ -306,7 +306,7 @@ export default function Index() {
         <CollapsibleTab
           variant="underline"
           size="md"
-          minHeaderHeight={100}
+          // minHeaderHeight={100}
           initialTabName={initialTab?.value}
           renderHeader={renderHeader}
           renderTabBarRight={() => (
