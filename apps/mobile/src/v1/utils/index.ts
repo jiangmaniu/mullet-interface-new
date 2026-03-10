@@ -442,43 +442,6 @@ export function hiddenCenterPartStr(str: any, num = 6) {
 }
 
 /**
- * 格式化字符串 17888888...
- * @param str 字符串
- * @param num 字符串左邊保留多少位展示
- * @returns
- */
-export function formatStringWithEllipsis(str: string, num = 6) {
-  if (!str) return ''
-  if (str.length <= num) return str
-  const start = str.slice(0, num)
-  return `${start}...`
-}
-
-// 格式化银行卡号 为1111-2222-3333-444
-export function formatBankCardCode(str: string, digits = 4) {
-  let result = ''
-  for (let i = 0; i < str.length; i++) {
-    result += str[i]
-    if ((i + 1) % digits === 0 && i !== str.length - 1) {
-      result += '-'
-    }
-  }
-  return result
-}
-
-/**
- * 判断是否是图片
- * @param filePath
- * @returns
- */
-export function isImageFile(filePath: any) {
-  // 定义正则表达式，用于匹配常见的图片文件扩展名
-  const imagePattern = /\.(jpeg|jpg|gif|png|bmp|svg|webp|tiff|ico)$/i
-  // 使用正则表达式进行匹配
-  return imagePattern.test(filePath)
-}
-
-/**
  * 对象数组去重
  * @param arr 数组
  * @param key 对象的key唯一

@@ -60,7 +60,6 @@
     "clsx": "^2.1.1",
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.19",
-    "decimal.js": "^10.6.0",
     "expo": "~55.0.2",
     "expo-apple-authentication": "~55.0.8",
     "expo-application": "~55.0.8",
