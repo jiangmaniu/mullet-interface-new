@@ -21,10 +21,10 @@ import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
 import { useSwapQuote } from '../../../_apis/use-swap-quote'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
+import { useSwapTransaction } from '../_hooks/use-swap-transaction'
+import type { BuildSwapTxParams } from '../_hooks/use-swap-transaction'
 
 const COUNTDOWN_SECONDS = 30
-
-export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
 const SwapConfirmScreen = observer(function SwapConfirmScreen() {
   const { fromWalletAddress, toWalletAddress, depositAmount } = useDepositState()
@@ -36,13 +36,29 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
   const { walletInfo } = useWalletInfo()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
-  const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
   const [showSignatureModal, setShowSignatureModal] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // 使用 useSwapTransaction Hook
+  const {
+    swapTransaction,
+    signatureStatus,
+    isBuilding,
+    buildAndSendTransaction,
+    sendTransaction,
+    clearTransaction,
+    resetStatus,
+  } = useSwapTransaction()
+
   // 构建询价参数
   const quoteParams = useMemo(() => {
-    if (!depositAmount || BNumber.from(depositAmount).lte(0) || !selectedTokenConfig || !usdcTokenConfig) {
+    if (
+      !depositAmount ||
+      BNumber.from(depositAmount).lte(0) ||
+      !selectedTokenConfig ||
+      !usdcTokenConfig ||
+      !fromWalletAddress
+    ) {
       return null
     }
     const decimals = selectedTokenConfig.displayDecimals
@@ -70,12 +86,34 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     return BNumber.from(quoteData.expectedOutputAmount).dividedBy(Math.pow(10, decimals)).toString()
   }, [quoteData, usdcTokenConfig])
 
+  // 刷新倒计时
+  const refreshCountdown = useCallback(() => {
+    setCountdown(COUNTDOWN_SECONDS)
+    // 清除旧的定时器
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+    }
+    // 重新启动定时器
+    timerRef.current = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          if (timerRef.current) clearInterval(timerRef.current)
+          clearTransaction()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }, [clearTransaction])
+
   // 倒计时
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           if (timerRef.current) clearInterval(timerRef.current)
+          // 倒计时归零时清除交易订单
+          clearTransaction()
           return 0
         }
         return prev - 1
@@ -85,41 +123,59 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [])
+  }, [clearTransaction])
 
   const handleConfirmSwap = useCallback(async () => {
-    if (!toWalletAddress) {
-      console.error('No to address')
+    if (!toWalletAddress || !quoteParams) {
+      console.error('Missing required parameters')
       return
     }
 
     setShowSignatureModal(true)
-    setSignatureStatus('signing')
 
     try {
-      setSignatureStatus('success')
+      // 检查是否已有交易订单
+      if (swapTransaction) {
+        // 直接发送已有交易
+        await sendTransaction(swapTransaction)
+      } else {
+        // 构建并发送新交易
+        const buildParams: BuildSwapTxParams = {
+          fromToken: quoteParams.fromToken,
+          toToken: quoteParams.toToken,
+          amount: quoteParams.amount,
+          fromAddress: quoteParams.fromAddress,
+          slippageBps: 50, // 默认滑点
+        }
+        await buildAndSendTransaction(buildParams, refreshCountdown)
+      }
     } catch (error) {
       console.error('Transaction failed:', error)
-      setSignatureStatus('failed')
     }
-  }, [toWalletAddress])
+  }, [toWalletAddress, quoteParams, swapTransaction, sendTransaction, buildAndSendTransaction, refreshCountdown])
 
-  const handleRetrySignature = useCallback(() => {
-    setSignatureStatus('signing')
-    setTimeout(() => {
-      setSignatureStatus(Math.random() > 0.3 ? 'success' : 'failed')
-    }, 3000)
-  }, [])
+  const handleRetrySignature = useCallback(async () => {
+    if (!swapTransaction) {
+      console.error('No transaction to retry')
+      return
+    }
+
+    try {
+      await sendTransaction(swapTransaction)
+    } catch (error) {
+      console.error('Retry transaction failed:', error)
+    }
+  }, [swapTransaction, sendTransaction])
 
   const handleCloseSignatureModal = useCallback(() => {
     setShowSignatureModal(false)
-    setSignatureStatus('idle')
+    resetStatus()
     if (signatureStatus === 'success') {
       // 返回到钱包转入列表页
       router.back()
       router.back()
     }
-  }, [signatureStatus])
+  }, [signatureStatus, resetStatus])
 
   return (
     <View className="gap-xl flex-1">
@@ -253,10 +309,12 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
             size="lg"
             color="primary"
             onPress={handleConfirmSwap}
-            disabled={signatureStatus === 'signing' || countdown <= 0}
-            loading={signatureStatus === 'signing'}
+            disabled={signatureStatus === 'signing' || isBuilding || countdown <= 0}
+            loading={signatureStatus === 'signing' || isBuilding}
           >
-            <Text>{signatureStatus === 'signing' ? <Trans>等待签名</Trans> : <Trans>确定</Trans>}</Text>
+            <Text>
+              {signatureStatus === 'signing' || isBuilding ? <Trans>等待签名</Trans> : <Trans>确定</Trans>}
+            </Text>
           </Button>
         </View>
       </SafeAreaView>
@@ -269,6 +327,8 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
         visible={showSignatureModal && signatureStatus === 'failed'}
         onClose={handleCloseSignatureModal}
         onRetry={handleRetrySignature}
+        showRetryButton={!!swapTransaction}
+        loading={signatureStatus === 'signing'}
       />
     </View>
   )
