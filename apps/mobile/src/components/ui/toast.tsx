@@ -45,9 +45,10 @@ function renderToast(config: ToastConfig) {
         'bg-secondary gap-medium flex-row items-center self-center rounded-xl border px-3 py-[6px]',
         borderClass,
       )}
+      style={{ maxWidth: '80%' }}
     >
       {toastIcon}
-      <Text className="text-paragraph-p2 text-content-1">{message}</Text>
+      <Text className="text-paragraph-p2 text-content-1 flex-shrink">{message}</Text>
     </View>,
     { ...options, duration: options?.duration ?? 2000 },
   )
