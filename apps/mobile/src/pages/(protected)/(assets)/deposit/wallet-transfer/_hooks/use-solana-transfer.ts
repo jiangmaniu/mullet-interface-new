@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 import bs58 from 'bs58'
 import type { EnhancedSolanaProvider } from '@/lib/appkit/use-solana-provider'
 
-import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 import { createMemoInstruction } from '@solana/spl-memo'
 import {
@@ -19,7 +19,8 @@ import { Connection, PublicKey, Transaction } from '@solana/web3.js'
  * 封装了获取钱包连接、构建交易、签名并发送的完整流程
  */
 export function useSolanaTransfer() {
-  const { saveContext } = useWalletCallback()
+  const { saveContext } = useWalletRouteCallback()
+
   /**
    * 执行 SPL 代币代币转账
    */
@@ -45,12 +46,10 @@ export function useSolanaTransfer() {
       memoContent,
       connection,
       walletProvider,
-      // providerResult,
     }: {
       memoContent?: Record<string, any>
       connection?: Connection
       walletProvider?: EnhancedSolanaProvider
-      // providerResult: SolanaProviderResult
     },
   ) => {
     if (!fromAddress) {
@@ -139,9 +138,9 @@ export function useSolanaTransfer() {
 
       // 使用 provider 的 signTransaction 方法签名交易
       console.log('-> 正在请求钱包签名交易...')
+
       // 保存上下文
       saveContext(WalletActionType.SignTransaction)
-
       const signatureResult = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
       console.log('✅ 钱包返回签名:', signatureResult)
 

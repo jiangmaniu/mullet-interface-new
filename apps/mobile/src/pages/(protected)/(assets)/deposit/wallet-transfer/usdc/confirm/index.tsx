@@ -50,7 +50,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   // const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
   const [showSignatureModal, setShowSignatureModal] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  // const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const formattedAmount = BNumber.toFormatNumber(depositAmount, {
     volScale: selectedTokenConfig?.displayDecimals,
@@ -217,7 +217,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 
       {/* 底部按钮 */}
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
+        <View className="px-5 py-8">
           <Button
             block
             size="lg"

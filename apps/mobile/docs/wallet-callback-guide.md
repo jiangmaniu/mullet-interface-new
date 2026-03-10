@@ -2,17 +2,17 @@
 
 ## 概述
 
-`useWalletCallback` Hook 提供了一个统一的方式来管理从外部钱包返回时的路由恢复逻辑。
+`useWalletRouteCallback` Hook 提供了一个统一的方式来管理从外部钱包返回时的路由恢复逻辑。
 
 ## 使用方法
 
 ### 1. 在需要调用钱包的页面中使用
 
 ```typescript
-import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
 function YourConfirmScreen() {
-  const { saveContext } = useWalletCallback()
+  const { saveContext } = useWalletRouteCallback()
 
   const handleSign = async () => {
     // 在调用钱包操作前,保存当前上下文
@@ -52,10 +52,10 @@ export enum WalletActionType {
 ```typescript
 // src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
 
-import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
 const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
-  const { saveContext } = useWalletCallback()
+  const { saveContext } = useWalletRouteCallback()
 
   const handleConfirmTransfer = async () => {
     // 保存上下文
@@ -72,10 +72,10 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 ```typescript
 // src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 
-import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
 const SwapConfirmScreen = observer(function SwapConfirmScreen() {
-  const { saveContext } = useWalletCallback()
+  const { saveContext } = useWalletRouteCallback()
 
   const handleConfirmSwap = async () => {
     // 保存上下文
@@ -92,10 +92,10 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
 ```typescript
 // src/pages/(public)/login/index.tsx
 
-import { useWalletCallback, WalletActionType } from '@/hooks/use-wallet-callback'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
 function LoginScreen() {
-  const { saveContext } = useWalletCallback()
+  const { saveContext } = useWalletRouteCallback()
 
   const handleConnectWallet = async () => {
     // 保存上下文，标记为连接操作
@@ -113,8 +113,24 @@ function LoginScreen() {
 2. **保存上下文** → 调用 `saveContext(WalletActionType.SignTransaction)`
 3. **跳转钱包** → App 跳转到 OKX 钱包
 4. **用户签名** → 在 OKX 中完成签名
-5. **返回 App** → OKX 调用 `mullet://wallet-callback`
-6. **恢复路由** → wallet-callback 页面读取保存的上下文,跳转回原页面
+5. **返回 App** → OKX 调用 `mullet://route-callback/wallet`
+6. **恢复路由** → route-callback/wallet 页面读取保存的上下文,跳转回原页面
+
+## 技术实现
+
+### 状态管理
+
+使用 Zustand store (`useRouteCallbackStore`) 管理回调状态：
+
+- 支持 MMKV 持久化存储
+- `walletCallback` 对象存储钱包回调上下文
+- 预留扩展空间，未来可添加其他业务级别的 callback 状态
+
+### 路由结构
+
+- 回调页面路径：`/route-callback/wallet`
+- Deep link：`mullet://route-callback/wallet`
+- 使用 `router.replace()` 跳转，保留原有路由堆栈
 
 ## 优势
 

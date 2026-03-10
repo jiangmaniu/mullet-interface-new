@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/drawer'
 import { IconSpecialFail, IconSpecialSuccess } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
+import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
 import { cn } from '@/lib/utils'
 import { LoginType } from '@/stores/login-auth'
@@ -47,6 +48,9 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
   const { open, disconnect: disconnectWallet } = useAppKit()
   const { address, isConnected } = useAccount()
   const { isOpen: isAppKitOpen, isLoading: isAppKitOpenLoading } = useAppKitState()
+
+  // 钱包路由回调
+  const { saveContext } = useWalletRouteCallback()
 
   // 跟踪 AppKit 对话框状态
   const prevAppKitOpen = useRef(false)
@@ -157,6 +161,10 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       try {
         setFlowState('signing')
         setStep2({ status: 'loading' })
+
+        // 保存上下文，标记为签名消息操作
+        saveContext(WalletActionType.SignMessage)
+
         // 签名并登录 Privy
         const authResult = await signAndLoginPrivy()
         if (!authResult) {
@@ -211,6 +219,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       handleClose()
       // 延迟打开 AppKit，确保 Drawer 完全关闭
       setTimeout(() => {
+        // 保存上下文，标记为连接操作
+        saveContext(WalletActionType.Connect)
         open({ view: 'Connect' })
       }, 300)
       return
@@ -219,6 +229,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
     setFlowState('connecting')
     setStep1({ status: 'loading' })
     try {
+      // 保存上下文，标记为连接操作
+      saveContext(WalletActionType.Connect)
       open({ view: 'Connect' })
       // 连接结果会通过 useEffect 监听
     } catch (error) {
@@ -226,7 +238,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       setStep1({ status: 'error', error: '打开钱包失败' })
       setFlowState('idle')
     }
-  }, [open, step1.status, handleClose])
+  }, [open, step1.status, handleClose, saveContext])
 
   // 用 ref 保存最新的 handleSign，避免 useEffect 因函数重建而无限循环
   const handleSignRef = useRef(handleSign)
