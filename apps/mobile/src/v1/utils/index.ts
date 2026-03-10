@@ -1,36 +1,12 @@
-import DecimalOld from 'decimal.js'
 import currency from 'currency.js'
+
 import { FIXED_ZERO_VALUE } from '@/v1/constants'
-import { message } from './message'
-import { Clipboard } from 'react-native'
-import { t } from '@lingui/core/macro'
 
 export const regPassword = /(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[\W_]).{8,16}$/gi // 至少包含一个数字、至少包含一个大写字母、至少包含一个小写字母、至少包含一个特殊字符或下划线
 
 export const regEmail =
   /^[a-zA-Z0-9.!#$%&amp;'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 export const regMobile = /^\d+(.\d{1,2})?$/
-
-const regcode = /^[0-9]+$/
-
-export function Decimal(v) {
-  try {
-    if (!v) v = 0
-    return new DecimalOld(v)
-  } catch {
-    return new DecimalOld(NaN)
-  }
-}
-
-export function isMobile(str: string) {
-  return regMobile.test(str)
-}
-export function isPassword(str: string) {
-  return regPassword.test(str)
-}
-export function isEmail(str: string) {
-  return regEmail.test(str)
-}
 
 // guid
 export async function getUID() {
@@ -82,12 +58,12 @@ export const formatEmail = (email: string) => {
 export function formatTimeDate(at: string) {
   const mapObj = {
     T: ' ',
-    '-': '/'
+    '-': '/',
   }
   return new Date(
     at.replace(/T|-/g, (matched) => {
       return mapObj[matched]
-    })
+    }),
   )
 }
 
@@ -119,7 +95,7 @@ export function getLocalTime(at, fmt) {
     'm+': at.getMinutes(), // 分
     's+': at.getSeconds(), // 秒
     'q+': Math.floor((at.getMonth() + 3) / 3), // 季度
-    S: at.getMilliseconds() // 毫秒
+    S: at.getMilliseconds(), // 毫秒
   }
   if (/(y+)/.test(fmt)) {
     fmt = fmt.replace(RegExp.$1, String(at.getFullYear()).substr(4 - RegExp.$1.length))
@@ -138,7 +114,7 @@ export function getTimeDistance(type: TimeType, format: boolean | string = 'yyyy
   const oneDay = 1000 * 60 * 60 * 24
   const res = {
     startTime: new Date(new Date().setHours(0, 0, 0, 0)),
-    endTime: new Date(new Date().setHours(23, 59, 59, 0))
+    endTime: new Date(new Date().setHours(23, 59, 59, 0)),
   }
   if (type === 'week' || type === 'month' || type === 'threeMonth' || type === 'halfYear') {
     res.startTime = new Date(Number(res.startTime))
@@ -591,12 +567,4 @@ export const toNegativeOrEmpty = (value: any) => {
 // 判斷數字小數點前後最大位數
 export const getMaxPrecisionByNumber = (value: any) => {
   return value ? Math.max(String(value).split('.')?.[0]?.length || 0, String(value).split('.')?.[1]?.length || 0) : 0
-}
-
-// 复制文本到剪贴板
-export const copyText = (text: any) => {
-  if (text) {
-    Clipboard.setString(text)
-    message.info(t`Copy Success`)
-  }
 }

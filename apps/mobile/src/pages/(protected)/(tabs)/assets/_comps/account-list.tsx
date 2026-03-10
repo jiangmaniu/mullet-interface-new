@@ -1,38 +1,45 @@
-import React, { useRef } from 'react';
-import { View, Pressable } from 'react-native';
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
+import React, { useRef } from 'react'
+import { ActivityIndicator, Pressable, View } from 'react-native'
 
-import { Trans } from '@lingui/react/macro';
-import { observer } from "mobx-react-lite"
-
-import { AddBalanceDrawer, AddBalanceDrawerRef } from "@/components/drawers/add-balance-drawer";
-import { TradeSimulateAccountDepositDrawer, TradeSimulateAccountDepositDrawerRef } from "@/components/drawers/trade-simulate-account-deposit-drawer";
-import { EmptyState } from "@/components/states/empty-state";
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { IconifyCopy, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons';
-import { Text } from '@/components/ui/text';
-import { useThemeColors } from '@/hooks/use-theme-colors';
-import { useStores } from "@/v1/provider/mobxProvider"
-import { getAccountSynopsisByLng } from "@/v1/utils/business";
-import { BNumber } from "@mullet/utils/number";
+import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
+import {
+  TradeSimulateAccountDepositDrawer,
+  TradeSimulateAccountDepositDrawerRef,
+} from '@/components/drawers/trade-simulate-account-deposit-drawer'
+import { EmptyState } from '@/components/states/empty-state'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { IconifyCopy, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons'
+import { Text } from '@/components/ui/text'
+import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { useCopyText } from '@/hooks/use-copy-text'
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { renderFallback } from '@mullet/utils/fallback'
+import { BNumber } from '@mullet/utils/number'
+import { formatAddress } from '@mullet/utils/web3'
 
 export const RealAccountList = observer(() => {
   const { user } = useStores()
   const realAccountList = user.currentUser?.accountList?.filter((item) => !item.isSimulate && item.enableConnect) || []
 
   if (realAccountList.length === 0) {
-    return <View className="flex-1 py-[60px]">
-      <EmptyState message={<Trans>暂无真实账户</Trans>} />
-    </View>
+    return (
+      <View className="flex-1 py-[60px]">
+        <EmptyState message={<Trans>暂无真实账户</Trans>} />
+      </View>
+    )
   }
 
   return (
     <>
-      {
-        realAccountList.map(account => {
-          return <RealAccountRow key={account.id} account={account} />
-        })
-      }
+      {realAccountList.map((account) => {
+        return <RealAccountRow key={account.id} account={account} />
+      })}
     </>
   )
 })
@@ -41,73 +48,111 @@ type RealAccountRowProps = {
   account: User.AccountItem
 }
 
-const RealAccountRow = observer(({ account,
-}: RealAccountRowProps) => {
-  const { textColorContent1, colorBrandSecondary1, colorBrandPrimary } = useThemeColors()
+const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
+  const { textColorContent1, colorBrandSecondary3, colorBrandPrimary } = useThemeColors()
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const synopsis = getAccountSynopsisByLng(account.synopsis)
+
+  // 获取钱包地址
+  const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
+    DEPOSIT_SOLANA_CHAIN_ID,
+    account.id,
+  )
+  const walletAddress = depositAddressInfo?.address
+
+  // 复制地址
+  const copyText = useCopyText()
+  const handleCopyAddress = () => {
+    if (walletAddress) {
+      copyText(walletAddress)
+    }
+  }
 
   return (
     <>
       <Card>
-        <CardContent className='gap-xs'>
-        {/* Header: User & Badges */}
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-medium">
-            <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-            <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
+        <CardContent className="gap-xs">
+          {/* Header: User & Badges */}
+          <View className="flex-row items-center justify-between">
+            <View className="gap-medium flex-row items-center">
+              <IconifyUserCircle width={20} height={20} color={textColorContent1} />
+              <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
+            </View>
+
+            <View className="gap-medium flex-row items-center">
+              <Badge color="green">
+                <Text>
+                  <Trans>真实</Trans>
+                </Text>
+              </Badge>
+              <Badge color="default">
+                <Text>{synopsis.abbr}</Text>
+              </Badge>
+            </View>
           </View>
 
-          <View className="flex-row items-center gap-medium">
-            <Badge color='green'>
-              <Text><Trans>真实</Trans></Text>
-            </Badge>
-            <Badge color='default'>
-              <Text>{synopsis.abbr}</Text>
-            </Badge>
+          {/* Balance */}
+          <View className="min-h-[24px] flex-row items-center justify-between">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>账户余额</Trans>
+            </Text>
+            <View className="gap-xs flex-row items-center">
+              <Text className="text-paragraph-p3 text-content-1">
+                {BNumber.toFormatNumber(account.money, {
+                  unit: account.currencyUnit,
+                  volScale: account.currencyDecimal,
+                })}
+              </Text>
+
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation()
+                  addBalanceDrawerRef.current?.open()
+                }}
+              >
+                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
+              </Pressable>
+            </View>
           </View>
-        </View>
 
-        {/* Balance */}
-        <View className="flex-row items-center justify-between min-h-[24px]">
-          <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
-          <View className="flex-row items-center gap-xs">
-            <Text className="text-paragraph-p3 text-content-1">{BNumber.toFormatNumber(account.money, { unit: account.currencyUnit, volScale: account.currencyDecimal })}</Text>
-
-            <Pressable onPress={(e) => {
-              e.stopPropagation()
-              addBalanceDrawerRef.current?.open()
-            }}>
-              <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-            </Pressable>
+          {/* Address */}
+          <View className="min-h-[24px] flex-row items-center justify-between">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>地址</Trans>
+            </Text>
+            <View className="gap-medium flex-row items-center">
+              {isAddressLoading ? (
+                <ActivityIndicator size={20} />
+              ) : (
+                <>
+                  {renderFallback(
+                    <>
+                      <Text className="text-paragraph-p3 text-content-1">{formatAddress(walletAddress)}</Text>
+                      {walletAddress && (
+                        <Pressable onPress={handleCopyAddress} hitSlop={8}>
+                          <IconifyCopy width={20} height={20} color={colorBrandSecondary3} />
+                        </Pressable>
+                      )}
+                    </>,
+                    { verify: !!walletAddress },
+                  )}
+                </>
+              )}
+            </View>
           </View>
-        </View>
+        </CardContent>
+      </Card>
 
-        {/* Address */}
-        <View className="flex-row items-center justify-between min-h-[24px]">
-          <Text className="text-paragraph-p3 text-content-4"><Trans>地址</Trans></Text>
-          <View className="flex-row items-center gap-xs">
-            {/* <Text className="text-paragraph-p3 text-content-1">{address}</Text> */}
-            <Pressable>
-              <IconifyCopy width={20} height={20} color={colorBrandSecondary1} />
-            </Pressable>
-          </View>
-        </View>
-      </CardContent>
-    </Card>
-
-    {/* Add Balance Drawer */}
-    <AddBalanceDrawer
-      ref={addBalanceDrawerRef}
-      accountInfo={account}
-    />
+      {/* Add Balance Drawer */}
+      <AddBalanceDrawer ref={addBalanceDrawerRef} accountInfo={account} />
     </>
   )
 })
 
 export const SimulateAccountList = observer(() => {
   const { user } = useStores()
-  const simulateAccountList = user.currentUser?.accountList?.filter((item) => item.isSimulate && item.enableConnect) || []
+  const simulateAccountList =
+    user.currentUser?.accountList?.filter((item) => item.isSimulate && item.enableConnect) || []
 
   if (simulateAccountList.length === 0) {
     return (
@@ -119,11 +164,9 @@ export const SimulateAccountList = observer(() => {
 
   return (
     <>
-      {
-        simulateAccountList.map(account => {
-          return <SimulateAccountRow key={account.id} account={account} />
-        })
-      }
+      {simulateAccountList.map((account) => {
+        return <SimulateAccountRow key={account.id} account={account} />
+      })}
     </>
   )
 })
@@ -132,10 +175,7 @@ type SimulateAccountRowProps = {
   account: User.AccountItem
 }
 
-
-const SimulateAccountRow = ({
-  account,
-}: SimulateAccountRowProps) => {
+const SimulateAccountRow = ({ account }: SimulateAccountRowProps) => {
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
 
   const synopsis = getAccountSynopsisByLng(account.synopsis)
@@ -143,40 +183,45 @@ const SimulateAccountRow = ({
   return (
     // <Pressable onPress={onPress}>
     <Card>
-      <CardContent className='gap-xs'>
+      <CardContent className="gap-xs">
         {/* Header: User & Badges */}
         <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-medium">
+          <View className="gap-medium flex-row items-center">
             <IconifyUserCircle width={20} height={20} color={textColorContent1} />
             <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
           </View>
 
-          <View className="flex-row items-center gap-medium">
-            <Badge color='secondary'>
-              <Text><Trans>模拟</Trans></Text>
+          <View className="gap-medium flex-row items-center">
+            <Badge color="secondary">
+              <Text>
+                <Trans>模拟</Trans>
+              </Text>
             </Badge>
-            <Badge color='default'>
+            <Badge color="default">
               <Text>{synopsis.abbr}</Text>
             </Badge>
           </View>
         </View>
 
         {/* Balance */}
-        <View className="flex-row items-center justify-between gap-xs min-h-[24px]">
-          <Text className="text-paragraph-p3 text-content-4"><Trans>账户余额</Trans></Text>
-          <View className="flex-row items-center gap-xs flex-1">
-            <Text className="flex-1 text-right text-paragraph-p3 text-content-1">{BNumber.toFormatNumber(account.money, { unit: account.currencyUnit, volScale: account.currencyDecimal })}</Text>
+        <View className="gap-xs min-h-[24px] flex-row items-center justify-between">
+          <Text className="text-paragraph-p3 text-content-4">
+            <Trans>账户余额</Trans>
+          </Text>
+          <View className="gap-xs flex-1 flex-row items-center">
+            <Text className="text-paragraph-p3 text-content-1 flex-1 text-right">
+              {BNumber.toFormatNumber(account.money, { unit: account.currencyUnit, volScale: account.currencyDecimal })}
+            </Text>
             <>
-              <Pressable onPress={() => {
-                tradeSimulateAccountDepositDrawerRef.current?.open()
-              }}>
+              <Pressable
+                onPress={() => {
+                  tradeSimulateAccountDepositDrawerRef.current?.open()
+                }}
+              >
                 <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
               </Pressable>
 
-              <TradeSimulateAccountDepositDrawer
-                ref={tradeSimulateAccountDepositDrawerRef}
-                account={account}
-              />
+              <TradeSimulateAccountDepositDrawer ref={tradeSimulateAccountDepositDrawerRef} account={account} />
             </>
           </View>
         </View>
