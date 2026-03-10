@@ -11,9 +11,17 @@ export interface SignatureFailModalProps {
   visible: boolean
   onClose: () => void
   onRetry: () => void
+  showRetryButton?: boolean // 是否显示重新签名按钮，默认 true
+  loading?: boolean // 重新签名按钮 loading 状态
 }
 
-export function SignatureFailModal({ visible, onClose, onRetry }: SignatureFailModalProps) {
+export function SignatureFailModal({
+  visible,
+  onClose,
+  onRetry,
+  showRetryButton = true,
+  loading = false,
+}: SignatureFailModalProps) {
   return (
     <Modal visible={visible} onClose={onClose} closeOnBackdropPress={false}>
       <ModalContent>
@@ -34,11 +42,19 @@ export function SignatureFailModal({ visible, onClose, onRetry }: SignatureFailM
         </View>
 
         <ModalFooter>
-          <Button color="primary" size="lg" block onPress={onRetry}>
-            <Text className="text-button-2 text-content-foreground">
-              <Trans>重新签名</Trans>
-            </Text>
-          </Button>
+          {showRetryButton ? (
+            <Button color="primary" size="lg" block onPress={onRetry} disabled={loading} loading={loading}>
+              <Text className="text-button-2 text-content-foreground">
+                {loading ? <Trans>等待签名</Trans> : <Trans>重新签名</Trans>}
+              </Text>
+            </Button>
+          ) : (
+            <Button color="primary" size="lg" block onPress={onClose}>
+              <Text className="text-button-2 text-content-foreground">
+                <Trans>确定</Trans>
+              </Text>
+            </Button>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>
