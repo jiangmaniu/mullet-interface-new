@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import type { Provider } from '@reown/appkit-common-react-native'
 
-import { useAppKitSolanaProvider } from './index'
+import { useAccount, useAppKitSolanaProvider } from './index'
 
 /**
  * 扩展的 Solana Provider 类型
@@ -20,6 +20,7 @@ export interface EnhancedSolanaProvider extends Provider {
  */
 export function useSolanaProvider() {
   const { provider, chainNamespace } = useAppKitSolanaProvider()
+  const { chainId } = useAccount()
 
   /**
    * 签名消息
@@ -37,12 +38,12 @@ export function useSolanaProvider() {
           method: 'solana_signMessage',
           params: { message, pubkey },
         },
-        `solana:${chainNamespace}`,
+        `${chainNamespace}:${chainId}`,
       )
 
       return typeof result === 'object' && result !== null ? (result as any).signature : String(result)
     },
-    [provider, chainNamespace],
+    [provider, chainId, chainNamespace],
   )
 
   /**
@@ -62,12 +63,12 @@ export function useSolanaProvider() {
             transaction,
           },
         },
-        `solana:${chainNamespace}`,
+        `${chainNamespace}:${chainId}`,
       )
 
       return typeof result === 'object' && result !== null ? (result as any).transaction : String(result)
     },
-    [provider, chainNamespace],
+    [provider, chainId, chainNamespace],
   )
 
   /**
@@ -87,12 +88,12 @@ export function useSolanaProvider() {
             transaction,
           },
         },
-        `solana:${chainNamespace}`,
+        `${chainNamespace}:${chainId}`,
       )
 
       return typeof result === 'object' && result !== null ? (result as any).signature : String(result)
     },
-    [provider, chainNamespace],
+    [provider, chainId, chainNamespace],
   )
 
   /**
@@ -112,12 +113,12 @@ export function useSolanaProvider() {
             transactions,
           },
         },
-        `solana:${chainNamespace}`,
+        `${chainNamespace}:${chainId}`,
       )
 
       return result as string[]
     },
-    [provider, chainNamespace],
+    [provider, chainId, chainNamespace],
   )
 
   // 创建增强的 provider 实例，将方法添加到 provider 属性中
