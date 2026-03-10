@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
-import { ActivityIndicator, Pressable, TouchableHighlight, View } from 'react-native'
+import { Pressable, TouchableHighlight, View } from 'react-native'
 
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
 import { Badge } from '@/components/ui/badge'
@@ -13,14 +13,10 @@ import {
   IconifyEye,
   IconifyEyeClosed,
   IconifyNavArrowDown,
-  IconifyPlusCircle,
-  IconifySettings,
   IconifyUserCircle,
-  IconPayment,
-  IconRecord,
-  IconWithdrawFunds,
 } from '@/components/ui/icons'
 import { Separator } from '@/components/ui/separator'
+import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useCopyText } from '@/hooks/use-copy-text'
@@ -118,7 +114,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
               </Pressable>
             </View>
             {isAddressLoading ? (
-              <ActivityIndicator size={20} />
+              <Spinning height={16} width={16} />
             ) : (
               walletAddress && (
                 <Pressable onPress={handleCopyAddress} hitSlop={8}>

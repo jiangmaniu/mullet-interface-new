@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useRef } from 'react'
-import { ActivityIndicator, Pressable, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 
 import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
 import {
@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconifyCopy, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons'
+import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useCopyText } from '@/hooks/use-copy-text'
@@ -122,7 +123,7 @@ const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
             </Text>
             <View className="gap-medium flex-row items-center">
               {isAddressLoading ? (
-                <ActivityIndicator size={20} />
+                <Spinning height={16} width={16} />
               ) : (
                 <>
                   {renderFallback(
