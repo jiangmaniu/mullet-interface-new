@@ -9,7 +9,7 @@ import { useAccount, useAppKitSolanaProvider } from './index'
  */
 export interface EnhancedSolanaProvider extends Provider {
   signMessage: (message: string, pubkey: string) => Promise<string>
-  signTransaction: (transaction: string) => Promise<string>
+  signTransaction: (transaction: string) => Promise<string | undefined>
   signAllTransactions: (transactions: string[]) => Promise<string[]>
 }
 
@@ -50,12 +50,12 @@ export function useSolanaProvider() {
    * @param transaction - 序列化的交易（base64）
    */
   const signTransaction = useCallback(
-    async (transaction: string) => {
+    async (transaction: string): Promise<string | undefined> => {
       if (!provider || !chainNamespace) {
         throw new Error('Provider not available')
       }
 
-      const result = await provider.request(
+      const result = (await provider.request(
         {
           method: 'solana_signTransaction',
           params: {
@@ -63,27 +63,9 @@ export function useSolanaProvider() {
           },
         },
         `${chainNamespace}:${chainId}`,
-      )
+      )) as { signature?: string }
 
-      console.log('[signTransaction] 原始返回结果:', result)
-      console.log('[signTransaction] 结果类型:', typeof result)
-
-      // 处理不同格式的返回值
-      if (typeof result === 'string') {
-        return result
-      }
-
-      if (typeof result === 'object' && result !== null) {
-        // 尝试多种可能的属性名
-        const signedTx = (result as any).transaction || (result as any).signedTransaction || (result as any).signature
-        console.log('[signTransaction] 提取的签名交易:', signedTx)
-        if (signedTx) {
-          return String(signedTx)
-        }
-      }
-
-      console.error('[signTransaction] 无法解析返回结果:', result)
-      throw new Error('Invalid signature result')
+      return result?.signature
     },
     [provider, chainId, chainNamespace],
   )

@@ -14,6 +14,7 @@ import { BNumber } from '@mullet/utils/number'
 
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
+import { useEstimateGasFee } from '../../_hooks/use-estimate-gas-fee'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
 import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
@@ -34,6 +35,17 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   const { walletProvider } = useSolanaProvider()
 
   const { transferToken } = useSolanaTransfer()
+
+  // 预估 Gas 费
+  const { estimatedFee, isLoading: isLoadingGasFee } = useEstimateGasFee({
+    connection,
+    fromAddress: fromWalletAddress,
+    toAddress: toWalletAddress,
+    mintAddress: selectedTokenConfig?.contractAddress,
+    amount: depositAmount,
+    decimals: selectedTokenConfig?.decimals,
+    enabled: !!connection && !!fromWalletAddress && !!toWalletAddress && !!selectedTokenConfig,
+  })
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
@@ -189,7 +201,16 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
         <View className="gap-medium">
           <InfoRow label={<Trans>兑换率</Trans>} value="1 : 1" />
           <InfoRow label={<Trans>到账时间</Trans>} value="≈1分钟" />
-          <InfoRow label={<Trans>Gas费</Trans>} value="0.0001 SOL" />
+          <InfoRow
+            label={<Trans>Gas费</Trans>}
+            value={
+              isLoadingGasFee ? (
+                <Trans>计算中...</Trans>
+              ) : (
+                `${BNumber.toFormatNumber(estimatedFee, { volScale: 4 })} SOL`
+              )
+            }
+          />
           <InfoRow
             label={<Trans>预计到账</Trans>}
             value={`${formattedAmount} ${selectedTokenConfig?.symbol ?? 'USDC'}`}

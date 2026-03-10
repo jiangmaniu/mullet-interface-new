@@ -91,7 +91,6 @@ export function useSolanaTransfer() {
         console.log('目标代币账户已存在')
       } catch (error) {
         console.log(error)
-        debugger
         console.log('目标代币账户不存在，需要创建')
         // 创建关联代币账户指令
         const createAccountInstruction = createAssociatedTokenAccountInstruction(
@@ -140,6 +139,9 @@ export function useSolanaTransfer() {
       const signedTransactionBase64 = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
       console.log('✅ 交易签名成功')
 
+      if (!signedTransactionBase64) {
+        throw new Error('签名失败')
+      }
       // 将签名后的交易发送到链上
       console.log('-> 正在发送交易到链上...')
       const signedTransactionBuffer = Buffer.from(signedTransactionBase64, 'base64')

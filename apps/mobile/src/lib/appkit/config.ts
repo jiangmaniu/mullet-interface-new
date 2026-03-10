@@ -68,7 +68,8 @@ export const appKit = createAppKit({
     icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-appkit.png`],
     redirect: {
       // 使用通用回调路径，由 App 内部路由处理具体跳转逻辑
-      native: `${appScheme}://wallet-callback`,
+      // native: `${appScheme}://wallet-callback`,
+      native: `${appScheme}://login`,
       // 不设置 universal — PhantomConnector/SolflareConnector 会优先使用 universal 作为 redirect_link，
       // 但 Phantom 在 Android 上通过 Chrome Custom Tab 打开 universal link，
       // JS 重定向后 URL scheme 不匹配导致连接失败（"Unexpected redirect URI"）。
