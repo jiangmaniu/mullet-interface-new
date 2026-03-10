@@ -10,6 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconSpinner } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
+import { toast } from '@/components/ui/toast'
 import { DEPOSIT_SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 import { useAccount } from '@/lib/appkit'
 import { renderFallback } from '@mullet/utils/fallback'
@@ -70,24 +71,24 @@ export default function WalletTransferScreen() {
 
   // 转换 API 数据为组件所需格式
   const assetsRendered: WalletAsset[] = useMemo(() => {
-    if (!balanceData || !tokensConfig) return []
+    if (!tokensConfig) return []
 
-    return balanceData.balances.map((tokenBalance) => {
-      const tokenConfig = tokensConfig.find((t) => t.symbol === tokenBalance.symbol)
+    return tokensConfig.map((tokenConfig) => {
+      const tokenBalance = balanceData?.balances.find((b) => b.symbol === tokenConfig.symbol)
 
       return {
         symbol: renderFallback(tokenConfig?.symbol),
         displayName: renderFallback(tokenConfig?.symbol),
         iconUrl: tokenConfig?.iconUrl,
-        balance: BNumber.toFormatNumber(tokenBalance.amount, {
+        balance: BNumber.toFormatNumber(tokenBalance?.amount, {
           volScale: tokenConfig?.displayDecimals,
           unit: tokenConfig?.symbol,
         }),
-        balanceUsd: BNumber.toFormatNumber(tokenBalance.usdValue, {
+        balanceUsd: BNumber.toFormatNumber(tokenBalance?.usdValue, {
           volScale: selectedAccount?.currencyDecimal,
           unit: selectedAccount?.currencyUnit,
         }),
-        isInsufficientBalance: BNumber.from(tokenBalance.amount).lt(tokenBalance.minAmount),
+        isInsufficientBalance: !!BNumber.from(tokenBalance?.minAmount)?.gt(tokenBalance?.amount),
       }
     })
   }, [balanceData, tokensConfig, selectedAccount])
@@ -111,7 +112,7 @@ export default function WalletTransferScreen() {
         className="flex-1"
         contentContainerClassName="gap-xl"
         nestedScrollEnabled
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+        // refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
       >
         {isLoading ? (
           <View className="py-xl items-center">
@@ -121,13 +122,12 @@ export default function WalletTransferScreen() {
           <>
             <View className="px-5">
               <Text className="text-paragraph-p2 text-content-4">
-                <Trans>
-                  余额：
-                  {BNumber.toFormatNumber(balanceData?.totalUsdValue, {
-                    volScale: selectedAccount?.currencyDecimal,
-                    unit: selectedAccount?.currencyUnit,
-                  })}
-                </Trans>
+                <Trans>余额</Trans>:{' '}
+                {BNumber.toFormatNumber(balanceData?.totalUsdValue, {
+                  prefix: '≈',
+                  volScale: selectedAccount?.currencyDecimal,
+                  unit: selectedAccount?.currencyUnit,
+                })}
               </Text>
             </View>
             <View className="gap-xl px-5">
@@ -151,6 +151,11 @@ function AssetRow({ asset }: { asset: WalletAsset }) {
   const disabled = asset.isInsufficientBalance
 
   const handlePress = () => {
+    // if (asset.isInsufficientBalance) {
+    //   toast.error(<Trans>当前余额低于最小入金额度，请使用其他代币入金</Trans>)
+    //   return
+    // }
+
     setSelectedTokenSymbol(asset.symbol)
     if (asset.symbol.toUpperCase() === USDC_TOKEN_SYMBOL.toUpperCase()) {
       router.push('/(assets)/deposit/wallet-transfer/usdc')
@@ -160,7 +165,7 @@ function AssetRow({ asset }: { asset: WalletAsset }) {
   }
 
   return (
-    <Pressable disabled={disabled} onPress={handlePress}>
+    <Pressable onPress={handlePress}>
       <Card className="rounded-small" style={disabled ? { opacity: 0.5 } : undefined}>
         <CardContent className="py-medium px-xl flex-row items-center justify-between">
           <View className="gap-medium flex-row items-center">
@@ -182,7 +187,7 @@ function AssetRow({ asset }: { asset: WalletAsset }) {
                 </Text>
               </Badge>
             )}
-            <Text className="text-paragraph-p2 text-content-1">{asset.balanceUsd}</Text>
+            <Text className="text-paragraph-p2 text-content-1">≈ {asset.balanceUsd}</Text>
           </View>
         </CardContent>
       </Card>

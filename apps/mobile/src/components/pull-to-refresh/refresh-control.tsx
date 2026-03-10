@@ -34,9 +34,11 @@ type RefreshControlProps = RNRefreshControlProps
  * ```
  */
 export function RefreshControl(props: RefreshControlProps) {
-  // Android 需要包裹 PullToRefresh,iOS 直接使用 Header
+  // Android 使用库自带的 RefreshControl（内部会返回 PullToRefresh 的 DefaultHeader）
+  // iOS 使用自定义的 Header 组件
   if (Platform.OS === 'android') {
-    return <PullToRefresh header={<CustomPullToRefreshHeader {...props} />} />
+    // @ts-ignore - 使用库的默认 Header
+    return <PullToRefresh.DefaultHeader {...props} />
   }
   return <CustomPullToRefreshHeader {...props} />
 }

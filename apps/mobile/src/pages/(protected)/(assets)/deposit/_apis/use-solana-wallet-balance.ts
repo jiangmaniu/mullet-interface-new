@@ -67,16 +67,20 @@ export function useSolanaWalletBalance(
   return useQuery({
     queryKey: ['solana-wallet', 'balance', address],
     queryFn: async () => {
-      const response = await depositRequest<SolanaWalletBalanceResponse>('/api/solana-wallet/balance', {
-        method: 'GET',
-        params: address ? { address } : undefined,
-      })
+      try {
+        const response = await depositRequest<SolanaWalletBalanceResponse>('/api/solana-wallet/balance', {
+          method: 'GET',
+          params: address ? { address } : undefined,
+        })
 
-      // // 模拟数据
-      // response.data.balances = response.data.balances.map((item) => {
-      //   return { ...item, usdValue: 12.0, amount: '12.000000' }
-      // })
-      return response.data
+        // // 模拟数据
+        // response.data.balances = response.data.balances.map((item) => {
+        //   return { ...item, usdValue: 12.0, amount: '12.000000' }
+        // })
+        return response.data
+      } catch {
+        return null
+      }
     },
     // 数据新鲜度：30 秒内认为数据是新鲜的，不会自动重新请求
     staleTime: 30000,

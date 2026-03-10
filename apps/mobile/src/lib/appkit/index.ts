@@ -1,13 +1,14 @@
 // 必须放在最前面，处理 polyfills
 import './polyfills'
 
-import { useMemo } from 'react'
-import { Connection, clusterApiUrl } from '@solana/web3.js'
 // 单独导入 useProvider 用于内部封装
 import { useProvider } from '@reown/appkit-react-native'
+import { useMemo } from 'react'
 import type { ChainNamespace, Provider } from '@reown/appkit-common-react-native'
 
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { clusterApiUrl, Connection } from '@solana/web3.js'
+
 import { appKit, solanaAdapter } from './config'
 
 export { appKit, solanaAdapter }
@@ -48,7 +49,7 @@ export const useAppKitSolanaProvider = (): SolanaProviderResult => {
   }
 
   return {
-    provider: provider,
+    provider,
     chainNamespace: providerType,
   }
 }

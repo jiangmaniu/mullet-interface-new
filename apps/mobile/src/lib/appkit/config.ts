@@ -15,6 +15,7 @@ const appScheme = (Constants.expoConfig?.scheme as string) ?? 'mullet'
 
 // 根据环境变量选择 Solana 网络
 const solanaCluster = EXPO_ENV_CONFIG.SOLANA_CLUSTER
+console.log('solanaCluster', solanaCluster)
 const networkMap = {
   'mainnet-beta': solana,
   devnet: solanaDevnet,
@@ -66,7 +67,8 @@ export const appKit = createAppKit({
     url: EXPO_ENV_CONFIG.WEBSITE_URL,
     icons: [`${EXPO_ENV_CONFIG.WEBSITE_URL}/icons/logo/mullet-appkit.png`],
     redirect: {
-      native: `${appScheme}://login`,
+      // 使用通用回调路径，由 App 内部路由处理具体跳转逻辑
+      native: `${appScheme}://wallet-callback`,
       // 不设置 universal — PhantomConnector/SolflareConnector 会优先使用 universal 作为 redirect_link，
       // 但 Phantom 在 Android 上通过 Chrome Custom Tab 打开 universal link，
       // JS 重定向后 URL scheme 不匹配导致连接失败（"Unexpected redirect URI"）。

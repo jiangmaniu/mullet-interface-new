@@ -1,9 +1,11 @@
 import { Trans } from '@lingui/react/macro'
-import { Image } from 'react-native'
+import { Image, View } from 'react-native'
 import { router } from 'expo-router'
 
 import { IconifyWalletSolid } from '@/components/ui/icons'
+import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
+import { toast } from '@/components/ui/toast'
 import { useWalletInfo } from '@/lib/appkit'
 import { formatAddress } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
@@ -23,7 +25,7 @@ export function ConnectedWalletCard() {
   const selectedAccount = useSelectedDepositAccount()
 
   // 查询钱包余额
-  const { data: balanceData } = useSolanaWalletBalance(fromWalletAddress)
+  const { data: balanceData, isLoading } = useSolanaWalletBalance(fromWalletAddress)
 
   const walletIcon = walletInfo?.icon ? (
     <Image source={{ uri: walletInfo.icon }} style={{ width: 24, height: 24, borderRadius: 4 }} />
@@ -32,6 +34,11 @@ export function ConnectedWalletCard() {
   )
 
   const handlePress = () => {
+    // if (isLoading) {
+    //   toast.warning(<Trans>正在获取余额...</Trans>)
+    //   return
+    // }
+
     router.push('/(assets)/deposit/wallet-transfer')
   }
 
@@ -40,15 +47,23 @@ export function ConnectedWalletCard() {
       icon={walletIcon}
       title={<Text className="text-paragraph-p2 text-content-1">{formatAddress(fromWalletAddress)}</Text>}
       subtitle={
-        <Text className="text-paragraph-p3 text-content-4">
-          <Trans>
-            余额：
-            {BNumber.toFormatNumber(balanceData?.totalUsdValue, {
-              volScale: selectedAccount?.currencyDecimal,
-              unit: selectedAccount?.currencyUnit,
-            })}
-          </Trans>
-        </Text>
+        <View className="flex flex-row items-center">
+          <Text className="text-paragraph-p2 text-content-4">
+            <Trans>余额</Trans>:{' '}
+          </Text>
+
+          {isLoading ? (
+            <Spinning width={14} height={14} className="text-content-5" />
+          ) : (
+            <Text className="text-paragraph-p2 text-content-4">
+              {BNumber.toFormatNumber(balanceData?.totalUsdValue, {
+                prefix: '≈',
+                volScale: selectedAccount?.currencyDecimal,
+                unit: selectedAccount?.currencyUnit,
+              })}
+            </Text>
+          )}
+        </View>
       }
       onPress={handlePress}
     />

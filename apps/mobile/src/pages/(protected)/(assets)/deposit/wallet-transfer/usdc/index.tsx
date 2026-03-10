@@ -37,10 +37,13 @@ const UsdcDepositScreen = observer(function UsdcDepositScreen() {
   const [selectedPercent, setSelectedPercent] = useState<string>('')
 
   // 是否余额不足
-  const isInsufficientBalance = BNumber.from(amount).gt(selectedTokenBalance?.amount)
+  const isInsufficientBalance = false
+  //  BNumber.from(amount).gt(selectedTokenBalance?.amount)
   // 是否满足最低充值
   const isValid =
-    BNumber.from(amount).gte(selectedTokenBalance?.minAmount) && BNumber.from(amount).lte(selectedTokenBalance?.amount)
+    true ||
+    (BNumber.from(amount).gte(selectedTokenBalance?.minAmount) &&
+      BNumber.from(amount).lte(selectedTokenBalance?.amount))
 
   const handleValueChange = useCallback((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
     if (source === NumberInputSourceType.EVENT) {
@@ -124,7 +127,7 @@ const UsdcDepositScreen = observer(function UsdcDepositScreen() {
       </View>
 
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
+        <View className="px-5 py-8">
           <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
             <Text>{isInsufficientBalance ? <Trans>余额不足</Trans> : <Trans>继续</Trans>}</Text>
           </Button>

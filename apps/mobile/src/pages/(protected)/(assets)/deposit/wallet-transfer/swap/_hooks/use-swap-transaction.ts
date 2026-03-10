@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
+import { Buffer } from 'buffer'
 
 import { depositRequest } from '@/v1/utils/deposit-request'
-import { useSolanaProvider } from '@/lib/appkit/use-solana-provider'
+import { useSolanaConnection, useSolanaProvider } from '@/lib/appkit'
 
 /**
  * 交易订单数据
@@ -49,8 +50,9 @@ export function useSwapTransaction() {
   // 是否正在构建交易
   const [isBuilding, setIsBuilding] = useState(false)
 
-  // Solana Provider
-  const { signAndSendTransaction } = useSolanaProvider()
+  // Solana Provider 和 Connection
+  const { walletProvider, signTransaction } = useSolanaProvider()
+  const { connection } = useSolanaConnection()
 
   // 清除交易数据
   const clearTransaction = useCallback(() => {
@@ -103,22 +105,35 @@ export function useSwapTransaction() {
         throw new Error('Invalid transaction data')
       }
 
+      if (!walletProvider || !connection) {
+        throw new Error('Provider or connection is missing')
+      }
+
       setSignatureStatus('signing')
       try {
-        // 使用 Solana Provider 签名并发送交易
-        const signature = await signAndSendTransaction(transactionData.swapTransaction)
+        console.log('-> 正在请求钱包签名交易...')
+        // 使用 walletProvider 签名交易
+        const signedTransactionBase64 = await signTransaction(transactionData.swapTransaction)
+        console.log('✅ 交易签名成功')
 
-        console.log('Transaction sent successfully:', signature)
+        // 将签名后的交易发送到链上
+        console.log('-> 正在发送交易到链上...')
+        const signedTransactionBuffer = Buffer.from(signedTransactionBase64, 'base64')
+        const txSignature = await connection.sendRawTransaction(signedTransactionBuffer, {
+          skipPreflight: false,
+          preflightCommitment: 'confirmed',
+        })
+        console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
+
         setSignatureStatus('success')
-
-        return signature
+        return txSignature
       } catch (error) {
-        console.error('Send transaction failed:', error)
+        console.error('❌ 交易发送失败:', error)
         setSignatureStatus('failed')
         throw error
       }
     },
-    [signAndSendTransaction],
+    [walletProvider, connection, signTransaction],
   )
 
   // 构建并发送交易

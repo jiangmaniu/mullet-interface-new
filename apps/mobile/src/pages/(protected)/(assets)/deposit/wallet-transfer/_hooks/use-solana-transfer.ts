@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer'
 import type { EnhancedSolanaProvider } from '@/lib/appkit/use-solana-provider'
 
 import { BNumber, BNumberValue } from '@mullet/utils/number'
@@ -27,7 +28,7 @@ export function useSolanaTransfer() {
       amount,
       decimals,
     }: {
-      /** 发送方钱包地址（如果未传入，则使用当前连接的钱包地址） */
+      /** 发送方钱包地址 */
       fromAddress?: string
       /** 接收方钱包地址 */
       toAddress: string
@@ -86,11 +87,12 @@ export function useSolanaTransfer() {
 
       // 检查目标代币账户是否存在，如果不存在则创建
       try {
-        await getAccount(connection, toTokenAccountPublicKey)
+        await getAccount(connection, toTokenAccountAtaAddress)
         console.log('目标代币账户已存在')
       } catch (error) {
-        console.log('目标代币账户不存在，需要创建')
+        console.log(error)
         debugger
+        console.log('目标代币账户不存在，需要创建')
         // 创建关联代币账户指令
         const createAccountInstruction = createAssociatedTokenAccountInstruction(
           fromTokenAccountPublicKey, // payer
@@ -101,6 +103,7 @@ export function useSolanaTransfer() {
         transaction.add(createAccountInstruction)
       }
 
+      debugger
       const transferAmount = BNumber.from(amount).multipliedBy(10 ** decimals)
 
       // 添加转账指令
@@ -126,15 +129,37 @@ export function useSolanaTransfer() {
       transaction.lastValidBlockHeight = lastValidBlockHeight
       transaction.feePayer = fromTokenAccountPublicKey
 
-      // 序列化交易
+      // 序列化交易（用于签名）
       const serializedTransaction = transaction.serialize({
         requireAllSignatures: false,
         verifySignatures: false,
       })
 
-      // 使用 provider 的 signAndSendTransaction 方法发送交易
-      const txSignature = await walletProvider.signAndSendTransaction(serializedTransaction.toString('base64'))
+      // 使用 provider 的 signTransaction 方法签名交易
+      console.log('-> 正在请求钱包签名交易...')
+      const signedTransactionBase64 = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
+      console.log('✅ 交易签名成功')
+
+      // 将签名后的交易发送到链上
+      console.log('-> 正在发送交易到链上...')
+      const signedTransactionBuffer = Buffer.from(signedTransactionBase64, 'base64')
+      const txSignature = await connection.sendRawTransaction(signedTransactionBuffer, {
+        skipPreflight: false,
+        preflightCommitment: 'confirmed',
+      })
       console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
+
+      // 等待交易确认（使用推荐的 TransactionConfirmationStrategy）
+      // console.log('-> 等待交易确认...')
+      // await connection.confirmTransaction(
+      //   {
+      //     signature: txSignature,
+      //     blockhash,
+      //     lastValidBlockHeight,
+      //   },
+      //   'confirmed',
+      // )
+      // console.log('✅ 交易已确认')
 
       return txSignature
     } catch (err: any) {

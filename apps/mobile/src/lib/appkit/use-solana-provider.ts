@@ -10,7 +10,6 @@ import { useAccount, useAppKitSolanaProvider } from './index'
 export interface EnhancedSolanaProvider extends Provider {
   signMessage: (message: string, pubkey: string) => Promise<string>
   signTransaction: (transaction: string) => Promise<string>
-  signAndSendTransaction: (transaction: string) => Promise<string>
   signAllTransactions: (transactions: string[]) => Promise<string[]>
 }
 
@@ -66,32 +65,25 @@ export function useSolanaProvider() {
         `${chainNamespace}:${chainId}`,
       )
 
-      return typeof result === 'object' && result !== null ? (result as any).transaction : String(result)
-    },
-    [provider, chainId, chainNamespace],
-  )
+      console.log('[signTransaction] 原始返回结果:', result)
+      console.log('[signTransaction] 结果类型:', typeof result)
 
-  /**
-   * 签名并发送交易
-   * @param transaction - 序列化的交易（base64）
-   */
-  const signAndSendTransaction = useCallback(
-    async (transaction: string) => {
-      if (!provider || !chainNamespace) {
-        throw new Error('Provider not available')
+      // 处理不同格式的返回值
+      if (typeof result === 'string') {
+        return result
       }
 
-      const result = await provider.request(
-        {
-          method: 'solana_signAndSendTransaction',
-          params: {
-            transaction,
-          },
-        },
-        `${chainNamespace}:${chainId}`,
-      )
+      if (typeof result === 'object' && result !== null) {
+        // 尝试多种可能的属性名
+        const signedTx = (result as any).transaction || (result as any).signedTransaction || (result as any).signature
+        console.log('[signTransaction] 提取的签名交易:', signedTx)
+        if (signedTx) {
+          return String(signedTx)
+        }
+      }
 
-      return typeof result === 'object' && result !== null ? (result as any).signature : String(result)
+      console.error('[signTransaction] 无法解析返回结果:', result)
+      throw new Error('Invalid signature result')
     },
     [provider, chainId, chainNamespace],
   )
@@ -124,7 +116,7 @@ export function useSolanaProvider() {
   // 创建增强的 provider 实例，将方法添加到 provider 属性中
   const enhancedProvider = useMemo(() => {
     if (!provider) {
-      return null
+      return undefined
     }
 
     // 创建一个新对象，包含原 provider 的所有属性和新增的方法
@@ -133,19 +125,17 @@ export function useSolanaProvider() {
     // 将独立函数绑定到 provider 实例上
     enhanced.signMessage = signMessage
     enhanced.signTransaction = signTransaction
-    enhanced.signAndSendTransaction = signAndSendTransaction
     enhanced.signAllTransactions = signAllTransactions
 
     return enhanced
-  }, [provider, signMessage, signTransaction, signAndSendTransaction, signAllTransactions])
+  }, [provider, signMessage, signTransaction, signAllTransactions])
 
   return {
-    provider: enhancedProvider,
+    walletProvider: enhancedProvider,
     chainNamespace,
     // 同时导出独立的函数
     signMessage,
     signTransaction,
-    signAndSendTransaction,
     signAllTransactions,
   }
 }
