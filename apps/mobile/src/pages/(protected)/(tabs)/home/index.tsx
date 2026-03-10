@@ -72,10 +72,8 @@ const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
       <View className="flex-1">
         <Text className="text-paragraph-p2 text-content-1">{symbolInfo.alias}</Text>
         <Tooltip title={<Trans>提示</Trans>}>
-          <TooltipTrigger className="no-underline">
-            <Text className="text-paragraph-p3 text-content-4" numberOfLines={1}>
-              {symbolInfo.remark}
-            </Text>
+          <TooltipTrigger className="text-paragraph-p3 text-content-4" hasUnderline={false} numberOfLines={1}>
+            {symbolInfo.remark}
           </TooltipTrigger>
           <TooltipContent>{symbolInfo.remark}</TooltipContent>
         </Tooltip>

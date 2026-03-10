@@ -19,7 +19,12 @@ function Tooltip({ children, title }: { children: React.ReactNode; title?: React
 }
 Tooltip.displayName = 'Tooltip'
 
-function TooltipTrigger({ children, className }: { children: React.ReactNode; className?: string }) {
+function TooltipTrigger({
+  children,
+  className,
+  hasUnderline = true,
+  ...props
+}: { children: React.ReactNode; className?: string; hasUnderline?: boolean } & React.ComponentProps<typeof Text>) {
   const { setVisible } = React.useContext(TooltipContext)
 
   // 阻止事件冒泡，避免触发外层的 Pressable
@@ -30,13 +35,12 @@ function TooltipTrigger({ children, className }: { children: React.ReactNode; cl
 
   return (
     <Pressable onPress={handlePress}>
-      {typeof children === 'string' ? (
-        <Text className={cn('text-paragraph-p3 text-content-4 underline decoration-dotted', className)}>
-          {children}
-        </Text>
-      ) : (
-        children
-      )}
+      <Text
+        className={cn('text-paragraph-p3 text-content-4', hasUnderline && 'underline decoration-dotted', className)}
+        {...props}
+      >
+        {children}
+      </Text>
     </Pressable>
   )
 }
