@@ -1,6 +1,7 @@
 // "main": "expo-router/entry",
 
 // Import required polyfills first
+import 'react-native-url-polyfill/auto'
 import 'fast-text-encoding'
 import 'react-native-get-random-values'
 import '@ethersproject/shims'

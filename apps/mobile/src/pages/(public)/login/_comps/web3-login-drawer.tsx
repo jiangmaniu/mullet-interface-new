@@ -418,9 +418,22 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
             <View className={cn('flex-row gap-2', 'items-start')}>
               <View className="h-full">{renderStepIcon(1, step1)}</View>
               <View className={cn('flex-1 gap-1', '', '')}>
-                <Text className={cn('text-white', 'text-paragraph-p1', '', '')}>
-                  <Trans>连接钱包</Trans>
-                </Text>
+                <View className="flex-row items-center justify-between">
+                  <Text className={cn('text-white', 'text-paragraph-p1', '', '')}>
+                    <Trans>连接钱包</Trans>
+                  </Text>
+                  {isConnected && step1.status === 'completed' && (
+                    <Text
+                      className={cn('text-content-5', 'text-paragraph-p3', '')}
+                      onPress={() => {
+                        disconnectWallet()
+                        resetSteps()
+                      }}
+                    >
+                      <Trans>断开</Trans>
+                    </Text>
+                  )}
+                </View>
                 <Text className={cn('text-content-4', 'text-paragraph-p3', '')}>
                   <Trans>仅作确认您是此钱包的所有权</Trans>
                 </Text>

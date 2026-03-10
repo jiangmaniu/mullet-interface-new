@@ -1,4 +1,4 @@
-import type { Provider } from '@reown/appkit-adapter-solana/react'
+import type { EnhancedSolanaProvider } from '@/lib/appkit/use-solana-provider'
 
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 import { createMemoInstruction } from '@solana/spl-memo'
@@ -45,7 +45,7 @@ export function useSolanaTransfer() {
     }: {
       memoContent?: Record<string, any>
       connection?: Connection
-      walletProvider?: Provider
+      walletProvider?: EnhancedSolanaProvider
       // providerResult: SolanaProviderResult
     },
   ) => {
@@ -116,7 +116,7 @@ export function useSolanaTransfer() {
       transaction.add(transferInstruction)
 
       if (memoContent) {
-        transaction.add(createMemoInstruction(memoContent, [fromTokenAccountPublicKey]))
+        transaction.add(createMemoInstruction(JSON.stringify(memoContent), [fromTokenAccountPublicKey]))
         console.log('[SwapDialog] Added memo:', memoContent)
       }
 
@@ -126,7 +126,14 @@ export function useSolanaTransfer() {
       transaction.lastValidBlockHeight = lastValidBlockHeight
       transaction.feePayer = fromTokenAccountPublicKey
 
-      const txSignature = await walletProvider.sendTransaction(transaction, connection)
+      // 序列化交易
+      const serializedTransaction = transaction.serialize({
+        requireAllSignatures: false,
+        verifySignatures: false,
+      })
+
+      // 使用 provider 的 signAndSendTransaction 方法发送交易
+      const txSignature = await walletProvider.signAndSendTransaction(serializedTransaction.toString('base64'))
       console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
 
       return txSignature

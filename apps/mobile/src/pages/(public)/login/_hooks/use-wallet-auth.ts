@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
 import bs58 from 'bs58'
 
-import { useAccount, useAppKit, useProvider } from '@/lib/appkit'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useAccount, useAppKit, useSolanaProvider } from '@/lib/appkit'
 import { useLoginWithSiws, usePrivy } from '@privy-io/expo'
 
 interface UseWalletAuthOptions {
@@ -52,15 +52,15 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
 
   const { generateMessage, login: loginWithSiws } = useLoginWithSiws()
   const { user: privyUser } = usePrivy()
-  const { address, chainId } = useAccount()
-  const { provider } = useProvider()
+  const { address } = useAccount()
+  const { signMessage } = useSolanaProvider()
   const { disconnect } = useAppKit()
 
   const mutation = useMutation({
     mutationKey: ['auth', 'wallet-sign'],
     retry: 0, // 失败后不自动重试
     mutationFn: async () => {
-      if (!address || !provider) {
+      if (!address || !signMessage) {
         throw new WalletAuthError('请先连接钱包', 'WalletNotConnected')
       }
 
@@ -79,26 +79,19 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
         },
       })
 
-      // 2. 使用 provider 签名消息
+      // 2. 使用 signMessage 方法签名消息
       const messageBytes = bs58.encode(new TextEncoder().encode(message))
 
       // Phantom on Android 偶现 -32603 (Internal Error)，
       // 通常因为 WalletConnect session 未完全就绪，重试即可恢复
       const MAX_SIGN_RETRIES = 2
       const SIGN_RETRY_DELAY = 1000
-      let signatureResult: any
+      let signature: string | undefined
       for (let attempt = 0; attempt <= MAX_SIGN_RETRIES; attempt++) {
         try {
-          signatureResult = await provider.request(
-            {
-              method: 'solana_signMessage',
-              params: {
-                message: messageBytes,
-                pubkey: address,
-              },
-            },
-            `solana:${chainId}`,
-          )
+          // 刚连接钱包后立刻签名有时失败，添加 300 毫秒延时
+          await new Promise((r) => setTimeout(r, 300))
+          signature = await signMessage(messageBytes, address)
           break
         } catch (e: any) {
           if (e?.code === -32603 && attempt < MAX_SIGN_RETRIES) {
@@ -114,13 +107,11 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
         }
       }
 
-      console.log('Signature result:', signatureResult)
+      if (!signature) {
+        throw new WalletAuthError('签名失败', 'SignatureFailed')
+      }
 
-      // 获取签名
-      const signature =
-        typeof signatureResult === 'object' && signatureResult !== null
-          ? (signatureResult as { signature?: string }).signature || JSON.stringify(signatureResult)
-          : String(signatureResult)
+      console.log('Signature result:', signature)
 
       // 3. 使用签名登录 Privy
       await loginWithSiws({

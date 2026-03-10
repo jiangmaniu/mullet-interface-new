@@ -1,22 +1,57 @@
 // 必须放在最前面，处理 polyfills
 import './polyfills'
 
-// import { Provider, useAppKitConnection } from '@reown/appkit-adapter-solana/react'
-// import { useAppKitProvider } from '@reown/appkit/react'
-// import type { ChainNamespace } from '@reown/appkit-common-react-native'
+import { useMemo } from 'react'
+import { Connection, clusterApiUrl } from '@solana/web3.js'
+// 单独导入 useProvider 用于内部封装
+import { useProvider } from '@reown/appkit-react-native'
+import type { ChainNamespace, Provider } from '@reown/appkit-common-react-native'
 
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { appKit, solanaAdapter } from './config'
 
 export { appKit, solanaAdapter }
 
-// export type SolanaProviderResult = {
-//   provider: Provider
-//   chainNamespace: ChainNamespace
-// }
+// 导出自定义 hooks
+export { useSolanaProvider } from './use-solana-provider'
 
-// export const useAppKitSolanaProvider = () => {
-//   return useAppKitProvider<Provider>('solana')
-// }
+export type SolanaProviderResult = {
+  provider?: Provider
+  chainNamespace?: ChainNamespace
+}
+
+/**
+ * 获取 Solana Connection
+ * 根据环境变量创建 Solana RPC 连接
+ */
+export function useSolanaConnection() {
+  const connection = useMemo(() => {
+    const cluster = EXPO_ENV_CONFIG.SOLANA_CLUSTER
+    return new Connection(clusterApiUrl(cluster), 'confirmed')
+  }, [])
+
+  return { connection }
+}
+
+/**
+ * 获取 Solana Provider
+ * 封装 useProvider 并确保返回 Solana 类型的 provider
+ */
+export const useAppKitSolanaProvider = (): SolanaProviderResult => {
+  const { provider, providerType } = useProvider()
+
+  if (providerType !== 'solana') {
+    return {
+      provider: undefined,
+      chainNamespace: undefined,
+    }
+  }
+
+  return {
+    provider: provider,
+    chainNamespace: providerType,
+  }
+}
 
 // 导出 AppKit 组件和 hooks
 // https://docs.reown.com/appkit/react-native/core/hooks
@@ -25,7 +60,6 @@ export {
   AppKitButton,
   useAppKit, // open, close, disconnect, switchNetwork
   useAccount, // address, isConnected, chainId, chain, namespace
-  useProvider, // provider, providerType
   useWalletInfo,
   useAppKitState,
   useAppKitEvents,
