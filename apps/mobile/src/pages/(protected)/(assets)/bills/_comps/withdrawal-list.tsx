@@ -3,12 +3,14 @@ import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 import { format } from 'date-fns'
+import dayjs from 'dayjs'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { useI18n } from '@/hooks/use-i18n'
-import { DepositEventTypeEnum, getDepositEventTypeEnumOption } from '@/options/deposit/event'
+import { DepositEventTypeEnum } from '@/options/deposit/event'
+import { getWithdrawalStatusEnumOption } from '@/options/deposit/status'
 import { getAccountSynopsisByLng } from '@/v1/utils/business'
 import { renderFallback } from '@mullet/utils/fallback'
 import { formatTxHash } from '@mullet/utils/format'
@@ -32,7 +34,7 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useFundFlowHistory(
     {
-      userId: selectedAccount.id,
+      accountId: selectedAccount.id,
       eventType: DepositEventTypeEnum.WITHDRAWAL_COMPLETED,
       startTime: formatDateTime(dateRange.startDate),
       endTime: formatDateTime(dateRange.endDate),
@@ -129,13 +131,16 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
       <CardContent className="gap-medium">
         <BillsCardRow
           label={<Trans>取现金额</Trans>}
-          value={BNumber.toFormatNumber(record.amount, { unit: record.token })}
+          value={BNumber.toFormatNumber(record.amount, {
+            unit: account.currencyUnit,
+            volScale: account.currencyDecimal,
+          })}
         />
         <BillsCardRow
           label={<Trans>取现状态</Trans>}
           value={renderLinguiMsg(
-            getDepositEventTypeEnumOption({ value: record.eventType })?.label,
-            <Trans>未知状态</Trans>,
+            getWithdrawalStatusEnumOption({ value: record.withdrawalStatus })?.label,
+            record.withdrawalStatus ?? <Trans>未知状态</Trans>,
           )}
         />
 
@@ -143,8 +148,8 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
           label={<Trans>充值账户</Trans>}
           valueComponent={
             <View className="gap-xs flex-row items-center">
-              <AccountTypeBadge type={synopsis.abbr} />
-              <Text className="text-paragraph-p3 text-content-1">{account.id}</Text>
+              {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(account.id)}</Text>
             </View>
           }
         />
@@ -152,15 +157,24 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
         <BillsCardRow label={<Trans>链</Trans>} value={renderFallback(record.chain)} />
         <BillsCardRow
           label={<Trans>操作前余额</Trans>}
-          value={BNumber.toFormatNumber(record.balanceBefore, { unit: record.token })}
+          value={BNumber.toFormatNumber(record.balanceBefore, {
+            unit: account.currencyUnit,
+            volScale: account.currencyDecimal,
+          })}
         />
         <BillsCardRow
           label={<Trans>操作后余额</Trans>}
-          value={BNumber.toFormatNumber(record.balanceAfter, { unit: record.token })}
+          value={BNumber.toFormatNumber(record.balanceAfter, {
+            unit: account.currencyUnit,
+            volScale: account.currencyDecimal,
+          })}
         />
 
         {record.txHash && <BillsCardRow label={<Trans>交易哈希</Trans>} value={`${formatTxHash(record.txHash)}`} />}
-        <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record.createdAt)} />
+        <BillsCardRow
+          label={<Trans>时间</Trans>}
+          value={renderFallback(dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss'), { verify: !!record.createdAt })}
+        />
       </CardContent>
     </Card>
   )

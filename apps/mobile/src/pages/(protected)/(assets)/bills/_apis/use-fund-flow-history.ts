@@ -1,14 +1,15 @@
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 
-import { depositRequest } from '@/v1/utils/deposit-request'
 import { DepositEventTypeEnum } from '@/options/deposit/event'
+import { DepositStatusEnum, WithdrawalStatusEnum } from '@/options/deposit/status'
+import { depositRequest } from '@/v1/utils/deposit-request'
 
 /**
  * 资金流水历史-参数
  */
 export interface FundFlowHistoryParams {
-  /** 用户 ID */
-  userId: string
+  /** 交易账户 ID（即 5 开头的账户 ID，非用户 ID） */
+  accountId: string
   /** 每页条数（默认 50，最大 200） */
   limit?: number
   /** 分页偏移（默认 0） */
@@ -30,12 +31,14 @@ export interface FundFlowHistoryParams {
  */
 export interface FundFlowHistoryData {
   data: FundFlowHistoryItem[]
-  pagination: {
-    total: number
-    limit: number
-    offset: number
-    hasMore: boolean
-  }
+  pagination: FundFlowHistoryPagination
+}
+
+export interface FundFlowHistoryPagination {
+  total: number
+  limit: number
+  offset: number
+  hasMore: boolean
 }
 
 /**
@@ -74,6 +77,22 @@ export interface FundFlowHistoryItem {
   metadata: string | null
   /** 事件创建时间 */
   createdAt: string
+  /** 入金来源地址（含 depositId 的事件才有） */
+  depositFromAddress: string | null
+  /** 入金收款地址（用户专属地址） */
+  depositToAddress: string | null
+  /** 入金外部单号（Cobo 数字 ID） */
+  depositTransactionId: string | null
+  /** 入金状态：pending / confirming / completed / failed */
+  depositStatus: DepositStatusEnum | null
+  /** 出金发出地址（含 withdrawalId 的事件才有） */
+  withdrawalFromAddress: string | null
+  /** 出金目标地址 */
+  withdrawalToAddress: string | null
+  /** 出金外部单号 */
+  withdrawalTransactionId: string | null
+  /** 出金状态：pending / submitted / processing / completed / failed */
+  withdrawalStatus: WithdrawalStatusEnum | null
 }
 
 /**
@@ -91,25 +110,34 @@ export async function getFundFlowHistory(params: FundFlowHistoryParams) {
  */
 export function useFundFlowHistory(params: Omit<FundFlowHistoryParams, 'limit' | 'offset'>, pageSize: number = 50) {
   return useInfiniteQuery({
-    queryKey: ['fundFlowHistory', params.userId, params.eventType, params.startTime, params.endTime, params.token, params.chain],
+    queryKey: [
+      'fundFlowHistory',
+      params.accountId,
+      params.eventType,
+      params.startTime,
+      params.endTime,
+      params.token,
+      params.chain,
+    ],
     queryFn: async ({ pageParam = 0 }) => {
       const res = await getFundFlowHistory({
         ...params,
         offset: pageParam,
         limit: pageSize,
       })
+
       // depositRequest 返回 { success, code, msg, data }
       // data 字段包含 { data: [], pagination: {} }
       return res.data
     },
     initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
+    getNextPageParam: (lastPage) => {
       if (!lastPage?.pagination) return undefined
       const { hasMore, offset, limit } = lastPage.pagination
       // 下一页的 offset = 当前 offset + limit
       return hasMore ? offset + limit : undefined
     },
-    enabled: !!params.userId,
+    enabled: !!params.accountId,
     // 保留旧数据，queryKey 变化时先展示旧数据再后台刷新
     placeholderData: keepPreviousData,
     // 组件重新挂载时始终后台刷新最新数据
