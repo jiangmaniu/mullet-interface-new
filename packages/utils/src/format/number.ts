@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { isNaN, isNil, isUndefined, merge } from 'lodash-es'
+import { isNaN, isNil, merge } from 'lodash-es'
 import numbro from 'numbro'
 
 import { BNumber, BNumberValue } from '../number/b-number'
@@ -7,9 +7,9 @@ import { BNumber, BNumberValue } from '../number/b-number'
 const FORMAT_VALUE_FALLBACK = '-'
 
 export type FormatNumberOpt = {
-  precision?: number
-  volScale?: number
-  unit?: string
+  precision?: number | null
+  volScale?: number | null
+  unit?: string | null
   unitSeparated?: string
   isFrontUnit?: boolean
   defaultLabel?: string
@@ -61,7 +61,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     thousandSeparated: true,
   }
 
-  if ((amount instanceof BNumber || amount instanceof BigNumber) && !isUndefined(precision)) {
+  if ((amount instanceof BNumber || amount instanceof BigNumber) && !isNil(precision)) {
     amount = BNumber.from(amount).toFixed(0)
   }
 
@@ -74,7 +74,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
   }
 
   let amountWithFormated = BNumber.from(amount)
-  if (!isUndefined(precision)) {
+  if (!isNil(precision)) {
     amountWithFormated = amountWithFormated.div(10 ** precision)
   }
 
@@ -84,7 +84,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     isNegative = false
   }
 
-  if (autoHideDecimal && !isUndefined(volScale) && !isUndefined(precision)) {
+  if (autoHideDecimal && !isNil(volScale) && !isNil(precision)) {
     volScale = formatAutoHideDecimal(amount, {
       precision,
       volScale,
@@ -102,10 +102,10 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
       numbro(amountWithFormated.toFixed(0)).format({
         ...initFormat,
         ...format,
-        mantissa: volScale,
+        mantissa: volScale ?? undefined,
       }),
     )
-    if (amountWithLimitDecimals.eq(0) && !isUndefined(volScale)) {
+    if (amountWithLimitDecimals.eq(0) && !isNil(volScale)) {
       return `<${isNegative ? '-' : ''}${1 / 10 ** volScale}${!isFrontUnit ? rearUnitLabel : ''}`
     }
   }
@@ -129,7 +129,7 @@ const formatAutoHideDecimal = (amount: BNumberValue, opt: formatAutoHideDecimalP
   const { precision } = opt
 
   let amountWithFormated = BNumber.from(amount)
-  if (!isUndefined(precision)) {
+  if (!isNil(precision)) {
     amountWithFormated = amountWithFormated.div(10 ** precision)
   }
 
