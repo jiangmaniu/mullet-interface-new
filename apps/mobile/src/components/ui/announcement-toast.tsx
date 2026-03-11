@@ -1,18 +1,14 @@
 import React from 'react'
 import { Pressable, View } from 'react-native'
-import { toast as sonnerToast } from 'sonner-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-} from 'react-native-reanimated'
+import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
 import { router } from 'expo-router'
+import { toast as sonnerToast } from 'sonner-native'
 
 import { cn } from '@/lib/utils'
-import { IconSuccess } from './icons/set/success'
+
 import { IconifyXmark } from './icons'
+import { IconSuccess } from './icons/set/success'
 import { Text } from './text'
 
 interface AnnouncementToastProps {
@@ -75,18 +71,9 @@ export function AnnouncementToast({ id, title, content, toastId }: AnnouncementT
 
   return (
     <GestureDetector gesture={panGesture}>
-      <Animated.View style={[{ width: '90%', maxWidth: 400 }, animatedStyle]}>
-        <Pressable onPress={handlePress}>
-          <View
-            className={cn(
-              'bg-background-2 flex-row items-start gap-3 rounded-2xl border-2 border-brand-primary p-4',
-            )}
-          >
-            {/* 左侧图标 */}
-            <View className="mt-0.5">
-              <IconSuccess width={24} height={24} />
-            </View>
-
+      <Animated.View className="items-center" style={[{ width: '100%', paddingHorizontal: 20 }, animatedStyle]}>
+        <Pressable onPress={handlePress} style={{ width: '100%' }}>
+          <View className={cn('bg-primary border-brand-primary flex-row items-start gap-3 rounded-2xl border-1 p-3')}>
             {/* 中间内容 */}
             <View className="flex-1 flex-shrink gap-1">
               <Text className="text-title-t3 text-content-1">{title}</Text>
@@ -96,9 +83,9 @@ export function AnnouncementToast({ id, title, content, toastId }: AnnouncementT
             </View>
 
             {/* 右侧关闭按钮 */}
-            <Pressable onPress={handleClose} hitSlop={8}>
+            {/* <Pressable onPress={handleClose} hitSlop={8}>
               <IconifyXmark width={20} height={20} className="text-content-3" />
-            </Pressable>
+            </Pressable> */}
           </View>
         </Pressable>
       </Animated.View>

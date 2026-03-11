@@ -62,17 +62,17 @@ const Trade = observer(() => {
     initData()
   })
 
-  // 动态计算 minHeaderHeight
-  // 基础高度：44 + insets.top
-  // 图表在顶部时：需要加上图表高度（展开：233px，隐藏：40px）
-  const minHeaderHeight = (() => {
-    const baseHeight = 44 + insets.top
-    if (chartPosition === 'bottom') {
-      return baseHeight
-    }
-    // 图表在顶部
-    return baseHeight + (isChartVisible ? 233 : 40)
-  })()
+  // // 动态计算 minHeaderHeight
+  // // 基础高度：44 + insets.top
+  // // 图表在顶部时：需要加上图表高度（展开：233px，隐藏：40px）
+  // const minHeaderHeight = (() => {
+  //   const baseHeight = 44 + insets.top
+  //   if (chartPosition === 'bottom') {
+  //     return baseHeight
+  //   }
+  //   // 图表在顶部
+  //   return baseHeight + (isChartVisible ? 233 : 40)
+  // })()
 
   return (
     <View className="flex-1">
@@ -80,7 +80,7 @@ const Trade = observer(() => {
         variant="underline"
         size="md"
         tabBarClassName="px-xl"
-        minHeaderHeight={minHeaderHeight}
+        // minHeaderHeight={minHeaderHeight}
         renderTabBarRight={() => (
           <IconButton onPress={() => router.push('/(trade)/records')}>
             <IconifyPage width={22} height={22} />
@@ -94,9 +94,9 @@ const Trade = observer(() => {
 
             <CollapsibleStickyContent>
               {/* K-Line Chart - 顶部位置 */}
-              {chartPosition !== 'bottom' && (
-                <SymbolChartView isVisible={isChartVisible} onToggle={setIsChartVisible} />
-              )}
+              {/* {chartPosition !== 'bottom' && ( */}
+              <SymbolChartView isVisible={isChartVisible} onToggle={setIsChartVisible} />
+              {/* )} */}
 
               {/* Account Card */}
               <View className="pt-xl px-xl">
@@ -120,7 +120,7 @@ const Trade = observer(() => {
 
       {/* K-Line Chart - 固定在提交按钮上方 */}
       {chartPosition === 'bottom' && (
-        <View className="absolute bottom-0 left-0 right-0 z-10">
+        <View className="absolute right-0 bottom-0 left-0 z-10">
           <SymbolChartView />
         </View>
       )}

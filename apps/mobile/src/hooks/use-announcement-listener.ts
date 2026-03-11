@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
 
-import mitt from '@/v1/utils/mitt'
-import { MessagePopupInfo } from '@/v1/stores/ws'
 import { toast } from '@/components/ui/toast'
+import { MessagePopupInfo } from '@/v1/stores/ws'
+import mitt from '@/v1/utils/mitt'
 
 /** 全局监听 ws 公告推送，弹出通知 Toast */
 export function useAnnouncementListener() {
   useEffect(() => {
     const handleWsMessagePopup = (info: unknown) => {
       const data = info as MessagePopupInfo
+
       toast.announcement({
         id: data.messageLogId,
         title: data.title,
