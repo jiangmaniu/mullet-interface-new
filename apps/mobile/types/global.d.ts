@@ -1,6 +1,10 @@
 declare global {
   type Nilable<T> = T | undefined | null
 
+  type NilablePartial<T> = {
+    [P in keyof T]?: Nilable<T[P]>
+  }
+
   type CanWrite<T> = {
     -readonly [K in keyof T]: T[K] extends Record<any, any> ? CanWrite<T[K]> : T[K]
   }

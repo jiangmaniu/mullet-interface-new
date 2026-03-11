@@ -110,7 +110,6 @@ export function useSolanaTransfer() {
         transaction.add(createAccountInstruction)
       }
 
-      debugger
       const transferAmount = BNumber.from(amount).multipliedBy(10 ** decimals)
 
       // 添加转账指令

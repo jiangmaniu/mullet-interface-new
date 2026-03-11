@@ -892,12 +892,8 @@ class WSStore {
         if (tron) {
           tron.display({ name: 'WS 通知', value: data, preview: data?.title || 'notice', important: true })
         }
-        console.log('消息通知', data)
-        // const info = data as MessagePopupInfo
-        // onDisplayNotification({
-        //   title: info.title,
-        //   body: removeOrderMessageFieldNames(info.content || '')
-        // })
+        // 触发公告通知 Toast
+        mitt.emit('ws-message-popup', data)
         break
       case MessageType.msg:
         if (tron) {

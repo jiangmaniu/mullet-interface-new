@@ -1,4 +1,5 @@
 import { type ImageSourcePropType } from 'react-native'
+
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 
 const FALLBACK_IMAGE = require('../assets/images/fallback/common.png')
@@ -18,10 +19,19 @@ export function isImageFile(filePath: any) {
 /**
  * 获取图片 source（兼容本地 require 和远程 URL）
  */
-export function getImgSource(imgUrl?: string, options: { withFallback?: boolean; fallbackUrl?: string } = {}): ImageSourcePropType {
+export function getImgSource(
+  imgUrl?: string,
+  options: { withFallback?: boolean; fallbackUrl?: string } = {},
+): ImageSourcePropType {
   const { withFallback = true, fallbackUrl } = options
   const imgDomain = EXPO_ENV_CONFIG.IMG_DOMAIN
 
+  // 完整远程 URL 直接透传
+  if (imgUrl && /^https?:\/\//.test(imgUrl)) {
+    return { uri: imgUrl }
+  }
+
+  // 相对路径拼接 imgDomain
   if (imgUrl && imgDomain && isImageFile(imgUrl)) {
     return { uri: `${imgDomain}/${imgUrl}` }
   }

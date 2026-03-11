@@ -142,7 +142,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
       </View>
 
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
+        <View className="px-5 py-8">
           <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
             <Text>{isInsufficientBalance ? <Trans>余额不足</Trans> : <Trans>继续</Trans>}</Text>
           </Button>

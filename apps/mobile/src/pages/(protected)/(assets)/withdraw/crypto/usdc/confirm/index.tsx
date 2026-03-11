@@ -146,7 +146,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
       </View>
 
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">{loginType === LoginType.Web3 ? <Web3Confirm /> : <Web2Confirm />}</View>
+        <View className="px-5 py-8">{loginType === LoginType.Web3 ? <Web3Confirm /> : <Web2Confirm />}</View>
       </SafeAreaView>
     </View>
   )

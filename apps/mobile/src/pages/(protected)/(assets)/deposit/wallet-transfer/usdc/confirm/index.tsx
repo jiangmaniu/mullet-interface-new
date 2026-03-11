@@ -19,8 +19,9 @@ import { useConfirmTransactionStatus } from '../../_hooks/use-confirm-transactio
 import { useEstimateGasFee } from '../../_hooks/use-estimate-gas-fee'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
 import { TransferTokenResult, useSolanaTransfer } from '../../_hooks/use-solana-transfer'
+import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
 import { useSolanaWalletBalance } from '../../../_apis/use-solana-wallet-balance'
-import { useDepositState } from '../../../_hooks/use-deposit-state'
+import { useDepositActions, useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
 // const COUNTDOWN_SECONDS = 30
@@ -29,6 +30,7 @@ export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
 const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   const { fromWalletAddress, toWalletAddress, depositAmount } = useDepositState()
+  const { setDepositAmount } = useDepositActions()
   const selectedAccount = useSelectedDepositAccount()
   const selectedTokenConfig = useSelectedTokenConfig()
 
@@ -36,6 +38,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   const { walletInfo } = useWalletInfo()
   const { connection } = useSolanaConnection()
   const { walletProvider } = useSolanaProvider()
+  const usdcTokenConfig = useUSDCTokenConfig()
 
   const { transferToken } = useSolanaTransfer()
 
@@ -133,11 +136,19 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     setShowSignatureModal(false)
     setSignatureStatus('idle')
     if (signatureStatus === 'success') {
-      // 返回到钱包转入列表页
-      router.back()
-      router.back()
+      // 清除路由堆栈，回到资产页面
+      router.dismissAll()
     }
   }, [signatureStatus])
+
+  // 确认按钮：回退到输入数量页面，并清空数量
+  const handleConfirmSignatureModal = useCallback(() => {
+    setShowSignatureModal(false)
+    setSignatureStatus('idle')
+    setDepositAmount('')
+    // usdc/confirm -> usdc（输入数量页）
+    router.back()
+  }, [setDepositAmount])
 
   useConfirmTransactionStatus(transferResult, {
     connection,
@@ -251,6 +262,12 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
       <SignatureSuccessModal
         visible={showSignatureModal && signatureStatus === 'success'}
         onClose={handleCloseSignatureModal}
+        onConfirm={handleConfirmSignatureModal}
+        confirmText={<Trans>继续充值</Trans>}
+        depositAmount={depositAmount}
+        depositTokenConfig={selectedTokenConfig}
+        receiveAmount={depositAmount}
+        receiveTokenConfig={usdcTokenConfig}
       />
       <SignatureFailModal
         visible={showSignatureModal && signatureStatus === 'failed'}

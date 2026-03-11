@@ -1,10 +1,10 @@
-import { useCallback, useState } from 'react'
 import { Buffer } from 'buffer'
+import { useCallback, useState } from 'react'
 import bs58 from 'bs58'
-import { Transaction } from '@solana/web3.js'
 
-import { depositRequest } from '@/v1/utils/deposit-request'
 import { useSolanaConnection, useSolanaProvider } from '@/lib/appkit'
+import { depositRequest } from '@/v1/utils/deposit-request'
+import { VersionedTransaction } from '@solana/web3.js'
 
 /**
  * 交易订单数据
@@ -29,8 +29,8 @@ export interface BuildSwapTxParams {
   toToken: string
   amount: string
   fromAddress: string
+  toAddress?: string // 输出 Token 接收地址，不传则默认等于 fromAddress
   slippageBps?: number // 默认 50 = 0.5%
-  provider?: string // 默认 "jupiter"
 }
 
 /**
@@ -67,38 +67,35 @@ export function useSwapTransaction() {
   }, [])
 
   // 构建交易订单
-  const buildTransaction = useCallback(
-    async (params: BuildSwapTxParams, onRefreshCountdown?: () => void) => {
-      setIsBuilding(true)
-      try {
-        const response = await depositRequest<SwapTransactionData>('/api/swap/build-tx', {
-          method: 'POST',
-          data: params,
-        })
+  const buildTransaction = useCallback(async (params: BuildSwapTxParams, onRefreshCountdown?: () => void) => {
+    setIsBuilding(true)
+    try {
+      const response = await depositRequest<SwapTransactionData>('/api/swap/build-tx', {
+        method: 'POST',
+        data: params,
+      })
 
-        // 验证响应数据
-        if (!response.data || !response.data.swapTransaction) {
-          throw new Error('Invalid transaction data received')
-        }
-
-        // 保存交易订单
-        setSwapTransaction(response.data)
-
-        // 刷新倒计时
-        if (onRefreshCountdown) {
-          onRefreshCountdown()
-        }
-
-        return response.data
-      } catch (error) {
-        console.error('Build transaction failed:', error)
-        throw error
-      } finally {
-        setIsBuilding(false)
+      // 验证响应数据
+      if (!response.data || !response.data.swapTransaction) {
+        throw new Error('Invalid transaction data received')
       }
-    },
-    [],
-  )
+
+      // 保存交易订单
+      setSwapTransaction(response.data)
+
+      // 刷新倒计时
+      if (onRefreshCountdown) {
+        onRefreshCountdown()
+      }
+
+      return response.data
+    } catch (error) {
+      console.error('Build transaction failed:', error)
+      throw error
+    } finally {
+      setIsBuilding(false)
+    }
+  }, [])
 
   // 发送交易
   const sendTransaction = useCallback(
@@ -122,16 +119,13 @@ export function useSwapTransaction() {
           throw new Error('签名失败：钱包未返回签名')
         }
 
-        // 反序列化原始交易
+        // 反序列化原始交易（VersionedTransaction 格式）
         const transactionBuffer = Buffer.from(transactionData.swapTransaction, 'base64')
-        const transaction = Transaction.from(transactionBuffer)
+        const transaction = VersionedTransaction.deserialize(transactionBuffer)
 
         // 钱包返回的是 base58 编码的签名，解码后添加到交易中
         const signatureBytes = bs58.decode(signatureResult)
-        transaction.signatures[0] = {
-          publicKey: transaction.feePayer!,
-          signature: Buffer.from(signatureBytes),
-        }
+        transaction.signatures[0] = Buffer.from(signatureBytes)
 
         // 序列化已签名的交易并发送到链上
         console.log('-> 正在发送交易到链上...')

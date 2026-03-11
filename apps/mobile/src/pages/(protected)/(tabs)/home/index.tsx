@@ -13,6 +13,7 @@ import {
   CollapsibleFlatList,
   CollapsibleStickyContent,
   CollapsibleStickyHeader,
+  CollapsibleStickyNavBar,
   CollapsibleTab,
   CollapsibleTabScene,
 } from '@/components/ui/collapsible-tab'
@@ -284,6 +285,10 @@ export default function Index() {
   const renderHeader = useCallback(
     () => (
       <CollapsibleStickyHeader className="bg-secondary">
+        <CollapsibleStickyNavBar>
+          <HomeHeader />
+        </CollapsibleStickyNavBar>
+
         <CollapsibleStickyContent>
           <MarketOverview />
         </CollapsibleStickyContent>
@@ -299,8 +304,6 @@ export default function Index() {
 
   return (
     <View className="bg-secondary flex-1">
-      <HomeHeader />
-
       <View className="flex-1">
         <CollapsibleTab
           variant="underline"

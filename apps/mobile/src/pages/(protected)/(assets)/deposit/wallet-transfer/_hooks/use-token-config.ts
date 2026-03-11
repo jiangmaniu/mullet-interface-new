@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 
-import { USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
+import { DEPOSIT_SOLANA_CHAIN_ID, USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 
 import { useDepositSupportedTokens } from '../../_apis/use-supported-tokens'
 
 export function useUSDCTokenConfig() {
-  const { data: tokensConfig } = useDepositSupportedTokens()
+  const { data: tokensConfig } = useDepositSupportedTokens(DEPOSIT_SOLANA_CHAIN_ID)
 
   return useMemo(() => {
     return tokensConfig?.find((t) => t.symbol.toUpperCase() === USDC_TOKEN_SYMBOL.toUpperCase())

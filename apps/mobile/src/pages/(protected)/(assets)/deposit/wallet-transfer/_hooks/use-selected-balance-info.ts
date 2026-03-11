@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+
 import { useSolanaWalletBalance } from '../../_apis/use-solana-wallet-balance'
 import { useDepositSupportedTokens } from '../../_apis/use-supported-tokens'
 import { useDepositState } from '../../_hooks/use-deposit-state'
@@ -10,7 +12,7 @@ import { useDepositState } from '../../_hooks/use-deposit-state'
  */
 export function useSelectedTokenConfig() {
   const { selectedTokenSymbol } = useDepositState()
-  const { data: tokensConfig } = useDepositSupportedTokens()
+  const { data: tokensConfig } = useDepositSupportedTokens(DEPOSIT_SOLANA_CHAIN_ID)
 
   return useMemo(() => {
     return tokensConfig?.find((t) => t.symbol === selectedTokenSymbol)

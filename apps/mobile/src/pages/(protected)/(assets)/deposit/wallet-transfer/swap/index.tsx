@@ -7,6 +7,7 @@ import { router } from 'expo-router'
 import { debounce } from 'lodash-es'
 import type { NumberFormatValues } from 'react-number-format'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { IconSwap } from '@/components/ui/icons/set/swap'
@@ -19,6 +20,7 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Spinning } from '@/components/ui/spinning'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { getImgSource } from '@/utils/img'
 import { t } from '@lingui/core/macro'
 import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -130,7 +132,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
   // 是否余额不足
   const isInsufficientBalance = BNumber.from(sendAmount).gt(selectedTokenBalance?.amount)
   // 是否有效
-  const isValid = BNumber.from(sendAmount).gt(0) && !isInsufficientBalance && !isQuoting && !!quoteData
+  const isValid = BNumber.from(sendAmount).gt(0) && !isInsufficientBalance && !!quoteData
 
   // 正向查询：更新 receiveAmount
   useEffect(() => {
@@ -248,9 +250,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
               <View className="flex-row items-center gap-4">
                 {/* Token 图标 */}
                 <View className="gap-medium flex-row items-center">
-                  {selectedTokenConfig?.iconUrl ? (
-                    <Image source={{ uri: selectedTokenConfig?.iconUrl }} style={{ width: 24, height: 24 }} />
-                  ) : null}
+                  <AvatarImage source={getImgSource(selectedTokenConfig?.iconUrl)} className="size-6 rounded-full" />
                   <Text className="text-paragraph-p2 text-content-1">
                     {renderFallback(selectedTokenConfig?.symbol)}
                   </Text>
@@ -264,7 +264,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
                     decimalScale={selectedTokenConfig?.displayDecimals}
                     placeholder={renderFallbackPlaceholder({ volScale: selectedTokenConfig?.displayDecimals })}
                     placeholderTextColor="#656886"
-                    className="text-important-1 text-content-1 !leading-small h-9"
+                    className="text-important-1 text-content-1 !leading-small"
                   />
                 </View>
               </View>
@@ -316,9 +316,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
 
               <View className="flex-row items-center gap-4">
                 <View className="gap-medium flex-row items-center">
-                  {usdcTokenConfig?.iconUrl ? (
-                    <Image source={{ uri: usdcTokenConfig?.iconUrl }} style={{ width: 24, height: 24 }} />
-                  ) : null}
+                  <AvatarImage source={getImgSource(usdcTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
                   <Text className="text-paragraph-p2 text-content-1">{renderFallback(usdcTokenConfig?.symbol)}</Text>
                 </View>
 
@@ -329,7 +327,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
                     decimalScale={2}
                     placeholder={renderFallbackPlaceholder({ volScale: 2 })}
                     placeholderTextColor="#656886"
-                    className="text-important-1 text-content-1 !leading-small h-9"
+                    className="text-important-1 text-content-1 !leading-small"
                   />
                 </View>
               </View>
@@ -354,14 +352,14 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
         <View className="gap-medium px-5">
           <FeeRow
             label={<Trans>兑换率</Trans>}
-            value={
-              quoteData
-                ? `${BNumber.toFormatNumber(1, { unit: selectedTokenConfig?.symbol })}≈${BNumber.toFormatNumber(
-                    BNumber.from(quoteData?.expectedOutputAmount).dividedBy(quoteData?.inputAmount),
-                    { unit: usdcTokenConfig?.symbol, volScale: usdcTokenConfig?.displayDecimals },
-                  )}`
-                : '-'
-            }
+            value={renderFallback(
+              quoteData &&
+                `${BNumber.toFormatNumber(1, { unit: selectedTokenConfig?.symbol })}≈${BNumber.toFormatNumber(
+                  BNumber.from(quoteData.expectedOutputAmount)?.dividedBy(quoteData.inputAmount),
+                  { unit: usdcTokenConfig?.symbol, volScale: usdcTokenConfig?.displayDecimals },
+                )}`,
+              { verify: !!quoteData },
+            )}
           />
           <FeeRow
             label={<Trans>滑点</Trans>}
@@ -408,8 +406,8 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
 
       {/* 底部按钮 */}
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
-          <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
+        <View className="px-5 py-8">
+          <Button block size="lg" color="primary" loading={isQuoting} disabled={!isValid} onPress={handleConfirmInput}>
             <Text>{isInsufficientBalance ? <Trans>余额不足</Trans> : <Trans>继续</Trans>}</Text>
           </Button>
         </View>

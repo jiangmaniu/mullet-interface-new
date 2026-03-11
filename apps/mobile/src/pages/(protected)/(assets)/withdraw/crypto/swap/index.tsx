@@ -329,7 +329,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
       </View>
 
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
+        <View className="px-5 py-8">
           <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
             <Text>
               <Trans>确定</Trans>

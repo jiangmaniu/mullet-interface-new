@@ -1,18 +1,22 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Image, View } from 'react-native'
+import { ActivityIndicator, Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import type { BuildSwapTxParams } from '../_hooks/use-swap-transaction'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
+import { toast } from '@/components/ui/toast'
 import { useWalletInfo } from '@/lib/appkit'
+import { getImgSource } from '@/utils/img'
 import { t } from '@lingui/core/macro'
-import { formatAddress, renderFallback } from '@mullet/utils/format'
+import { renderFallback } from '@mullet/utils/fallback'
+import { formatAddress } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSwapTransaction } from '../_hooks/use-swap-transaction'
@@ -61,7 +65,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     ) {
       return null
     }
-    const decimals = selectedTokenConfig.displayDecimals
+    const decimals = selectedTokenConfig.decimals
     const amountInSmallestUnit = BNumber.from(depositAmount).multipliedBy(Math.pow(10, decimals)).toFixed(0)
     return {
       fromToken: selectedTokenConfig.symbol,
@@ -72,9 +76,13 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
   }, [depositAmount, selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
 
   // 调用询价接口
-  const { data: quoteData, isLoading: isQuoting } = useSwapQuote(quoteParams, {
+  const {
+    data: quoteData,
+    isLoading: isQuoting,
+    refetch: refetchQuote,
+  } = useSwapQuote(quoteParams, {
     enabled: !!quoteParams,
-    refetchInterval: 30000, // 30 秒自动刷新
+    refetchInterval: false, // 由倒计时手动控制刷新
   })
 
   // 从询价结果计算接收金额
@@ -82,39 +90,28 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     if (!quoteData?.expectedOutputAmount || !usdcTokenConfig) {
       return
     }
-    const decimals = usdcTokenConfig.displayDecimals
+    const decimals = usdcTokenConfig.decimals
     return BNumber.from(quoteData.expectedOutputAmount).dividedBy(Math.pow(10, decimals)).toString()
   }, [quoteData, usdcTokenConfig])
 
-  // 刷新倒计时
+  // 倒计时归零时的处理：清除交易订单 + 刷新报价 + 重置倒计时
+  const handleCountdownExpire = useCallback(() => {
+    clearTransaction()
+    refetchQuote()
+  }, [clearTransaction, refetchQuote])
+
+  // 刷新倒计时（用于确认交易后重置）
   const refreshCountdown = useCallback(() => {
     setCountdown(COUNTDOWN_SECONDS)
-    // 清除旧的定时器
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-    }
-    // 重新启动定时器
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current)
-          clearTransaction()
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-  }, [clearTransaction])
+  }, [])
 
-  // 倒计时
+  // 倒计时循环：到 0 自动刷新 quote 并重新开始
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current)
-          // 倒计时归零时清除交易订单
-          clearTransaction()
-          return 0
+          handleCountdownExpire()
+          return COUNTDOWN_SECONDS
         }
         return prev - 1
       })
@@ -123,7 +120,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [clearTransaction])
+  }, [handleCountdownExpire])
 
   const handleConfirmSwap = useCallback(async () => {
     if (!toWalletAddress || !quoteParams) {
@@ -145,10 +142,12 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
           toToken: quoteParams.toToken,
           amount: quoteParams.amount,
           fromAddress: quoteParams.fromAddress,
+          // toAddress: toWalletAddress,
         }
         await buildAndSendTransaction(buildParams, refreshCountdown)
       }
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error?.message ?? error?.msg ?? <Trans>交易失败</Trans>)
       console.error('Transaction failed:', error)
     }
   }, [toWalletAddress, quoteParams, swapTransaction, sendTransaction, buildAndSendTransaction, refreshCountdown])
@@ -170,11 +169,19 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     setShowSignatureModal(false)
     resetStatus()
     if (signatureStatus === 'success') {
-      // 返回到钱包转入列表页
-      router.back()
-      router.back()
+      // 清除路由堆栈，重定向到资产页面
+      router.dismissAll()
     }
   }, [signatureStatus, resetStatus])
+
+  // 确认按钮：回退到选择入金 token 页面
+  const handleConfirmSignatureModal = useCallback(() => {
+    setShowSignatureModal(false)
+    resetStatus()
+    // swap/confirm -> swap -> wallet-transfer（选择 token 页面）
+    router.back()
+    router.back()
+  }, [resetStatus])
 
   return (
     <View className="gap-xl flex-1">
@@ -195,9 +202,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
             </Text>
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
-                {walletInfo?.icon && (
-                  <Image source={{ uri: walletInfo.icon }} style={{ width: 24, height: 24, borderRadius: 4 }} />
-                )}
+                <AvatarImage source={getImgSource(walletInfo?.icon)} className={'size-6 rounded-full'} />
                 <View className="gap-1">
                   <Text className="text-paragraph-p2 text-content-1">
                     {walletInfo?.name ? walletInfo.name : <Trans>未知钱包</Trans>}
@@ -224,9 +229,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
             </Text>
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-2">
-                {usdcTokenConfig?.iconUrl && (
-                  <Image source={{ uri: usdcTokenConfig?.iconUrl }} style={{ width: 24, height: 24 }} />
-                )}
+                <AvatarImage source={getImgSource(usdcTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
                 <View className="gap-1">
                   <Text className="text-paragraph-p2 text-content-1">{renderFallback(selectedAccount?.id)}</Text>
                   <Text className="text-paragraph-p3 text-content-4">{formatAddress(toWalletAddress)}</Text>
@@ -245,52 +248,54 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
         </Card>
 
         {/* 交易详情 */}
-        <View className="gap-2">
-          <FeeRow
-            label={<Trans>兑换率</Trans>}
-            value={
-              quoteData
-                ? `1 ${selectedTokenConfig?.symbol ?? ''}≈${BNumber.toFormatNumber(
-                    BNumber.from(quoteData.expectedOutputAmount).dividedBy(quoteData.inputAmount),
+        {isQuoting && !quoteData ? (
+          <View className="py-xl items-center">
+            <ActivityIndicator />
+          </View>
+        ) : (
+          <View className="gap-2">
+            <FeeRow
+              label={<Trans>兑换率</Trans>}
+              value={renderFallback(
+                quoteData &&
+                  `1 ${selectedTokenConfig?.symbol ?? ''}≈${BNumber.toFormatNumber(
+                    BNumber.from(quoteData?.expectedOutputAmount).dividedBy(quoteData?.inputAmount),
                     { unit: usdcTokenConfig?.symbol, volScale: usdcTokenConfig?.displayDecimals },
-                  )}`
-                : '-'
-            }
-          />
-          <FeeRow
-            label={<Trans>滑点</Trans>}
-            value={BNumber.toFormatNumber(quoteData?.slippagePercent, { prefix: t`自动`, unit: '%' })}
-          />
-          <FeeRow
-            label={<Trans>网络费</Trans>}
-            value={BNumber.toFormatNumber(quoteData?.estimatedGasUSD, {
-              unit: usdcTokenConfig?.symbol,
-            })}
-          />
-          <FeeRow
-            label={<Trans>服务费</Trans>}
-            value={
-              BNumber.from(quoteData?.estimatedFeeUSD)?.eq(0) ? (
-                <Trans>免费</Trans>
-              ) : (
-                BNumber.toFormatNumber(quoteData?.estimatedFeeUSD, {
-                  unit: usdcTokenConfig?.symbol,
-                })
-              )
-            }
-          />
-          <FeeRow
-            label={<Trans>预计到账</Trans>}
-            value={
-              quoteData
-                ? BNumber.toFormatNumber(receiveAmount, {
+                  )}`,
+                { verify: !!quoteData },
+              )}
+            />
+            <FeeRow
+              label={<Trans>滑点</Trans>}
+              value={BNumber.toFormatNumber(quoteData?.slippagePercent, { prefix: t`自动`, unit: '%' })}
+            />
+            <FeeRow
+              label={<Trans>网络费</Trans>}
+              value={BNumber.toFormatNumber(quoteData?.estimatedGasUSD, {
+                unit: usdcTokenConfig?.symbol,
+              })}
+            />
+            <FeeRow
+              label={<Trans>服务费</Trans>}
+              value={
+                BNumber.from(quoteData?.estimatedFeeUSD)?.eq(0) ? (
+                  <Trans>免费</Trans>
+                ) : (
+                  BNumber.toFormatNumber(quoteData?.estimatedFeeUSD, {
                     unit: usdcTokenConfig?.symbol,
-                    volScale: usdcTokenConfig?.displayDecimals,
                   })
-                : '-'
-            }
-          />
-        </View>
+                )
+              }
+            />
+            <FeeRow
+              label={<Trans>预计到账</Trans>}
+              value={BNumber.toFormatNumber(receiveAmount, {
+                unit: usdcTokenConfig?.symbol,
+                volScale: usdcTokenConfig?.displayDecimals,
+              })}
+            />
+          </View>
+        )}
 
         {/* 兑换服务提示 */}
         <View>
@@ -302,7 +307,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
 
       {/* 底部按钮 */}
       <SafeAreaView edges={['bottom']}>
-        <View className="px-5">
+        <View className="px-5 py-8">
           <Button
             block
             size="lg"
@@ -319,6 +324,12 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
       <SignatureSuccessModal
         visible={showSignatureModal && signatureStatus === 'success'}
         onClose={handleCloseSignatureModal}
+        onConfirm={handleConfirmSignatureModal}
+        confirmText={<Trans>继续充值</Trans>}
+        depositAmount={depositAmount}
+        receiveAmount={receiveAmount}
+        depositTokenConfig={selectedTokenConfig}
+        receiveTokenConfig={usdcTokenConfig}
       />
       <SignatureFailModal
         visible={showSignatureModal && signatureStatus === 'failed'}

@@ -2,25 +2,39 @@ import { Trans } from '@lingui/react/macro'
 import React from 'react'
 import { View } from 'react-native'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { IconSolana } from '@/components/ui/icons/set/solana'
 import { IconSuccess } from '@/components/ui/icons/set/success'
-import { IconUsdcSol } from '@/components/ui/icons/set/usdc-sol'
 import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { Text } from '@/components/ui/text'
+import { getImgSource } from '@/utils/img'
 import { BNumber } from '@mullet/utils/number'
 
-import { useSelectedTokenConfig } from '../_hooks/use-selected-balance-info'
-import { useDepositState } from '../../_hooks/use-deposit-state'
+import { DepositTokenInfo } from '../../_apis/use-supported-tokens'
 
 export interface SignatureSuccessModalProps {
   visible: boolean
   onClose: () => void
+  /** 点击确认按钮回调 */
+  onConfirm?: () => void
+  /** 确认按钮文案，默认"确定" */
+  confirmText?: React.ReactNode
+  depositAmount?: string
+  receiveAmount?: string
+  receiveTokenConfig?: DepositTokenInfo
+  depositTokenConfig?: DepositTokenInfo
 }
 
-export function SignatureSuccessModal({ visible, onClose }: SignatureSuccessModalProps) {
-  const { depositAmount } = useDepositState()
-  const selectedTokenConfig = useSelectedTokenConfig()
+export function SignatureSuccessModal({
+  visible,
+  onClose,
+  onConfirm,
+  confirmText,
+  depositAmount,
+  receiveAmount,
+  depositTokenConfig,
+  receiveTokenConfig,
+}: SignatureSuccessModalProps) {
   return (
     <Modal visible={visible} onClose={onClose} closeOnBackdropPress={false}>
       <ModalContent>
@@ -44,11 +58,11 @@ export function SignatureSuccessModal({ visible, onClose }: SignatureSuccessModa
                 <Trans>您发送</Trans>
               </Text>
               <View className="gap-medium flex-row items-center">
-                <IconSolana width={24} height={24} />
+                <AvatarImage source={getImgSource(depositTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />{' '}
                 <Text className="text-paragraph-p2 text-content-1">
                   {BNumber.toFormatNumber(depositAmount, {
-                    unit: selectedTokenConfig?.symbol,
-                    volScale: selectedTokenConfig?.displayDecimals,
+                    unit: depositTokenConfig?.symbol,
+                    volScale: depositTokenConfig?.displayDecimals,
                   })}
                 </Text>
               </View>
@@ -59,11 +73,11 @@ export function SignatureSuccessModal({ visible, onClose }: SignatureSuccessModa
                 <Trans>您收到</Trans>
               </Text>
               <View className="gap-medium flex-row items-center">
-                <IconUsdcSol width={24} height={24} />
+                <AvatarImage source={getImgSource(receiveTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
                 <Text className="text-paragraph-p2 text-content-1">
-                  {BNumber.toFormatNumber(depositAmount, {
-                    unit: selectedTokenConfig?.symbol,
-                    volScale: selectedTokenConfig?.displayDecimals,
+                  {BNumber.toFormatNumber(receiveAmount, {
+                    unit: receiveTokenConfig?.symbol,
+                    volScale: receiveTokenConfig?.displayDecimals,
                   })}
                 </Text>
               </View>
@@ -76,9 +90,9 @@ export function SignatureSuccessModal({ visible, onClose }: SignatureSuccessModa
         </View>
 
         <ModalFooter>
-          <Button color="primary" size="lg" block onPress={onClose}>
+          <Button color="primary" size="lg" block onPress={onConfirm ?? onClose}>
             <Text className="text-button-2 text-content-foreground">
-              <Trans>确定</Trans>
+              {confirmText ?? <Trans>确定</Trans>}
             </Text>
           </Button>
         </ModalFooter>
