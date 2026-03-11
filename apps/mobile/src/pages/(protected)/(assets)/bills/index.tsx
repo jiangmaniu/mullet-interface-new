@@ -12,10 +12,11 @@ import { IconifyFilter, IconifyNavArrowDown, IconifyUserCircle } from '@/compone
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
-import { t } from '@/locales/i18n'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { msg } from '@lingui/core/macro'
 
 import { DateFilterDrawer, DateRange } from './_comps/date-filter-drawer'
 import { DepositList } from './_comps/deposit-list'
@@ -90,11 +91,12 @@ const BillsScreen = observer(() => {
     DEPOSIT = 'deposit',
     TRANSFER = 'transfer',
   }
+  const { renderLinguiMsg } = useI18n()
 
   const routes: Route[] = [
-    { key: TabKeyEnum.WITHDRAWAL, title: t`出金` },
-    { key: TabKeyEnum.DEPOSIT, title: t`入金` },
-    { key: TabKeyEnum.TRANSFER, title: t`划转` },
+    { key: TabKeyEnum.WITHDRAWAL, title: renderLinguiMsg(msg`取现`) },
+    { key: TabKeyEnum.DEPOSIT, title: renderLinguiMsg(msg`充值`) },
+    { key: TabKeyEnum.TRANSFER, title: renderLinguiMsg(msg`划转`) },
   ]
 
   const TabContent = {

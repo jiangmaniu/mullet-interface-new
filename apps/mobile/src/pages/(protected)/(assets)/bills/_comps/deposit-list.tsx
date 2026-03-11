@@ -1,76 +1,69 @@
-import { observer } from "mobx-react-lite"
-import { Card, CardContent } from '@/components/ui/card';
-import { Text } from '@/components/ui/text';
-import { Trans } from '@lingui/react/macro';
-import React from 'react';
-import { ActivityIndicator, FlatList, View } from 'react-native';
-import { BillsCardRow } from "./card-row";
-import { useBillsScreenContext } from "../index";
-import { useFundFlowHistory, FundFlowHistoryItem } from "../_apis/use-fund-flow-history";
-import { EmptyState } from "@/components/states/empty-state";
-import { renderFallback } from "@mullet/utils/fallback";
-import { useStores } from "@/v1/provider/mobxProvider";
-import { DepositEventTypeEnum, getDepositEventTypeEnumOption } from "@/options/deposit/event";
-import { useI18n } from "@/hooks/use-i18n";
-import { format } from 'date-fns';
+import { Trans } from '@lingui/react/macro'
+import { observer } from 'mobx-react-lite'
+import React from 'react'
+import { ActivityIndicator, FlatList, View } from 'react-native'
+import { format } from 'date-fns'
 
-const PAGE_SIZE = 50;
+import { EmptyState } from '@/components/states/empty-state'
+import { Card, CardContent } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
+import { useI18n } from '@/hooks/use-i18n'
+import { DepositEventTypeEnum, getDepositEventTypeEnumOption } from '@/options/deposit/event'
+import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { renderFallback } from '@mullet/utils/fallback'
+import { formatTxHash } from '@mullet/utils/format'
+import { BNumber } from '@mullet/utils/number'
 
-export const DepositList = observer(({
-  accountSelector,
-}: {
-  accountSelector: React.ReactNode;
-}) => {
-  const { dateRange } = useBillsScreenContext();
-  const { user } = useStores();
+import { FundFlowHistoryItem, useFundFlowHistory } from '../_apis/use-fund-flow-history'
+import { useBillsScreenContext } from '../index'
+import { AccountTypeBadge, BillsCardRow } from './card-row'
+
+const PAGE_SIZE = 20
+
+export const DepositList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
+  const { dateRange } = useBillsScreenContext()
 
   // 格式化时间为 API 需要的格式
   const formatDateTime = (date: Date | null) => {
-    if (!date) return undefined;
-    return format(date, 'yyyy-MM-dd HH:mm:ss');
-  };
+    if (!date) return undefined
+    return format(date, 'yyyy-MM-dd HH:mm:ss')
+  }
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    refetch,
-    isRefetching,
-  } = useFundFlowHistory(
+  const { selectedAccount } = useBillsScreenContext()
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useFundFlowHistory(
     {
-      userId: String(user.currentUser.id!),
+      userId: selectedAccount.id,
       eventType: DepositEventTypeEnum.DEPOSIT_COMPLETED,
       startTime: formatDateTime(dateRange.startDate),
       endTime: formatDateTime(dateRange.endDate),
     },
-    PAGE_SIZE
-  );
+    PAGE_SIZE,
+  )
 
   // 合并所有页数据并去重
   const records = React.useMemo(() => {
-    if (!data?.pages) return [];
-    const all = data.pages.flatMap(page => page?.data ?? []);
+    if (!data?.pages) return []
+    const all = data.pages.flatMap((page) => page?.data ?? [])
     // 使用 Map 去重，保留最新的记录（后面的覆盖前面的）
-    const recordMap = new Map<number, FundFlowHistoryItem>();
-    all.forEach(item => {
+    const recordMap = new Map<number, FundFlowHistoryItem>()
+    all.forEach((item) => {
       if (item.id != null) {
-        recordMap.set(item.id, item);
+        recordMap.set(item.id, item)
       }
-    });
-    return Array.from(recordMap.values());
-  }, [data]);
+    })
+    return Array.from(recordMap.values())
+  }, [data])
 
   const handleEndReached = () => {
     if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+      fetchNextPage()
     }
-  };
+  }
 
   const renderItem = ({ item }: { item: FundFlowHistoryItem }) => (
-    <DepositCard record={item} />
-  );
+    <DepositCard record={item} account={selectedAccount} />
+  )
 
   const renderFooter = () => {
     if (isFetchingNextPage) {
@@ -78,17 +71,19 @@ export const DepositList = observer(({
         <View className="py-xl items-center">
           <ActivityIndicator />
         </View>
-      );
+      )
     }
     if (!hasNextPage && records.length > 0) {
       return (
         <View className="py-xl items-center">
-          <Text className="text-paragraph-p3 text-content-4"><Trans>没有更多了</Trans></Text>
+          <Text className="text-paragraph-p3 text-content-4">
+            <Trans>没有更多了</Trans>
+          </Text>
         </View>
-      );
+      )
     }
-    return null;
-  };
+    return null
+  }
 
   const renderEmpty = () => {
     if (isLoading) {
@@ -96,14 +91,14 @@ export const DepositList = observer(({
         <View className="py-3xl items-center">
           <ActivityIndicator />
         </View>
-      );
+      )
     }
     return (
-      <View className="py-[60px] items-center">
+      <View className="items-center py-[60px]">
         <EmptyState message={<Trans>暂无入金记录</Trans>} />
       </View>
-    );
-  };
+    )
+  }
 
   return (
     <FlatList
@@ -112,11 +107,7 @@ export const DepositList = observer(({
       data={records}
       keyExtractor={(item) => String(item.id)}
       renderItem={renderItem}
-      ListHeaderComponent={
-        <View className="pt-xl pb-xl">
-          {accountSelector}
-        </View>
-      }
+      ListHeaderComponent={<View className="pt-xl pb-xl">{accountSelector}</View>}
       ItemSeparatorComponent={() => <View className="h-xl" />}
       ListFooterComponent={renderFooter}
       ListEmptyComponent={renderEmpty}
@@ -126,48 +117,52 @@ export const DepositList = observer(({
       refreshing={isRefetching && !isFetchingNextPage}
       style={{ paddingHorizontal: 16 }}
     />
-  );
+  )
 })
 
 // 充值卡片组件
-const DepositCard = observer(({ record }: { record: FundFlowHistoryItem }) => {
-  const { renderLinguiMsg } = useI18n();
+const DepositCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem }) => {
+  const { renderLinguiMsg } = useI18n()
 
+  const synopsis = getAccountSynopsisByLng(account.synopsis)
   return (
     <Card>
       <CardContent className="gap-medium">
         <BillsCardRow
-          label={<Trans>事件类型</Trans>}
-          value={renderLinguiMsg(getDepositEventTypeEnumOption({ value: record.eventType })?.label, <Trans>未知类型</Trans>)}
+          label={<Trans>充值金额</Trans>}
+          value={BNumber.toFormatNumber(record.amount, { unit: record.token })}
         />
+
         <BillsCardRow
-          label={<Trans>入金金额</Trans>}
-          value={record.amount ? `${record.amount} ${record.token ?? 'USDC'}` : '-'}
+          label={<Trans>充值状态</Trans>}
+          value={renderLinguiMsg(
+            getDepositEventTypeEnumOption({ value: record.eventType })?.label,
+            <Trans>未知状态</Trans>,
+          )}
         />
+
         <BillsCardRow
-          label={<Trans>链</Trans>}
-          value={renderFallback(record.chain)}
+          label={<Trans>取现账户</Trans>}
+          valueComponent={
+            <View className="gap-xs flex-row items-center">
+              <AccountTypeBadge type={synopsis.abbr} />
+              <Text className="text-paragraph-p3 text-content-1">{account.id}</Text>
+            </View>
+          }
         />
+
+        <BillsCardRow label={<Trans>链</Trans>} value={renderFallback(record.chain)} />
         <BillsCardRow
           label={<Trans>操作前余额</Trans>}
-          value={record.balanceBefore ? `${record.balanceBefore} USDC` : '-'}
+          value={BNumber.toFormatNumber(record.balanceBefore, { unit: record.token })}
         />
         <BillsCardRow
           label={<Trans>操作后余额</Trans>}
-          value={record.balanceAfter ? `${record.balanceAfter} USDC` : '-'}
+          value={BNumber.toFormatNumber(record.balanceAfter, { unit: record.token })}
         />
-        {record.txHash && (
-          <BillsCardRow
-            label={<Trans>交易哈希</Trans>}
-            value={`${record.txHash.slice(0, 6)}...${record.txHash.slice(-4)}`}
-          />
-        )}
-        <BillsCardRow
-          label={<Trans>时间</Trans>}
-          value={renderFallback(record.createdAt)}
-        />
+        {record.txHash && <BillsCardRow label={<Trans>交易哈希</Trans>} value={`${formatTxHash(record.txHash)}`} />}
+        <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record.createdAt)} />
       </CardContent>
     </Card>
-  );
+  )
 })
-
