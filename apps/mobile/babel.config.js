@@ -10,6 +10,8 @@ module.exports = function (api) {
       inspectorBabelPlugin,
       // Lingui 国际化
       '@lingui/babel-plugin-lingui-macro',
+      // Reanimated 插件必须放在最后
+      'react-native-reanimated/plugin',
     ],
   };
 };

@@ -7,10 +7,10 @@ import Animated, {
   cancelAnimation,
   Extrapolation,
   interpolate,
-  interpolateColor,
   SharedValue,
   useAnimatedReaction,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
   withDecay,
 } from 'react-native-reanimated'
@@ -131,15 +131,17 @@ function CustomTabItem({
   inactiveColor,
   scrollEnabled,
 }: CustomTabItemProps) {
-  // 文字颜色插值动画
+  // 缓存距离计算，避免每帧重复 Math.abs
+  const progress = useDerivedValue(() => {
+    'worklet'
+    return Math.min(Math.abs(index - indexDecimal.value), 1)
+  })
+
+  // 用 opacity 替代 interpolateColor，性能提升显著
   const animatedTextStyle = useAnimatedStyle(() => {
-    const distance = Math.abs(index - indexDecimal.value)
-    const progress = Math.min(distance, 1)
-
-    const color = interpolateColor(progress, [0, 1], [activeColor, inactiveColor])
-
+    'worklet'
     return {
-      color,
+      opacity: interpolate(progress.value, [0, 1], [1, 0.45]),
     }
   })
 
@@ -157,12 +159,18 @@ function CustomTabItem({
       onLayout={onLayout}
       className={cn(tabItemVariants({ variant, size, selected: false }), { 'flex-1': !scrollEnabled })}
     >
-      <Animated.Text className={cn(tabTextVariants({ variant, size, selected: false }))} style={animatedTextStyle}>
+      <Animated.Text
+        className={cn(tabTextVariants({ variant, size, selected: false }))}
+        style={[{ color: activeColor }, animatedTextStyle]}
+      >
         {label}
       </Animated.Text>
     </Pressable>
   )
 }
+
+// 使用 React.memo 避免不必要的重渲染
+const MemoizedCustomTabItem = React.memo(CustomTabItem)
 
 // ----------------------------------------------------------------------
 // 3. 主组件 CollapsibleTab
@@ -225,7 +233,7 @@ export function CollapsibleTab({
             activeColor={textColorContent1}
             inactiveColor={textColorContent4}
             TabItemComponent={(itemProps) => (
-              <CustomTabItem
+              <MemoizedCustomTabItem
                 index={itemProps.index}
                 indexDecimal={itemProps.indexDecimal}
                 scrollEnabled={scrollEnabled}
@@ -342,12 +350,14 @@ export function CollapsibleStickyHeader({
   const initialScrollY = useSharedValue(0)
   const isGestureActive = useSharedValue(false)
   const targetScrollY = useSharedValue(0)
+  const lastScrolledY = useSharedValue(0)
 
   useAnimatedReaction(
     () => targetScrollY.value,
-    (targetY) => {
+    (targetY, previousTargetY) => {
       'worklet'
-      if (!isGestureActive.value) {
+      // 只在值真正变化且手势未激活时才执行
+      if (!isGestureActive.value && targetY !== previousTargetY) {
         const currentTab = focusedTab.value
         const ref = refMap[currentTab]
         if (ref) {
@@ -367,6 +377,7 @@ export function CollapsibleStickyHeader({
       cancelAnimation(targetScrollY)
       initialScrollY.value = scrollY.value
       targetScrollY.value = scrollY.value
+      lastScrolledY.value = scrollY.value
       isGestureActive.value = true
     })
     .onUpdate((e) => {
@@ -376,8 +387,12 @@ export function CollapsibleStickyHeader({
       if (ref) {
         const delta = -e.translationY
         const newTargetScrollY = Math.max(0, initialScrollY.value + delta)
-        targetScrollY.value = newTargetScrollY
-        scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture')
+        // 只在变化超过 1px 时才调用 scrollTo，减少桥接开销
+        if (Math.abs(newTargetScrollY - lastScrolledY.value) > 1) {
+          targetScrollY.value = newTargetScrollY
+          scrollTo(ref, 0, newTargetScrollY, false, 'headerGesture')
+          lastScrolledY.value = newTargetScrollY
+        }
       }
     })
     .onEnd((e) => {
@@ -472,33 +487,37 @@ export function CollapsibleStickyNavBar({
 
   const scrollY = useCurrentTabScrollY()
 
-  const animatedStyle = useAnimatedStyle(() => {
-    if (bannerHeight === 0) return {}
+  // 提取共享的 translateY 计算，避免两个 useAnimatedStyle 重复计算
+  const translateY = useDerivedValue(() => {
+    'worklet'
+    if (bannerHeight === 0) return 0
+    return interpolate(scrollY.value, [0, bannerHeight], [0, bannerHeight], Extrapolation.CLAMP)
+  })
 
-    const translateY = interpolate(scrollY.value, [0, bannerHeight], [0, bannerHeight], Extrapolation.CLAMP)
-
-    if (fixed) {
-      return { transform: [{ translateY }] }
-    }
-
-    const opacity = interpolate(
+  // 仅 non-fixed 模式需要 opacity
+  const navOpacity = useDerivedValue(() => {
+    'worklet'
+    if (fixed || bannerHeight === 0) return 1
+    return interpolate(
       scrollY.value + insets.top,
       [bannerHeight, bannerHeight + headerHeight],
       [1, 0],
       Extrapolation.CLAMP,
     )
+  })
 
+  const animatedStyle = useAnimatedStyle(() => {
+    'worklet'
     return {
-      transform: [{ translateY }],
-      opacity,
+      transform: [{ translateY: translateY.value }],
+      opacity: navOpacity.value,
     }
   })
 
   const statusBarAnimatedStyle = useAnimatedStyle(() => {
-    if (bannerHeight === 0) return {}
-    const translateY = interpolate(scrollY.value, [0, bannerHeight], [0, bannerHeight], Extrapolation.CLAMP)
+    'worklet'
     return {
-      transform: [{ translateY }],
+      transform: [{ translateY: translateY.value }],
     }
   })
 
