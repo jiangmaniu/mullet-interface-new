@@ -285,7 +285,6 @@ export default function Index() {
     () => (
       <CollapsibleStickyHeader className="bg-secondary">
         <CollapsibleStickyContent>
-          <HomeHeader />
           <MarketOverview />
         </CollapsibleStickyContent>
       </CollapsibleStickyHeader>
@@ -300,6 +299,8 @@ export default function Index() {
 
   return (
     <View className="bg-secondary flex-1">
+      <HomeHeader />
+
       <View className="flex-1">
         <CollapsibleTab
           variant="underline"
