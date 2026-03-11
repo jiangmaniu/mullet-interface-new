@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Buffer } from 'buffer'
+import bs58 from 'bs58'
+import { Transaction } from '@solana/web3.js'
 
 import { depositRequest } from '@/v1/utils/deposit-request'
 import { useSolanaConnection, useSolanaProvider } from '@/lib/appkit'
@@ -113,13 +115,28 @@ export function useSwapTransaction() {
       try {
         console.log('-> 正在请求钱包签名交易...')
         // 使用 walletProvider 签名交易
-        const signedTransactionBase64 = await signTransaction(transactionData.swapTransaction)
-        console.log('✅ 交易签名成功')
+        const signatureResult = await signTransaction(transactionData.swapTransaction)
+        console.log('✅ 钱包返回签名:', signatureResult)
 
-        // 将签名后的交易发送到链上
+        if (!signatureResult) {
+          throw new Error('签名失败：钱包未返回签名')
+        }
+
+        // 反序列化原始交易
+        const transactionBuffer = Buffer.from(transactionData.swapTransaction, 'base64')
+        const transaction = Transaction.from(transactionBuffer)
+
+        // 钱包返回的是 base58 编码的签名，解码后添加到交易中
+        const signatureBytes = bs58.decode(signatureResult)
+        transaction.signatures[0] = {
+          publicKey: transaction.feePayer!,
+          signature: Buffer.from(signatureBytes),
+        }
+
+        // 序列化已签名的交易并发送到链上
         console.log('-> 正在发送交易到链上...')
-        const signedTransactionBuffer = Buffer.from(signedTransactionBase64, 'base64')
-        const txSignature = await connection.sendRawTransaction(signedTransactionBuffer, {
+        const signedTransaction = transaction.serialize()
+        const txSignature = await connection.sendRawTransaction(signedTransaction, {
           skipPreflight: false,
           preflightCommitment: 'confirmed',
         })
