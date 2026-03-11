@@ -26,13 +26,25 @@ export enum BridgeIncoming {
   /** 调用 widget 方法 */
   Widget = 'widget',
   SyncQuote = 'syncQuote',
-  SetWatermark = 'setWatermark'
+  SetWatermark = 'setWatermark',
+  /** 返回历史 K 线数据（响应 RequestBars） */
+  BarsResponse = 'barsResponse',
+  /** 返回品种信息（响应 ResolveSymbol） */
+  SymbolResponse = 'symbolResponse',
 }
 
 /** Web → App */
 export enum BridgeOutgoing {
   ChartReady = 'chartReady',
-  ChartCallResult = 'chartCallResult'
+  ChartCallResult = 'chartCallResult',
+  /** 请求历史 K 线数据 */
+  RequestBars = 'requestBars',
+  /** 请求解析品种信息 */
+  ResolveSymbol = 'resolveSymbol',
+  /** 请求订阅品种行情 */
+  Subscribe = 'subscribe',
+  /** 请求取消订阅品种行情 */
+  Unsubscribe = 'unsubscribe',
 }
 
 // ── App → Web 消息 ──
@@ -76,9 +88,65 @@ export type AppToWebMessage =
   | WidgetMessage
   | SyncQuoteMessage
   | SetWatermarkMessage
+  | BarsResponseMessage
+  | SymbolResponseMessage
 
 // ── Web → App 消息 ──
+
+/** 请求历史 K 线 */
+export interface RequestBarsPayload {
+  symbol: string
+  resolution: string
+  from: number
+  to: number
+  countBack: number
+  firstDataRequest: boolean
+}
+
+/** K 线 Bar 数据 */
+export interface BarData {
+  time: number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume?: number
+}
+
+/** 历史 K 线响应 */
+export interface BarsResponseMessage {
+  type: BridgeIncoming.BarsResponse
+  callId: string
+  payload: {
+    bars: BarData[]
+    noData: boolean
+  }
+}
+
+/** 品种信息 */
+export interface BridgeSymbolInfo {
+  name: string
+  description?: string
+  type?: string
+  session?: string
+  exchange?: string
+  timezone?: string
+  precision?: number
+  mtName?: string
+  [key: string]: unknown
+}
+
+/** 品种信息响应 */
+export interface SymbolResponseMessage {
+  type: BridgeIncoming.SymbolResponse
+  callId: string
+  payload: BridgeSymbolInfo
+}
 
 export type WebToAppMessage =
   | { type: BridgeOutgoing.ChartReady }
   | { type: BridgeOutgoing.ChartCallResult; callId: string; data?: unknown; error?: string }
+  | { type: BridgeOutgoing.RequestBars; callId: string; payload: RequestBarsPayload }
+  | { type: BridgeOutgoing.ResolveSymbol; callId: string; payload: { symbol: string } }
+  | { type: BridgeOutgoing.Subscribe; payload: { symbol: string } }
+  | { type: BridgeOutgoing.Unsubscribe; payload: { symbol: string } }

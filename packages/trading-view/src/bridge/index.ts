@@ -1,7 +1,9 @@
 import type { IChartingLibraryWidget } from 'public/static/charting_library'
 
 import { getWidget, registerWidget, unregisterWidget } from '@/core/bridge/widget-registry'
-import wsStore from '@/stores/ws'
+import type { BridgeHistoryProvider } from '@/core/datafeed/bridge/bridge-history-provider'
+import type { BridgeSymbolProvider } from '@/core/datafeed/bridge/bridge-symbol-provider'
+import quoteStore from '@/stores/quote-store'
 
 import {
   type AppToWebMessage,
@@ -23,6 +25,8 @@ function postToApp(msg: WebToAppMessage) {
 
 let listening = false
 let watermarkCallback: ((base64: string) => void) | null = null
+let historyProviderRef: BridgeHistoryProvider | null = null
+let symbolProviderRef: BridgeSymbolProvider | null = null
 
 function isEnvelope(raw: unknown): raw is MessageEnvelope<AppToWebMessage> {
   if (raw == null || typeof raw !== 'object') return false
@@ -87,10 +91,19 @@ function handleMessage(event: MessageEvent) {
       break
     }
     case BridgeIncoming.SyncQuote:
-      // App 推送的行情数据，格式需与 setQuoteData 一致：{ n, b, a, t } 或数组
       if (msg.payload) {
         const items = Array.isArray(msg.payload) ? msg.payload : [msg.payload]
-        items.forEach((p) => p && typeof p === 'object' && wsStore.setQuoteData(p))
+        items.forEach((p) => p && typeof p === 'object' && quoteStore.setQuoteData(p))
+      }
+      break
+    case BridgeIncoming.BarsResponse:
+      if (historyProviderRef && msg.callId) {
+        historyProviderRef.handleBarsResponse(msg.callId, msg.payload.bars, msg.payload.noData)
+      }
+      break
+    case BridgeIncoming.SymbolResponse:
+      if (symbolProviderRef && msg.callId) {
+        symbolProviderRef.handleSymbolResponse(msg.callId, msg.payload)
       }
       break
     case BridgeIncoming.SetWatermark:
@@ -101,8 +114,16 @@ function handleMessage(event: MessageEvent) {
 
 // ── 公开 API ──
 
-export function initBridge(widget: IChartingLibraryWidget) {
-  registerWidget(widget)
+export function initBridge(
+  widget: IChartingLibraryWidget | null,
+  providers?: {
+    historyProvider?: BridgeHistoryProvider
+    symbolProvider?: BridgeSymbolProvider
+  }
+) {
+  if (widget) registerWidget(widget)
+  historyProviderRef = providers?.historyProvider ?? historyProviderRef
+  symbolProviderRef = providers?.symbolProvider ?? symbolProviderRef
   if (!listening) {
     window.addEventListener('message', handleMessage)
     document.addEventListener('message', handleMessage as EventListener)
@@ -115,6 +136,8 @@ export function destroyBridge() {
   document.removeEventListener('message', handleMessage as EventListener)
   unregisterWidget()
   watermarkCallback = null
+  historyProviderRef = null
+  symbolProviderRef = null
   listening = false
 }
 

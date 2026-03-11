@@ -75,6 +75,3 @@ export const quoteUtil = {
     return this.intToBin(Math.floor(ts / 1000))
   }
 }
-
-/** @deprecated 使用 @/config/symbols 中的 symbolInfoArr */
-export { symbolInfoArr } from '@/config/symbols'

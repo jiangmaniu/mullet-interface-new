@@ -1,6 +1,4 @@
-import { runInAction } from 'mobx'
 import { useRouter } from 'next/router'
-import type { Bar } from 'public/static/charting_library'
 import {
   ChartStyle,
   IChartingLibraryWidget,
@@ -11,13 +9,12 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { BridgeOutgoing, destroyBridge, initBridge, onWatermark, postToApp } from '@/bridge'
-import { symbolInfoArr } from '@/config/symbols'
 import { KEY_TRADINGVIEW_CHART_PROPS } from '@/constants'
 import { useConfig } from '@/context/config-provider'
-import { useStores } from '@/context/mobx-provider'
-import { createMt5Datafeed } from '@/core/datafeed/mt5/mt5-datafeed'
-import { Mt5HistoryProvider } from '@/core/datafeed/mt5/mt5-history-provider'
-import { createStaticSymbolProvider } from '@/core/symbols/static-provider'
+import { createBridgeDatafeed } from '@/core/datafeed/bridge/bridge-datafeed'
+import { BridgeHistoryProvider } from '@/core/datafeed/bridge/bridge-history-provider'
+import { BridgeSymbolProvider } from '@/core/datafeed/bridge/bridge-symbol-provider'
+import quoteStore from '@/stores/quote-store'
 import { ThemeConst } from '@/theme/theme'
 import { STORAGE_GET_CHART_PROPS, STORAGE_REMOVE_CHART_PROPS } from '@/utils/storage'
 
@@ -94,7 +91,6 @@ function injectWatermark(containerEl: HTMLDivElement | null, base64: string) {
 export const TVChart = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const [chartReady, setChartReady] = useState(false)
-  const { ws } = useStores()
   const { isMobile, isPc } = useConfig()
   const { query } = useRouter()
 
@@ -117,24 +113,18 @@ export const TVChart = () => {
   useEffect(() => {
     clearChartCache(theme, bgGradientStartColor)
 
-    const symbolProvider = createStaticSymbolProvider(symbolInfoArr)
-    const historyProvider = new Mt5HistoryProvider()
-    const datafeed = createMt5Datafeed(
+    const symbolProvider = new BridgeSymbolProvider(postToApp)
+    const historyProvider = new BridgeHistoryProvider(postToApp)
+    const datafeed = createBridgeDatafeed(
       symbolProvider,
-      {
-        setActiveSymbolInfo: ws.setActiveSymbolInfo,
-        getHistoryBars: (p, onResult) => {
-          historyProvider.getBars(p, (bars: Bar[], meta: { noData?: boolean }) => {
-            runInAction(() => {
-              ws.loading = false
-            })
-            onResult(bars, meta)
-          })
-        },
-        removeActiveSymbol: ws.removeActiveSymbol,
-      },
+      historyProvider,
+      quoteStore,
+      postToApp,
       { isZh: locale === 'zh_TW' }
     )
+
+    // 先启动 Bridge 消息监听，确保 resolveSymbol/getBars 的响应能被接收
+    initBridge(null as unknown as IChartingLibraryWidget, { historyProvider, symbolProvider })
 
     const container = chartContainerRef.current
     if (!container) return
@@ -158,17 +148,18 @@ export const TVChart = () => {
         createDefaultStudies(tvWidget, showBottomMACD === 1, !!isPc)
       }
 
-      initBridge(tvWidget)
+      // widget ready 后注册，支持 ActiveChart/Widget 方法调用
+      initBridge(tvWidget, { historyProvider, symbolProvider })
       onWatermark((base64) => injectWatermark(chartContainerRef.current, base64))
 
       setChartReady(true)
       postToApp({ type: BridgeOutgoing.ChartReady })
     })
 
-    ws.setTvWidget(tvWidget)
-
     return () => {
       destroyBridge()
+      historyProvider.destroy()
+      symbolProvider.destroy()
       tvWidget.remove()
     }
   }, [params, isPc, chartType, showBottomMACD, mode])
