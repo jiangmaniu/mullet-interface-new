@@ -196,7 +196,12 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
           .multipliedBy(pct)
           .dividedBy(100)
           .toString()
+
         setSendAmount(calculated)
+        // 如果 sendAmount 为 0，也清空 receiveAmount
+        if (!calculated || calculated === '0') {
+          setReceiveAmount('0')
+        }
       }
     },
     [selectedTokenBalance?.amount],
