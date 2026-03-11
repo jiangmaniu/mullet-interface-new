@@ -1,62 +1,32 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import type { WebView } from 'react-native-webview'
+import { autorun } from 'mobx'
 
-import { BridgeIncoming } from '@mullet/trading-view'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { BridgeIncoming } from '@mullet/trading-view'
 
 /**
- * 节流推送实时行情到 WebView
- * WebSocket 行情推送频率很高（每秒数次），100ms 节流只保留最新一帧
+ * 实时推送行情到 WebView
+ * 使用 MobX autorun 追踪 quotes 深层属性变化，每次变化立即推送，保证与 Native UI 同步
  */
 export function useQuoteSync(webviewRef: React.RefObject<WebView | null>, accountGroupId: number, symbolName: string) {
   const { ws } = useStores()
-  const throttledPost = useThrottledPost(webviewRef)
-
-  const quoteKey = `${accountGroupId}/${symbolName}`
-  const currentQuote = ws.quotes.get(quoteKey)
 
   useEffect(() => {
-    if (!currentQuote) return
-    throttledPost(JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: currentQuote } }))
-  }, [currentQuote, throttledPost])
-}
-
-// ─── 内部：节流 postMessage ─────────────────────────────────────────
-
-function useThrottledPost(webviewRef: React.RefObject<WebView | null>, delay = 100) {
-  const lastRef = useRef(0)
-  const pendingRef = useRef<string | null>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current)
-    }
-  }, [])
-
-  return useCallback(
-    (msg: string) => {
-      const now = Date.now()
-      if (now - lastRef.current >= delay) {
-        lastRef.current = now
-        webviewRef.current?.postMessage(msg)
-      } else {
-        pendingRef.current = msg
-        if (!timerRef.current) {
-          timerRef.current = setTimeout(
-            () => {
-              if (pendingRef.current) {
-                webviewRef.current?.postMessage(pendingRef.current)
-                lastRef.current = Date.now()
-                pendingRef.current = null
-              }
-              timerRef.current = null
-            },
-            delay - (now - lastRef.current),
-          )
-        }
+    const quoteKey = `${accountGroupId}/${symbolName}`
+    const dispose = autorun(() => {
+      const currentQuote = ws.quotes.get(quoteKey)
+      if (!currentQuote?.priceData) return
+      const tick = {
+        n: currentQuote.symbol,
+        b: currentQuote.priceData.sell,
+        a: currentQuote.priceData.buy,
+        t: Math.floor(currentQuote.priceData.id / 1000),
       }
-    },
-    [webviewRef, delay],
-  )
+      webviewRef.current?.postMessage(
+        JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }),
+      )
+    })
+    return dispose
+  }, [ws, accountGroupId, symbolName, webviewRef])
 }

@@ -1,15 +1,17 @@
-import { useRef, useCallback, useEffect } from 'react'
-import { Platform } from 'react-native'
-import { WebView, type WebViewMessageEvent } from 'react-native-webview'
 import { observer } from 'mobx-react-lite'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { Animated, Easing, Platform, View } from 'react-native'
+import { WebView } from 'react-native-webview'
+import type { WebViewMessageEvent } from 'react-native-webview'
 
 import { useThemeColors } from '@/hooks/use-theme-colors'
-
 import { BridgeIncoming, BridgeOutgoing } from '@mullet/trading-view'
-import { getSourceUri, getAllowingReadAccessToURL } from './utils'
-import { useTradingviewConfig } from './hooks/use-tradingview-config'
+
+import { useBridgeDataProvider } from './hooks/use-bridge-data-provider'
 import { useQuoteSync } from './hooks/use-quote-sync'
+import { useTradingviewConfig } from './hooks/use-tradingview-config'
 import { useWebviewLifecycle } from './hooks/use-webview-lifecycle'
+import { getAllowingReadAccessToURL, getSourceUri } from './utils'
 
 export interface TradingviewChartProps {
   /** simple=纯 K 线，时间周期由上层 Bridge 控制；detail=完整详情页 */
@@ -18,29 +20,32 @@ export interface TradingviewChartProps {
   resolution?: string
 }
 
-function TradingviewChartInner({
-  mode = 'detail',
-  resolution,
-}: TradingviewChartProps) {
+function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChartProps) {
   const webviewRef = useRef<WebView>(null)
+  const [chartReady, setChartReady] = useState(false)
+  const [skeletonVisible, setSkeletonVisible] = useState(true)
+  const skeletonOpacity = useRef(new Animated.Value(1)).current
   const { backgroundColorSecondary } = useThemeColors()
+
+  useEffect(() => {
+    if (chartReady) {
+      Animated.timing(skeletonOpacity, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => setSkeletonVisible(false))
+    }
+  }, [chartReady, skeletonOpacity])
 
   const configOpts = {
     mode,
   }
 
-  const {
-    env,
-    locale,
-    urlQuery,
-    symbolName,
-    symbolItem,
-    accountGroupId,
-    isReady,
-  } = useTradingviewConfig(configOpts)
+  const { env, locale, urlQuery, symbolName, symbolItem, accountGroupId, isReady } = useTradingviewConfig(configOpts)
 
   useQuoteSync(webviewRef, accountGroupId, symbolName)
   useWebviewLifecycle(webviewRef, env, symbolName, symbolItem, accountGroupId)
+  const { handleBridgeMessage } = useBridgeDataProvider(webviewRef)
 
   useEffect(() => {
     if (mode === 'simple' && resolution && isReady) {
@@ -56,8 +61,10 @@ function TradingviewChartInner({
 
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
+      if (handleBridgeMessage(event.nativeEvent.data)) return
       const msg: { type?: string } = JSON.parse(event.nativeEvent.data)
       if (msg.type === BridgeOutgoing.ChartReady) {
+        setChartReady(true)
         webviewRef.current?.postMessage(
           JSON.stringify({
             payload: {
@@ -69,35 +76,99 @@ function TradingviewChartInner({
         )
       }
     },
-    [webviewRef],
+    [webviewRef, handleBridgeMessage],
   )
 
   if (!isReady) return null
 
   return (
-    <WebView
-      key={locale}
-      ref={webviewRef}
-      source={{ uri: getSourceUri(urlQuery) }}
-      style={{ flex: 1, backgroundColor: backgroundColorSecondary }}
-      {...(allowingReadAccess && { allowingReadAccessToURL: allowingReadAccess })}
-      allowUniversalAccessFromFileURLs
-      allowFileAccess
-      allowFileAccessFromFileURLs
-      originWhitelist={['*']}
-      domStorageEnabled
-      javaScriptEnabled
-      scalesPageToFit={false}
-      scrollEnabled={false}
-      bounces={false}
-      allowsInlineMediaPlayback
-      mixedContentMode="always"
-      overScrollMode="never"
-      webviewDebuggingEnabled={__DEV__} // 开发环境下可通过 Safari/Chrome 远程调试 WebView
-      {...(Platform.OS === 'android' && { androidLayerType: 'hardware' as const })}
-      onMessage={handleMessage}
-    />
+    <>
+      {skeletonVisible && (
+        <Animated.View
+          className="bg-secondary absolute top-0 right-0 bottom-0 left-0 z-10"
+          style={{ opacity: skeletonOpacity }}
+        >
+          <ChartSkeleton />
+        </Animated.View>
+      )}
+      <WebView
+        key={locale}
+        ref={webviewRef}
+        source={{ uri: getSourceUri(urlQuery) }}
+        style={{ flex: 1, backgroundColor: backgroundColorSecondary }}
+        {...(allowingReadAccess && { allowingReadAccessToURL: allowingReadAccess })}
+        allowUniversalAccessFromFileURLs
+        allowFileAccess
+        allowFileAccessFromFileURLs
+        originWhitelist={['*']}
+        domStorageEnabled
+        javaScriptEnabled
+        scalesPageToFit={false}
+        scrollEnabled={false}
+        bounces={false}
+        allowsInlineMediaPlayback
+        mixedContentMode="always"
+        overScrollMode="never"
+        webviewDebuggingEnabled={__DEV__} // 开发环境下可通过 Safari/Chrome 远程调试 WebView
+        {...(Platform.OS === 'android' && { androidLayerType: 'hardware' as const })}
+        onMessage={handleMessage}
+      />
+    </>
   )
 }
 
 export const TradingviewChart = observer(TradingviewChartInner)
+
+// ─── 加载动画 ──────────────────────────────────────────────────────
+
+const BAR_COUNT = 5
+
+function ChartSkeleton() {
+  const animsRef = useRef(Array.from({ length: BAR_COUNT }, () => new Animated.Value(0)))
+
+  useEffect(() => {
+    const anims = animsRef.current
+    const loops = anims.map((anim, i) => {
+      // 每根条错开相位，形成连续波浪
+      anim.setValue(0)
+      return Animated.loop(
+        Animated.sequence([
+          Animated.delay(i * 60),
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: 300,
+            easing: Easing.inOut(Easing.sin),
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0,
+            duration: 300,
+            easing: Easing.inOut(Easing.sin),
+            useNativeDriver: true,
+          }),
+        ]),
+      )
+    })
+    loops.forEach((l) => l.start())
+    return () => loops.forEach((l) => l.stop())
+  }, [])
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+        {animsRef.current.map((anim, i) => (
+          <Animated.View
+            key={i}
+            className="bg-brand-primary"
+            style={{
+              width: 3,
+              height: 16,
+              borderRadius: 1.5,
+              transform: [{ scaleY: anim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 1] }) }],
+            }}
+          />
+        ))}
+      </View>
+    </View>
+  )
+}
