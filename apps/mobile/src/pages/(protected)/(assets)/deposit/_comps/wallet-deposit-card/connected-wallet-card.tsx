@@ -34,11 +34,12 @@ export function ConnectedWalletCard() {
   )
 
   const handlePress = () => {
-    // if (isLoading) {
-    //   toast.warning(<Trans>正在获取余额...</Trans>)
-    //   return
-    // }
-
+    if (!__DEV__) {
+      if (isLoading) {
+        toast.warning(<Trans>正在获取余额...</Trans>)
+        return
+      }
+    }
     router.push('/(assets)/deposit/wallet-transfer')
   }
 

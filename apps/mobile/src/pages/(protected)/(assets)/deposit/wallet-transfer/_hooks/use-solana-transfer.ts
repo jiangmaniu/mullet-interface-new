@@ -14,6 +14,12 @@ import {
 } from '@solana/spl-token'
 import { Connection, PublicKey, Transaction } from '@solana/web3.js'
 
+export type TransferTokenResult = {
+  signature: string
+  blockhash: string
+  lastValidBlockHeight: number
+}
+
 /**
  * 自定义 Hook：处理 Solana 钱包的代币转账逻辑
  * 封装了获取钱包连接、构建交易、签名并发送的完整流程
@@ -182,7 +188,11 @@ export function useSolanaTransfer() {
       // )
       // console.log('✅ 交易已确认')
 
-      return txSignature
+      return {
+        signature: txSignature,
+        blockhash,
+        lastValidBlockHeight,
+      }
     } catch (err: any) {
       console.error('❌ SolanaAdapter 发送异常:', err)
       throw err

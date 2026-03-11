@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import Constants from 'expo-constants'
 import { router } from 'expo-router'
 
 import { Button } from '@/components/ui/button'
@@ -14,9 +15,11 @@ import { BNumber } from '@mullet/utils/number'
 
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
+import { useConfirmTransactionStatus } from '../../_hooks/use-confirm-transaction'
 import { useEstimateGasFee } from '../../_hooks/use-estimate-gas-fee'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
-import { useSolanaTransfer } from '../../_hooks/use-solana-transfer'
+import { TransferTokenResult, useSolanaTransfer } from '../../_hooks/use-solana-transfer'
+import { useSolanaWalletBalance } from '../../../_apis/use-solana-wallet-balance'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
@@ -47,6 +50,8 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     enabled: !!connection && !!fromWalletAddress && !!toWalletAddress && !!selectedTokenConfig,
   })
 
+  const { refetch: refetchBalance } = useSolanaWalletBalance(fromWalletAddress)
+
   // const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
   const [showSignatureModal, setShowSignatureModal] = useState(false)
@@ -55,6 +60,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
   const formattedAmount = BNumber.toFormatNumber(depositAmount, {
     volScale: selectedTokenConfig?.displayDecimals,
   })
+  const [transferResult, setTransferResult] = useState<TransferTokenResult | undefined>(undefined)
 
   // 倒计时
   // useEffect(() => {
@@ -85,7 +91,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     try {
       if (!selectedTokenConfig) return
 
-      await transferToken(
+      const result = await transferToken(
         {
           fromAddress: fromWalletAddress,
           toAddress: toWalletAddress,
@@ -94,18 +100,22 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
           decimals: selectedTokenConfig.decimals,
         },
         {
-          // memoContent: {
-          //   app: 'betta',
-          //   userId: selectedAccount?.id,
-          //   token: selectedTokenConfig.symbol,
-          //   amount: depositAmount.toString(),
-          //   ts: Date.now()
-          // },
+          memoContent: {
+            app: Constants.expoConfig?.name,
+            userId: selectedAccount?.id,
+            token: selectedTokenConfig.symbol,
+            amount: depositAmount.toString(),
+            ts: Date.now(),
+          },
           walletProvider,
           connection,
         },
       )
-      setSignatureStatus('success')
+
+      if (result) {
+        setSignatureStatus('success')
+        setTransferResult(result)
+      }
     } catch (error) {
       console.error('Transaction failed:', error)
       setSignatureStatus('failed')
@@ -129,13 +139,20 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     }
   }, [signatureStatus])
 
+  useConfirmTransactionStatus(transferResult, {
+    connection,
+    onConfirm: () => {
+      refetchBalance()
+    },
+  })
+
   return (
     <View className="gap-xl flex-1">
       <ScreenHeader
         content={
           <Text className="text-important-1 text-content-1">
             <Trans>订单确认</Trans>
-            {/* <Text className="text-status-danger">{countdown}S 
+            {/* <Text className="text-status-danger">{countdown}S
             </Text/}>*/}
           </Text>
         }

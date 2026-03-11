@@ -1,31 +1,52 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Connection, TransactionSignature } from '@solana/web3.js'
+import { Connection, TransactionConfirmationStrategy, TransactionSignature } from '@solana/web3.js'
 
-export const useConfirmTransactionStatus = () => {
-  const [isConfirmed, setIsConfirmed] = useState(false)
+export enum ConfirmTransactionStatus {
+  IDLE = 'idle',
+  CONFIRMING = 'confirming',
+  CONFIRMED = 'confirmed',
+  FAILED = 'failed',
+}
+
+export type ConfirmTransactionParams = TransactionSignature | TransactionConfirmationStrategy
+
+export type ConfirmTransactionParamsOptions = {
+  connection?: Connection
+  onConfirm?: () => void
+  onError?: (error: any) => void
+}
+
+export const useConfirmTransaction = () => {
+  const [confirmStatus, setConfirmStatus] = useState<ConfirmTransactionStatus>(ConfirmTransactionStatus.IDLE)
   const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined)
-  const [isError, setIsError] = useState(false)
+  const isConfirmed = confirmStatus === ConfirmTransactionStatus.CONFIRMED
+  const isConfirming = confirmStatus === ConfirmTransactionStatus.CONFIRMING
+  const isError = confirmStatus === ConfirmTransactionStatus.FAILED
 
   // 使用 confirmTransaction 确认交易状态
-  const confirmTransactionStatus = async (
-    signature: TransactionSignature,
-    { connection }: { connection?: Connection },
+  const confirmTransaction = async (
+    params: TransactionSignature | TransactionConfirmationStrategy,
+
+    { connection, onConfirm, onError }: ConfirmTransactionParamsOptions,
   ): Promise<boolean> => {
     try {
       if (!connection) {
         throw new Error('connection is missing')
       }
 
+      const transactionParams =
+        typeof params === 'string'
+          ? {
+              signature: params,
+              blockhash: (await connection.getLatestBlockhash()).blockhash,
+              lastValidBlockHeight: (await connection.getLatestBlockhash()).lastValidBlockHeight,
+            }
+          : params
+
+      setConfirmStatus(ConfirmTransactionStatus.CONFIRMING)
       // 等待交易确认，设置超时时间
-      const confirmation = await connection.confirmTransaction(
-        {
-          signature,
-          blockhash: (await connection.getLatestBlockhash()).blockhash,
-          lastValidBlockHeight: (await connection.getLatestBlockhash()).lastValidBlockHeight,
-        },
-        'confirmed',
-      )
+      const confirmation = await connection.confirmTransaction(transactionParams, 'confirmed')
 
       // 检查是否有错误
       if (confirmation?.value?.err) {
@@ -33,29 +54,48 @@ export const useConfirmTransactionStatus = () => {
         if (typeof confirmation?.value?.err === 'string') {
           setErrorMessage(confirmation?.value?.err)
         }
-        setIsConfirmed(false)
-        setIsError(true)
+        setConfirmStatus(ConfirmTransactionStatus.FAILED)
         return false
       }
 
       console.log('交易确认成功!')
       setErrorMessage(undefined)
-      setIsConfirmed(true)
-      setIsError(false)
+      setConfirmStatus(ConfirmTransactionStatus.CONFIRMED)
+      onConfirm?.()
       return true
     } catch (error: any) {
       console.error('确认交易时出错:', error)
-      setIsConfirmed(false)
-      setIsError(true)
+      setConfirmStatus(ConfirmTransactionStatus.FAILED)
       setErrorMessage(error?.message)
+      onError?.(error)
       return false
+    } finally {
+      setConfirmStatus(ConfirmTransactionStatus.IDLE)
     }
   }
 
   return {
+    isConfirming,
+    confirmStatus,
     isConfirmed,
     errorMessage,
     isError,
-    confirmTransactionStatus,
+    confirmTransaction,
+  }
+}
+
+export const useConfirmTransactionStatus = (
+  props?: ConfirmTransactionParams,
+  options?: ConfirmTransactionParamsOptions,
+) => {
+  const { confirmTransaction, ...rest } = useConfirmTransaction()
+  useEffect(() => {
+    if (props && options) {
+      confirmTransaction(props, options)
+    }
+  }, [props, confirmTransaction, options])
+
+  return {
+    ...rest,
   }
 }

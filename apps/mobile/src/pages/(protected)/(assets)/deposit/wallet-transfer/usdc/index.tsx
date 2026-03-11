@@ -37,13 +37,12 @@ const UsdcDepositScreen = observer(function UsdcDepositScreen() {
   const [selectedPercent, setSelectedPercent] = useState<string>('')
 
   // 是否余额不足
-  const isInsufficientBalance = false
-  //  BNumber.from(amount).gt(selectedTokenBalance?.amount)
+  const isInsufficientBalance = __DEV__ ? false : BNumber.from(amount).gt(selectedTokenBalance?.amount)
   // 是否满足最低充值
-  const isValid =
-    true ||
-    (BNumber.from(amount).gte(selectedTokenBalance?.minAmount) &&
-      BNumber.from(amount).lte(selectedTokenBalance?.amount))
+  const isValid = __DEV__
+    ? true
+    : BNumber.from(amount).gte(selectedTokenBalance?.minAmount) &&
+      BNumber.from(amount).lte(selectedTokenBalance?.amount)
 
   const handleValueChange = useCallback((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
     if (source === NumberInputSourceType.EVENT) {
