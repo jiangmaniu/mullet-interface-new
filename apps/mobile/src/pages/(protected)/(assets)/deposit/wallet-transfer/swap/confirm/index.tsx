@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
+import type { BuildSwapTxParams } from '../_hooks/use-swap-transaction'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,6 +15,7 @@ import { t } from '@lingui/core/macro'
 import { formatAddress, renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
+import { useSwapTransaction } from '../_hooks/use-swap-transaction'
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
 import { useSelectedTokenConfig } from '../../_hooks/use-selected-balance-info'
@@ -21,8 +23,6 @@ import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
 import { useSwapQuote } from '../../../_apis/use-swap-quote'
 import { useDepositState } from '../../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
-import { useSwapTransaction } from '../_hooks/use-swap-transaction'
-import type { BuildSwapTxParams } from '../_hooks/use-swap-transaction'
 
 const COUNTDOWN_SECONDS = 30
 
@@ -145,7 +145,6 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
           toToken: quoteParams.toToken,
           amount: quoteParams.amount,
           fromAddress: quoteParams.fromAddress,
-          slippageBps: 50, // 默认滑点
         }
         await buildAndSendTransaction(buildParams, refreshCountdown)
       }
@@ -312,9 +311,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
             disabled={signatureStatus === 'signing' || isBuilding || countdown <= 0}
             loading={signatureStatus === 'signing' || isBuilding}
           >
-            <Text>
-              {signatureStatus === 'signing' || isBuilding ? <Trans>等待签名</Trans> : <Trans>确定</Trans>}
-            </Text>
+            <Text>{signatureStatus === 'signing' || isBuilding ? <Trans>等待签名</Trans> : <Trans>确定</Trans>}</Text>
           </Button>
         </View>
       </SafeAreaView>

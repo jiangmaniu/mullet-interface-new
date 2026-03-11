@@ -72,10 +72,10 @@ export const AddBalanceDrawer = ({ accountInfo, ref }: AddBalanceDrawerProps) =>
                 <View className="flex-row items-center justify-between">
                   <View className="gap-xs flex-1">
                     <Text className="text-paragraph-p2 text-content-1">
-                      <Trans>入金</Trans>
+                      <Trans>存款</Trans>
                     </Text>
                     <Text className="text-paragraph-p3 text-content-4">
-                      <Trans>从外部钱包充值入金</Trans>
+                      <Trans>从外部钱包充值存款</Trans>
                     </Text>
                   </View>
                   <IconifyNavArrowRight width={16} height={16} className="text-content-4" />

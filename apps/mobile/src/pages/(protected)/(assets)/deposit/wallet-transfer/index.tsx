@@ -152,7 +152,7 @@ function AssetRow({ asset }: { asset: WalletAsset }) {
 
   const handlePress = () => {
     // if (asset.isInsufficientBalance) {
-    //   toast.error(<Trans>当前余额低于最小入金额度，请使用其他代币入金</Trans>)
+    //   toast.error(<Trans>当前余额低于最小充值额度，请使用其他代币充值</Trans>)
     //   return
     // }
 
