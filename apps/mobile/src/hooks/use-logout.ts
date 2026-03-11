@@ -82,8 +82,9 @@ export function useLogout(): UseLogoutReturn {
     setIsLoggingOut(true)
 
     try {
-      await clearAuthData()
+      // 先跳转到登录页，再清除数据，避免 LoginGuard 检测到 token 为空后重复重定向
       router.replace('/login')
+      await clearAuthData()
     } catch (error) {
       console.error('Logout failed:', error)
     } finally {
