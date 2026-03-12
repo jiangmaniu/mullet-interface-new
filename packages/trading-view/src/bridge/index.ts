@@ -16,9 +16,20 @@ import {
 // ── 发送消息到宿主 App ──
 
 function postToApp(msg: WebToAppMessage) {
-  ;(window as Window & { ReactNativeWebView?: { postMessage: (s: string) => void } }).ReactNativeWebView?.postMessage(
-    JSON.stringify(msg)
-  )
+  const rnWebView = (window as Window & { ReactNativeWebView?: { postMessage: (s: string) => void } }).ReactNativeWebView
+
+  if (!rnWebView) {
+    console.error('[Bridge] ReactNativeWebView not found, message not sent:', msg.type)
+    return
+  }
+
+  try {
+    const payload = JSON.stringify(msg)
+    console.log('[Bridge] Sending message:', msg.type, 'callId' in msg ? msg.callId : '')
+    rnWebView.postMessage(payload)
+  } catch (err) {
+    console.error('[Bridge] Failed to send message:', err, msg)
+  }
 }
 
 // ── Bridge 状态 ──
@@ -40,11 +51,17 @@ function handleMessage(event: MessageEvent) {
   let raw: unknown
   try {
     raw = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
-  } catch {
+  } catch (err) {
+    console.warn('[Bridge] Failed to parse message:', err)
     return
   }
   const msg: AppToWebMessage = isEnvelope(raw) ? raw.payload : (raw as AppToWebMessage)
-  if (!msg || !msg.type) return
+  if (!msg || !msg.type) {
+    console.warn('[Bridge] Invalid message format:', raw)
+    return
+  }
+
+  console.log('[Bridge] Received message:', msg.type, 'callId' in msg ? msg.callId : '')
 
   const widget = getWidget()
 
@@ -97,13 +114,19 @@ function handleMessage(event: MessageEvent) {
       }
       break
     case BridgeIncoming.BarsResponse:
+      console.log('[Bridge] BarsResponse received, callId:', msg.callId, 'bars count:', msg.payload.bars?.length)
       if (historyProviderRef && msg.callId) {
         historyProviderRef.handleBarsResponse(msg.callId, msg.payload.bars, msg.payload.noData)
+      } else {
+        console.warn('[Bridge] BarsResponse ignored - provider or callId missing')
       }
       break
     case BridgeIncoming.SymbolResponse:
+      console.log('[Bridge] SymbolResponse received, callId:', msg.callId, 'symbol:', msg.payload.name)
       if (symbolProviderRef && msg.callId) {
         symbolProviderRef.handleSymbolResponse(msg.callId, msg.payload)
+      } else {
+        console.warn('[Bridge] SymbolResponse ignored - provider or callId missing')
       }
       break
     case BridgeIncoming.SetWatermark:
@@ -125,8 +148,21 @@ export function initBridge(
   historyProviderRef = providers?.historyProvider ?? historyProviderRef
   symbolProviderRef = providers?.symbolProvider ?? symbolProviderRef
   if (!listening) {
+    console.log('[Bridge] Initializing bridge listeners')
+    console.log('[Bridge] ReactNativeWebView available:', !!(window as any).ReactNativeWebView)
+    console.log('[Bridge] User Agent:', navigator.userAgent)
+
+    // 某些安卓设备（如 OPPO）可能需要同时监听 window 和 document 的 message 事件
     window.addEventListener('message', handleMessage)
     document.addEventListener('message', handleMessage as EventListener)
+
+    // 额外监听 Android WebView 的消息事件
+    if ((window as any).ReactNativeWebView) {
+      console.log('[Bridge] ReactNativeWebView detected, bridge ready')
+    } else {
+      console.warn('[Bridge] ReactNativeWebView not found, bridge may not work')
+    }
+
     listening = true
   }
 }
