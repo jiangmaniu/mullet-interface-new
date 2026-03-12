@@ -434,7 +434,7 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
                   <Text className={cn('text-white', 'text-paragraph-p1', '', '')}>
                     <Trans>连接钱包</Trans>
                   </Text>
-                  {isConnected && step1.status === 'completed' && (
+                  {isConnected && step1.status === 'completed' && !buttonConfig.loading && (
                     <Text
                       className={cn('text-content-5', 'text-paragraph-p3', '')}
                       onPress={() => {

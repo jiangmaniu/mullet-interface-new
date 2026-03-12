@@ -1,7 +1,9 @@
+import { Trans } from '@lingui/react/macro'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 
 import { IconMail } from '@/components/ui/icons/set'
+import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { LoginType } from '@/stores/login-auth'
 import { usePrivy } from '@privy-io/expo'
@@ -47,6 +49,12 @@ export function Web2LoginSection() {
 
   // Web2 登录（Email 等）
   const handleWeb2Login = async () => {
+    // 检查 Privy 是否已准备好
+    if (!privyReady) {
+      toast.error(<Trans>登录服务正在初始化，请检查网络</Trans>)
+      return
+    }
+
     setIsLoggingIn(true)
     loginTriggeredRef.current = true
 
@@ -64,8 +72,9 @@ export function Web2LoginSection() {
 
     try {
       await privyLogin({ loginMethods: ['email'] })
-    } catch (error) {
+    } catch (error: any) {
       console.error('Privy login failed:', error)
+      toast.error(error?.message || '登录失败，请重试')
       resetLoginState()
     }
   }
@@ -90,15 +99,15 @@ export function Web2LoginSection() {
           'active:opacity-80',
         )}
       >
-        {isLoading ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <>
+        <View className={cn('flex-1 flex-row justify-center', 'items-center', 'gap-medium')}>
+          <View className="gap-medium flex-1 flex-row items-center justify-start">
             <IconMail width={24} height={24} color="#FFFFFF" />
             <Text className={cn('text-white', 'text-paragraph-p2')}>电子邮箱登录/注册</Text>
-          </>
-        )}
+          </View>
+          {isLoading && <ActivityIndicator size="small" color="#fff" />}
+        </View>
       </Pressable>
+
       {backendError && (
         <Text className={cn('text-center', 'mt-medium', 'text-red-500', 'text-paragraph-p3')}>{backendError}</Text>
       )}
