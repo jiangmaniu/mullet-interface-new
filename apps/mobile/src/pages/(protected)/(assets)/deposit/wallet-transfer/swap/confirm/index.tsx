@@ -143,7 +143,6 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
           amount: quoteParams.amount,
           fromAddress: quoteParams.fromAddress,
           toAddress: toWalletAddress,
-          provider: 'jupiter',
         }
         await buildAndSendTransaction(buildParams, refreshCountdown)
       }
