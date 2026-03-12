@@ -8,6 +8,7 @@ import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useI18n } from '@/hooks/use-i18n'
 import { useLogout } from '@/hooks/use-logout'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { locales } from '@/locales/i18n'
@@ -18,10 +19,10 @@ export default function SettingScreen() {
   const router = useRouter()
   const { logout, isLoggingOut } = useLogout()
   const { textColorContent4 } = useThemeColors()
-  const { i18n } = useLingui()
+  const { locale } = useI18n()
   const [languageVisible, setLanguageVisible] = useState(false)
 
-  const currentLocaleName = locales[i18n.locale as Locale] || '简体中文'
+  const currentLocaleName = locales[locale] || '简体中文'
 
   // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
   const appVersion = useMemo(() => {
