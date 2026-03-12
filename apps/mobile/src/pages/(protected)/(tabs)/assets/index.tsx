@@ -15,9 +15,11 @@ import {
 } from '@/components/ui/collapsible-tab'
 import { IconifyBell, IconifyPlusCircle, IconifySettings } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
+import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
 import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
+import { msg } from '@lingui/core/macro'
 
 import { RealAccountList, SimulateAccountList } from './_comps/account-list'
 import { TradeAccountActions } from './_comps/trade-account-actions.tsx'
@@ -27,6 +29,7 @@ export default observer(function AssetsScreen() {
   const { textColorContent1 } = useThemeColors()
   const { tab } = useLocalSearchParams<{ tab?: string }>()
   const { data: unreadCount = 0 } = useUnreadCount()
+  const { renderLinguiMsg } = useI18n()
 
   const renderHeader = () => {
     return (
@@ -79,7 +82,7 @@ export default observer(function AssetsScreen() {
           </IconButton>
         )}
       >
-        <CollapsibleTabScene name="real" label={() => <Trans>真实账户</Trans>}>
+        <CollapsibleTabScene name="real" label={renderLinguiMsg(msg`真实账户`)}>
           <CollapsibleScrollView contentContainerStyle={{ padding: 12 }}>
             <View className="gap-medium py-xl">
               <RealAccountList />
@@ -87,7 +90,7 @@ export default observer(function AssetsScreen() {
           </CollapsibleScrollView>
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="mock" label={() => <Trans>模拟账户</Trans>}>
+        <CollapsibleTabScene name="mock" label={renderLinguiMsg(msg`模拟账户`)}>
           <CollapsibleScrollView contentContainerStyle={{ padding: 12 }}>
             <View className="gap-medium py-xl">
               <SimulateAccountList />

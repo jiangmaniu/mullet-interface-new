@@ -1,4 +1,3 @@
-import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
@@ -15,8 +14,10 @@ import {
 } from '@/components/ui/collapsible-tab'
 import { IconifyPage } from '@/components/ui/icons'
 import { useAppState } from '@/hooks/use-app-state'
+import { useI18n } from '@/hooks/use-i18n'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { msg } from '@lingui/core/macro'
 
 import { AccountCard } from './_comps/account-card'
 import { TradeHeader } from './_comps/header'
@@ -29,7 +30,7 @@ const Trade = observer(() => {
   // Router
   const router = useRouter()
   const { trade, user } = useStores()
-
+  const { renderLinguiMsg } = useI18n()
   const symbol = trade.activeSymbolName
 
   // Safe Area Insets
@@ -109,11 +110,11 @@ const Trade = observer(() => {
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={() => <Trans>持仓({positionList?.length ?? 0})</Trans>}>
+        <CollapsibleTabScene name="positions" label={renderLinguiMsg(msg`持仓(${positionList?.length ?? 0})`)}>
           <TradePositions />
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={() => <Trans>挂单({pendingList?.length ?? 0})</Trans>}>
+        <CollapsibleTabScene name="orders" label={renderLinguiMsg(msg`挂单(${pendingList?.length ?? 0})`)}>
           <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>

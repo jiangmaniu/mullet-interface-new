@@ -340,7 +340,7 @@ export default function Index() {
               <CollapsibleTabScene
                 key={categoryOption.value}
                 name={categoryOption.value}
-                label={() => renderLinguiMsg(categoryOption.label)}
+                label={renderLinguiMsg(categoryOption.label)}
               >
                 <AssetTabListContent viewMode={viewMode} categoryOption={categoryOption} />
               </CollapsibleTabScene>
