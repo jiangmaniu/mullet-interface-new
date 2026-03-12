@@ -20,10 +20,10 @@ import shelljs from 'shelljs'
  *   --clean            清理构建缓存 (默认)
  *   --no-clean         不清理构建缓存
  *
- * 证书验证:
- *   --verify-certificates              验证证书有效性（需要登录 Apple Developer）
- *   --apple-id=<email>                 Apple ID (与 --verify-certificates 一起使用)
- *   --apple-password=<app-password>    Apple 专用密码 (与 --verify-certificates 一起使用)
+ * 证书管理:
+ *   --force-regenerate-certificates    强制重新生成证书（用于证书过期、添加新设备、修改 Capabilities）
+ *   --apple-id=<email>                 Apple Developer 账号邮箱（TestFlight 上传或重新生成证书时需要）
+ *   --apple-password=<app-password>    Apple 专用密码（TestFlight 上传或重新生成证书时需要）
  */
 
 const __filename = fileURLToPath(import.meta.url)
@@ -80,8 +80,8 @@ async function parseArgs() {
       clean = true
     }
 
-    // 解析 --verify-certificates 参数
-    const verifyCertificates = flags.includes('--verify-certificates')
+    // 解析 --force-regenerate-certificates 参数
+    const forceRegenerateCertificates = flags.includes('--force-regenerate-certificates')
 
     // 解析 --apple-id 和 --apple-password 参数
     let appleId = null
@@ -97,7 +97,7 @@ async function parseArgs() {
       applePassword = applePasswordFlag.split('=')[1]
     }
 
-    return { platform, env, iosDist, clean, verifyCertificates, appleId, applePassword }
+    return { platform, env, iosDist, clean, forceRegenerateCertificates, appleId, applePassword }
   }
 
   // 交互模式
@@ -143,19 +143,9 @@ async function parseArgs() {
       },
     },
     {
-      name: 'clean',
+      name: 'forceRegenerateCertificates',
       type: 'select',
-      message: chalk.magentaBright('是否清理构建缓存？'),
-      default: true,
-      choices: [
-        { name: '是', value: true },
-        { name: '否', value: false },
-      ],
-    },
-    {
-      name: 'verifyCertificates',
-      type: 'select',
-      message: chalk.magentaBright('是否验证证书有效性？（需要登录 Apple Developer）'),
+      message: chalk.magentaBright('是否强制重新生成证书？（用于证书过期、添加新设备、修改 Capabilities）'),
       default: false,
       when: (ans) => ans.platform === 'ios',
       choices: [
@@ -166,9 +156,23 @@ async function parseArgs() {
     {
       name: 'appleId',
       type: 'input',
-      message: chalk.magentaBright('请输入您的 Apple ID:'),
+      message: chalk.magentaBright('请输入 Apple Developer 账号:'),
+      when: (ans) => ans.platform === 'ios',
+      validate: (input) => {
+        if (!input || !input.includes('@')) {
+          return '请输入有效的邮箱地址'
+        }
+        return true
+      },
+    },
+    {
+      name: 'applePassword',
+      // type: 'password',
+      type: 'input',
+      message: chalk.magentaBright('请输入 Apple 专用密码:'),
       when: (ans) => {
-        if (ans.verifyCertificates) {
+        const needsPassword = ans.iosDist === 'testflight' || ans.forceRegenerateCertificates
+        if (needsPassword) {
           console.log('')
           console.log(chalk.gray('  💡 提示: 专用密码获取方式'))
           console.log(chalk.gray('     1. 访问 https://appleid.apple.com'))
@@ -176,28 +180,25 @@ async function parseArgs() {
           console.log(chalk.gray('     3. 点击"App 专用密码" → "生成密码"'))
           console.log(chalk.gray('     4. 格式: xxxx-xxxx-xxxx-xxxx'))
           console.log('')
-          return true
         }
-        return false
+        return needsPassword
       },
-      validate: (input) => {
-        if (!input || !input.includes('@')) {
-          return '请输入有效的 Apple ID (邮箱格式)'
-        }
-        return true
-      },
-    },
-    {
-      name: 'applePassword',
-      type: 'password',
-      message: chalk.magentaBright('请输入 Apple 专用密码:'),
-      when: (ans) => ans.verifyCertificates,
       validate: (input) => {
         if (!input || input.length < 4) {
           return '请输入有效的专用密码'
         }
         return true
       },
+    },
+    {
+      name: 'clean',
+      type: 'select',
+      message: chalk.magentaBright('是否清理构建缓存？'),
+      default: true,
+      choices: [
+        { name: '是', value: true },
+        { name: '否', value: false },
+      ],
     },
   ])
 
@@ -206,7 +207,7 @@ async function parseArgs() {
     env: answers.env,
     clean: answers.clean,
     iosDist: answers.iosDist || 'local',
-    verifyCertificates: answers.verifyCertificates || false,
+    forceRegenerateCertificates: answers.forceRegenerateCertificates || false,
     appleId: answers.appleId,
     applePassword: answers.applePassword,
   }
@@ -253,7 +254,7 @@ function organizeArtifacts(platform, env, version) {
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist, clean, verifyCertificates, appleId, applePassword } = await parseArgs()
+  const { platform, env, iosDist, clean, forceRegenerateCertificates, appleId, applePassword } = await parseArgs()
 
   // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
@@ -273,14 +274,22 @@ async function main() {
   shelljs.env.VERSION_CODE = versionCode
   shelljs.env.ENV = env
 
-  // 如果用户选择验证证书，设置环境变量并使用用户输入的凭证
-  if (verifyCertificates) {
-    shelljs.env.VERIFY_CERTIFICATES = 'true'
-    if (appleId) {
-      shelljs.env.APPLE_ID = appleId
+  // iOS 构建需要设置 APPLE_ID（Match 需要 username）
+  if (platform === 'ios' && appleId) {
+    shelljs.env.APPLE_ID = appleId
+  }
+
+  // TestFlight 上传或重新生成证书需要专用密码
+  const needsPassword = (platform === 'ios' && iosDist === 'testflight') || forceRegenerateCertificates
+
+  if (needsPassword) {
+    if (!applePassword) {
+      console.error(chalk.red('\n错误: TestFlight 上传或重新生成证书需要 Apple 专用密码'))
+      process.exit(1)
     }
-    if (applePassword) {
-      shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
+    shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
+    if (forceRegenerateCertificates) {
+      shelljs.env.FORCE_REGENERATE_CERTIFICATES = 'true'
     }
   }
 
