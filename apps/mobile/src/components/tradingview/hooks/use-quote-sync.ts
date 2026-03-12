@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import type { WebView } from 'react-native-webview'
 import { autorun } from 'mobx'
+import type { WebView } from 'react-native-webview'
 
 import { useStores } from '@/v1/provider/mobxProvider'
 import { BridgeIncoming } from '@mullet/trading-view'
@@ -12,21 +12,21 @@ import { BridgeIncoming } from '@mullet/trading-view'
 export function useQuoteSync(webviewRef: React.RefObject<WebView | null>, accountGroupId: number, symbolName: string) {
   const { ws } = useStores()
 
-  useEffect(() => {
-    const quoteKey = `${accountGroupId}/${symbolName}`
-    const dispose = autorun(() => {
-      const currentQuote = ws.quotes.get(quoteKey)
-      if (!currentQuote?.priceData) return
-      const tick = {
-        n: currentQuote.symbol,
-        b: currentQuote.priceData.sell,
-        a: currentQuote.priceData.buy,
-        t: Math.floor(currentQuote.priceData.id / 1000),
-      }
-      webviewRef.current?.postMessage(
-        JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }),
-      )
-    })
-    return dispose
-  }, [ws, accountGroupId, symbolName, webviewRef])
+  // useEffect(() => {
+  //   const quoteKey = `${accountGroupId}/${symbolName}`
+  //   const dispose = autorun(() => {
+  //     const currentQuote = ws.quotes.get(quoteKey)
+  //     if (!currentQuote?.priceData) return
+  //     const tick = {
+  //       n: currentQuote.symbol,
+  //       b: currentQuote.priceData.sell,
+  //       a: currentQuote.priceData.buy,
+  //       t: Math.floor(currentQuote.priceData.id / 1000),
+  //     }
+  //     webviewRef.current?.postMessage(
+  //       JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }),
+  //     )
+  //   })
+  //   return dispose
+  // }, [ws, accountGroupId, symbolName, webviewRef])
 }
