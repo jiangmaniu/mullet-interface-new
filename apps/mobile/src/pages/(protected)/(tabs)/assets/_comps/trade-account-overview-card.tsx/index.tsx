@@ -5,10 +5,8 @@ import { Pressable, TouchableHighlight, View } from 'react-native'
 
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import {
-  IconifyBell,
-  IconifyCoinsSwap,
   IconifyCopy,
   IconifyEye,
   IconifyEyeClosed,
@@ -19,12 +17,12 @@ import { Separator } from '@/components/ui/separator'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -150,7 +148,12 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
             >
               {isBalanceHidden
                 ? '******'
-                : `${BNumber.toFormatNumber(totalProfit, { unit: tradeAccount.currencyUnit, volScale: tradeAccount.currencyDecimal, forceSign: true })}`}
+                : `${BNumber.toFormatNumber(totalProfit, {
+                    unit: tradeAccount.currencyUnit,
+                    volScale: tradeAccount.currencyDecimal,
+                    positive: false,
+                    forceSign: true,
+                  })}`}
             </Text>
           </View>
         </View>
