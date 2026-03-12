@@ -1,14 +1,13 @@
 import React from 'react'
 import { Pressable, View } from 'react-native'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
-import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated'
+import { scheduleOnRN } from 'react-native-worklets'
 import { router } from 'expo-router'
 import { toast as sonnerToast } from 'sonner-native'
 
 import { cn } from '@/lib/utils'
 
-import { IconifyXmark } from './icons'
-import { IconSuccess } from './icons/set/success'
 import { Text } from './text'
 
 interface AnnouncementToastProps {
@@ -31,25 +30,50 @@ export function AnnouncementToast({ id, title, content, toastId }: AnnouncementT
     sonnerToast.dismiss(toastId)
   }
 
-  // 手势处理：支持上、左、右滑动关闭
+  // 手势处理：支持上、左、右滑动关闭（只响应主方向）
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      // 只允许向上、向左、向右滑动
-      if (event.translationY < 0) {
-        translateY.value = event.translationY
-      }
-      if (event.translationX !== 0) {
+      const absX = Math.abs(event.translationX)
+      const absY = Math.abs(event.translationY)
+
+      // 判断主方向：横向或纵向
+      if (absX > absY) {
+        // 横向滑动为主
         translateX.value = event.translationX
+        translateY.value = 0
+      } else if (event.translationY < 0) {
+        // 纵向向上滑动
+        translateY.value = event.translationY
+        translateX.value = 0
       }
     })
     .onEnd((event) => {
-      const shouldDismiss =
-        Math.abs(event.translationX) > 100 || // 左右滑动超过 100
-        event.translationY < -50 // 向上滑动超过 50
+      'worklet'
+      const absX = Math.abs(event.translationX)
+      const absY = Math.abs(event.translationY)
 
-      if (shouldDismiss) {
-        runOnJS(dismissToast)()
+      let shouldDismiss = false
+
+      // 判断主方向并检查是否达到关闭阈值
+      if (absX > absY) {
+        // 横向滑动为主：左右滑动超过 100
+        shouldDismiss = absX > 100
+        if (shouldDismiss) {
+          translateX.value = withSpring(event.translationX > 0 ? 300 : -300, {}, () => {
+            scheduleOnRN(() => dismissToast())
+          })
+        }
       } else {
+        // 纵向滑动为主：向上滑动超过 50
+        shouldDismiss = event.translationY < -50
+        if (shouldDismiss) {
+          translateY.value = withSpring(-300, {}, () => {
+            scheduleOnRN(() => dismissToast())
+          })
+        }
+      }
+
+      if (!shouldDismiss) {
         // 回弹
         translateX.value = withSpring(0)
         translateY.value = withSpring(0)
@@ -73,7 +97,11 @@ export function AnnouncementToast({ id, title, content, toastId }: AnnouncementT
     <GestureDetector gesture={panGesture}>
       <Animated.View className="items-center" style={[{ width: '100%', paddingHorizontal: 20 }, animatedStyle]}>
         <Pressable onPress={handlePress} style={{ width: '100%' }}>
-          <View className={cn('bg-primary border-brand-primary flex-row items-start gap-3 rounded-2xl border-1 p-3')}>
+          <View
+            className={cn(
+              'bg-pop-up-mask border-brand-default rounded-small backdrop-blur-base flex-row items-start gap-3 border-1 p-3',
+            )}
+          >
             {/* 中间内容 */}
             <View className="flex-1 flex-shrink gap-1">
               <Text className="text-title-t3 text-content-1">{title}</Text>
