@@ -24,7 +24,7 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -40,7 +40,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
   const tradeAccount = trade.currentAccountInfo
   const isReal = !tradeAccount.isSimulate
 
-  const synopsis = getAccountSynopsisByLng(tradeAccount.synopsis)
+  const synopsis = useAccountSynopsis(tradeAccount.synopsis)
 
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false)
   const onPressSwitch = () => {

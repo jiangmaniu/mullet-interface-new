@@ -13,7 +13,7 @@ import { IconifyNavArrowDown, IconifyPlusCircle, IconifyUserCircle } from '@/com
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
@@ -25,7 +25,7 @@ export const AccountCard = observer(({}: AccountCardProps) => {
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const { trade } = useStores()
   const currentAccountInfo = trade.currentAccountInfo
-  const synopsis = getAccountSynopsisByLng(currentAccountInfo.synopsis)
+  const synopsis = useAccountSynopsis(currentAccountInfo.synopsis)
   const handleAccountPress = () => {
     setIsAccountDrawerOpen(true)
   }

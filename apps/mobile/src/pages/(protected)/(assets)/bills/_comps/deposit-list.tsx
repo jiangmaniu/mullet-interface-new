@@ -12,7 +12,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { DepositEventTypeEnum } from '@/options/deposit/event'
 import { DepositStatusEnum, getDepositStatusEnumOption } from '@/options/deposit/status'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatTxHash } from '@mullet/utils/web3'
@@ -127,7 +127,7 @@ export const DepositList = observer(({ accountSelector }: { accountSelector: Rea
 const DepositCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem }) => {
   const { renderLinguiMsg } = useI18n()
 
-  const synopsis = getAccountSynopsisByLng(account.synopsis)
+  const synopsis = useAccountSynopsis(account.synopsis)
   return (
     <Card>
       <CardContent className="gap-medium">

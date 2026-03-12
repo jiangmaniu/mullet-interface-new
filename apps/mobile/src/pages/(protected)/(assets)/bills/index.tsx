@@ -15,7 +15,7 @@ import { Text } from '@/components/ui/text'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { msg } from '@lingui/core/macro'
 
 import { DateFilterDrawer, DateRange } from './_comps/date-filter-drawer'
@@ -177,7 +177,7 @@ const BillsAccountSelector = observer(() => {
 function AccountSelector({ selectedAccount, onPress }: { selectedAccount: User.AccountItem; onPress?: () => void }) {
   const { textColorContent1 } = useThemeColors()
 
-  const synopsis = getAccountSynopsisByLng(selectedAccount.synopsis)
+  const synopsis = useAccountSynopsis(selectedAccount.synopsis)
 
   return (
     <Pressable onPress={() => onPress?.()}>

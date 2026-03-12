@@ -136,7 +136,7 @@ export function useBillsScreenContext() { return useContext(BillsScreenContext);
 
 - `BNumber.toFormatNumber(value, { unit, volScale })` — 格式化数字金额
 - `renderFallback(value)` — 空值时显示 `-`
-- `getAccountSynopsisByLng(synopsis)` — 获取账户类型缩写
+- `useAccountSynopsis(synopsis)` — 获取账户类型缩写（Hook）
 - `<EmptyState message={...} />` — 空状态组件
 ## 参考实现
 

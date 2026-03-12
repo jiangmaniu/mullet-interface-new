@@ -23,7 +23,7 @@ import { EmptyState } from '@/components/states/empty-state'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { AddAccount } from '@/v1/services/tradeCore/account'
 import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { t } from '@lingui/core/macro'
 import { useAccountGroupList } from './_apis/use-account-group-list'
 
@@ -35,7 +35,7 @@ function AccountGroupCard({ accountGroup }: AccountGroupCardProps) {
   const { selectedAccountGroup, setSelectedAccountGroup } = useCrateAccountScreenContext()
   const isMock = accountGroup?.isSimulate
   const isSelected = selectedAccountGroup?.id === accountGroup.id
-  const synopsis = getAccountSynopsisByLng(accountGroup.synopsis)
+  const synopsis = useAccountSynopsis(accountGroup.synopsis)
 
   return (
     <Pressable onPress={() => setSelectedAccountGroup(accountGroup)}>
@@ -122,6 +122,7 @@ export default function CrateAccountScreen() {
 
   const [isLoading, { setTrue: setIsLoadingTrue, setFalse: setIsLoadingFalse }] = useBoolean(false)
   const { user } = useStores()
+  const selectedSynopsis = useAccountSynopsis(selectedAccountGroup?.synopsis)
 
   const handleCreateAccount = async () => {
     if (!selectedAccountGroup) return
@@ -129,9 +130,7 @@ export default function CrateAccountScreen() {
     try {
       setIsLoadingTrue()
 
-      const synopsis = getAccountSynopsisByLng(selectedAccountGroup.synopsis)
-
-      const name = synopsis?.name || selectedAccountGroup.groupName
+      const name = selectedSynopsis?.name || selectedAccountGroup.groupName
 
       const result = await AddAccount({
         accountGroupId: selectedAccountGroup.id,

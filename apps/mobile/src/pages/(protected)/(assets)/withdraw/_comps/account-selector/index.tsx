@@ -11,7 +11,7 @@ import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowDown, IconifyUserCircle } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
@@ -57,7 +57,7 @@ export const AccountSelection = observer(function AccountSelection() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.accountId, selectedAccountId])
 
-  const synopsis = selectedAccount ? getAccountSynopsisByLng(selectedAccount.synopsis) : null
+  const synopsis = useAccountSynopsis(selectedAccount?.synopsis)
 
   const handleSelectAccount = (account: User.AccountItem) => {
     setSelectedAccountIdRef.current(account.id)

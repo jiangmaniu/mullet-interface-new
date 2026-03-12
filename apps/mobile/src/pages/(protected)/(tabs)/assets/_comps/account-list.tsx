@@ -19,7 +19,7 @@ import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
@@ -52,7 +52,7 @@ type RealAccountRowProps = {
 const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
   const { textColorContent1, colorBrandSecondary3, colorBrandPrimary } = useThemeColors()
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
-  const synopsis = getAccountSynopsisByLng(account.synopsis)
+  const synopsis = useAccountSynopsis(account.synopsis)
 
   // 获取钱包地址
   const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
@@ -77,7 +77,7 @@ const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
           <View className="flex-row items-center justify-between">
             <View className="gap-medium flex-row items-center">
               <IconifyUserCircle width={20} height={20} color={textColorContent1} />
-              <Text className="text-paragraph-p1 text-content-1">{account.id}</Text>
+              <Text className="text-paragraph-p1 text-content-1">{renderFallback(account.id)}</Text>
             </View>
 
             <View className="gap-medium flex-row items-center">
@@ -179,7 +179,7 @@ type SimulateAccountRowProps = {
 const SimulateAccountRow = ({ account }: SimulateAccountRowProps) => {
   const { textColorContent1, colorBrandPrimary } = useThemeColors()
 
-  const synopsis = getAccountSynopsisByLng(account.synopsis)
+  const synopsis = useAccountSynopsis(account.synopsis)
   const tradeSimulateAccountDepositDrawerRef = useRef<TradeSimulateAccountDepositDrawerRef>(null)
   return (
     // <Pressable onPress={onPress}>

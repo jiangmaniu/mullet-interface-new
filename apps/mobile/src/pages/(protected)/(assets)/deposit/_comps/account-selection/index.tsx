@@ -4,7 +4,7 @@ import { DrawerRef } from '@/components/ui/drawer';
 import { IconifyNavArrowDown, IconifyUserCircle } from '@/components/ui/icons';
 import { Text } from '@/components/ui/text';
 import { Trans } from '@lingui/react/macro';
-import { getAccountSynopsisByLng } from '@/v1/utils/business';
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis';
 import { BNumber } from '@mullet/utils/number';
 import { useDepositState, useDepositActions } from '../../_hooks/use-deposit-state';
 import { useSelectedDepositAccount } from '../../_hooks/use-selected-account';
@@ -34,7 +34,7 @@ export const DepositAccountSelector = observer(function DepositAccountSelector()
 		if (account) setSelectedAccountId(account.id);
 	}, [accountId, accountList, trade.currentAccountInfo?.id, selectedAccountId, setSelectedAccountId]);
 
-	const synopsis = selectedAccount ? getAccountSynopsisByLng(selectedAccount.synopsis) : null;
+	const synopsis = useAccountSynopsis(selectedAccount?.synopsis);
 
 	return (
 		<>

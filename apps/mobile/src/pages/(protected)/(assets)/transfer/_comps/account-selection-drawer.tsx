@@ -4,7 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Drawer, DrawerContent, DrawerHeader } from '@/components/ui/drawer';
 import { Text } from '@/components/ui/text';
 import { useStores } from '@/v1/provider/mobxProvider';
-import { getAccountSynopsisByLng } from '@/v1/utils/business';
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis';
 import { Trans } from '@lingui/react/macro';
 import { BNumber } from '@mullet/utils/number';
 import { observer } from 'mobx-react-lite';
@@ -65,7 +65,7 @@ function AccountRow({
 }: { account: User.AccountItem, selectedAccountId?: string, onPress: () => void }) {
 	const isSelected = account.id === selectedAccountId
 
-	const synopsis = getAccountSynopsisByLng(account.synopsis)
+	const synopsis = useAccountSynopsis(account.synopsis)
 	return (
 		<Pressable onPress={onPress}>
 			<Card className='border-0 bg-transparent'>

@@ -13,9 +13,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { observer } from 'mobx-react-lite';
 import { useStores } from '@/v1/provider/mobxProvider';
-import { getAccountSynopsisByLng } from '@/v1/utils/business';
 import { BNumber } from '@mullet/utils/number';
 import { toast } from '../ui/toast';
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis';
 
 export interface Account {
 	id: string;
@@ -106,7 +106,7 @@ interface AccountRowProps {
 const AccountRow = observer(({ account, isSelected, onPress }: AccountRowProps) => {
 	const { textColorContent1 } = useThemeColors();
 
-	const synopsis = getAccountSynopsisByLng(account.synopsis)
+	const synopsis = useAccountSynopsis(account.synopsis)
 	return (
 		<Pressable onPress={isSelected ? undefined : onPress}>
 			<Card className="border-0">

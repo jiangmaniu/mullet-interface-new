@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/text'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { getAccountSynopsisByLng } from '@/v1/utils/business'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -133,10 +133,12 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
 
   const { user } = useStores()
 
-  const getTag = (accountId: any) => {
-    const synopsis = getAccountSynopsisByLng(user.realAccountList.find((item) => item.id === accountId)?.synopsis)
-    return synopsis?.abbr
-  }
+  // 获取转出账户和转入账户的 synopsis
+  const fromAccount = user.realAccountList.find((item) => item.id === remark?.fromAccountId)
+  const toAccount = user.realAccountList.find((item) => item.id === remark?.toAccountId)
+
+  const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
+  const toSynopsis = useAccountSynopsis(toAccount?.synopsis)
 
   return (
     <Card>
@@ -150,7 +152,7 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
           valueComponent={
             <View className="flex-row gap-1">
               <Badge color="default">
-                <Text>{getTag(remark?.fromAccountId)}</Text>
+                <Text>{fromSynopsis?.abbr}</Text>
               </Badge>
 
               <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.fromAccountId)}</Text>
@@ -162,7 +164,7 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
           valueComponent={
             <View className="flex-row gap-1">
               <Badge color="default">
-                <Text>{getTag(remark?.fromAccountId)}</Text>
+                <Text>{toSynopsis?.abbr}</Text>
               </Badge>
               <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.toAccountId)}</Text>
             </View>
