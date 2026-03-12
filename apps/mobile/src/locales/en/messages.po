@@ -1546,8 +1546,8 @@ msgid "平仓"
 msgstr "Close"
 
 #: src/pages/(protected)/(tabs)/trade/index.tsx
-msgid "持仓)"
-msgstr "Positions)"
+msgid "持仓"
+msgstr "Positions"
 
 #: src/options/trade/position.tsx
 msgid "持仓中"
