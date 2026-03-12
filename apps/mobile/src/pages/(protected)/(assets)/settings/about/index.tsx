@@ -49,6 +49,8 @@ export default function AboutScreen() {
 
   const handleConfirmUpdate = useCallback(() => {
     setUpdateVisible(false)
+    toast.warning('敬请期待')
+
     // TODO: 实际更新逻辑，跳转到应用商店
   }, [])
 
@@ -68,7 +70,11 @@ export default function AboutScreen() {
       {/* 菜单项 */}
       <View className="gap-xl">
         {/* 服务条款 */}
-        <Pressable onPress={() => {}}>
+        <Pressable
+          onPress={() => {
+            toast.warning('敬请期待')
+          }}
+        >
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>服务条款</Trans>
@@ -78,7 +84,11 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 隐私政策 */}
-        <Pressable onPress={() => {}}>
+        <Pressable
+          onPress={() => {
+            toast.warning('敬请期待')
+          }}
+        >
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>隐私政策</Trans>
