@@ -58,7 +58,7 @@ export function SignatureSuccessModal({
                 <Trans>您发送</Trans>
               </Text>
               <View className="gap-medium flex-row items-center">
-                <AvatarImage source={getImgSource(depositTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />{' '}
+                <AvatarImage source={getImgSource(depositTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
                 <Text className="text-paragraph-p2 text-content-1">
                   {BNumber.toFormatNumber(depositAmount, {
                     unit: depositTokenConfig?.symbol,

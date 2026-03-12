@@ -15,7 +15,7 @@ import { Table, TableCell, TableHead, TableHeader, TableRow } from '@mullet/ui/t
 import { dayjs } from '@mullet/utils/dayjs'
 // import { useStores } from '@/context/mobxProvider'
 import { renderFallback } from '@mullet/utils/fallback'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
 
 import { useVaultListContext } from './list'

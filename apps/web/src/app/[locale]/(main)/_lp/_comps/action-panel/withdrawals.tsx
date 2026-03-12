@@ -16,7 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@mullet/ui/
 import { IconInfo } from '@mullet/ui/icons'
 import { NumberInput, NumberInputSourceType } from '@mullet/ui/numberInput'
 import { toast } from '@mullet/ui/toast'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
 import {
   ChainId,

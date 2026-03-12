@@ -3,6 +3,8 @@ const KLINE_API_BASE = process.env.KLINE_API_BASE || 'https://mt.cd-ex.io'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 转译 workspace 包
+  transpilePackages: ['@mullet/utils'],
   // https://nextjs.org/docs/pages/api-reference/next-config-js/runtime-configuration
   // 注入server、client公用的环境变量，通过const { publicRuntimeConfig } = getConfig()访问
   publicRuntimeConfig: { BASE_PATH, PLATFORM: 'mullet', KLINE_API_BASE },

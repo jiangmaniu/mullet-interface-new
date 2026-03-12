@@ -1,7 +1,7 @@
 import { useGetTWRRecordListApiOptions } from '@/services/api/trade-core/hooks/follow-manage/twr-record-list'
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from '@umijs/max'
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 
 export enum VaultChartsTimeIntervalEnum {
   HOUR24 = 'HOUR24',

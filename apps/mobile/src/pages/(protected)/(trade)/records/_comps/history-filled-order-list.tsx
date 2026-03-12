@@ -17,7 +17,7 @@ import { getImgSource } from '@/utils/img'
 import { getOrderCompletionTypeEnumOption, getOrderMarginTypeEnumOption } from '@/options/trade/order'
 import { useI18n } from '@/hooks/use-i18n'
 import { BNumber } from '@mullet/utils/number'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { cn } from '@/lib/utils'
 
 const PAGE_SIZE = 10

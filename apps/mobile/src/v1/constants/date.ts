@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 
 export const DATE = {
   DATE_TODAY: dayjs().format('YYYY-MM-DD'),

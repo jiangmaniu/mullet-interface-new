@@ -4,7 +4,7 @@ import { getTradeCoreApiInstance } from '../../instance'
 import { FollowManage, PoolManage } from '../../instance/gen'
 import { PageDataResponse } from '../../type'
 import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 import { TimeParseEnum } from '@/utils/dayjs'
 
 export type PoolManageWrapper = Prettify<

@@ -151,6 +151,7 @@ export function useSwapTransaction() {
   const buildAndSendTransaction = useCallback(
     async (params: BuildSwapTxParams, onRefreshCountdown?: () => void) => {
       try {
+        console.log('BuildSwapTxParams', params)
         // 1. 构建交易订单
         const transactionData = await buildTransaction(params, onRefreshCountdown)
 

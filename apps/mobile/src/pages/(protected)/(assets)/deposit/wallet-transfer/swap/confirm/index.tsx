@@ -16,7 +16,7 @@ import { useWalletInfo } from '@/lib/appkit'
 import { getImgSource } from '@/utils/img'
 import { t } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/fallback'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSwapTransaction } from '../_hooks/use-swap-transaction'
@@ -142,7 +142,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
           toToken: quoteParams.toToken,
           amount: quoteParams.amount,
           fromAddress: quoteParams.fromAddress,
-          // toAddress: toWalletAddress,
+          toAddress: toWalletAddress,
         }
         await buildAndSendTransaction(buildParams, refreshCountdown)
       }

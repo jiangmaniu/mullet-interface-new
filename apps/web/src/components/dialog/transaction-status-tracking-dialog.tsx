@@ -19,7 +19,7 @@ import { IconClose } from '@mullet/ui/icons'
 // import { waitTransactionConfirm } from '@/libs/web3/helpers/tx'
 // import { formatAddress } from '@/utils/web3'
 import { cn } from '@mullet/ui/lib/utils'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 
 // import { Connection } from '@solana/web3.js'
 

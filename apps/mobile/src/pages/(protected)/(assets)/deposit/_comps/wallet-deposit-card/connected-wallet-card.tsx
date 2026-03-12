@@ -7,7 +7,7 @@ import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { useWalletInfo } from '@/lib/appkit'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSolanaWalletBalance } from '../../_apis/use-solana-wallet-balance'

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 
 import { cn } from '@mullet/ui/lib/utils'
 import { renderFallback } from '@mullet/utils/fallback'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 
 import VaultDetailCharts from './_comps/charts'
 import VaultDetailInfo from './_comps/info'

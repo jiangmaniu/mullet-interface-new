@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { IconSpecialSuccess } from '@/components/ui/icons'
 import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { Text } from '@/components/ui/text'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedChainInfo } from '../../../_hooks/use-selected-chain-info'

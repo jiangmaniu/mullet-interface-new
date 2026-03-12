@@ -1,4 +1,4 @@
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 import { action, makeAutoObservable, observable } from 'mobx'
 import NP from 'number-precision'
 

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 import { action, makeAutoObservable, observable, runInAction } from 'mobx'
 import NP from 'number-precision'
 

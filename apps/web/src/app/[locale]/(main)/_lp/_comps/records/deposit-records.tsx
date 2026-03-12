@@ -10,7 +10,7 @@ import {
 } from '@/services/api/trade-core/hooks/follow-manage/pool-list'
 import { cn } from '@mullet/ui/lib/utils'
 import { Table, TableCell, TableHead, TableHeader, TableRow } from '@mullet/ui/table'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 
 export const vaultTablecolumns: ColumnDef<PoolManageWrapper>[] = [
   {

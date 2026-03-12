@@ -12,7 +12,7 @@
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { FlatList, ActivityIndicator, View } from 'react-native';
 import { observer } from "mobx-react-lite";
-import dayjs from "dayjs";
+import { dayjs } from "@mullet/utils/dayjs";
 
 const PAGE_SIZE = 10;
 

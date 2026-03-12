@@ -4,7 +4,7 @@ import { getTradeCoreApiInstance } from '../../instance'
 import { FollowManage, SharesRecord, TwrRecordVO } from '../../instance/gen'
 import { tradeCoreApiQueriesKey } from '../../queries-eache-key'
 import { PageDataResponse } from '../../type'
-import dayjs from 'dayjs'
+import { dayjs } from '@mullet/utils/dayjs'
 import { TimeParseEnum } from '@/utils/dayjs'
 
 export type SharesRecordWrapper = Prettify<

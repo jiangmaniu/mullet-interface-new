@@ -18,9 +18,9 @@
     "tsc": "npx tsc --noEmit"
   },
   "dependencies": {
+    "@mullet/utils": "workspace:*",
     "axios": "^1.6.2",
     "bytebuffer": "^5.0.1",
-    "dayjs": "^1.11.10",
     "google-protobuf": "^3.21.2",
     "js-base64": "^3.7.5",
     "lodash": "^4.17.21",

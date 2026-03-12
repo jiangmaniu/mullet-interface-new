@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/text'
 import { WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
-import { formatAddress } from '@mullet/utils/format'
+import { formatAddress } from '@mullet/utils/web3'
 
 import { useWithdrawStore } from '../../_store'
 
