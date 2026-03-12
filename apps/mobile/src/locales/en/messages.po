@@ -6,6 +6,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-tp-sl.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/position-tp-sl-drawer.tsx
@@ -601,6 +607,10 @@ msgstr "Free"
 msgid "签名请求"
 msgstr "Signature Request"
 
+#: src/pages/(protected)/(home)/notifications/index.tsx
+msgid "消息通知"
+msgstr "Message Notifications"
+
 #: src/options/trade/order.tsx
 msgid "止损限价买入单"
 msgstr "Stop Limit Buy Order"
@@ -895,6 +905,10 @@ msgstr "No historical positions"
 msgid "从"
 msgstr "From"
 
+#: src/pages/(protected)/(assets)/settings/index.tsx
+msgid "退出登录"
+msgstr "Sign Out"
+
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx
 msgid "单笔交易手数"
 msgstr "Lots per trade"
@@ -1007,6 +1021,10 @@ msgstr "Add Balance"
 msgid "充值金额"
 msgstr "Deposit Amount"
 
+#: src/pages/(protected)/(home)/notifications/index.tsx
+msgid "通知"
+msgstr "Notifications"
+
 #. placeholder {0}: currentAccountInfo.currencyUnit
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 msgid "浮动盈亏({0})"
@@ -1066,6 +1084,7 @@ msgstr "Cross Margin"
 
 #: src/components/drawers/account-select-drawer.tsx
 #: src/pages/(protected)/(assets)/create-account/index.tsx
+#: src/pages/(protected)/(tabs)/assets/index.tsx
 msgid "模拟账户"
 msgstr "Demo Account"
 
@@ -1242,6 +1261,10 @@ msgstr "Limit Fee"
 msgid "清除缓存"
 msgstr "Clear Cache"
 
+#: src/pages/(protected)/(assets)/settings/index.tsx
+msgid "退出中..."
+msgstr "Signing out..."
+
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/_comps/signature-fail-modal.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
@@ -1317,6 +1340,10 @@ msgstr "Monday"
 #: src/options/deposit/status.tsx
 msgid "确认中"
 msgstr "Confirming"
+
+#: src/pages/(protected)/(tabs)/trade/index.tsx
+msgid "挂单"
+msgstr "Pending Orders"
 
 #: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 msgid "数量(手)"
@@ -1518,6 +1545,10 @@ msgstr "You will receive"
 msgid "平仓"
 msgstr "Close"
 
+#: src/pages/(protected)/(tabs)/trade/index.tsx
+msgid "持仓)"
+msgstr "Positions)"
+
 #: src/options/trade/position.tsx
 msgid "持仓中"
 msgstr "Open"
@@ -1650,6 +1681,7 @@ msgstr "Deposit Completed"
 
 #: src/components/drawers/account-select-drawer.tsx
 #: src/pages/(protected)/(assets)/create-account/index.tsx
+#: src/pages/(protected)/(tabs)/assets/index.tsx
 msgid "真实账户"
 msgstr "Real Account"
 
@@ -1751,6 +1783,10 @@ msgstr "Switching..."
 #: src/options/deposit/event.tsx
 msgid "检测到入金"
 msgstr "Deposit Detected"
+
+#: src/pages/(protected)/(home)/notifications/index.tsx
+msgid "公告"
+msgstr "Announcements"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx

@@ -110,11 +110,11 @@ const Trade = observer(() => {
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={renderLinguiMsg(msg`持仓(${positionList?.length ?? 0})`)}>
+        <CollapsibleTabScene name="positions" label={`${renderLinguiMsg(msg`持仓`)}(${positionList?.length ?? 0})`}>
           <TradePositions />
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={renderLinguiMsg(msg`挂单(${pendingList?.length ?? 0})`)}>
+        <CollapsibleTabScene name="orders" label={`${renderLinguiMsg(msg`挂单`)}(${pendingList?.length ?? 0})`}>
           <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>
