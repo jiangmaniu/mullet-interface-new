@@ -1,21 +1,22 @@
-import { MessageDescriptor } from "@lingui/core"
-import { msg } from "@lingui/core/macro"
-import { Trans } from "@lingui/react/macro"
+import { Trans } from '@lingui/react/macro'
+
+import { MessageDescriptor } from '@lingui/core'
+import { msg } from '@lingui/core/macro'
 
 export enum SymbolFilterMode {
   All = '0',
-  Favorite = '1'
+  Favorite = '1',
 }
 
 export const SYMBOL_FILTER_MODE_OPTIONS = [
   {
     label: <Trans>全部</Trans>,
-    value: SymbolFilterMode.All
+    value: SymbolFilterMode.All,
   },
   {
     label: <Trans>自选</Trans>,
-    value: SymbolFilterMode.Favorite
-  }
+    value: SymbolFilterMode.Favorite,
+  },
 ]
 
 /**
@@ -28,7 +29,7 @@ export enum SymbolCategory {
   Commodities = '20',
   Indices = '40',
   Stock = '50',
-  Crypto = '10'
+  Crypto = '10',
 }
 
 export type SymbolCategoryOption = {
@@ -39,32 +40,31 @@ export type SymbolCategoryOption = {
 export const SYMBOL_CATEGORY_OPTIONS: SymbolCategoryOption[] = [
   {
     label: msg`自选`,
-    value: SymbolCategory.Favorite
+    value: SymbolCategory.Favorite,
   },
   {
     label: msg`全部`,
-    value: SymbolCategory.All
+    value: SymbolCategory.All,
+  },
+  {
+    label: msg`数字货币`,
+    value: SymbolCategory.Crypto,
   },
   {
     label: msg`外汇`,
-    value: SymbolCategory.Forex
+    value: SymbolCategory.Forex,
   },
 
   {
     label: msg`商品`,
-    value: SymbolCategory.Commodities
+    value: SymbolCategory.Commodities,
   },
   {
     label: msg`指数`,
-    value: SymbolCategory.Indices
+    value: SymbolCategory.Indices,
   },
   {
     label: msg`股票`,
-    value: SymbolCategory.Stock
+    value: SymbolCategory.Stock,
   },
-
-  {
-    label: msg`数字货币`,
-    value: SymbolCategory.Crypto
-  }
 ]
