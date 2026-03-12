@@ -1,10 +1,15 @@
 import fs from 'fs'
+import path from 'path'
 import dotenv from 'dotenv'
 import { ConfigContext, ExpoConfig } from 'expo/config'
 
 import { ExpoConfigExtra } from './types/expo'
 
 const env = process.env.ENV || 'dev'
+
+// 从 package.json 读取版本号
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'))
+const version = packageJson.version
 
 const envFile = `.env.${env}`
 if (fs.existsSync(envFile)) {
@@ -45,6 +50,9 @@ export default ({ config }: { config: ConfigContext }) => {
     REOWN_PROJECT_ID: process.env.EXPO_PUBLIC_REOWN_PROJECT_ID!,
     // Solana 网络配置
     SOLANA_CLUSTER: (process.env.EXPO_PUBLIC_SOLANA_CLUSTER as 'devnet' | 'testnet' | 'mainnet-beta') || 'mainnet-beta',
+    // 版本和环境信息
+    APP_VERSION: version,
+    APP_ENV: env,
   }
 
   // 从 WEBSITE_URL 提取域名，用于 iOS associatedDomains
@@ -54,7 +62,7 @@ export default ({ config }: { config: ConfigContext }) => {
     ...config,
     name: displayName[env] ?? `Mullet (${env})`,
     slug: 'mullet',
-    version: '0.0.1',
+    version: version,
     orientation: 'portrait',
     icon: './public/images/icon.png',
     scheme: `mullet${schemeSuffix[env] ?? ''}`,

@@ -13,4 +13,7 @@ export type ExpoConfigExtra = {
   REOWN_PROJECT_ID: string
   // Solana 网络配置
   SOLANA_CLUSTER: 'devnet' | 'testnet' | 'mainnet-beta'
+  // 版本和环境信息
+  APP_VERSION: string
+  APP_ENV: string
 }

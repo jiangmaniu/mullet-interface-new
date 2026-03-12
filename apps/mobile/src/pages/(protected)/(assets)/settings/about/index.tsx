@@ -1,16 +1,17 @@
-import { useState, useCallback, useEffect } from 'react'
-import { View, Pressable } from 'react-native'
 import { Trans } from '@lingui/react/macro'
-import { Text } from '@/components/ui/text'
-import { ScreenHeader } from '@/components/ui/screen-header'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Pressable, View } from 'react-native'
+
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
-import { useThemeColors } from '@/hooks/use-theme-colors'
+import { ScreenHeader } from '@/components/ui/screen-header'
+import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
-import { UpgradeModal } from './_comps/upgrade-modal'
-import { ClearCacheModal } from './_comps/clear-cache-modal'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 
-const APP_VERSION = 'v1.0.0'
+import { ClearCacheModal } from './_comps/clear-cache-modal'
+import { UpgradeModal } from './_comps/upgrade-modal'
 
 export default function AboutScreen() {
   const { textColorContent4 } = useThemeColors()
@@ -18,6 +19,12 @@ export default function AboutScreen() {
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
   const [newVersion, setNewVersion] = useState<string | null>(null)
+
+  // 根据环境生成完整版本号：v{version}-{env}
+  const APP_VERSION = useMemo(() => {
+    const { APP_VERSION: version, APP_ENV: env } = EXPO_ENV_CONFIG
+    return env === 'prod' ? `v${version}` : `v${version}-${env}`
+  }, [])
 
   const handleCheckUpdate = useCallback(() => {
     // TODO: 替换为实际的版本检查 API
@@ -27,7 +34,7 @@ export default function AboutScreen() {
     } else {
       toast.success('当前已是最新版本')
     }
-  }, [])
+  }, [APP_VERSION])
 
   useEffect(() => {
     handleCheckUpdate()
@@ -45,11 +52,11 @@ export default function AboutScreen() {
   }, [])
 
   return (
-    <View className="flex-1 bg-secondary">
+    <View className="bg-secondary flex-1">
       <ScreenHeader content={<Trans>关于Mullet</Trans>} />
 
       {/* Logo 区域 */}
-      <View className="items-center py-[32px] gap-medium mt-xl">
+      <View className="gap-medium mt-xl items-center py-[32px]">
         <IconAppLogoCircle width={80} height={80} />
         <View className="items-center">
           <Text className="text-title-h4 text-content-1">Mullet</Text>
@@ -60,7 +67,7 @@ export default function AboutScreen() {
       {/* 菜单项 */}
       <View className="gap-xl">
         {/* 服务条款 */}
-        <Pressable onPress={() => { }}>
+        <Pressable onPress={() => {}}>
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>服务条款</Trans>
@@ -70,7 +77,7 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 隐私政策 */}
-        <Pressable onPress={() => { }}>
+        <Pressable onPress={() => {}}>
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>隐私政策</Trans>
@@ -85,18 +92,14 @@ export default function AboutScreen() {
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>检查更新</Trans>
             </Text>
-            <View className="flex-row items-center gap-xs">
+            <View className="gap-xs flex-row items-center">
               {newVersion ? (
                 <>
-                  <View className="w-[8px] h-[8px] rounded-full bg-status-danger" />
-                  <Text className="text-paragraph-p2 text-content-4">
-                    发现新版本{newVersion}
-                  </Text>
+                  <View className="bg-status-danger h-[8px] w-[8px] rounded-full" />
+                  <Text className="text-paragraph-p2 text-content-4">发现新版本{newVersion}</Text>
                 </>
               ) : (
-                <Text className="text-paragraph-p2 text-content-4">
-                  {APP_VERSION} 当前最新版本
-                </Text>
+                <Text className="text-paragraph-p2 text-content-4">{APP_VERSION} 当前最新版本</Text>
               )}
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
@@ -109,7 +112,7 @@ export default function AboutScreen() {
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>清除缓存</Trans>
             </Text>
-            <View className="flex-row items-center gap-xs">
+            <View className="gap-xs flex-row items-center">
               <Text className="text-paragraph-p2 text-content-4">{cacheSize}</Text>
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
@@ -125,11 +128,7 @@ export default function AboutScreen() {
       />
 
       {/* 更新版本 Modal */}
-      <UpgradeModal
-        visible={updateVisible}
-        onClose={() => setUpdateVisible(false)}
-        onConfirm={handleConfirmUpdate}
-      />
+      <UpgradeModal visible={updateVisible} onClose={() => setUpdateVisible(false)} onConfirm={handleConfirmUpdate} />
     </View>
   )
 }
