@@ -1,4 +1,4 @@
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
@@ -15,6 +15,8 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { parseSymbolLotsVolScale } from '@/helpers/symbol'
+import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { t } from '@/locales/i18n'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
@@ -24,6 +26,7 @@ import { transferWeekDay } from '@/v1/constants'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { formatTimeStr } from '@/v1/utils/business'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
 
@@ -40,7 +43,6 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
   const symbolMarketInfo = getCurrentQuote(symbol)
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
-  // const synopsis = getAccountSynopsisByLng(trade.currentAccountInfo.synopsis)
 
   const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
 
@@ -211,7 +213,6 @@ function ChartView({ symbol }: { symbol: string }) {
 
 // ============ DetailsView Component ============
 function DetailsView({ symbol }: { symbol: string }) {
-  const { i18n, t } = useLingui()
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbol)
   const tradeTimeConf = symbolMarketInfo?.tradeTimeConf as any[]
@@ -220,6 +221,8 @@ function DetailsView({ symbol }: { symbol: string }) {
   const transactionFeeConf = symbolMarketInfo?.transactionFeeConf
   const prepaymentConf = symbolMarketInfo?.prepaymentConf
   const marginMode = prepaymentConf?.mode // 保证金模式
+  const lotsVolScale = parseSymbolLotsVolScale(symbolConf)
+  const { renderLinguiMsg } = useI18n()
   const showPencent = holdingCostConf?.type !== 'pointMode' // 以
 
   const CONTRACT_PROPERTIES = [
@@ -230,15 +233,18 @@ function DetailsView({ symbol }: { symbol: string }) {
       label: <Trans>单笔交易手数</Trans>,
       value: (
         <>
-          {BNumber.toFormatNumber(symbolConf?.minTrade, { volScale: 2 })}
-          {i18n._(LOTS_UNIT_LABEL)}-{BNumber.toFormatNumber(symbolConf?.maxTrade, { volScale: 2 })}
-          {i18n._(LOTS_UNIT_LABEL)}
+          {BNumber.toFormatNumber(symbolConf?.minTrade, { volScale: lotsVolScale })}
+          {renderLinguiMsg(LOTS_UNIT_LABEL)}-{BNumber.toFormatNumber(symbolConf?.maxTrade, { volScale: lotsVolScale })}
+          {renderLinguiMsg(LOTS_UNIT_LABEL)}
         </>
       ),
     },
     {
       label: <Trans>手数差值</Trans>,
-      value: BNumber.toFormatNumber(symbolConf?.tradeStep, { volScale: 2, unit: i18n._(LOTS_UNIT_LABEL) }),
+      value: BNumber.toFormatNumber(symbolConf?.tradeStep, {
+        volScale: lotsVolScale,
+        unit: renderLinguiMsg(LOTS_UNIT_LABEL),
+      }),
     },
     {
       label: <Trans>隔夜利息（多单）</Trans>,
@@ -247,7 +253,7 @@ function DetailsView({ symbol }: { symbol: string }) {
           ? BNumber.toFormatPercent(holdingCostConf?.buyBag, { isRaw: false, positive: false })
           : BNumber.toFormatNumber(holdingCostConf?.buyBag, {
               positive: false,
-              unit: `(${t`点模式`})`,
+              unit: `(${renderLinguiMsg(msg`点模式`)})`,
             }),
         {
           verify: holdingCostConf?.isEnable,
@@ -261,7 +267,7 @@ function DetailsView({ symbol }: { symbol: string }) {
           ? BNumber.toFormatPercent(holdingCostConf?.sellBag, { isRaw: false, positive: false })
           : BNumber.toFormatNumber(holdingCostConf?.sellBag, {
               positive: false,
-              unit: `(${t`点模式`})`,
+              unit: `(${renderLinguiMsg(msg`点模式`)})`,
             }),
         {
           verify: holdingCostConf?.isEnable,

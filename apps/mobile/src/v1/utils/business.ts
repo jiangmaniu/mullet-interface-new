@@ -5,6 +5,7 @@ import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 
 import { formatMin2Time, getUID, groupBy, parseJsonFields } from '.'
+import { AccountGroup } from '../services/tradeCore/accountGroup/typings'
 
 //  =============
 
@@ -21,13 +22,13 @@ export function transformTradeTimeSubmit(arr: any[]) {
       // 交易时间
       trade: groupBy(item.trade, 2).map((v: any) => ({
         start: v[0],
-        end: v[1]
+        end: v[1],
       })),
       // 报价时间
       price: groupBy(item.price, 2).map((v: any) => ({
         start: v[0],
-        end: v[1]
-      }))
+        end: v[1],
+      })),
     }
   })
 
@@ -47,7 +48,7 @@ export function transformTradeTimeShow(conf: any) {
       // 交易时间
       trade: (conf[key]?.trade || [])?.map((v: any) => [v.start, v.end]).flat(),
       // 报价时间
-      price: (conf[key]?.price || [])?.map((v: any) => [v.start, v.end]).flat()
+      price: (conf[key]?.price || [])?.map((v: any) => [v.start, v.end]).flat(),
     })
   })
 
@@ -93,7 +94,7 @@ export function transformTradeInventoryShow(conf: Symbol.HoldingCostConf) {
       // 库存费乘数
       // @ts-ignore
       num: conf?.multiplier[key],
-      id: getUID() // 需要一个唯一值id，否则编辑表格出错
+      id: getUID(), // 需要一个唯一值id，否则编辑表格出错
     })
   })
 
@@ -121,9 +122,9 @@ export function transformTradeFeeSubmit(conf: Symbol.TransactionFeeConf) {
             market_fee: item.market_fee,
             limit_fee: item.limit_fee,
             min_value: item?.maxMinMap?.min_value,
-            max_value: item?.maxMinMap?.max_value
+            max_value: item?.maxMinMap?.max_value,
           }
-        })
+        }),
       }
     : {}
 
@@ -145,8 +146,8 @@ export function transformTradeFeeShow(conf: Symbol.TransactionFeeConf) {
       maxMinMap: {
         // 用于显示在表格上的范围值，一个输入框 对应两个值
         min_value: item.min_value,
-        max_value: item.max_value
-      }
+        max_value: item.max_value,
+      },
     }
   })
   return conf
@@ -164,7 +165,7 @@ export function transformTradePrepaymentConfSubmit(conf: Symbol.PrepaymentConf) 
         return {
           bag_nominal_value: item.bag_nominal_value,
           lever_start_value: item?.maxMinMap?.lever_start_value,
-          lever_end_value: item?.maxMinMap?.lever_end_value
+          lever_end_value: item?.maxMinMap?.lever_end_value,
         }
       })
   }
@@ -184,8 +185,8 @@ export function transformTradePrepaymentConfShow(conf: Symbol.PrepaymentConf) {
         maxMinMap: {
           // 用于显示在表格上的范围值，一个输入框 对应两个值
           lever_start_value: item.lever_start_value,
-          lever_end_value: item.lever_end_value
-        }
+          lever_end_value: item.lever_end_value,
+        },
       }
     })
   }
@@ -206,7 +207,7 @@ export const formatMultipleValue = (fields: string[], obj: any) => {
   })
   return {
     ...obj,
-    ...result
+    ...result,
   }
 }
 
@@ -233,7 +234,7 @@ export const formatSymbolConf = (data: any) => {
       'tradeTimeConf', // 交易时间配置
       'quotationConf', // 报价配置
       'transactionFeeConf', // 手续费配置
-      'holdingCostConf' // 库存费配置
+      'holdingCostConf', // 库存费配置
     ])
     // 格式化多选字段，转化为数组
     symbolConf = formatMultipleValue(['orderType'], symbolConf)
@@ -282,8 +283,7 @@ export const getBuySellInfo = (item: any) => {
 
   let marginTypeText = ''
   if (item.marginType) {
-    marginTypeText =
-      item.marginType === 'CROSS_MARGIN' ? t`CROSS_MARGIN` : t`ISOLATED_MARGIN`
+    marginTypeText = item.marginType === 'CROSS_MARGIN' ? t`CROSS_MARGIN` : t`ISOLATED_MARGIN`
   }
   const fixedMarginText = isFixedMargin ? t`Fixed Margin Abbr` : ''
   const leverageMultiple = item.leverageMultiple
@@ -299,7 +299,7 @@ export const getBuySellInfo = (item: any) => {
     text,
     buySellText,
     marginTypeText,
-    colorClassName: isBuy ? 'text-green' : 'text-red'
+    colorClassName: isBuy ? 'text-green' : 'text-red',
   }
 }
 
@@ -334,7 +334,7 @@ export function formatSymbolList(symbolList) {
     .sort() // 确保A-Z顺序
     .map((letter) => ({
       title: letter,
-      data: groupedData[letter]
+      data: groupedData[letter],
     }))
 
   return result

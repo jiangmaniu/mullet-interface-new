@@ -1,44 +1,41 @@
+import { Trans, useLingui } from '@lingui/react/macro'
 import { useState } from 'react'
-import { View, Pressable } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Trans } from '@lingui/react/macro'
-import { i18n } from '@lingui/core'
-import { Text } from '@/components/ui/text'
-import { ScreenHeader } from '@/components/ui/screen-header'
+import type { Locale } from '@/locales/i18n'
+
 import { IconifyNavArrowRight } from '@/components/ui/icons'
-import { useThemeColors } from '@/hooks/use-theme-colors'
+import { ScreenHeader } from '@/components/ui/screen-header'
+import { Text } from '@/components/ui/text'
 import { useLogout } from '@/hooks/use-logout'
-import { locales, type Locale } from '@/locales/i18n'
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { locales } from '@/locales/i18n'
+
 import { LanguageDrawer } from './_comps/language-drawer'
 
 export default function SettingScreen() {
   const router = useRouter()
   const { logout, isLoggingOut } = useLogout()
   const { textColorContent4 } = useThemeColors()
+  const { i18n } = useLingui()
   const [languageVisible, setLanguageVisible] = useState(false)
 
   const currentLocaleName = locales[i18n.locale as Locale] || '简体中文'
 
   return (
-    <View className="flex-1 bg-secondary">
+    <View className="bg-secondary flex-1">
       <ScreenHeader content={<Trans>设置</Trans>} />
 
       <View className="gap-xl pt-xl">
         {/* 语言设置 */}
         <Pressable onPress={() => setLanguageVisible(true)}>
-          <View className="h-[48px] flex-row items-center justify-between px-xl">
+          <View className="px-xl h-[48px] flex-row items-center justify-between">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>语言设置</Trans>
             </Text>
-            <View className="flex-row items-center gap-xs">
-              <Text className="text-paragraph-p2 text-content-4">
-                {currentLocaleName}
-              </Text>
-              <IconifyNavArrowRight
-                width={18}
-                height={18}
-                color={textColorContent4}
-              />
+            <View className="gap-xs flex-row items-center">
+              <Text className="text-paragraph-p2 text-content-4">{currentLocaleName}</Text>
+              <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
           </View>
         </Pressable>
@@ -64,19 +61,13 @@ export default function SettingScreen() {
 
         {/* 关于Mullet */}
         <Pressable onPress={() => router.push('/settings/about')}>
-          <View className="h-[48px] flex-row items-center justify-between px-xl">
+          <View className="px-xl h-[48px] flex-row items-center justify-between">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>关于Mullet</Trans>
             </Text>
-            <View className="flex-row items-center gap-xs">
-              <Text className="text-paragraph-p2 text-content-4">
-                v1.0.0
-              </Text>
-              <IconifyNavArrowRight
-                width={18}
-                height={18}
-                color={textColorContent4}
-              />
+            <View className="gap-xs flex-row items-center">
+              <Text className="text-paragraph-p2 text-content-4">v1.0.0</Text>
+              <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
           </View>
         </Pressable>
@@ -85,18 +76,15 @@ export default function SettingScreen() {
       {/* 退出登录 */}
       <View className="mt-xl">
         <Pressable onPress={logout}>
-          <View className="w-full flex justify-center items-center py-3.5 px-3">
+          <View className="flex w-full items-center justify-center px-3 py-3.5">
             <Text className="text-content-4 text-paragraph-p2">
-              {isLoggingOut ? '退出中...' : '退出登录'}
+              {isLoggingOut ? <Trans>退出中...</Trans> : <Trans>退出登录</Trans>}
             </Text>
           </View>
         </Pressable>
       </View>
 
-      <LanguageDrawer
-        visible={languageVisible}
-        onClose={() => setLanguageVisible(false)}
-      />
+      <LanguageDrawer visible={languageVisible} onClose={() => setLanguageVisible(false)} />
     </View>
   )
 }

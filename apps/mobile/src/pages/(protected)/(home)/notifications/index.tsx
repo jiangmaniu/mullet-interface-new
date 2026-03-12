@@ -15,6 +15,8 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useMarkAllRead } from './_hooks/use-mark-all-read'
 import { useMessageList } from './_hooks/use-message-list'
 import { useUnreadCount } from './_hooks/use-unread-count'
+import { useI18n } from '@/hooks/use-i18n'
+import { msg } from '@lingui/core/macro'
 
 // ============ NotificationItem ============
 interface NotificationItemProps {
@@ -143,14 +145,12 @@ export default function NotificationsPage() {
   const { textColorContent1 } = useThemeColors()
   const { mutate: markAllRead } = useMarkAllRead()
   const { data: unreadCount = 0 } = useUnreadCount()
+  const { renderLinguiMsg } = useI18n()
 
-  const routes = useMemo<Route[]>(
-    () => [
-      { key: 'notifications', title: '通知' },
-      { key: 'announcements', title: '公告' },
-    ],
-    [],
-  )
+  const routes: Route[] = [
+    { key: 'notifications', title: renderLinguiMsg(msg`通知`) },
+    { key: 'announcements', title: renderLinguiMsg(msg`公告`) },
+  ]
 
   const renderScene = useCallback(({ route }: { route: Route }) => {
     if (route.key === 'notifications') {
@@ -166,7 +166,7 @@ export default function NotificationsPage() {
   return (
     <View className="bg-secondary flex-1">
       <ScreenHeader
-        content="消息通知"
+        content={<Trans>消息通知</Trans>}
         right={
           unreadCount > 0 ? (
             <Pressable onPress={handleMarkAllRead} className="p-1">

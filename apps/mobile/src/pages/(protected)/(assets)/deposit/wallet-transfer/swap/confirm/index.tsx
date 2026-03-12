@@ -16,8 +16,8 @@ import { useWalletInfo } from '@/lib/appkit'
 import { getImgSource } from '@/utils/img'
 import { t } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/fallback'
-import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
+import { formatAddress } from '@mullet/utils/web3'
 
 import { useSwapTransaction } from '../_hooks/use-swap-transaction'
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
@@ -143,6 +143,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
           amount: quoteParams.amount,
           fromAddress: quoteParams.fromAddress,
           toAddress: toWalletAddress,
+          provider: 'jupiter',
         }
         await buildAndSendTransaction(buildParams, refreshCountdown)
       }

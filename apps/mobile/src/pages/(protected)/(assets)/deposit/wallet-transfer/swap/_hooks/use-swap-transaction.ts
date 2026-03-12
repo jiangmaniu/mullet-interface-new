@@ -31,6 +31,8 @@ export interface BuildSwapTxParams {
   fromAddress: string
   toAddress?: string // 输出 Token 接收地址，不传则默认等于 fromAddress
   slippageBps?: number // 默认 50 = 0.5%
+  /** "jupiter"（默认）\| "lifi" */
+  provider?: string
 }
 
 /**

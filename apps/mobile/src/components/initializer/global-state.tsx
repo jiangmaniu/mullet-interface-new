@@ -1,7 +1,8 @@
-import { useStores } from "@/v1/provider/mobxProvider"
-import { observer } from "mobx-react-lite"
-import { useCallback, useEffect, useState } from "react"
-import { Platform, Text, View } from "react-native"
+import { observer } from 'mobx-react-lite'
+import { useCallback, useEffect, useState } from 'react'
+import { Platform, Text, View } from 'react-native'
+
+import { useStores } from '@/v1/provider/mobxProvider'
 
 let unsubscribe: (() => void) | undefined
 
@@ -37,15 +38,12 @@ export const GlobalStateInitializer = observer(({ children }: { children: React.
   }, [initApp])
 
   if (!ready) {
-    return <View className="flex justify-center items-center">
-      <Text className="text-content-1 text-paragraph-p2">loading...</Text>
-    </View>
+    return (
+      <View className="flex flex-1 items-center justify-center">
+        <Text className="text-content-1 text-paragraph-p2">loading...</Text>
+      </View>
+    )
   }
 
-  return (
-    <>
-      {children}
-    </>
-  )
-}
-)
+  return <>{children}</>
+})

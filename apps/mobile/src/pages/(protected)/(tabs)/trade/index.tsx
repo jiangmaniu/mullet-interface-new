@@ -1,8 +1,8 @@
+import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useToggle } from 'ahooks'
 import { useRouter } from 'expo-router'
 
 import { IconButton } from '@/components/ui/button'
@@ -109,11 +109,11 @@ const Trade = observer(() => {
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={`持仓(${positionList?.length ?? 0})`}>
+        <CollapsibleTabScene name="positions" label={() => <Trans>持仓({positionList?.length ?? 0})</Trans>}>
           <TradePositions />
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={`挂单(${pendingList?.length ?? 0})`}>
+        <CollapsibleTabScene name="orders" label={() => <Trans>挂单({pendingList?.length ?? 0})</Trans>}>
           <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>

@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { ScrollView, View } from 'react-native'
+import { Pressable, ScrollView, View } from 'react-native'
+import { router } from 'expo-router'
 
 import { AreaChart } from '@/components/trading-view'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -11,7 +12,7 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSymbolKline } from '../_hooks/use-symbol-kline'
@@ -81,38 +82,46 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   // 判断是否应该显示图表
   const shouldShowChart = !isChartLoading && chartData.length > 0
 
+  const handlePress = () => {
+    trade.switchSymbol(symbolInfo.symbol)
+    subscribeCurrentAndPositionSymbol({ cover: true })
+    router.push(`/${symbolInfo.symbol}`)
+  }
+
   return (
-    <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
-      <CardContent className="gap-medium">
-        <View className="flex-row items-center gap-2">
-          <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-4 flex-shrink-0 rounded-full" />
-          <Text className="text-content-1 text-sm font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
-        </View>
+    <Pressable onPress={handlePress}>
+      <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
+        <CardContent className="gap-medium">
+          <View className="flex-row items-center gap-2">
+            <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-4 flex-shrink-0 rounded-full" />
+            <Text className="text-content-1 text-sm font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
+          </View>
 
-        <View>
-          <Text className="text-content-1 text-sm font-medium">{BNumber.toFormatNumber(price, { volScale: 2 })}</Text>
-          <Text style={{ color: changeColor }} className="text-paragraph-p3">
-            {BNumber.toFormatPercent(change, { forceSign: true, isRaw: false })}
-          </Text>
-        </View>
+          <View>
+            <Text className="text-content-1 text-sm font-medium">{BNumber.toFormatNumber(price, { volScale: 2 })}</Text>
+            <Text style={{ color: changeColor }} className="text-paragraph-p3">
+              {BNumber.toFormatPercent(change, { forceSign: true, isRaw: false })}
+            </Text>
+          </View>
 
-        {/* Mini Chart */}
-        <View className="h-[60px] w-full overflow-hidden" pointerEvents="none">
-          {isChartLoading ? (
-            // 加载骨架屏
-            <View className="bg-content-5 h-full w-full rounded-xs opacity-10" />
-          ) : shouldShowChart ? (
-            <AreaChart
-              data={chartData}
-              lineColor={changeColor}
-              lineWidth={1}
-              topColor={`${changeColor}99`}
-              bottomColor={`${changeColor}00`}
-            />
-          ) : null}
-        </View>
-      </CardContent>
-    </Card>
+          {/* Mini Chart */}
+          <View className="h-[60px] w-full overflow-hidden" pointerEvents="none">
+            {isChartLoading ? (
+              // 加载骨架屏
+              <View className="bg-content-5 h-full w-full rounded-xs opacity-10" />
+            ) : shouldShowChart ? (
+              <AreaChart
+                data={chartData}
+                lineColor={changeColor}
+                lineWidth={1}
+                topColor={`${changeColor}99`}
+                bottomColor={`${changeColor}00`}
+              />
+            ) : null}
+          </View>
+        </CardContent>
+      </Card>
+    </Pressable>
   )
 })
 

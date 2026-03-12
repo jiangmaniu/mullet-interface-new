@@ -22,6 +22,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
@@ -278,7 +279,7 @@ enum ViewMode {
 export default function Index() {
   const [viewMode, setViewMode] = useState(ViewMode.Market)
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
-  const { i18n } = useLingui()
+  const { renderLinguiMsg } = useI18n()
 
   const initialTab = SYMBOL_CATEGORY_OPTIONS.find((item) => item.value === SymbolCategory.All)
 
@@ -335,9 +336,12 @@ export default function Index() {
           renderTabBarBottom={() => <AssetTradeHeader viewMode={viewMode} />}
         >
           {SYMBOL_CATEGORY_OPTIONS.map((categoryOption) => {
-            const label = i18n._(categoryOption.label)
             return (
-              <CollapsibleTabScene key={categoryOption.value} name={categoryOption.value} label={label}>
+              <CollapsibleTabScene
+                key={categoryOption.value}
+                name={categoryOption.value}
+                label={() => renderLinguiMsg(categoryOption.label)}
+              >
                 <AssetTabListContent viewMode={viewMode} categoryOption={categoryOption} />
               </CollapsibleTabScene>
             )
