@@ -215,15 +215,11 @@ async function parseArgs() {
 
 // --- 产物整理 ---
 
-function organizeArtifacts(platform, env, version) {
-  const now = new Date()
-  const timestamp = [
-    now.getFullYear(),
-    String(now.getMonth() + 1).padStart(2, '0'),
-    String(now.getDate()).padStart(2, '0'),
-    String(now.getHours()).padStart(2, '0'),
-    String(now.getMinutes()).padStart(2, '0'),
-  ].join('')
+function organizeArtifacts(platform, env, version, versionCode) {
+  // 将 YYMMDDHHMM 转换为 YYYYMMDDHHMM 用于文件名
+  const yy = versionCode.slice(0, 2)
+  const rest = versionCode.slice(2)
+  const timestamp = `20${yy}${rest}`
 
   const dirName = `Mullet-${platform}-${version}-${env}-${timestamp}`
   const buildDir = path.join(PROJECT_DIR, 'build')
@@ -340,7 +336,7 @@ async function main() {
 
   // Step 4: Organize build artifacts
   console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
-  const outputDir = organizeArtifacts(platform, env, version)
+  const outputDir = organizeArtifacts(platform, env, version, versionCode)
 
   // 构建成功汇总
   console.log('')

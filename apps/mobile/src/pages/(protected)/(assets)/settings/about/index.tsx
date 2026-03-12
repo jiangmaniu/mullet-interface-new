@@ -20,10 +20,11 @@ export default function AboutScreen() {
   const [updateVisible, setUpdateVisible] = useState(false)
   const [newVersion, setNewVersion] = useState<string | null>(null)
 
-  // 根据环境生成完整版本号：v{version}-{env}
+  // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
   const APP_VERSION = useMemo(() => {
-    const { APP_VERSION: version, APP_ENV: env } = EXPO_ENV_CONFIG
-    return env === 'prod' ? `v${version}` : `v${version}-${env}`
+    const { APP_VERSION: version, APP_ENV: env, BUILD_TIME: buildTime } = EXPO_ENV_CONFIG
+    const versionStr = env === 'prod' ? `v${version}` : `v${version}-${env}`
+    return `${versionStr} (${buildTime})`
   }, [])
 
   const handleCheckUpdate = useCallback(() => {

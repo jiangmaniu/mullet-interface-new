@@ -11,6 +11,29 @@ const env = process.env.ENV || 'dev'
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'))
 const version = packageJson.version
 
+// 构建时间戳：优先使用 build.mjs 传入的 VERSION_CODE，否则生成当前时间
+// 格式：YYYYMMDDHHMM（完整年份）或 YYMMDDHHMM（build.mjs 格式）
+const buildTime = (() => {
+  // 如果是通过 build.mjs 构建，使用传入的 VERSION_CODE（YYMMDDHHMM 格式）
+  if (process.env.VERSION_CODE) {
+    // 将 YYMMDDHHMM 转换为 YYYYMMDDHHMM
+    const yy = process.env.VERSION_CODE.slice(0, 2)
+    const rest = process.env.VERSION_CODE.slice(2)
+    const yyyy = `20${yy}` // 假设是 21 世纪
+    return `${yyyy}${rest}`
+  }
+
+  // 开发模式下生成当前时间
+  const now = new Date()
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0'),
+    String(now.getHours()).padStart(2, '0'),
+    String(now.getMinutes()).padStart(2, '0'),
+  ].join('')
+})()
+
 const envFile = `.env.${env}`
 if (fs.existsSync(envFile)) {
   dotenv.config({ path: envFile })
@@ -53,6 +76,7 @@ export default ({ config }: { config: ConfigContext }) => {
     // 版本和环境信息
     APP_VERSION: version,
     APP_ENV: env,
+    BUILD_TIME: buildTime,
   }
 
   // 从 WEBSITE_URL 提取域名，用于 iOS associatedDomains

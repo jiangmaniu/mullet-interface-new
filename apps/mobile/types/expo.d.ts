@@ -16,4 +16,5 @@ export type ExpoConfigExtra = {
   // 版本和环境信息
   APP_VERSION: string
   APP_ENV: string
+  BUILD_TIME: string
 }
