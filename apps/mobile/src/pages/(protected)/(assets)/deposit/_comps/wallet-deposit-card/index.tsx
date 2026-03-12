@@ -21,5 +21,6 @@ export function WalletDepositCard() {
   }
 
   // 未连接钱包卡片
-  return <UnconnectedWalletCard />
+  // return <UnconnectedWalletCard />
+  return null
 }

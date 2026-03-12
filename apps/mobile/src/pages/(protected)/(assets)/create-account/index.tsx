@@ -1,9 +1,11 @@
 import { Trans } from '@lingui/react/macro'
 import React, { createContext, useContext, useState } from 'react'
 import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useBoolean } from 'ahooks'
 import { router, useLocalSearchParams } from 'expo-router'
 
+import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -19,12 +21,12 @@ import { IconifyUserCircle } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
-import { EmptyState } from '@/components/states/empty-state'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { AddAccount } from '@/v1/services/tradeCore/account'
 import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { t } from '@lingui/core/macro'
+
 import { useAccountGroupList } from './_apis/use-account-group-list'
 
 interface AccountGroupCardProps {
@@ -177,20 +179,22 @@ export default function CrateAccountScreen() {
           </CollapsibleTabScene>
         </CollapsibleTab>
 
-        {/* Fixed Bottom Button */}
-        <View className="bg-secondary px-xl pb-3xl absolute right-0 bottom-0 left-0">
-          <Button
-            size="lg"
-            color="primary"
-            disabled={!selectedAccountGroup}
-            onPress={handleCreateAccount}
-            loading={isLoading}
-          >
-            <Text>
-              <Trans>创建账户</Trans>
-            </Text>
-          </Button>
-        </View>
+        {/* 底部按钮 */}
+        <SafeAreaView edges={['bottom']}>
+          <View className="py-3xl px-5">
+            <Button
+              size="lg"
+              color="primary"
+              disabled={!selectedAccountGroup}
+              onPress={handleCreateAccount}
+              loading={isLoading}
+            >
+              <Text>
+                <Trans>创建账户</Trans>
+              </Text>
+            </Button>
+          </View>
+        </SafeAreaView>
       </View>
     </CrateAccountScreenContext.Provider>
   )
@@ -201,7 +205,7 @@ function RealAccountGroupList() {
 
   const realAccountGroupList = React.useMemo(
     () => accountGroupList.filter((group) => !group.isSimulate),
-    [accountGroupList]
+    [accountGroupList],
   )
 
   const isInitialLoading = isLoading && realAccountGroupList.length === 0
@@ -219,7 +223,7 @@ function RealAccountGroupList() {
             <ActivityIndicator />
           </View>
         ) : isEmpty ? (
-          <View className="py-[60px] items-center">
+          <View className="items-center py-[60px]">
             <EmptyState message={<Trans>暂无真实账户组</Trans>} />
           </View>
         ) : (
@@ -237,7 +241,7 @@ function SimulateAccountGroupList() {
 
   const simulateAccountGroupList = React.useMemo(
     () => accountGroupList.filter((group) => group.isSimulate),
-    [accountGroupList]
+    [accountGroupList],
   )
 
   const isInitialLoading = isLoading && simulateAccountGroupList.length === 0
@@ -255,7 +259,7 @@ function SimulateAccountGroupList() {
             <ActivityIndicator />
           </View>
         ) : isEmpty ? (
-          <View className="py-[60px] items-center">
+          <View className="items-center py-[60px]">
             <EmptyState message={<Trans>暂无模拟账户组</Trans>} />
           </View>
         ) : (
