@@ -1,7 +1,8 @@
 import { Trans } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
-import { Image, Pressable, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { IconifyEdit } from '@/components/ui/icons'
 import { IconifyRefreshDouble } from '@/components/ui/icons/iconify'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,7 @@ import { Text } from '@/components/ui/text'
 import { WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
+import { getImgSource } from '@/utils/img'
 import { formatAddress } from '@mullet/utils/web3'
 
 import { useWithdrawStore } from '../../_store'
@@ -85,7 +87,7 @@ export function WalletSelector() {
 
       {walletMode === 'connected' && isSolanaChain ? (
         <View className="gap-medium flex-row items-center">
-          <Image source={{ uri: walletInfo?.icon }} style={{ width: 24, height: 24 }} />
+          <AvatarImage source={getImgSource(walletInfo?.icon)} className="size-6 rounded-full" />
           <View className="flex-1">
             <Text className="text-paragraph-p2 text-content-1">{walletInfo?.name ?? 'Wallet'}</Text>
             <Text className="text-paragraph-p3 text-content-4">{formatAddress(currentWalletAddress)}</Text>

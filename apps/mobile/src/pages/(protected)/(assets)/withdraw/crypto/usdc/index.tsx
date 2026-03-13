@@ -1,11 +1,12 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useState } from 'react'
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
 import type { NumberFormatValues } from 'react-number-format'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import {
   NumberInputPrimitive,
@@ -15,6 +16,7 @@ import {
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { getImgSource } from '@/utils/img'
 import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
@@ -104,7 +106,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
         <View className="gap-3xl">
           <View className="gap-large items-center">
             <View className="gap-xs flex-row items-center">
-              <Image source={{ uri: tokenInfo?.iconUrl }} style={{ width: 24, height: 24 }} />
+              <AvatarImage source={getImgSource(tokenInfo?.iconUrl)} className="size-6 rounded-full" />
               <Text className="text-paragraph-p2 text-content-1">{tokenInfo?.symbol}</Text>
             </View>
 

@@ -25,6 +25,7 @@
     "@lingui/react": "^5.5.1",
     "@mullet/trading-view": "workspace:*",
     "@mullet/utils": "workspace:*",
+    "@mullet/web3": "workspace:*",
     "@privy-io/expo": "^0.63.7",
     "@privy-io/expo-native-extensions": "^0.0.6",
     "@react-native-camera-roll/camera-roll": "^7.10.2",

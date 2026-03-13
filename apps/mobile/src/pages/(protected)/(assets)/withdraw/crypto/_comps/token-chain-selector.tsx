@@ -2,13 +2,15 @@ import { useEffect, useMemo } from 'react'
 import { Image, View } from 'react-native'
 import type { Option } from '@/components/ui/select'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { getImgSource } from '@/utils/img'
 
-import { useDepositAddress } from '../../../deposit/_apis/use-deposit-address'
 import { useWithdrawSupportedChains } from '../../_apis/use-supported-chains'
 import { useWithdrawSupportedTokens } from '../../_apis/use-supported-tokens'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
+import { useDepositAddress } from '../../../deposit/_apis/use-deposit-address'
 
 export function TokenChainSelector() {
   const selectedAccount = useSelectedWithdrawAccount()
@@ -84,18 +86,14 @@ export function TokenChainSelector() {
   const selectedChainOption: Option = {
     value: selectedChainId,
     label: selectedChain?.displayName ?? selectedChainId,
-    icon: selectedChain?.iconUrl ? (
-      <Image source={{ uri: selectedChain.iconUrl }} style={{ width: 16, height: 16 }} />
-    ) : undefined,
+    icon: <AvatarImage source={getImgSource(selectedChain?.iconUrl)} className="size-4 rounded-full" />,
   }
 
   const selectedTokenIconUrl = getTokenIconUrl(selectedTokenSymbol)
   const selectedTokenOption: Option = {
     value: selectedTokenSymbol,
     label: selectedTokenSymbol,
-    icon: selectedTokenIconUrl ? (
-      <Image source={{ uri: selectedTokenIconUrl }} style={{ width: 16, height: 16 }} />
-    ) : undefined,
+    icon: <AvatarImage source={getImgSource(selectedTokenIconUrl)} className="size-4 rounded-full" />,
   }
 
   return (
@@ -112,9 +110,7 @@ export function TokenChainSelector() {
               key={chain.chainId}
               value={chain.chainId}
               label={chain.displayName}
-              icon={
-                chain.iconUrl ? <Image source={{ uri: chain.iconUrl }} style={{ width: 16, height: 16 }} /> : undefined
-              }
+              icon={<AvatarImage source={getImgSource(chain.iconUrl)} className="size-4 rounded-full" />}
             />
           ))}
         </SelectContent>
@@ -134,9 +130,7 @@ export function TokenChainSelector() {
                 key={token.symbol}
                 value={token.symbol}
                 label={token.symbol}
-                icon={
-                  tokenIconUrl ? <Image source={{ uri: tokenIconUrl }} style={{ width: 16, height: 16 }} /> : undefined
-                }
+                icon={<AvatarImage source={getImgSource(tokenIconUrl)} className="size-4 rounded-full" />}
               />
             )
           })}
