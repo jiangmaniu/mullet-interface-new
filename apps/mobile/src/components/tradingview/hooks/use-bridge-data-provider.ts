@@ -44,7 +44,7 @@ export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null
       try {
         const res = await request<{ data: string[] }>('/api/trade-market/marketApi/kline/symbol/klineList', {
           params: {
-            symbol,
+            symbol: trade.activeSymbolName,
             klineType,
             size: 300,
             klineTime: toTimestamp * 1000,
