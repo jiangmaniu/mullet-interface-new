@@ -15,11 +15,11 @@ import { IconifyCopy, IconifyPlusCircle, IconifyUserCircle } from '@/components/
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
@@ -182,7 +182,6 @@ const SimulateAccountRow = ({ account }: SimulateAccountRowProps) => {
   const synopsis = useAccountSynopsis(account.synopsis)
   const tradeSimulateAccountDepositDrawerRef = useRef<TradeSimulateAccountDepositDrawerRef>(null)
   return (
-    // <Pressable onPress={onPress}>
     <Card>
       <CardContent className="gap-xs">
         {/* Header: User & Badges */}
@@ -228,6 +227,5 @@ const SimulateAccountRow = ({ account }: SimulateAccountRowProps) => {
         </View>
       </CardContent>
     </Card>
-    // </Pressable>
   )
 }

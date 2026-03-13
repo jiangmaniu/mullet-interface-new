@@ -1,4 +1,4 @@
-import { Trans, useLingui } from '@lingui/react/macro'
+import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
@@ -20,7 +20,6 @@ import {
 import { IconDepth, IconDepthTB, IconifyBell, IconifySearch } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
@@ -73,12 +72,7 @@ const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
       <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
       <View className="flex-1">
         <Text className="text-paragraph-p2 text-content-1">{symbolInfo.alias}</Text>
-        <Tooltip title={<Trans>提示</Trans>}>
-          <TooltipTrigger className="text-paragraph-p3 text-content-4" hasUnderline={false} numberOfLines={1}>
-            {symbolInfo.remark}
-          </TooltipTrigger>
-          <TooltipContent>{symbolInfo.remark}</TooltipContent>
-        </Tooltip>
+        <Text className="text-paragraph-p3 text-content-4">{symbolInfo.alias}</Text>
       </View>
     </View>
   )
