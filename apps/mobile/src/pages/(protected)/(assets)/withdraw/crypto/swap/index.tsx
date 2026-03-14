@@ -1,34 +1,36 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { TextInput, View } from 'react-native'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
-import type { Option } from '@/components/ui/select'
+import { debounce } from 'lodash-es'
+import type { NumberFormatValues } from 'react-number-format'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
-import { IconSolana } from '@/components/ui/icons/set/solana'
 import { IconSwap } from '@/components/ui/icons/set/swap'
-import { IconUSDT } from '@/components/ui/icons/set/usdt'
-import { IconOkxWallet } from '@/components/ui/icons/set/wallet/okx-wallet'
+import {
+  NumberInputPrimitive,
+  NumberInputSourceInfo,
+  NumberInputSourceType,
+} from '@/components/ui/number-input-primitive'
 import { ScreenHeader } from '@/components/ui/screen-header'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Spinning } from '@/components/ui/spinning'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { SOL_TOKEN_SYMBOL } from '@/constants/config/deposit'
+import { useSwapQuote } from '@/pages/(protected)/(assets)/deposit/_apis/use-swap-quote'
+import { getImgSource } from '@/utils/img'
+import { t } from '@lingui/core/macro'
+import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
+import { BNumber } from '@mullet/utils/number'
 
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
-import { SignatureFailModal } from '../../../deposit/wallet-transfer/_comps/signature-fail-modal'
-import { SignatureSuccessModal } from '../../../deposit/wallet-transfer/_comps/signature-success-modal'
-
-export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
-
-type PageMode = 'input' | 'confirm'
-
-const MOCK_BALANCE = 10.5
-const MOCK_WALLET_ADDRESS = '0x862D...B22A'
-const COUNTDOWN_SECONDS = 30
+import { useSelectedChainInfo, useSelectedTokenConfig } from '../../_hooks/use-selected-chain-info'
+import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
+import { useWithdrawActions, useWithdrawState } from '../../_hooks/use-withdraw-state'
 
 const PERCENT_OPTIONS = [
   { label: '25%', value: '25' },
@@ -37,248 +39,231 @@ const PERCENT_OPTIONS = [
   { label: 'Max', value: '100' },
 ]
 
-const TOKEN_OPTIONS: Option[] = [{ label: 'SOL', value: 'SOL' }]
-
-const formatCurrency = (num: number): string =>
-  num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const QUICK_AMOUNT_OPTIONS = [
+  { label: '$200', value: '200' },
+  { label: '$500', value: '500' },
+  { label: '$1000', value: '1000' },
+  { label: '$2000', value: '2000' },
+]
 
 const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
+  const { setWithdrawAmount } = useWithdrawActions()
+  const { toWalletAddress, fromWalletAddress } = useWithdrawState()
+  const selectedTokenConfig = useSelectedTokenConfig()
+  const { chainInfo } = useSelectedChainInfo()
   const selectedAccount = useSelectedWithdrawAccount()
-  const [mode, setMode] = useState<PageMode>('input')
-  const [sendAmount, setSendAmount] = useState<number | null>(null)
-  const [sendDisplayText, setSendDisplayText] = useState('')
-  const [selectedToken, setSelectedToken] = useState<Option>(TOKEN_OPTIONS[0])
+  const usdcTokenConfig = useUSDCTokenConfig()
+
+  const [sendAmount, setSendAmount] = useState<string>('')
+  const [receiveAmount, setReceiveAmount] = useState<string>('')
   const [selectedPercent, setSelectedPercent] = useState<string>('')
-  const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
-  const [signatureStatus, setSignatureStatus] = useState<SignatureStatus>('idle')
-  const [showSignatureModal, setShowSignatureModal] = useState(false)
-  const timerRef = useRef<ReturnType<typeof setInterval>>(null)
-  const receiveAmount = sendAmount ? sendAmount * 150 : 0
-  const isValid = (sendAmount ?? 0) > 0 && (sendAmount ?? 0) <= MOCK_BALANCE
+  const [selectedQuickAmount, setSelectedQuickAmount] = useState<string>('')
+  const [editingField, setEditingField] = useState<'send' | 'receive' | null>(null)
+  const [latestQuoteData, setLatestQuoteData] = useState<any>(null)
 
-  const handleTextChange = useCallback((text: string) => {
-    const digits = text.replace(/[^0-9.]/g, '')
-    if (digits === '') {
-      setSendAmount(null)
-      setSendDisplayText('')
-      setSelectedPercent('')
-      return
+  const initQuoteParams = useMemo(() => {
+    if (!selectedTokenConfig || !usdcTokenConfig) return null
+    const decimals = usdcTokenConfig.decimals
+    const amountInSmallestUnit = BNumber.from(200).multipliedBy(Math.pow(10, decimals)).toString()
+    return {
+      fromToken: usdcTokenConfig.symbol,
+      toToken: selectedTokenConfig.symbol,
+      amount: amountInSmallestUnit,
+      fromAddress: fromWalletAddress || undefined, // 初始询价不强制要求钱包地址
     }
-    const num = parseFloat(digits)
-    if (!isNaN(num)) {
-      setSendAmount(num)
-      setSendDisplayText(digits)
-      setSelectedPercent('')
-    }
-  }, [])
+  }, [selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
 
-  const handlePercentChange = useCallback((value: string) => {
-    setSelectedPercent(value)
-    const pct = Number(value)
-    if (pct > 0) {
-      const calculated = Math.floor(((MOCK_BALANCE * pct) / 100) * 100) / 100
-      setSendAmount(calculated)
-      setSendDisplayText(formatCurrency(calculated))
+  const forwardQuoteParams = useMemo(() => {
+    if (
+      editingField !== 'send' ||
+      !sendAmount ||
+      BNumber.from(sendAmount).lte(0) ||
+      !selectedTokenConfig ||
+      !usdcTokenConfig
+    ) {
+      return null
     }
-  }, [])
+    const decimals = usdcTokenConfig.decimals
+    const amountInSmallestUnit = BNumber.from(sendAmount).multipliedBy(Math.pow(10, decimals)).toString()
+    return {
+      fromToken: usdcTokenConfig.symbol,
+      toToken: selectedTokenConfig.symbol,
+      amount: amountInSmallestUnit,
+      fromAddress: fromWalletAddress,
+    }
+  }, [editingField, sendAmount, selectedTokenConfig, usdcTokenConfig, fromWalletAddress])
 
-  const handleConfirmInput = useCallback(() => {
-    setMode('confirm')
-    setCountdown(COUNTDOWN_SECONDS)
-  }, [])
+  const { data: initQuoteData } = useSwapQuote(initQuoteParams, {
+    enabled: !!initQuoteParams,
+    refetchInterval: 30000,
+  })
+
+  const {
+    data: forwardQuoteData,
+    isLoading: isForwardQuoting,
+    refetch: refetchForwardQuote,
+  } = useSwapQuote(forwardQuoteParams, {
+    enabled: !!forwardQuoteParams,
+    refetchInterval: 30000,
+  })
+
+  const quoteData = forwardQuoteData || initQuoteData
+  const isQuoting = isForwardQuoting
 
   useEffect(() => {
-    if (mode !== 'confirm') return
+    if (initQuoteData) setLatestQuoteData(initQuoteData)
+  }, [initQuoteData])
+  useEffect(() => {
+    if (forwardQuoteData) setLatestQuoteData(forwardQuoteData)
+  }, [forwardQuoteData])
 
-    timerRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current!)
-          return 0
+  const isInsufficientBalance = BNumber.from(sendAmount).gt(selectedAccount?.money ?? 0)
+  const isValid = BNumber.from(sendAmount).gt(0) && !isInsufficientBalance && !!quoteData && !!toWalletAddress?.trim()
+
+  useEffect(() => {
+    if (!forwardQuoteData?.expectedOutputAmount || !usdcTokenConfig) return
+    const decimals = usdcTokenConfig.decimals ?? usdcTokenConfig.displayDecimals ?? 6
+    const result = BNumber.from(forwardQuoteData.expectedOutputAmount).dividedBy(Math.pow(10, decimals)).toString()
+    setReceiveAmount(result)
+  }, [forwardQuoteData, usdcTokenConfig])
+
+  const handleSendAmountChange = useMemo(
+    () =>
+      debounce((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
+        if (source === NumberInputSourceType.EVENT) {
+          setEditingField('send')
+          setSendAmount(values.value)
+          setSelectedPercent('')
+          setSelectedQuickAmount('')
+          if (!values.value || values.value === '0') setReceiveAmount('')
         }
-        return prev - 1
-      })
-    }, 1000)
+      }, 300),
+    [],
+  )
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [mode])
-
-  const handleConfirmSwap = useCallback(() => {
-    setShowSignatureModal(true)
-    setSignatureStatus('signing')
-    setTimeout(() => {
-      setSignatureStatus('success')
-    }, 3000)
-  }, [])
-
-  const handleRetrySignature = useCallback(() => {
-    setSignatureStatus('signing')
-    setTimeout(() => {
-      setSignatureStatus(Math.random() > 0.3 ? 'success' : 'failed')
-    }, 3000)
-  }, [])
-
-  const handleCloseSignatureModal = useCallback(() => {
-    setShowSignatureModal(false)
-    setSignatureStatus('idle')
-    if (signatureStatus === 'success') {
-      router.push('/(assets)/withdraw/crypto/usdc/verify')
-    }
-  }, [signatureStatus])
-
-  const formattedSendAmount = sendAmount ? formatCurrency(sendAmount) : '0.00'
-  const formattedReceiveAmount = formatCurrency(receiveAmount)
-
-  const tokenIcon = <IconSolana width={20} height={20} />
-
-  if (mode === 'confirm') {
-    return (
-      <View className="gap-xl flex-1">
-        <ScreenHeader
-          content={
-            <Text>
-              <Trans>订单确认</Trans> {countdown}S
-            </Text>
+  const handleReceiveAmountChange = useMemo(
+    () =>
+      debounce((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
+        if (source === NumberInputSourceType.EVENT) {
+          setEditingField('receive')
+          setReceiveAmount(values.value)
+          setSelectedPercent('')
+          setSelectedQuickAmount('')
+          if (!values.value || values.value === '0') {
+            setSendAmount('')
+          } else if (latestQuoteData) {
+            const rate = BNumber.from(latestQuoteData.expectedOutputAmount).dividedBy(latestQuoteData.inputAmount)
+            const calculatedSendAmount = BNumber.from(values.value).dividedBy(rate).toString()
+            setSendAmount(calculatedSendAmount)
           }
-        />
+        }
+      }, 300),
+    [latestQuoteData],
+  )
 
-        <View className="gap-xl flex-1">
-          <View className="gap-medium px-5">
-            <Card>
-              <CardContent className="py-medium gap-large">
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-paragraph-p2 text-content-4">
-                    <Trans>付</Trans>
-                  </Text>
-                  <Text className="text-paragraph-p2 text-status-danger">-{formattedSendAmount} SOL</Text>
-                </View>
-                <View className="gap-medium flex-row items-center">
-                  <IconAppLogoCircle width={24} height={24} />
-                  <View>
-                    <Text className="text-paragraph-p2 text-content-1">{selectedAccount?.id ?? '-'}</Text>
-                    <Text className="text-paragraph-p3 text-content-4">{MOCK_WALLET_ADDRESS}</Text>
-                  </View>
-                </View>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="py-medium gap-large">
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-paragraph-p2 text-content-4">
-                    <Trans>收</Trans>
-                  </Text>
-                  <Text className="text-paragraph-p2 text-status-success">+{formattedReceiveAmount} USDT</Text>
-                </View>
-                <View className="gap-medium flex-row items-center">
-                  <IconOkxWallet width={24} height={24} />
-                  <View>
-                    <Text className="text-paragraph-p2 text-content-1">
-                      <Trans>未知钱包</Trans>
-                    </Text>
-                    <Text className="text-paragraph-p3 text-content-4">{MOCK_WALLET_ADDRESS}</Text>
-                  </View>
-                </View>
-              </CardContent>
-            </Card>
-          </View>
-
-          <View className="px-5">
-            <Card>
-              <CardContent className="py-medium gap-large">
-                <FeeRow label={<Trans>兑换率</Trans>} value="1 SOL ≈ 150 USDT" />
-                <FeeRow label={<Trans>到账时间</Trans>} value="≈1分钟" />
-                <FeeRow label={<Trans>Gas费</Trans>} value="0.0001 SOL" />
-                <FeeRow label={<Trans>预计到账</Trans>} value={`${formattedReceiveAmount} USDT`} />
-                <FeeRow label={<Trans>服务费</Trans>} value="免费" />
-              </CardContent>
-            </Card>
-            <Text className="text-paragraph-p3 text-content-4 mt-medium text-center">
-              <Trans>兑换服务由 Jup Swap 提供</Trans>
-            </Text>
-          </View>
-        </View>
-
-        <SafeAreaView edges={['bottom']}>
-          <View className="px-5">
-            <Button block size="lg" color="primary" onPress={handleConfirmSwap} disabled={countdown <= 0}>
-              <Text>
-                <Trans>确认兑换</Trans>
-              </Text>
-            </Button>
-          </View>
-        </SafeAreaView>
-
-        <SignatureSuccessModal
-          visible={showSignatureModal && signatureStatus === 'success'}
-          onClose={handleCloseSignatureModal}
-        />
-        <SignatureFailModal
-          visible={showSignatureModal && signatureStatus === 'failed'}
-          onClose={handleCloseSignatureModal}
-          onRetry={handleRetrySignature}
-        />
-      </View>
-    )
+  const handlePercentChange = (value: string) => {
+    setEditingField('send')
+    setSelectedPercent(value)
+    setSelectedQuickAmount('')
+    const pct = Number(value)
+    if (pct > 0) {
+      const calculated = BNumber.from(selectedAccount?.money ?? 0)
+        .multipliedBy(pct)
+        .dividedBy(100)
+        .toString()
+      setSendAmount(calculated)
+      if (!calculated || calculated === '0') setReceiveAmount('0')
+    }
   }
+
+  const handleQuickAmountChange = useCallback(
+    (value: string) => {
+      setEditingField('receive')
+      setSelectedQuickAmount(value)
+      setSelectedPercent('')
+      setReceiveAmount(value)
+      if (latestQuoteData) {
+        const rate = BNumber.from(latestQuoteData.expectedOutputAmount).dividedBy(latestQuoteData.inputAmount)
+        const calculatedSendAmount = BNumber.from(value).dividedBy(rate).toString()
+        setSendAmount(calculatedSendAmount)
+      }
+    },
+    [latestQuoteData],
+  )
+
+  const handleConfirmInput = useCallback(() => {
+    if (sendAmount && isValid) {
+      setWithdrawAmount(sendAmount)
+      router.push('/(assets)/withdraw/crypto/swap/confirm')
+    }
+  }, [sendAmount, isValid, setWithdrawAmount])
 
   return (
     <View className="gap-xl flex-1">
       <ScreenHeader content={<Trans>加密货币取现</Trans>} />
 
       <View className="gap-xl flex-1">
-        <View className="px-5">
-          <Text className="text-paragraph-p2 text-content-4">
-            <Trans>余额：{MOCK_BALANCE} SOL</Trans>
-          </Text>
-          <Text className="text-paragraph-p3 text-content-4">
-            <Trans>最低取现 200 USDC</Trans>
-          </Text>
-        </View>
+        <View className="relative gap-2 px-5">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-paragraph-p2 text-content-4">
+              <Trans>
+                余额：
+                {BNumber.toFormatNumber(selectedAccount?.money, {
+                  unit: selectedAccount?.currencyUnit,
+                  volScale: selectedAccount?.currencyDecimal,
+                })}
+              </Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>
+                最低取现
+                {BNumber.toFormatNumber(chainInfo?.minWithdraw, {
+                  unit: usdcTokenConfig?.symbol,
+                  volScale: usdcTokenConfig?.displayDecimals,
+                })}
+              </Trans>
+            </Text>
+          </View>
 
-        <View className="gap-xl px-5">
-          <Card className="rounded-small">
-            <CardContent className="py-xl px-xl gap-medium">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-paragraph-p3 text-content-4">
-                  <Trans>你将发送</Trans>
-                </Text>
-                <Text className="text-paragraph-p3 text-content-4">
-                  <Trans>可用：{MOCK_BALANCE} SOL</Trans>
-                </Text>
-              </View>
-
-              <View className="gap-medium flex-row items-center">
-                <Select value={selectedToken} onValueChange={setSelectedToken}>
-                  <SelectTrigger LeftContent={tokenIcon} placeholder="选择代币">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {TOKEN_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value} label={option.label} />
-                    ))}
-                  </SelectContent>
-                </Select>
-
-                <View className="flex-1">
-                  <TextInput
-                    value={sendDisplayText}
-                    onChangeText={handleTextChange}
-                    keyboardType="decimal-pad"
-                    placeholder="0.00"
+          <Card>
+            <CardContent className="gap-medium">
+              <Text className="text-paragraph-p3 text-content-4">
+                <Trans>你将发送</Trans>
+              </Text>
+              <View className="flex-row items-center gap-4">
+                <View className="gap-medium flex-row items-center">
+                  <AvatarImage source={getImgSource(usdcTokenConfig?.iconUrl)} className="size-6 rounded-full" />
+                  <Text className="text-paragraph-p2 text-content-1">{renderFallback(usdcTokenConfig?.symbol)}</Text>
+                </View>
+                <View className="border-brand-default flex-1 border-b">
+                  <NumberInputPrimitive
+                    value={sendAmount}
+                    onValueChange={handleSendAmountChange}
+                    decimalScale={usdcTokenConfig?.displayDecimals}
+                    placeholder={renderFallbackPlaceholder({
+                      volScale: usdcTokenConfig?.displayDecimals,
+                    })}
                     placeholderTextColor="#656886"
-                    className="text-paragraph-p1 text-content-1 p-0 text-right"
+                    className="text-important-1 text-content-1 !leading-small"
                   />
                 </View>
               </View>
-
+              <View className="flex-row items-center justify-between">
+                <Text className="text-paragraph-p3 text-content-4">
+                  <Trans>
+                    可用：
+                    {BNumber.toFormatNumber(selectedAccount?.money, {
+                      unit: selectedAccount?.currencyUnit,
+                      volScale: selectedAccount?.currencyDecimal,
+                    })}
+                  </Trans>
+                </Text>
+              </View>
               <View className="flex-row items-center justify-center">
                 <Tabs value={selectedPercent} onValueChange={handlePercentChange}>
-                  <TabsList variant="solid" size="sm">
+                  <TabsList variant="solid" size="md">
                     {PERCENT_OPTIONS.map((opt) => (
-                      <TabsTrigger key={opt.value} value={opt.value}>
+                      <TabsTrigger key={opt.value} value={opt.value} className="flex-1 px-0">
                         <Text>{opt.label}</Text>
                       </TabsTrigger>
                     ))}
@@ -288,52 +273,121 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
             </CardContent>
           </Card>
 
-          <View className="items-center">
-            <IconSwap width={24} height={24} className="text-content-4" />
-          </View>
-
-          <Card className="rounded-small">
-            <CardContent className="py-xl px-xl gap-medium">
+          <Card>
+            <CardContent className="gap-large relative">
+              <View className="top-xl absolute left-1/2 z-10 -translate-x-1/2">
+                {isQuoting ? (
+                  <Spinning width={24} height={24} />
+                ) : (
+                  <Pressable onPress={() => refetchForwardQuote()}>
+                    <IconSwap width={24} height={24} />
+                  </Pressable>
+                )}
+              </View>
               <Text className="text-paragraph-p3 text-content-4">
                 <Trans>你将收到</Trans>
               </Text>
-
-              <View className="gap-medium flex-row items-center">
-                <View className="gap-xs flex-row items-center">
-                  <IconUSDT width={20} height={20} />
-                  <Text className="text-paragraph-p2 text-content-1">USDT</Text>
+              <View className="flex-row items-center gap-4">
+                <View className="gap-medium flex-row items-center">
+                  <AvatarImage source={getImgSource(selectedTokenConfig?.iconUrl)} className="size-6 rounded-full" />
+                  <Text className="text-paragraph-p2 text-content-1">
+                    {renderFallback(selectedTokenConfig?.symbol)}
+                  </Text>
                 </View>
-
-                <View className="flex-1">
-                  <Text className="text-paragraph-p1 text-content-1 text-right">{formattedReceiveAmount}</Text>
+                <View className="border-brand-default flex-1 border-b">
+                  <NumberInputPrimitive
+                    value={receiveAmount}
+                    onValueChange={handleReceiveAmountChange}
+                    decimalScale={selectedTokenConfig?.displayDecimals}
+                    placeholder={renderFallbackPlaceholder({
+                      volScale: selectedTokenConfig?.displayDecimals,
+                    })}
+                    placeholderTextColor="#656886"
+                    className="text-important-1 text-content-1 !leading-small"
+                  />
                 </View>
+              </View>
+              <View className="flex-row items-center justify-center">
+                <Tabs value={selectedQuickAmount} onValueChange={handleQuickAmountChange}>
+                  <TabsList variant="solid" size="md">
+                    {QUICK_AMOUNT_OPTIONS.map((opt) => (
+                      <TabsTrigger key={opt.value} value={opt.value} className="flex-1 px-0">
+                        <Text>{opt.label}</Text>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </Tabs>
               </View>
             </CardContent>
           </Card>
         </View>
 
+        <View className="gap-medium px-5">
+          <FeeRow
+            label={<Trans>兑换率</Trans>}
+            value={renderFallback(
+              quoteData &&
+                `${BNumber.toFormatNumber(1, { unit: usdcTokenConfig?.symbol })} ≈ ${BNumber.toFormatNumber(
+                  BNumber.from(quoteData.expectedOutputAmount)?.dividedBy(quoteData.inputAmount),
+                  {
+                    unit: selectedTokenConfig?.symbol,
+                    volScale: selectedTokenConfig?.displayDecimals,
+                  },
+                )}`,
+              { verify: !!quoteData },
+            )}
+          />
+          <FeeRow
+            label={<Trans>滑点</Trans>}
+            value={BNumber.toFormatNumber(quoteData?.slippagePercent, { prefix: t`自动`, unit: '%' })}
+          />
+          <FeeRow
+            label={<Trans>Gas费</Trans>}
+            value={renderFallback(
+              quoteData &&
+                `${BNumber.toFormatNumber(quoteData?.estimatedGasSOL, {
+                  unit: SOL_TOKEN_SYMBOL,
+                })} ≈ ${BNumber.toFormatNumber(quoteData?.estimatedGasUSD, {
+                  unit: usdcTokenConfig?.symbol,
+                })}`,
+              { verify: !!quoteData },
+            )}
+          />
+          <FeeRow
+            label={<Trans>服务费</Trans>}
+            value={
+              BNumber.from(quoteData?.estimatedFeeUSD)?.eq(0) ? (
+                <Trans>免费</Trans>
+              ) : (
+                BNumber.toFormatNumber(quoteData?.estimatedFeeUSD, {
+                  unit: usdcTokenConfig?.symbol,
+                })
+              )
+            }
+          />
+          <FeeRow
+            label={<Trans>预计到账</Trans>}
+            value={renderFallback(
+              BNumber.toFormatNumber(receiveAmount, {
+                unit: selectedTokenConfig?.symbol,
+                volScale: selectedTokenConfig?.displayDecimals,
+              }),
+              { verify: !!quoteData },
+            )}
+          />
+        </View>
+
         <View className="px-5">
-          <Card>
-            <CardContent className="py-medium gap-large">
-              <FeeRow label={<Trans>兑换率</Trans>} value="1 SOL ≈ 150 USDT" />
-              <FeeRow label={<Trans>到账时间</Trans>} value="≈1分钟" />
-              <FeeRow label={<Trans>Gas费</Trans>} value="0.0001 SOL" />
-              <FeeRow label={<Trans>预计到账</Trans>} value={`${formattedReceiveAmount} USDT`} />
-              <FeeRow label={<Trans>服务费</Trans>} value="免费" />
-            </CardContent>
-          </Card>
-          <Text className="text-paragraph-p3 text-content-4 mt-medium text-center">
-            <Trans>兑换服务由 Jup Swap 提供</Trans>
+          <Text className="text-paragraph-p3 text-content-4 text-center">
+            <Trans>兑换服务由Jup Swap提供</Trans>
           </Text>
         </View>
       </View>
 
       <SafeAreaView edges={['bottom']}>
         <View className="px-5 py-8">
-          <Button block size="lg" color="primary" disabled={!isValid} onPress={handleConfirmInput}>
-            <Text>
-              <Trans>确定</Trans>
-            </Text>
+          <Button block size="lg" color="primary" loading={isQuoting} disabled={!isValid} onPress={handleConfirmInput}>
+            <Text>{isInsufficientBalance ? <Trans>余额不足</Trans> : <Trans>继续</Trans>}</Text>
           </Button>
         </View>
       </SafeAreaView>
@@ -343,7 +397,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
 
 export default SwapWithdrawScreen
 
-function FeeRow({ label, value }: { label: React.ReactNode; value: string }) {
+function FeeRow({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
   return (
     <View className="flex-row items-center justify-between">
       <Text className="text-paragraph-p3 text-content-4">{label}</Text>

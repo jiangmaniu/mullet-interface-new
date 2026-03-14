@@ -4,14 +4,16 @@ import { useMemo } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+import { AvatarImage } from '@/components/ui/avatar'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
+import { getImgSource } from '@/utils/img'
 import { renderFallback } from '@mullet/utils/format'
-import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
+import { formatAddress } from '@mullet/utils/web3'
 
 import { useWithdrawEstimate } from '../../../_apis/use-withdraw-estimate'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
@@ -83,9 +85,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
             </Text>
             <View className="flex-row items-center justify-between">
               <View className="gap-medium flex-row items-center">
-                {isConnectedWallet && walletInfo?.icon && (
-                  <Image source={{ uri: walletInfo.icon }} style={{ width: 24, height: 24, borderRadius: 4 }} />
-                )}
+                <AvatarImage source={getImgSource(walletInfo?.icon)} className="size-6 rounded-full" />
                 <View className="gap-xs">
                   <Text className="text-paragraph-p2 text-content-1">
                     {isConnectedWallet && walletInfo?.name ? walletInfo.name : <Trans>未知钱包</Trans>}

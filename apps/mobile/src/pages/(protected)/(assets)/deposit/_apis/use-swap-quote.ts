@@ -25,6 +25,8 @@ export interface SwapQuoteResponse {
   slippagePercent: number
   /** 使用的工具（如 Jupiter） */
   tool: string
+  /** 预估 Gas 费用（SOL） */
+  estimatedGasSOL: string
   /** 预估 Gas 费用（USD） */
   estimatedGasUSD: string
   /** 预估服务费（USD） */

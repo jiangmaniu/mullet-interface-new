@@ -11,6 +11,7 @@ import { getImgSource } from '@/utils/img'
 import { BNumber } from '@mullet/utils/number'
 
 import { DepositTokenInfo } from '../../_apis/use-supported-tokens'
+import { WithdrawTokenInfo } from '../../../withdraw/_apis/use-supported-tokens'
 
 export interface SignatureSuccessModalProps {
   visible: boolean
@@ -21,8 +22,8 @@ export interface SignatureSuccessModalProps {
   confirmText?: React.ReactNode
   depositAmount?: string
   receiveAmount?: string
-  receiveTokenConfig?: DepositTokenInfo
-  depositTokenConfig?: DepositTokenInfo
+  receiveTokenConfig?: DepositTokenInfo | WithdrawTokenInfo
+  sendTokenConfig?: DepositTokenInfo | WithdrawTokenInfo
 }
 
 export function SignatureSuccessModal({
@@ -32,7 +33,7 @@ export function SignatureSuccessModal({
   confirmText,
   depositAmount,
   receiveAmount,
-  depositTokenConfig,
+  sendTokenConfig,
   receiveTokenConfig,
 }: SignatureSuccessModalProps) {
   return (
@@ -58,11 +59,11 @@ export function SignatureSuccessModal({
                 <Trans>您发送</Trans>
               </Text>
               <View className="gap-medium flex-row items-center">
-                <AvatarImage source={getImgSource(depositTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
+                <AvatarImage source={getImgSource(sendTokenConfig?.iconUrl)} className={'size-6 rounded-full'} />
                 <Text className="text-paragraph-p2 text-content-1">
                   {BNumber.toFormatNumber(depositAmount, {
-                    unit: depositTokenConfig?.symbol,
-                    volScale: depositTokenConfig?.displayDecimals,
+                    unit: sendTokenConfig?.symbol,
+                    volScale: sendTokenConfig?.displayDecimals,
                   })}
                 </Text>
               </View>
@@ -91,9 +92,7 @@ export function SignatureSuccessModal({
 
         <ModalFooter>
           <Button color="primary" size="lg" block onPress={onConfirm ?? onClose}>
-            <Text className="text-button-2 text-content-foreground">
-              {confirmText ?? <Trans>确定</Trans>}
-            </Text>
+            <Text className="text-button-2 text-content-foreground">{confirmText ?? <Trans>确定</Trans>}</Text>
           </Button>
         </ModalFooter>
       </ModalContent>

@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Constants from 'expo-constants'
@@ -11,8 +11,8 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { useSolanaConnection, useSolanaProvider, useWalletInfo } from '@/lib/appkit'
 import { renderFallback } from '@mullet/utils/format'
-import { formatAddress } from '@mullet/utils/web3'
 import { BNumber } from '@mullet/utils/number'
+import { formatAddress } from '@mullet/utils/web3'
 
 import { SignatureFailModal } from '../../_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../_comps/signature-success-modal'
@@ -266,7 +266,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
         onConfirm={handleConfirmSignatureModal}
         confirmText={<Trans>继续充值</Trans>}
         depositAmount={depositAmount}
-        depositTokenConfig={selectedTokenConfig}
+        sendTokenConfig={selectedTokenConfig}
         receiveAmount={depositAmount}
         receiveTokenConfig={usdcTokenConfig}
       />

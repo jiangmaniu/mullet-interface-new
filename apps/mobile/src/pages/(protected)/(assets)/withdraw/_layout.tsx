@@ -22,6 +22,7 @@ export default function WithdrawLayout() {
       <Stack.Screen name="crypto/verify/index" />
       <Stack.Screen name="crypto/usdc/confirm/index" />
       <Stack.Screen name="crypto/swap/index" />
+      <Stack.Screen name="crypto/swap/confirm/index" />
     </Stack>
   )
 }

@@ -4,9 +4,11 @@ import { depositRequest } from '@/v1/utils/deposit-request'
 
 export interface WithdrawTokenInfo {
   symbol: string
+  contractAddress: string
+  decimals: number
+  displayDecimals: number
   displayName: string
   iconUrl: string
-  supportedChains: string[] // 该代币支持的链列表
   minWithdraw: string
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { Image, View } from 'react-native'
+import { View } from 'react-native'
 import type { Option } from '@/components/ui/select'
 
 import { AvatarImage } from '@/components/ui/avatar'
@@ -9,16 +9,13 @@ import { getImgSource } from '@/utils/img'
 import { useWithdrawSupportedChains } from '../../_apis/use-supported-chains'
 import { useWithdrawSupportedTokens } from '../../_apis/use-supported-tokens'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
-import { useWithdrawStore } from '../../_store'
+import { useWithdrawActions, useWithdrawState } from '../../_hooks/use-withdraw-state'
 import { useDepositAddress } from '../../../deposit/_apis/use-deposit-address'
 
 export function TokenChainSelector() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const selectedTokenSymbol = useWithdrawStore((s) => s.selectedTokenSymbol)
-  const selectedChainId = useWithdrawStore((s) => s.selectedChainId)
-  const setSelectedTokenSymbol = useWithdrawStore((s) => s.setSelectedTokenSymbol)
-  const setSelectedChainId = useWithdrawStore((s) => s.setSelectedChainId)
-  const setFromWalletAddress = useWithdrawStore((s) => s.setFromWalletAddress)
+  const { selectedChainId, selectedTokenSymbol } = useWithdrawState()
+  const { setSelectedChainId, setSelectedTokenSymbol, setFromWalletAddress } = useWithdrawActions()
 
   // 获取所有链列表（包含每个链支持的代币）
   const { data: chains, isLoading: isLoadingChains } = useWithdrawSupportedChains()

@@ -42,7 +42,7 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
     }
 
     // 判断是否为 Solana 链
-    const isSolanaChain = selectedChainId === WITHDRAW_SOLANA_CHAIN_ID
+    const isSolanaChain = selectedChainId.toUpperCase() === WITHDRAW_SOLANA_CHAIN_ID.toUpperCase()
 
     if (isSolanaChain) {
       // Solana 链：USDC 走钱包转账，非 USDC 走 Swap
