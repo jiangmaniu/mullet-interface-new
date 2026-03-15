@@ -1,17 +1,18 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { ActivityIndicator, FlatList, View } from 'react-native'
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
 import { format } from 'date-fns'
-import { dayjs } from '@mullet/utils/dayjs'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { useCopyText } from '@/hooks/use-copy-text'
 import { useI18n } from '@/hooks/use-i18n'
 import { DepositEventTypeEnum } from '@/options/deposit/event'
 import { getWithdrawalStatusEnumOption } from '@/options/deposit/status'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatTxHash } from '@mullet/utils/web3'
@@ -126,6 +127,7 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
   const { renderLinguiMsg } = useI18n()
 
   const synopsis = useAccountSynopsis(account.synopsis)
+  const copyText = useCopyText()
   return (
     <Card>
       <CardContent className="gap-medium">
@@ -140,12 +142,29 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
           label={<Trans>取现状态</Trans>}
           value={renderLinguiMsg(
             getWithdrawalStatusEnumOption({ value: record.withdrawalStatus })?.label,
-            record.withdrawalStatus ?? <Trans>未知状态</Trans>,
+            record.withdrawalStatus ?? <Trans>未知</Trans>,
           )}
         />
 
         <BillsCardRow
-          label={<Trans>充值账户</Trans>}
+          label={<Trans>收款地址</Trans>}
+          valueComponent={
+            <View className="gap-xs flex-row items-center">
+              <Pressable
+                onPress={() => {
+                  if (record.withdrawalToAddress) {
+                    copyText(record.withdrawalToAddress)
+                  }
+                }}
+              >
+                <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.withdrawalToAddress)}</Text>
+              </Pressable>
+            </View>
+          }
+        />
+
+        <BillsCardRow
+          label={<Trans>取现账户</Trans>}
           valueComponent={
             <View className="gap-xs flex-row items-center">
               {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
@@ -170,7 +189,24 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
           })}
         />
 
-        {record.txHash && <BillsCardRow label={<Trans>交易哈希</Trans>} value={`${formatTxHash(record.txHash)}`} />}
+        {record.txHash && (
+          <BillsCardRow
+            label={<Trans>交易哈希</Trans>}
+            valueComponent={
+              <View className="gap-xs flex-row items-center">
+                <Pressable
+                  onPress={() => {
+                    if (record.txHash) {
+                      copyText(record.txHash)
+                    }
+                  }}
+                >
+                  <Text className="text-paragraph-p3 text-content-1">{formatTxHash(record.txHash)}</Text>
+                </Pressable>
+              </View>
+            }
+          />
+        )}
         <BillsCardRow
           label={<Trans>时间</Trans>}
           value={renderFallback(dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss'), { verify: !!record.createdAt })}
