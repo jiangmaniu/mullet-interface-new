@@ -3,9 +3,9 @@ import { useMutation } from '@tanstack/react-query'
 import { depositRequest } from '@/v1/utils/deposit-request'
 
 interface SolanaTransferResponse {
-  transactionId: string
-  status: 'pending' | 'completed' | 'failed'
-  message: string
+  success: boolean
+  txHash: string
+  explorerUrl: string
 }
 
 interface SolanaTransferBaseParams {
@@ -13,6 +13,7 @@ interface SolanaTransferBaseParams {
   toAddress: string
   token: string
   amount: string
+  withdrawMessage: string
 }
 
 type SolanaTransferParams = SolanaTransferBaseParams &
@@ -30,6 +31,7 @@ export function useSolanaWithdraw() {
       amount,
       verifyCode,
       walletSignature,
+      withdrawMessage,
     }: SolanaTransferParams) => {
       const response = await depositRequest<SolanaTransferResponse>('/api/solana-wallet/transfer', {
         method: 'POST',
@@ -38,6 +40,7 @@ export function useSolanaWithdraw() {
           toAddress,
           token,
           amount,
+          withdrawMessage,
           ...(verifyCode ? { verifyCode } : {}),
           ...(walletSignature ? { walletSignature } : {}),
         },

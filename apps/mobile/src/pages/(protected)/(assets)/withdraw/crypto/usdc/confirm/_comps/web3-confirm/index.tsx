@@ -11,10 +11,14 @@ import { useSolanaWithdraw } from '../../../../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../../../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../../../../_hooks/use-selected-chain-info'
 import { useWithdrawActions, useWithdrawState } from '../../../../../_hooks/use-withdraw-state'
+import { useWithdrawWalletSign } from '../../../../../_hooks/use-withdraw-wallet-sign'
+import { SignatureFailModal } from '../../../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
+
+type TxStatus = 'idle' | 'signing' | 'submitting' | 'success' | 'failed'
 
 /**
  * Web3 钱包签名确认按钮
- * 处理钱包签名验证流程
+ * 流程：钱包签名 → 调用出金接口 → 状态弹窗
  */
 export function Web3Confirm() {
   const selectedAccount = useSelectedWithdrawAccount()
@@ -22,67 +26,87 @@ export function Web3Confirm() {
   const { tokenInfo } = useSelectedChainInfo()
   const { reset } = useWithdrawActions()
 
-  // Solana transfer mutation
-  const { mutate: transfer, isPending: isTransferring } = useSolanaWithdraw()
+  const { signWithdrawMessage } = useWithdrawWalletSign()
+  const { mutateAsync: transfer } = useSolanaWithdraw()
 
-  // Status modal state
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [txStatus, setTxStatus] = useState<TxStatus>('idle')
+  const [showModal, setShowModal] = useState(false)
 
-  const handleConfirm = useCallback(() => {
-    // toWalletAddress 应该已经有值
+  const isLoading = txStatus === 'signing' || txStatus === 'submitting'
+
+  const handleConfirm = useCallback(async () => {
     if (!toWalletAddress) {
       toast.error(<Trans>请输入钱包地址</Trans>)
       return
     }
-
-    // TODO: 暂时直接出金，后续再实现签名验证
     if (!selectedAccount?.id || !withdrawAmount || !tokenInfo) {
       toast.error(<Trans>缺少必要参数</Trans>)
       return
     }
 
-    transfer(
-      {
+    setShowModal(true)
+    setTxStatus('signing')
+    try {
+      // 1. 钱包签名
+      console.log('[USDCWithdraw] 开始签名流程')
+      const signatureData = await signWithdrawMessage()
+      console.log('[USDCWithdraw] 签名完成')
+
+      // 2. 调用出金接口
+      setTxStatus('submitting')
+      const result = await transfer({
         tradeAccountId: selectedAccount.id,
         toAddress: toWalletAddress,
         token: tokenInfo.symbol,
         amount: withdrawAmount,
-        walletSignature: '',
-      },
-      {
-        onSuccess: (data) => {
-          console.log('Transfer success:', data)
-          setShowSuccessModal(true)
-        },
-        onError: (error: any) => {
-          console.error('Transfer failed:', error)
-          toast.error(error?.msg || <Trans>提现失败</Trans>)
-        },
-      },
-    )
-  }, [selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer])
+        walletSignature: signatureData.signature,
+        withdrawMessage: signatureData.message,
+      })
+      console.log('[USDCWithdraw] 出金成功 txHash:', result.txHash)
 
-  const handleCloseModal = () => {
-    setShowSuccessModal(false)
+      setTxStatus('success')
+    } catch (error: any) {
+      setTxStatus('failed')
+      console.error('[USDCWithdraw] 失败:', error)
+      toast.error(error?.msg ?? error?.message ?? <Trans>提现失败</Trans>)
+    }
+  }, [selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer, signWithdrawMessage])
+
+  const handleCloseSuccessModal = () => {
+    setShowModal(false)
+    setTxStatus('idle')
     const accountId = selectedAccountId
-    reset() // 重置 store 状态
-    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } }) // 跳转到 提现 页面
+    reset()
+    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } })
+  }
+
+  const handleCloseFailModal = () => {
+    setShowModal(false)
+    setTxStatus('idle')
   }
 
   return (
     <>
-      <Button
-        block
-        size="lg"
-        color="primary"
-        disabled={isTransferring}
-        loading={isTransferring}
-        onPress={handleConfirm}
-      >
-        <Text>{isTransferring ? <Trans>处理中</Trans> : <Trans>确定</Trans>}</Text>
+      <Button block size="lg" color="primary" disabled={isLoading} loading={isLoading} onPress={handleConfirm}>
+        <Text>
+          {txStatus === 'signing' ? (
+            <Trans>等待签名</Trans>
+          ) : txStatus === 'submitting' ? (
+            <Trans>提交中</Trans>
+          ) : (
+            <Trans>确定</Trans>
+          )}
+        </Text>
       </Button>
 
-      <WithdrawSuccessModal visible={showSuccessModal} onClose={handleCloseModal} />
+      <WithdrawSuccessModal visible={showModal && txStatus === 'success'} onClose={handleCloseSuccessModal} />
+      <SignatureFailModal
+        visible={showModal && txStatus === 'failed'}
+        onClose={handleCloseFailModal}
+        onRetry={handleConfirm}
+        showRetryButton
+        loading={isLoading}
+      />
     </>
   )
 }

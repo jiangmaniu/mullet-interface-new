@@ -19,7 +19,7 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
-import { useWithdrawWalletSign } from '../_hooks/use-withdraw-wallet-sign'
+import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
 import { useSwapWithdraw } from '../../../_apis/use-swap-withdraw'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'

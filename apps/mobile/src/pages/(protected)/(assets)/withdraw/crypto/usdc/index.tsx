@@ -46,7 +46,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
   // 是否余额不足
   const isInsufficientBalance = BNumber.from(amount).gt(accountBalance)
   // 是否满足最低取现
-  const isValid = BNumber.from(amount).gte(minWithdraw) && BNumber.from(amount).lte(accountBalance)
+  const isValid = __DEV__ ? true : BNumber.from(amount).gte(minWithdraw) && BNumber.from(amount).lte(accountBalance)
 
   const handleValueChange = useCallback((values: NumberFormatValues, { source }: NumberInputSourceInfo) => {
     if (source === NumberInputSourceType.EVENT) {

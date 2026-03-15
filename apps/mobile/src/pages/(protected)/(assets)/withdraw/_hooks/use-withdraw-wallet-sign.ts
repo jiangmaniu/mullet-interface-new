@@ -3,8 +3,8 @@ import bs58 from 'bs58'
 
 import { useSolanaProvider } from '@/lib/appkit'
 
-import { useWithdrawMessage } from '../../../_apis/use-withdraw-message'
-import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawMessage } from '../_apis/use-withdraw-message'
+import { useWithdrawState } from './use-withdraw-state'
 
 export type WithdrawSignStatus = 'idle' | 'signing' | 'success' | 'failed'
 
