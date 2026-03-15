@@ -12,17 +12,10 @@ import { DepositAccountSelector } from './_comps/account-selection'
 import { BankDepositCard } from './_comps/bank-deposit-card'
 import { QrDepositCard } from './_comps/qr-deposit-card'
 import { WalletDepositCard } from './_comps/wallet-deposit-card'
-import { useDepositActions } from './_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from './_hooks/use-selected-account'
 
 const DepositScreen = observer(function DepositScreen() {
   const selectedAccount = useSelectedDepositAccount()
-  const { reset } = useDepositActions()
-
-  // 离开入金模块时重置状态
-  useEffect(() => {
-    return () => reset()
-  }, [reset])
 
   return (
     <View className="flex-1">

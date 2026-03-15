@@ -1,6 +1,3 @@
-import { Stack } from 'expo-router';
+import Layout from '@/pages/(protected)/(assets)/deposit/_layout'
 
-/** 入金模块 Layout */
-export default function DepositLayout() {
-	return <Stack screenOptions={{ headerShown: false }} />;
-}
+export default Layout
