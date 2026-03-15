@@ -82,7 +82,10 @@ async function fetchWithTimeout(url: string, options: RequestInit, timeout: numb
  * - 所有错误都会抛出 Error，由上层捕获并决定是否显示 toast
  * - Error.message 包含用户友好的错误信息
  */
-export async function depositRequest<T = any>(url: string, config?: DepositRequestConfig): Promise<DepositResponse<T>> {
+export async function depositRequest<T = any, R = object>(
+  url: string,
+  config?: DepositRequestConfig,
+): Promise<DepositResponse<T> & R> {
   const needPrivyAuth = config?.needPrivyAuth !== false // 默认需要认证
   const timeout = config?.timeout ?? DEFAULT_TIMEOUT
 
@@ -142,7 +145,7 @@ export async function depositRequest<T = any>(url: string, config?: DepositReque
 
     // 解析响应
     const text = await response.text()
-    let data: DepositResponse<T>
+    let data: DepositResponse<T> & R
     try {
       data = JSON.parse(text)
     } catch {

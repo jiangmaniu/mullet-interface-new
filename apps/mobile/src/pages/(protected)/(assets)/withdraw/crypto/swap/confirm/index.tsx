@@ -19,12 +19,12 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
-import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
 import { useSwapWithdraw } from '../../../_apis/use-swap-withdraw'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'
 import { useUSDCTokenConfig } from '../../../_hooks/use-token-config'
 import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
 import { SignatureFailModal } from '../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
 import { SignatureSuccessModal } from '../../../../deposit/wallet-transfer/_comps/signature-success-modal'
 
@@ -109,7 +109,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
       // 1. 钱包签名
       console.log('[SwapWithdraw] 开始签名流程')
       const signatureData = await signWithdrawMessage()
-      console.log('[SwapWithdraw] 签名完成, address:', signatureData.address)
+      console.log('[SwapWithdraw] 签名完成')
 
       // 2. 调用 swap withdraw API
       setTxStatus('submitting')
@@ -121,14 +121,13 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
         walletSignature: signatureData.signature,
         slippageBps: quoteData?.slippageBps,
       }
-      console.log('[SwapWithdraw] 提交出金请求:', JSON.stringify(requestParams, null, 2))
       const result = await swapWithdraw(requestParams)
-      console.log('[SwapWithdraw] 出金成功:', JSON.stringify(result, null, 2))
+      console.log('[SwapWithdraw] 出金成功 txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {
       setTxStatus('failed')
-      console.error('[SwapWithdraw] 出金失败:', error?.status, JSON.stringify(error?.data ?? error?.message ?? error))
+      console.error('[SwapWithdraw] 出金失败:', error)
       toast.error(error?.message ?? error?.msg ?? <Trans>交易失败</Trans>)
     }
   }, [

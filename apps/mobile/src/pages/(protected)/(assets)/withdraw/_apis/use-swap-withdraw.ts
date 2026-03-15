@@ -38,15 +38,10 @@ interface SwapWithdrawApprovalResponse {
 export function useSwapWithdraw() {
   return useMutation({
     mutationFn: async (params: SwapWithdrawParams) => {
-      console.log('[SwapWithdrawAPI] POST /api/swap/withdraw, params:', JSON.stringify(params, null, 2))
-      const response = await depositRequest<SwapWithdrawResponse | SwapWithdrawApprovalResponse>(
-        '/api/swap/withdraw',
-        {
-          method: 'POST',
-          data: params,
-        },
-      )
-      console.log('[SwapWithdrawAPI] 响应:', JSON.stringify(response.data, null, 2))
+      const response = await depositRequest<SwapWithdrawResponse, SwapWithdrawApprovalResponse>('/api/swap/withdraw', {
+        method: 'POST',
+        data: params,
+      })
       return response.data
     },
   })

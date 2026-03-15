@@ -67,7 +67,7 @@ export function Web3Confirm() {
       setTxStatus('success')
     } catch (error: any) {
       setTxStatus('failed')
-      console.error('[USDCWithdraw] 失败:', error)
+      console.error('[USDCWithdraw] 出金失败:', error)
       toast.error(error?.msg ?? error?.message ?? <Trans>提现失败</Trans>)
     }
   }, [selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer, signWithdrawMessage])
