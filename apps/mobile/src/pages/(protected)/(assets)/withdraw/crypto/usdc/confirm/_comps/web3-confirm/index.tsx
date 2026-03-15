@@ -10,7 +10,7 @@ import { toast } from '@/components/ui/toast'
 import { useSolanaWithdraw } from '../../../../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../../../../_hooks/use-selected-account'
 import { useSelectedTokenConfig } from '../../../../../_hooks/use-selected-chain-info'
-import { useWithdrawActions, useWithdrawState } from '../../../../../_hooks/use-withdraw-state'
+import { useWithdrawState } from '../../../../../_hooks/use-withdraw-state'
 import { useWithdrawWalletSign } from '../../../../../_hooks/use-withdraw-wallet-sign'
 import { SignatureFailModal } from '../../../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
 
@@ -22,9 +22,8 @@ type TxStatus = 'idle' | 'signing' | 'submitting' | 'success' | 'failed'
  */
 export function Web3Confirm() {
   const selectedAccount = useSelectedWithdrawAccount()
-  const { toWalletAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount } = useWithdrawState()
   const selectedTokenConfig = useSelectedTokenConfig()
-  const { reset } = useWithdrawActions()
 
   const { signWithdrawMessage } = useWithdrawWalletSign()
   const { mutateAsync: transfer } = useSolanaWithdraw()
@@ -75,9 +74,7 @@ export function Web3Confirm() {
   const handleCloseSuccessModal = () => {
     setShowModal(false)
     setTxStatus('idle')
-    const accountId = selectedAccountId
-    reset()
-    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } })
+    router.dismissAll()
   }
 
   const handleCloseFailModal = () => {

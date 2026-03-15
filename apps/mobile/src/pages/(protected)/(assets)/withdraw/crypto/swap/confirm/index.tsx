@@ -23,7 +23,7 @@ import { useSwapWithdraw } from '../../../_apis/use-swap-withdraw'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'
 import { useUSDCTokenConfig } from '../../../_hooks/use-token-config'
-import { useWithdrawActions, useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
 import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
 import { WithdrawSuccessModal } from '../../../../../../../components/modals/withdraw-success-modal'
 import { SignatureFailModal } from '../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
@@ -32,7 +32,6 @@ const COUNTDOWN_SECONDS = 30
 
 const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() {
   const { toWalletAddress, withdrawAmount, fromWalletAddress, selectedAccountId } = useWithdrawState()
-  const { reset } = useWithdrawActions()
   const usdcTokenConfig = useUSDCTokenConfig()
   const selectedTokenConfig = useSelectedTokenConfig()
   const selectedAccount = useSelectedWithdrawAccount()
@@ -146,9 +145,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
   const handleCloseSuccessModal = () => {
     setShowModal(false)
     setTxStatus('idle')
-    const accountId = selectedAccountId
-    reset()
-    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } })
+    router.dismissAll()
   }
 
   const handleCloseFailModal = () => {
