@@ -13,11 +13,10 @@ interface SolanaTransferBaseParams {
   toAddress: string
   token: string
   amount: string
-  withdrawMessage: string
 }
 
 type SolanaTransferParams = SolanaTransferBaseParams &
-  ({ verifyCode: string; walletSignature?: never } | { verifyCode?: never; walletSignature: string })
+  ({ verifyCode: string; walletSignature?: never } | { verifyCode?: never; walletSignature: string; withdrawMessage: string })
 
 /**
  * Solana 链上转账
