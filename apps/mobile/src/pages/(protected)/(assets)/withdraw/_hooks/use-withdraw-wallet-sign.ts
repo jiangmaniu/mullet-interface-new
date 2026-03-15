@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import bs58 from 'bs58'
 
-import { useSolanaProvider } from '@/lib/appkit'
+import { useAccount, useSolanaProvider } from '@/lib/appkit'
 
 import { useWithdrawMessage } from '../_apis/use-withdraw-message'
 import { useWithdrawState } from './use-withdraw-state'
@@ -21,22 +21,22 @@ export interface WalletSignatureData {
 export function useWithdrawWalletSign() {
   const [status, setStatus] = useState<WithdrawSignStatus>('idle')
   const { signMessage } = useSolanaProvider()
-  const { toWalletAddress } = useWithdrawState()
+  const { address: currentWalletAddress } = useAccount()
 
   // 获取标准签名消息
-  const { data: messageData, refetch: refetchMessage } = useWithdrawMessage(toWalletAddress)
+  const { data: messageData, refetch: refetchMessage } = useWithdrawMessage(currentWalletAddress)
 
   const resetStatus = useCallback(() => setStatus('idle'), [])
 
   const signWithdrawMessage = useCallback(async (): Promise<WalletSignatureData> => {
-    if (!signMessage) {
+    if (!signMessage || !currentWalletAddress) {
       throw new Error('钱包未连接')
     }
 
     setStatus('signing')
     try {
       // 1. 获取最新的签名消息（确保时间戳有效）
-      console.log('[WithdrawSign] 获取签名消息, toWalletAddress:', toWalletAddress)
+      console.log('[WithdrawSign] 获取签名消息')
       const { data: latestMessageData } = await refetchMessage()
       if (!latestMessageData) throw new Error('无法获取签名消息')
 
@@ -47,7 +47,7 @@ export function useWithdrawWalletSign() {
       // 2. 钱包签名
       const messageBytes = bs58.encode(new TextEncoder().encode(message))
       console.log('[WithdrawSign] 请求钱包签名...')
-      const signature = await signMessage(messageBytes, toWalletAddress)
+      const signature = await signMessage(messageBytes, address)
       if (!signature) throw new Error('签名失败：钱包未返回签名')
 
       console.log('[WithdrawSign] 签名成功, signature:', signature.slice(0, 20) + '...')
@@ -58,7 +58,7 @@ export function useWithdrawWalletSign() {
       setStatus('failed')
       throw error
     }
-  }, [toWalletAddress, signMessage, refetchMessage])
+  }, [currentWalletAddress, signMessage, refetchMessage])
 
   return {
     status,

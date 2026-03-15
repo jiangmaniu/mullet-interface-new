@@ -2,14 +2,14 @@ import { Trans } from '@lingui/react/macro'
 import { useCallback, useState } from 'react'
 import { router } from 'expo-router'
 
+import { WithdrawSuccessModal } from '@/components/modals/withdraw-success-modal'
 import { Button } from '@/components/ui/button'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 
-import { WithdrawSuccessModal } from '../../../_comps/withdraw-success-modal'
 import { useSolanaWithdraw } from '../../../../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../../../../_hooks/use-selected-account'
-import { useSelectedChainInfo } from '../../../../../_hooks/use-selected-chain-info'
+import { useSelectedTokenConfig } from '../../../../../_hooks/use-selected-chain-info'
 import { useWithdrawActions, useWithdrawState } from '../../../../../_hooks/use-withdraw-state'
 import { useWithdrawWalletSign } from '../../../../../_hooks/use-withdraw-wallet-sign'
 import { SignatureFailModal } from '../../../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
@@ -23,7 +23,7 @@ type TxStatus = 'idle' | 'signing' | 'submitting' | 'success' | 'failed'
 export function Web3Confirm() {
   const selectedAccount = useSelectedWithdrawAccount()
   const { toWalletAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
-  const { tokenInfo } = useSelectedChainInfo()
+  const selectedTokenConfig = useSelectedTokenConfig()
   const { reset } = useWithdrawActions()
 
   const { signWithdrawMessage } = useWithdrawWalletSign()
@@ -39,7 +39,7 @@ export function Web3Confirm() {
       toast.error(<Trans>请输入钱包地址</Trans>)
       return
     }
-    if (!selectedAccount?.id || !withdrawAmount || !tokenInfo) {
+    if (!selectedAccount?.id || !withdrawAmount || !selectedTokenConfig) {
       toast.error(<Trans>缺少必要参数</Trans>)
       return
     }
@@ -57,12 +57,12 @@ export function Web3Confirm() {
       const result = await transfer({
         tradeAccountId: selectedAccount.id,
         toAddress: toWalletAddress,
-        token: tokenInfo.symbol,
+        token: selectedTokenConfig?.symbol,
         amount: withdrawAmount,
         walletSignature: signatureData.signature,
         withdrawMessage: signatureData.message,
       })
-      console.log('[USDCWithdraw] 出金成功 txHash:', result.txHash)
+      console.log('[USDCWithdraw] 出金成功, txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {
@@ -70,7 +70,7 @@ export function Web3Confirm() {
       console.error('[USDCWithdraw] 出金失败:', error)
       toast.error(error?.msg ?? error?.message ?? <Trans>提现失败</Trans>)
     }
-  }, [selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer, signWithdrawMessage])
+  }, [selectedAccount, toWalletAddress, withdrawAmount, selectedTokenConfig, transfer, signWithdrawMessage])
 
   const handleCloseSuccessModal = () => {
     setShowModal(false)
@@ -99,7 +99,13 @@ export function Web3Confirm() {
         </Text>
       </Button>
 
-      <WithdrawSuccessModal visible={showModal && txStatus === 'success'} onClose={handleCloseSuccessModal} />
+      <WithdrawSuccessModal
+        visible={showModal && txStatus === 'success'}
+        onClose={handleCloseSuccessModal}
+        address={toWalletAddress}
+        amount={withdrawAmount}
+        tokenConfig={selectedTokenConfig}
+      />
       <SignatureFailModal
         visible={showModal && txStatus === 'failed'}
         onClose={handleCloseFailModal}

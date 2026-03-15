@@ -23,26 +23,29 @@ import { useSwapWithdraw } from '../../../_apis/use-swap-withdraw'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
 import { useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'
 import { useUSDCTokenConfig } from '../../../_hooks/use-token-config'
-import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawActions, useWithdrawState } from '../../../_hooks/use-withdraw-state'
 import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
+import { WithdrawSuccessModal } from '../../../../../../../components/modals/withdraw-success-modal'
 import { SignatureFailModal } from '../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
-import { SignatureSuccessModal } from '../../../../deposit/wallet-transfer/_comps/signature-success-modal'
 
 const COUNTDOWN_SECONDS = 30
 
 const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() {
   const { toWalletAddress, withdrawAmount, fromWalletAddress, selectedAccountId } = useWithdrawState()
+  const { reset } = useWithdrawActions()
   const usdcTokenConfig = useUSDCTokenConfig()
   const selectedTokenConfig = useSelectedTokenConfig()
   const selectedAccount = useSelectedWithdrawAccount()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
-  const [showSignatureModal, setShowSignatureModal] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [txStatus, setTxStatus] = useState<'idle' | 'signing' | 'submitting' | 'success' | 'failed'>('idle')
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const { signWithdrawMessage } = useWithdrawWalletSign()
   const { mutateAsync: swapWithdraw } = useSwapWithdraw()
+
+  const isLoading = txStatus === 'signing' || txStatus === 'submitting'
 
   const quoteParams = useMemo(() => {
     if (
@@ -103,7 +106,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
       console.error('Missing required parameters')
       return
     }
-    setShowSignatureModal(true)
+    setShowModal(true)
     setTxStatus('signing')
     try {
       // 1. 钱包签名
@@ -122,7 +125,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
         slippageBps: quoteData?.slippageBps,
       }
       const result = await swapWithdraw(requestParams)
-      console.log('[SwapWithdraw] 出金成功 txHash:', result.txHash)
+      console.log('[SwapWithdraw] 出金成功, txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {
@@ -140,28 +143,18 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
     quoteData?.slippageBps,
   ])
 
-  const handleRetrySignature = useCallback(async () => {
-    try {
-      await handleConfirmSwap()
-    } catch (error) {
-      console.error('Retry failed:', error)
-    }
-  }, [handleConfirmSwap])
-
-  const handleCloseSignatureModal = useCallback(() => {
-    setShowSignatureModal(false)
+  const handleCloseSuccessModal = () => {
+    setShowModal(false)
     setTxStatus('idle')
-    if (txStatus === 'success') {
-      router.dismissAll()
-    }
-  }, [txStatus])
+    const accountId = selectedAccountId
+    reset()
+    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } })
+  }
 
-  const handleConfirmSignatureModal = useCallback(() => {
-    setShowSignatureModal(false)
+  const handleCloseFailModal = () => {
+    setShowModal(false)
     setTxStatus('idle')
-    router.back()
-    router.back()
-  }, [])
+  }
 
   return (
     <View className="gap-xl flex-1">
@@ -313,22 +306,20 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
         </View>
       </SafeAreaView>
 
-      <SignatureSuccessModal
-        visible={showSignatureModal && txStatus === 'success'}
-        onClose={handleCloseSignatureModal}
-        onConfirm={handleConfirmSignatureModal}
-        confirmText={<Trans>完成</Trans>}
-        depositAmount={withdrawAmount}
-        receiveAmount={receiveAmount}
-        sendTokenConfig={usdcTokenConfig as any}
-        receiveTokenConfig={selectedTokenConfig}
+      <WithdrawSuccessModal
+        visible={showModal && txStatus === 'success'}
+        onClose={handleCloseSuccessModal}
+        address={toWalletAddress}
+        amount={quoteData?.inputAmount ?? ''}
+        tokenConfig={selectedTokenConfig}
       />
+
       <SignatureFailModal
-        visible={showSignatureModal && txStatus === 'failed'}
-        onClose={handleCloseSignatureModal}
-        onRetry={handleRetrySignature}
-        showRetryButton={true}
-        loading={txStatus === 'signing' || txStatus === 'submitting'}
+        visible={showModal && txStatus === 'failed'}
+        onClose={handleCloseFailModal}
+        onRetry={handleConfirmSwap}
+        showRetryButton
+        loading={isLoading}
       />
     </View>
   )
