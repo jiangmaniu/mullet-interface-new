@@ -11,13 +11,19 @@ import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import useDisabled from '@/v1/hooks/trade/useDisabled'
 import useQuote from '@/v1/hooks/trade/useQoute'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useOrderPanelStore } from './store/order-panel-store'
+
 export const OrderAmount = observer(({ symbol }: { symbol: string }) => {
-  const { vmax, vmin, orderVolume } = useQuote()
+  const { vmax, vmin } = useQuote()
+  const { trade } = useStores()
+  const { orderVolume, setOrderVolume } = trade
+  const { setOrderVolume: setOrderVolumePanel } = useOrderPanelStore()
   const { disabledInput } = useDisabled()
   const disabled = disabledInput
-  const { trade } = useStores()
+
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const lotsVolScale = parseSymbolLotsVolScale(symbolInfo)
   const amount = BNumber.from(orderVolume).cutDecimalPlaces(lotsVolScale).toFixed()
@@ -31,13 +37,15 @@ export const OrderAmount = observer(({ symbol }: { symbol: string }) => {
         value={amount}
         onValueChange={({ value }, { source }) => {
           if (source === NumberInputSourceType.EVENT) {
-            trade.setOrderVolume(value)
+            setOrderVolume(value)
+            setOrderVolumePanel(value)
           }
         }}
+        placeholder={renderFallbackPlaceholder({
+          volScale: lotsVolScale,
+        })}
         decimalScale={lotsVolScale}
         keyboardType="decimal-pad"
-        min={vmin}
-        max={vmax}
         RightContent={<Text className="text-paragraph-p2 text-content-1">{renderLinguiMsg(LOTS_UNIT_LABEL)}</Text>}
         variant="outlined"
         size="md"

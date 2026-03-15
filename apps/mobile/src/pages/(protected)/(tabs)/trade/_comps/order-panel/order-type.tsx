@@ -8,11 +8,12 @@ import { ITradeTabsOrderType } from '@/v1/stores/trade'
 
 export const OrderType = observer(() => {
   const { trade } = useStores()
-  const { orderType } = trade
+  const { orderType, resetTradeAction, setOrderSpslChecked, setOrderType } = trade
 
   const handleTabValueChange = (key: ITradeTabsOrderType) => {
-    trade.setOrderType(key)
-    trade.setOrderSpslChecked(false)
+    setOrderType(key)
+    setOrderSpslChecked(false)
+    resetTradeAction()
   }
 
   return (

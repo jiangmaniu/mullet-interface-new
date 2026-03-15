@@ -9,6 +9,7 @@ import useSpSl from '@/v1/hooks/trade/useSpSl'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { createOrder } from '@/v1/services/tradeCore/order'
 import { vibrate } from '@/v1/utils/native'
+import { BNumber } from '@mullet/utils/number'
 
 /**
  * 提交订单, 需要确保只有下单时候才会用单这个钩子函数
@@ -36,7 +37,7 @@ export default function useSubmitOrder() {
       return false
     }
 
-    if (!Number(maxOpenVolume)) {
+    if (!Number(maxOpenVolume) || BNumber.from(maxOpenVolume).lt(count)) {
       toast.warning(<Trans>余额不足</Trans>)
       return false
     }

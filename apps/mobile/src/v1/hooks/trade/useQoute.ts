@@ -2,11 +2,13 @@ import { useMemo } from 'react'
 
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { Order } from '@/v1/services/tradeCore/order/typings'
 import { getPrecisionByNumber, toFixed } from '@/v1/utils'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 
 export default function useQuote() {
   const { trade } = useStores()
+
   const {
     activeSymbolName,
     recordModalItem,

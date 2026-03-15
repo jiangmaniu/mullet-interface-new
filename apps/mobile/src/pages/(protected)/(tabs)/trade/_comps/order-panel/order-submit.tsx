@@ -24,13 +24,14 @@ export const OrderSubmit = observer(() => {
   const { onSubmitOrder, onCheckSubmit, isSubmitLoading } = useSubmitOrder()
 
   const handleSubmitOrder = async () => {
-    if (!onCheckSubmit()) {
-      return
-    }
     await onSubmitOrder()
   }
 
   const handleConfirm = () => {
+    if (!onCheckSubmit()) {
+      return
+    }
+
     if (orderConfirmation) {
       orderConfirmDrawerRef.current?.open()
     } else {

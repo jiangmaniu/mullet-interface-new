@@ -17,9 +17,11 @@ import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useTradeSettingsStore } from '@/stores/trade-settings'
 import { getImgSource } from '@/utils/img'
 import useMargin from '@/v1/hooks/trade/useMargin'
+import useQuote from '@/v1/hooks/trade/useQoute'
 import useSpSl from '@/v1/hooks/trade/useSpSl'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
+import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 interface OrderConfirmDrawerProps {
@@ -64,10 +66,12 @@ const OrderConfirmDrawerContent = observer(
     const { renderLinguiMsg } = useI18n()
 
     const { slValuePrice, spValuePrice } = useSpSl()
+    const { currentPrice } = useQuote()
 
     const lotsVolScale = parseSymbolLotsVolScale(activeSymbolInfo)
-    const { orderPrice, orderVolume } = trade
-    const orderAmountValue = BNumber.from(orderVolume).multipliedBy(orderPrice)
+    const { orderPrice, orderVolume, orderType } = trade
+    const openOrderPrice = orderType === 'MARKET_ORDER' ? currentPrice : orderPrice
+    const orderAmountValue = BNumber.from(orderVolume).multipliedBy(openOrderPrice)
     // 接口计算预估保证金
     const expectedMargin = useMargin()
 
@@ -105,7 +109,7 @@ const OrderConfirmDrawerContent = observer(
                   <Trans>价格</Trans>
                 </Text>
                 <Text className="text-paragraph-p2 text-market-rise">
-                  {BNumber.toFormatNumber(orderPrice, {
+                  {BNumber.toFormatNumber(openOrderPrice, {
                     volScale: activeSymbolInfo.symbolDecimal,
                   })}
                 </Text>
@@ -156,10 +160,13 @@ const OrderConfirmDrawerContent = observer(
                   <Trans>止盈</Trans>
                 </Text>
                 <Text className="text-paragraph-p2 text-content-4">
-                  {BNumber.toFormatNumber(spValuePrice, {
-                    volScale: activeSymbolInfo.symbolDecimal,
-                    defaultLabel: renderLinguiMsg(msg`未设置`),
-                  })}
+                  {renderFallback(
+                    BNumber.toFormatNumber(spValuePrice, {
+                      volScale: activeSymbolInfo.symbolDecimal,
+                      defaultLabel: renderLinguiMsg(msg`未设置`),
+                    }),
+                    { verify: !!spValuePrice },
+                  )}
                 </Text>
               </View>
 
@@ -169,10 +176,13 @@ const OrderConfirmDrawerContent = observer(
                   <Trans>止损</Trans>
                 </Text>
                 <Text className="text-paragraph-p2 text-content-4">
-                  {BNumber.toFormatNumber(slValuePrice, {
-                    volScale: activeSymbolInfo.symbolDecimal,
-                    defaultLabel: renderLinguiMsg(msg`未设置`),
-                  })}
+                  {renderFallback(
+                    BNumber.toFormatNumber(slValuePrice, {
+                      volScale: activeSymbolInfo.symbolDecimal,
+                      defaultLabel: renderLinguiMsg(msg`未设置`),
+                    }),
+                    { verify: !!slValuePrice },
+                  )}
                 </Text>
               </View>
             </View>
