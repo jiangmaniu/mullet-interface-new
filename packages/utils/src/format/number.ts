@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { isNil, isUndefined, merge } from 'lodash-es'
 import numbro from 'numbro'
 
-import { BNumber, BNumberValue } from '@/number'
+import { BNumber, BNumberValue } from '../number/b-number'
 
 const FORMAT_VALUE_FALLBACK = '-'
 
