@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
-import { isNaN, isNil, isUndefined, merge } from 'lodash-es'
+import { isNil, isUndefined, merge } from 'lodash-es'
 import numbro from 'numbro'
 
-import { BNumber, BNumberValue } from '../number/b-number'
+import { BNumber, BNumberValue } from '@/number'
 
 const FORMAT_VALUE_FALLBACK = '-'
 
@@ -65,11 +65,32 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     amount = BNumber.from(amount).toFixed(0)
   }
 
-  if (isNil(amount) || isNaN(amount) || amount.toString().length === 0) {
+  // 🔥 更安全的空值检查，避免 toString() 报错
+  if (
+    isNil(amount) ||
+    amount === '' ||
+    (typeof amount === 'number' && isNaN(amount)) ||
+    amount.toString().length === 0
+  ) {
     if (!fallbackToZero) {
       return defaultLabel
     }
+    amount = BNumber.from(0)
+  }
 
+  // 尝试安全地转换为字符串检查
+  try {
+    const amountStr = String(amount)
+    if (amountStr === '' || amountStr === 'undefined' || amountStr === 'null' || amountStr === 'NaN') {
+      if (!fallbackToZero) {
+        return defaultLabel
+      }
+      amount = BNumber.from(0)
+    }
+  } catch {
+    if (!fallbackToZero) {
+      return defaultLabel
+    }
     amount = BNumber.from(0)
   }
 
@@ -116,7 +137,9 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
     ...(volScale ? { mantissa: volScale } : {}),
   })
 
-  return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${!isFrontUnit ? rearUnitLabel : ''}`
+  return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${
+    !isFrontUnit ? rearUnitLabel : ''
+  }`
 }
 
 type formatAutoHideDecimalParams = {
