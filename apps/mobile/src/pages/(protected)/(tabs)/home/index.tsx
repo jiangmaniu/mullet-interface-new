@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { router, useRouter } from 'expo-router'
 import { useResolveClassNames } from 'uniwind'
 
+import { SparkLine } from '@/components/charts/spark-line'
 import { EmptyState } from '@/components/states/empty-state'
-import { AreaChart } from '@/components/trading-view'
 import { AvatarImage } from '@/components/ui/avatar'
 import {
   CollapsibleFlatList,
@@ -138,7 +138,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
             // 加载骨架屏
             <View className="bg-content-5/10 rounded-xs h-full w-full" />
           ) : memoizedChartData.length > 0 ? (
-            <AreaChart data={memoizedChartData} lineColor={chartColor} lineWidth={1} />
+            <SparkLine data={memoizedChartData} color={chartColor} width={70} height={32} strokeWidth={1} />
           ) : null}
         </View>
 

@@ -3,7 +3,7 @@ import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { router } from 'expo-router'
 
-import { AreaChart } from '@/components/trading-view'
+import { SparkLine } from '@/components/charts/spark-line'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
@@ -58,6 +58,9 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
   )
 })
 
+const CARD_CHART_WIDTH = 153
+const CARD_CHART_HEIGHT = 60
+
 const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   // 获取 K线历史数据
   const { data: chartData = [], isLoading: isChartLoading } = useSymbolKline(symbol)
@@ -104,18 +107,18 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
             </Text>
           </View>
 
-          {/* Mini Chart */}
-          <View className="h-[60px] w-full overflow-hidden" pointerEvents="none">
+          {/* Mini Chart - SVG */}
+          <View className="overflow-hidden" style={{ height: CARD_CHART_HEIGHT }} pointerEvents="none">
             {isChartLoading ? (
-              // 加载骨架屏
-              <View className="bg-content-5 rounded-xs h-full w-full opacity-10" />
+              <View className="bg-content-5 rounded-xs mx-xl h-full opacity-10" />
             ) : shouldShowChart ? (
-              <AreaChart
+              <SparkLine
                 data={chartData}
-                lineColor={changeColor}
-                lineWidth={1}
-                topColor={`${changeColor}99`}
-                bottomColor={`${changeColor}00`}
+                color={changeColor}
+                width={CARD_CHART_WIDTH}
+                height={CARD_CHART_HEIGHT}
+                strokeWidth={1}
+                fillEnabled
               />
             ) : null}
           </View>
