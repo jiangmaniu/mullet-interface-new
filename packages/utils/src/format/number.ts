@@ -146,6 +146,7 @@ export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOp
       !isFrontUnit ? rearUnitLabel : ''
     }`
   } catch (error) {
+    console.error(`数据[${value}]格式化渲染错误: `, error)
     return value
   }
 }
