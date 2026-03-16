@@ -18,7 +18,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -110,7 +110,7 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
   const positionTpSlDrawerRef = useRef<DrawerRef>(null)
 
   // 获取平仓确认设置
-  const closeConfirmation = useTradeSettingsStore((s) => s.closeConfirmation)
+  const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
 
   // 使用平仓 hook
   const { mutate: closePosition, isPending: isClosingPosition } = useClosePosition()

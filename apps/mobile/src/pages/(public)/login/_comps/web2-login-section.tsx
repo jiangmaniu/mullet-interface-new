@@ -5,7 +5,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { IconMail } from '@/components/ui/icons/set'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-import { LoginType } from '@/stores/login-auth'
+import { LoginType } from '@/stores/user-slice'
 import { usePrivy } from '@privy-io/expo'
 import { useLogin } from '@privy-io/expo/ui'
 

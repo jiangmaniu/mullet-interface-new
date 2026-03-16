@@ -15,7 +15,7 @@ import {
 import { IconifyPage } from '@/components/ui/icons'
 import { useAppState } from '@/hooks/use-app-state'
 import { useI18n } from '@/hooks/use-i18n'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 
@@ -39,7 +39,7 @@ const Trade = observer(() => {
   const pendingList = trade.pendingList
   const positionList = trade.positionList
 
-  const chartPosition = useTradeSettingsStore((state) => state.chartPosition)
+  const chartPosition = useRootStore((state) => state.trade.setting.chartPosition)
 
   // 图表展开/隐藏状态
   const [isChartVisible, setIsChartVisible] = useState(true)

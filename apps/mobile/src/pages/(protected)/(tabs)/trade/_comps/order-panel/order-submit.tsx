@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { DrawerRef } from '@/components/ui/drawer'
 import { Text } from '@/components/ui/text'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
 
 import useSubmitOrder from '../../hooks/useSubmitOrder'
@@ -19,7 +19,7 @@ export const OrderSubmit = observer(() => {
   const { buySell } = trade
   const isBuy = buySell === TradePositionDirectionEnum.BUY
 
-  const orderConfirmation = useTradeSettingsStore((state) => state.orderConfirmation)
+  const orderConfirmation = useRootStore((state) => state.trade.setting.orderConfirmation)
 
   const { onSubmitOrder, onCheckSubmit, isSubmitLoading } = useSubmitOrder()
 

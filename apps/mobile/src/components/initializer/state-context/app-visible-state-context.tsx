@@ -1,5 +1,5 @@
 import { useAppState } from "@/hooks/use-app-state"
-import { useLoginAuthStore } from "@/stores/login-auth"
+import { useRootStore } from "@/stores"
 import useNetInfo from "@/v1/hooks/useNetInfo"
 import { stores } from "@/v1/provider/mobxProvider"
 import { SymbolWSItem } from "@/v1/stores/ws"
@@ -51,7 +51,7 @@ export const AppVisibleStateProvider = ({ children }: { children: React.ReactNod
   }
 
   const onAppActive = async () => {
-    // const token = useLoginAuthStore.getState().accessToken
+    // const token = useRootStore.getState().user.auth.accessToken
     // setIsVisible(true)
 
     // if (token) {

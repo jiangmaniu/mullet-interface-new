@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
-import type { LoginType } from '@/stores/login-auth'
+import type { LoginType } from '@/stores/user-slice'
 
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { stores } from '@/v1/provider/mobxProvider'
 import { login } from '@/v1/services/user'
 import { usePrivy } from '@privy-io/expo'
@@ -36,7 +36,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
         grant_type: 'privy_token',
       })
 
-      useLoginAuthStore.setState({
+      useRootStore.getState().user.auth.setAuth({
         accessToken: userinfo.access_token,
         loginInfo: userinfo,
         loginType: loginType ?? null,
@@ -50,9 +50,9 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
     },
     onSuccess: () => {
       // 登录成功后跳转回原页面
-      const { redirectTo, setRedirectTo } = useLoginAuthStore.getState()
+      const { redirectTo } = useRootStore.getState().user.auth
       if (redirectTo) {
-        setRedirectTo(undefined)
+        useRootStore.getState().user.auth.setAuth({ redirectTo: undefined })
         router.replace(redirectTo as '/')
       } else {
         router.replace('/')

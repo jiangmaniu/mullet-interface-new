@@ -2,7 +2,7 @@ import { Base64 } from 'js-base64'
 
 import { toast } from '@/components/ui/toast'
 import { handle401Error, setCancelAllRequestsCallback } from '@/lib/auth-handler'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
@@ -64,8 +64,8 @@ const DEFAULT_HEADERS = {
 
 // 构建请求头
 async function buildHeaders(config?: IRequestConfig): Promise<Record<string, string>> {
-  const userInfo = useLoginAuthStore.getState().loginInfo
-  const token = useLoginAuthStore.getState().accessToken
+  const userInfo = useRootStore.getState().user.auth.loginInfo
+  const token = useRootStore.getState().user.auth.accessToken
   const ENV = await getEnv()
 
   let privyAccessToken: string | null = null

@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { router } from 'expo-router'
 
 import { useAppKit } from '@/lib/appkit'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { STORAGE_REMOVE_AUTHORIZED, STORAGE_REMOVE_CONF_INFO, STORAGE_REMOVE_ENV } from '@/v1/utils/storage'
 import { usePrivy } from '@privy-io/expo'
 
@@ -24,7 +24,7 @@ export function useClearAuthData(): UseClearAuthDataReturn {
   const [isClearing, setIsClearing] = useState(false)
   const { logout: privyLogout } = usePrivy()
   const { disconnect: disconnectWallet } = useAppKit()
-  const { logout: authLogout } = useLoginAuthStore()
+  const { logout: authLogout } = useRootStore((s) => s.user.auth)
 
   const clearAuthData = useCallback(async () => {
     if (isClearing) return
@@ -33,7 +33,7 @@ export function useClearAuthData(): UseClearAuthDataReturn {
 
     try {
       // 清除 redirectTo，防止重新登录后跳转回退出前的页面
-      useLoginAuthStore.getState().setRedirectTo(undefined)
+      useRootStore.getState().user.auth.setAuth({ redirectTo: undefined })
 
       await STORAGE_REMOVE_CONF_INFO()
       await STORAGE_REMOVE_ENV()
@@ -104,13 +104,13 @@ export function useLogout(): UseLogoutReturn {
  */
 export const onBackendLogout = async () => {
   // 清除 redirectTo，防止重新登录后跳转回退出前的页面
-  useLoginAuthStore.getState().setRedirectTo(undefined)
+  useRootStore.getState().user.auth.setAuth({ redirectTo: undefined })
 
   await Promise.all([
     STORAGE_REMOVE_CONF_INFO(),
     STORAGE_REMOVE_ENV(),
     STORAGE_REMOVE_AUTHORIZED(),
-    useLoginAuthStore.getState().logout(),
+    useRootStore.getState().user.auth.logout(),
   ])
 
   router.replace('/login')

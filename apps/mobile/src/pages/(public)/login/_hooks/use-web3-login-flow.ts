@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 
 import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 
 interface UseWeb3LoginFlowOptions {
   /** 是否自动授权（用于 401 重定向且钱包已连接的情况） */
@@ -20,7 +20,7 @@ export function useWeb3LoginFlow({ autoAuth = false }: UseWeb3LoginFlowOptions =
   const { open: openAppKit } = useAppKit()
   const { isConnected: isWalletConnected } = useAccount()
   const { isOpen: isAppKitOpen } = useAppKitState()
-  const isBackendAuthenticated = useLoginAuthStore((state) => state.accessToken)
+  const isBackendAuthenticated = useRootStore((state) => state.user.auth.accessToken)
 
   // Drawer 可见状态
   const [isDrawerVisible, setIsDrawerVisible] = useState(false)

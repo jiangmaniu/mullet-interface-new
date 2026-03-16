@@ -17,7 +17,7 @@ import { Spinning } from '@/components/ui/spinning'
 import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
 import { cn } from '@/lib/utils'
-import { LoginType } from '@/stores/login-auth'
+import { LoginType } from '@/stores/user-slice'
 
 import { useBackendLogin } from '../_hooks/use-backend-login'
 import { useWalletAuth, WalletAuthError } from '../_hooks/use-wallet-auth'

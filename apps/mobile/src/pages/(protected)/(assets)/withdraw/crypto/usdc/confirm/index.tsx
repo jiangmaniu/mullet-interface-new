@@ -9,7 +9,8 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { USDC_TOKEN_SYMBOL } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
-import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
+import { LoginType } from '@/stores/user-slice'
 import { getImgSource } from '@/utils/img'
 import { renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
@@ -26,7 +27,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
   const selectedAccount = useSelectedWithdrawAccount()
   const { toWalletAddress, withdrawAmount, fromWalletAddress } = useWithdrawState()
   const { tokenInfo, chainInfo } = useSelectedChainInfo()
-  const loginType = useLoginAuthStore((s) => s.loginType)
+  const loginType = useRootStore((s) => s.user.auth.loginType)
 
   // Web3 wallet state
   const { address: connectedWalletAddress } = useAccount()

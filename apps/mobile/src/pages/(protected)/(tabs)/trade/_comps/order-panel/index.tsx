@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 
-import { ChartPosition } from '@/stores/trade-settings'
+import type { ChartPosition } from '@/stores/trade-slice'
 import { useStores } from '@/v1/provider/mobxProvider'
 
 import { OrderAmount } from './order-amount'

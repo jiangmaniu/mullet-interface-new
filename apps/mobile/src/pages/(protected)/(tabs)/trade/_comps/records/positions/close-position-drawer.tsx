@@ -20,7 +20,7 @@ import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -36,8 +36,8 @@ interface ClosePositionDrawerProps {
 const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerProps) => {
   const [closedLots, setClosedLots] = useState('')
   const [sliderValue, setSliderValue] = useState(0)
-  const closeConfirmation = useTradeSettingsStore((s) => s.closeConfirmation)
-  const { setCloseConfirmation } = useTradeSettingsStore()
+  const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
+  const setCloseConfirmation = useRootStore((s) => s.trade.setting.setCloseConfirmation)
   const { trade } = useStores()
 
   const [dontAskAgain, setDontAskAgain] = useState(!closeConfirmation)

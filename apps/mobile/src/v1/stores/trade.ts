@@ -43,7 +43,7 @@ import klineStore from './kline'
 import { getSymbolIsHoliday } from '@/v1/services/tradeCore/holiday'
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { getSymbolTicker } from '@/v1/services/market/symbol'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
 import { Order } from '../services/tradeCore/order/typings'
@@ -858,7 +858,7 @@ class TradeStore {
   getAllSimbleSymbols = async () => {
     try {
       // 判断是否登录
-      const userInfo = useLoginAuthStore.getState().loginInfo
+      const userInfo = useRootStore.getState().user.auth.loginInfo
       if (!userInfo) {
         return
       }
@@ -1013,7 +1013,7 @@ class TradeStore {
   // 查询持仓列表
   @action
   getPositionList = async (cover = false) => {
-    const token = useLoginAuthStore.getState().accessToken
+    const token = useRootStore.getState().user.auth.accessToken
     if (!token) {
       return
     }

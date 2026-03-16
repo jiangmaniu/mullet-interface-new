@@ -4,7 +4,7 @@ import { stores } from '@/v1/provider/mobxProvider'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import { replace } from '@/v1/utils/navigation'
 import { STORAGE_GET_CONF_INFO } from '@/v1/utils/storage'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { onBackendLogout } from '@/hooks/use-logout'
 
 // 禁用 MobX 严格模式
@@ -32,7 +32,7 @@ class UserStore {
   @action
   fetchUserInfo = async (isRefreshAccount?: boolean) => {
     try {
-      const localUserInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
+      const localUserInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
 
       const id = localUserInfo?.user_id
       // 查询客户信息

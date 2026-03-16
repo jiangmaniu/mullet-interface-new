@@ -1,7 +1,8 @@
 import { useEffect } from 'react'
 
 import { useAccount } from '@/lib/appkit'
-import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
+import { LoginType } from '@/stores/user-slice'
 
 import { useDepositActions, useDepositState } from '../../_hooks/use-deposit-state'
 
@@ -15,7 +16,7 @@ import { useDepositActions, useDepositState } from '../../_hooks/use-deposit-sta
 export function useWalletSync() {
   const { fromWalletAddress } = useDepositState()
   const { setFromWalletAddress } = useDepositActions()
-  const loginType = useLoginAuthStore((s) => s.loginType)
+  const loginType = useRootStore((s) => s.user.auth.loginType)
   const { isConnected: isGlobalWalletConnected, address: globalWalletAddress } = useAccount()
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { View, Text } from 'react-native'
 import { router, usePathname } from 'expo-router'
 
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { useAccount } from '@/lib/appkit'
 
 /**
@@ -18,9 +18,9 @@ import { useAccount } from '@/lib/appkit'
  *    - 否则跳转到登录页
  */
 export default function CallbackPage() {
-  const redirectTo = useLoginAuthStore((s) => s.redirectTo)
-  const accessToken = useLoginAuthStore((s) => s.accessToken)
-  const { setRedirectTo } = useLoginAuthStore()
+  const redirectTo = useRootStore((s) => s.user.auth.redirectTo)
+  const accessToken = useRootStore((s) => s.user.auth.accessToken)
+  const setRedirectTo = useRootStore((s) => s.user.auth.setAuth)
   const { isConnected } = useAccount()
   const pathname = usePathname()
 
@@ -32,7 +32,7 @@ export default function CallbackPage() {
         // 优先使用 store 中保存的 redirectTo
         if (redirectTo) {
           // 清除 redirectTo，避免下次误用
-          setRedirectTo(undefined)
+          setRedirectTo({ redirectTo: undefined })
           router.replace(redirectTo as any)
           return
         }

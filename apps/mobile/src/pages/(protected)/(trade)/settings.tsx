@@ -10,20 +10,20 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 
 export default function TradeSettingsScreen() {
-  const setColorScheme = useTradeSettingsStore((state) => state.setColorScheme)
-  const setOrderConfirmation = useTradeSettingsStore((state) => state.setOrderConfirmation)
-  const setCloseConfirmation = useTradeSettingsStore((state) => state.setCloseConfirmation)
-  const setChartPosition = useTradeSettingsStore((state) => state.setChartPosition)
+  const setColorScheme = useRootStore((state) => state.trade.setting.setColorScheme)
+  const setOrderConfirmation = useRootStore((state) => state.trade.setting.setOrderConfirmation)
+  const setCloseConfirmation = useRootStore((state) => state.trade.setting.setCloseConfirmation)
+  const setChartPosition = useRootStore((state) => state.trade.setting.setChartPosition)
 
-  const { colorScheme, orderConfirmation, closeConfirmation, chartPosition } = useTradeSettingsStore(
+  const { colorScheme, orderConfirmation, closeConfirmation, chartPosition } = useRootStore(
     useShallow((state) => ({
-      colorScheme: state.colorScheme,
-      orderConfirmation: state.orderConfirmation,
-      closeConfirmation: state.closeConfirmation,
-      chartPosition: state.chartPosition,
+      colorScheme: state.trade.setting.colorScheme,
+      orderConfirmation: state.trade.setting.orderConfirmation,
+      closeConfirmation: state.trade.setting.closeConfirmation,
+      chartPosition: state.trade.setting.chartPosition,
     })),
   )
 

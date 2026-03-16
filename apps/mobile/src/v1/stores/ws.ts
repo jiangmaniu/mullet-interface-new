@@ -11,7 +11,7 @@ import { Platform } from 'react-native'
 import { getEnv } from '@/v1/env'
 import { uniqueObjectArray } from '@/v1/utils'
 import mitt from '@/v1/utils/mitt'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import type Reactotron from 'reactotron-react-native'
 import { Account } from '../services/tradeCore/account/typings'
 import { Symbol } from '../services/tradeCore/symbol/typings'
@@ -304,7 +304,7 @@ class WSStore {
 
   @action
   async connect(resolve?: () => void) {
-    const token = useLoginAuthStore.getState().accessToken
+    const token = useRootStore.getState().user.auth.accessToken
     const { ws: websocketUrl } = await getEnv()
     // token不要传bear前缀
     // 游客传WebSocket:visitor
@@ -343,10 +343,7 @@ class WSStore {
 
   // 订阅消息
   subscribeMessage = async (cancel?: boolean) => {
-    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
-    if (!userInfo?.user_id) return
-
-    // 公共订阅：/{租户ID}/public/1
+    const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
     // 角色订阅：/{租户ID}/role/{角色ID}
     // 机构订阅：/{租户ID}/dept/{机构ID}
     // 岗位订阅：/{租户ID}/post/{岗位ID}
@@ -375,7 +372,7 @@ class WSStore {
 
   // 订阅中消息（目前只订阅支付响应消息：20250327）
   subscribeNotify = async (cancel?: boolean) => {
-    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
+    const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
     if (!userInfo?.user_id) return
 
     console.log('=========订阅响应消息', `/000000/msg/${userInfo?.user_id}`, cancel)
@@ -387,7 +384,7 @@ class WSStore {
 
   // 开始心跳
   startHeartbeat() {
-    const token = useLoginAuthStore.getState().accessToken
+    const token = useRootStore.getState().user.auth.accessToken
     if (!token) return
     this.stopHeartbeat()
     this.heartbeatInterval = setInterval(() => {
@@ -535,8 +532,7 @@ class WSStore {
   // 发送socket指令
   @action
   async send(cmd = {}, header = {}) {
-    const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
-    // 游客身份userId传123456789
+    const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
     const userId = userInfo?.user_id || '123456789'
     if (this.socket && this.socket.readyState === 1) {
       const payload = {

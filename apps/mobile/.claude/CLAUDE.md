@@ -56,3 +56,4 @@
 ./figma.md
 ./layout.md
 ./enum-option.md
+./store-pattern.md

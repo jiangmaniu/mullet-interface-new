@@ -4,7 +4,7 @@ import { router, usePathname, useSegments } from 'expo-router'
 import { parse, stringify } from 'qs'
 import type { DependencyList } from 'react'
 
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { WEBVIEW_AUTHRORIZATION_URI } from '@/v1/constants'
 import { getEnv } from '@/v1/env'
 
@@ -36,8 +36,8 @@ function getRoutePath(name: string): string {
 
 // 格式化参数到url上
 export const formatUrlParams = async (url: string, params?: any) => {
-  const token = useLoginAuthStore.getState().accessToken
-  const userInfo = useLoginAuthStore.getState().loginInfo as User.UserInfo
+  const token = useRootStore.getState().user.auth.accessToken
+  const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
   const tempUrl = new URL(url)
   // 解析url中?后面的参数
   const parseUrlParams = parse(tempUrl.search.slice(1) || '') || {}

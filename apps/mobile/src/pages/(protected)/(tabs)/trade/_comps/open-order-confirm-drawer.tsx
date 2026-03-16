@@ -14,7 +14,7 @@ import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbo
 import { useI18n } from '@/hooks/use-i18n'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { getImgSource } from '@/utils/img'
 import useMargin from '@/v1/hooks/trade/useMargin'
 import useQuote from '@/v1/hooks/trade/useQoute'
@@ -60,9 +60,9 @@ const OrderConfirmDrawerContent = observer(
     const isBuy = trade.buySell === TradePositionDirectionEnum.BUY
     const currentAccountInfo = trade.currentAccountInfo
 
-    const orderConfirmation = useTradeSettingsStore((s) => s.orderConfirmation)
+    const orderConfirmation = useRootStore((s) => s.trade.setting.orderConfirmation)
     const [dontAskAgain, setDontAskAgain] = useState(!orderConfirmation)
-    const setOrderConfirmation = useTradeSettingsStore((s) => s.setOrderConfirmation)
+    const setOrderConfirmation = useRootStore((s) => s.trade.setting.setOrderConfirmation)
     const { renderLinguiMsg } = useI18n()
 
     const { slValuePrice, spValuePrice } = useSpSl()

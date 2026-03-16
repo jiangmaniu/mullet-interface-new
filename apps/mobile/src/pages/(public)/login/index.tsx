@@ -5,11 +5,11 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { IconLogo, IconPrivy } from '@/components/ui/icons/set'
 import { Web2LoginSection } from './_comps/web2-login-section'
 import { Web3LoginSection } from './_comps/web3-login-section'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { useEffect } from 'react'
 
 const Login = () => {
-  const { accessToken, loginInfo } = useLoginAuthStore()
+  const { accessToken, loginInfo } = useRootStore((state) => state.user.auth)
   console.log('accessToken', accessToken, loginInfo)
 
   // 🚫 禁止 Android 物理返回

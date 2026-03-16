@@ -2,7 +2,7 @@
  * 401 认证错误处理器
  * 处理 API 返回 401 时的自动重新认证逻辑
  */
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { stores } from '@/v1/provider/mobxProvider'
 import { login, refreshToken as refreshTokenAPI } from '@/v1/services/user'
 import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
@@ -43,7 +43,7 @@ export function setCancelAllRequestsCallback(callback: () => void) {
  */
 async function tryRefreshToken(): Promise<boolean> {
   try {
-    const userInfo = useLoginAuthStore.getState().loginInfo
+    const userInfo = useRootStore.getState().user.auth.loginInfo
     if (!userInfo?.refresh_token) {
       console.log('No refresh token available')
       return false
@@ -90,7 +90,7 @@ async function clearAllAuthData(): Promise<void> {
       cancelAllRequestsCallback()
     }
 
-    await Promise.allSettled([useLoginAuthStore.getState().logout()])
+    await Promise.allSettled([useRootStore.getState().user.auth.logout()])
   } catch (error) {
     console.error('Clear auth data failed:', error)
   }
@@ -118,7 +118,7 @@ async function tryAutoLogin(): Promise<boolean> {
     )
 
     // 保存用户信息
-    useLoginAuthStore.setState({
+    useRootStore.getState().user.auth.setAuth({
       accessToken: userInfo.access_token,
       loginInfo: userInfo,
     })

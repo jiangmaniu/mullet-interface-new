@@ -6,7 +6,7 @@ import { STORAGE_GET_ENV, STORAGE_GET_TRADER_SERVER } from '@/v1/utils/storage'
 import { hydrateStores, stores } from '../provider/mobxProvider'
 import type { IStore, PVoid } from './types'
 import { fetchRemoteConfig } from '@/v1/env'
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { Platform } from 'react-native'
 
 type StoreDefaultKeys = 'set' | 'upload' | 'hydrate'
@@ -85,7 +85,7 @@ export class GlobalStore implements IStore {
   onStartApp = async () => {
     await hydrateStores()
 
-    const token = useLoginAuthStore.getState().accessToken
+    const token = useRootStore.getState().user.auth.accessToken
 
     // 初始化远程配置
     await this.initRemoteConfig()

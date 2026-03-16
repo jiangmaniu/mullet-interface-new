@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { IEnv } from '@/v1/env'
 
 import { i18n } from '@/locales/i18n'
-import { useTradeSettingsStore } from '@/stores/trade-settings'
+import { useRootStore } from '@/stores'
 import { getEnv } from '@/v1/env'
 import { useStores } from '@/v1/provider/mobxProvider'
 
@@ -23,7 +23,7 @@ export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
   const symbolName = trade.activeSymbolName
   const symbolItem = trade.symbolMapAll[symbolName]
   const accountGroupId = Number(trade.currentAccountInfo?.accountGroupId ?? 0)
-  const colorScheme = useTradeSettingsStore((s) => s.colorScheme)
+  const colorScheme = useRootStore((s) => s.trade.setting.colorScheme)
   const colorType = colorScheme === 'green-up' ? '1' : '2'
 
   useEffect(() => {

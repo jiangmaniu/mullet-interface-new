@@ -1,6 +1,6 @@
 import { stringify } from 'qs'
 
-import { useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
 import { getEnv } from '@/v1/env'
 import { request } from '@/v1/utils/request'
 
@@ -24,7 +24,7 @@ export async function login(body: User.LoginParams, options?: { [key: string]: a
 
 // 刷新token
 export async function refreshToken() {
-  const userInfo = useLoginAuthStore.getState().loginInfo
+  const userInfo = useRootStore.getState().user.auth.loginInfo
   const body = {
     grant_type: 'refresh_token',
     scope: 'all',
@@ -35,7 +35,7 @@ export async function refreshToken() {
     skipAllErrorHandler: true, // 避免 401 错误触发无限循环
   }).then((res) => {
     if (res?.access_token) {
-      useLoginAuthStore.getState().setLoginInfo(res)
+      useRootStore.getState().user.auth.setAuth({ loginInfo: res })
     }
     return res
   })

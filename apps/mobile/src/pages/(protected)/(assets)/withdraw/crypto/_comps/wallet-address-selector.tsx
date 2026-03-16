@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Text } from '@/components/ui/text'
 import { WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
-import { LoginType, useLoginAuthStore } from '@/stores/login-auth'
+import { useRootStore } from '@/stores'
+import { LoginType } from '@/stores/user-slice'
 import { getImgSource } from '@/utils/img'
 import { formatAddress } from '@mullet/utils/web3'
 
@@ -24,7 +25,7 @@ export function WalletSelector() {
   const setToWalletAddress = useWithdrawStore((s) => s.setToWalletAddress)
 
   // 获取用户登录类型
-  const loginType = useLoginAuthStore((s) => s.loginType)
+  const loginType = useRootStore((s) => s.user.auth.loginType)
   const isWeb3Login = loginType === LoginType.Web3
 
   // 获取当前连接的钱包信息
