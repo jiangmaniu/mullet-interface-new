@@ -2,7 +2,7 @@ import { merge } from 'lodash-es'
 import { create } from 'zustand'
 import { createJSONStorage, persist, subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import type { MarketSlice } from './market'
+import type { MarketSlice } from './market-slice'
 import type { TradeSlice } from './trade-slice'
 import type { UserSlice } from './user-slice'
 
@@ -10,7 +10,7 @@ import { mmkvStorage } from '@/lib/storage/mmkv'
 
 import { createSelectors } from './_helpers/createSelectors'
 import { createPartialize } from './_helpers/types'
-import { createMarketSlice } from './market'
+import { createMarketSlice } from './market-slice'
 import { createTradeSlice } from './trade-slice'
 import { createUserSlice } from './user-slice'
 

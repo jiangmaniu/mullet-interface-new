@@ -1,10 +1,9 @@
 import { keyBy } from 'lodash-es'
-
-import { Account } from '@/v1/services/tradeCore/account/typings'
-import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
-
 import type { ImmerStateCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
+
+import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
+import { Account } from '@/v1/services/tradeCore/account/typings'
 
 export interface MarketSliceState {
   /** 品种列表加载状态 */
