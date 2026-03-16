@@ -69,6 +69,7 @@ export default function useSubmitOrder() {
         setOrderVolume(vmin)
         setOrderPrice('')
         trade.resetSpSl()
+        toast.success(<Trans>下单成功</Trans>)
       }
     } catch (error: any) {
       toast.error(error?.message || <Trans>下单失败</Trans>)
