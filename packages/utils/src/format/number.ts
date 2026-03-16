@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { isNil, isUndefined, merge } from 'lodash-es'
+import { isNil, isString, isUndefined, merge } from 'lodash-es'
 import numbro from 'numbro'
 
 import { BNumber, BNumberValue } from '../number/b-number'
@@ -34,112 +34,120 @@ const enUs: numbro.NumbroLanguage = merge(numbro.languageData('en-US'), {
 numbro.registerLanguage(enUs)
 
 export function toFormatNumber(value?: BNumberValue | null, opt?: FormatNumberOpt) {
-  let { volScale } = opt || {}
-
-  let amount = value
-
-  const {
-    precision = undefined,
-    defaultLabel = FORMAT_VALUE_FALLBACK,
-    fallbackToZero = false,
-    autoHideDecimal = false,
-    prefix,
-    positive = true,
-    isFrontUnit = false,
-    unit,
-    format,
-    sign,
-    forceSign = false,
-    minimumFallback = false,
-    unitSeparated = isFrontUnit ? '' : ' ',
-  }: FormatNumberOpt = opt || {}
-
-  const initFormat: numbro.Format = {
-    roundingFunction: (...args) => {
-      return Math.floor(...args)
-    },
-    thousandSeparated: true,
-  }
-
-  if ((amount instanceof BNumber || amount instanceof BigNumber) && !isUndefined(precision)) {
-    amount = BNumber.from(amount).toFixed(0)
-  }
-
-  // 🔥 更安全的空值检查，避免 toString() 报错
-  if (
-    isNil(amount) ||
-    amount === '' ||
-    (typeof amount === 'number' && isNaN(amount)) ||
-    amount.toString().length === 0
-  ) {
-    if (!fallbackToZero) {
-      return defaultLabel
-    }
-    amount = BNumber.from(0)
-  }
-
-  // 尝试安全地转换为字符串检查
   try {
-    const amountStr = String(amount)
-    if (amountStr === '' || amountStr === 'undefined' || amountStr === 'null' || amountStr === 'NaN') {
+    let { volScale } = opt || {}
+
+    let amount = value
+
+    if (isString(amount)) {
+      amount = amount.replace(/,/g, '')
+    }
+
+    const {
+      precision = undefined,
+      defaultLabel = FORMAT_VALUE_FALLBACK,
+      fallbackToZero = false,
+      autoHideDecimal = false,
+      prefix,
+      positive = true,
+      isFrontUnit = false,
+      unit,
+      format,
+      sign,
+      forceSign = false,
+      minimumFallback = false,
+      unitSeparated = isFrontUnit ? '' : ' ',
+    }: FormatNumberOpt = opt || {}
+
+    const initFormat: numbro.Format = {
+      roundingFunction: (...args) => {
+        return Math.floor(...args)
+      },
+      thousandSeparated: true,
+    }
+
+    if ((amount instanceof BNumber || amount instanceof BigNumber) && !isUndefined(precision)) {
+      amount = BNumber.from(amount).toFixed(0)
+    }
+
+    // 🔥 更安全的空值检查，避免 toString() 报错
+    if (
+      isNil(amount) ||
+      amount === '' ||
+      (typeof amount === 'number' && isNaN(amount)) ||
+      amount.toString().length === 0
+    ) {
       if (!fallbackToZero) {
         return defaultLabel
       }
       amount = BNumber.from(0)
     }
-  } catch {
-    if (!fallbackToZero) {
-      return defaultLabel
+
+    // 尝试安全地转换为字符串检查
+    try {
+      const amountStr = String(amount)
+      if (amountStr === '' || amountStr === 'undefined' || amountStr === 'null' || amountStr === 'NaN') {
+        if (!fallbackToZero) {
+          return defaultLabel
+        }
+        amount = BNumber.from(0)
+      }
+    } catch {
+      if (!fallbackToZero) {
+        return defaultLabel
+      }
+      amount = BNumber.from(0)
     }
-    amount = BNumber.from(0)
-  }
 
-  let amountWithFormated = BNumber.from(amount)
-  if (!isUndefined(precision)) {
-    amountWithFormated = amountWithFormated.div(10 ** precision)
-  }
+    let amountWithFormated = BNumber.from(amount)
+    if (!isUndefined(precision)) {
+      amountWithFormated = amountWithFormated.div(10 ** precision)
+    }
 
-  let isNegative = amountWithFormated.lt(0)
-  if (positive && isNegative) {
-    amountWithFormated = BNumber.from(0)
-    isNegative = false
-  }
+    let isNegative = amountWithFormated.lt(0)
+    if (positive && isNegative) {
+      amountWithFormated = BNumber.from(0)
+      isNegative = false
+    }
 
-  if (autoHideDecimal && !isUndefined(volScale) && !isUndefined(precision)) {
-    volScale = formatAutoHideDecimal(amount, {
-      precision,
-      volScale,
+    if (autoHideDecimal && !isUndefined(volScale) && !isUndefined(precision)) {
+      volScale = formatAutoHideDecimal(amount, {
+        precision,
+        volScale,
+      })
+    }
+
+    const numSign = isNegative ? '-' : '+'
+    const frontUnitLabel = unit ? `${unit}${unitSeparated}` : ''
+    const rearUnitLabel = unit ? `${unitSeparated}${unit}` : ''
+    const signOfDisplayed = sign ? sign : forceSign || isNegative ? numSign : ''
+
+    /** Minimum amount fallback */
+    if (minimumFallback && !amountWithFormated.eq(0)) {
+      const amountWithLimitDecimals = BNumber.from(
+        numbro(amountWithFormated.toFixed(0)).format({
+          ...initFormat,
+          ...format,
+          mantissa: volScale,
+        }),
+      )
+      if (amountWithLimitDecimals.eq(0) && !isUndefined(volScale)) {
+        return `<${isNegative ? '-' : ''}${1 / 10 ** volScale}${!isFrontUnit ? rearUnitLabel : ''}`
+      }
+    }
+
+    const formatedValue = numbro(amountWithFormated.abs().toFixed()).format({
+      ...initFormat,
+      ...format,
+      ...(volScale ? { mantissa: volScale } : {}),
     })
+
+    return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${
+      !isFrontUnit ? rearUnitLabel : ''
+    }`
+  } catch (error) {
+    return value
   }
-
-  const numSign = isNegative ? '-' : '+'
-  const frontUnitLabel = unit ? `${unit}${unitSeparated}` : ''
-  const rearUnitLabel = unit ? `${unitSeparated}${unit}` : ''
-  const signOfDisplayed = sign ? sign : forceSign || isNegative ? numSign : ''
-
-  /** Minimum amount fallback */
-  if (minimumFallback && !amountWithFormated.eq(0)) {
-    const amountWithLimitDecimals = BNumber.from(
-      numbro(amountWithFormated.toFixed(0)).format({
-        ...initFormat,
-        ...format,
-        mantissa: volScale,
-      }),
-    )
-    if (amountWithLimitDecimals.eq(0) && !isUndefined(volScale)) {
-      return `<${isNegative ? '-' : ''}${1 / 10 ** volScale}${!isFrontUnit ? rearUnitLabel : ''}`
-    }
-  }
-
-  const formatedValue = numbro(amountWithFormated.abs().toFixed()).format({
-    ...initFormat,
-    ...format,
-    ...(volScale ? { mantissa: volScale } : {}),
-  })
-
-  return `${prefix ? prefix : ''}${signOfDisplayed}${isFrontUnit ? frontUnitLabel : ''}${formatedValue}${
-    !isFrontUnit ? rearUnitLabel : ''
-  }`
 }
 
 type formatAutoHideDecimalParams = {
