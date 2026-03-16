@@ -34,7 +34,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
 
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
-  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
+  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo?.symbol)
 
   const handleViewChange = (view: 'chart' | 'depth') => {
     if (view === 'chart') {
@@ -42,7 +42,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
       return
     } else {
       // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
-      router.push({ pathname: '/(protected)/(trade)/[symbol]', params: { symbol: symbolInfo.symbol } })
+      router.push({ pathname: '/(protected)/(trade)/[symbol]', params: { symbol: symbolInfo?.symbol } })
     }
   }
 
@@ -106,7 +106,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
                   })
                 }}
                 onFavorites={() => {
-                  trade.toggleSymbolFavorite(symbolInfo.symbol)
+                  trade.toggleSymbolFavorite(symbolInfo?.symbol)
                 }}
               />
             </>
@@ -122,7 +122,7 @@ const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
   const [isSymbolSelectDrawerOpen, setIsSymbolSelectDrawerOpen] = useState(false)
 
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   const handleSymbolPress = () => {
@@ -131,7 +131,7 @@ const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
 
   const handleSymbolSelect = useCallback(
     (symbolInfo: Account.TradeSymbolListItem) => {
-      trade.switchSymbol(symbolInfo.symbol)
+      trade.switchSymbol(symbolInfo?.symbol)
       subscribeCurrentAndPositionSymbol({ cover: true })
     },
     [trade],
@@ -141,7 +141,7 @@ const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
     <>
       <View className="gap-medium flex-row items-center">
         <Pressable onPress={handleSymbolPress} className="gap-medium flex-row items-center">
-          <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
+          <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
           <Text className="text-paragraph-p1 text-content-1 font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
           <Text
             className={
@@ -161,7 +161,7 @@ const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
       <SymbolSelectDrawer
         visible={isSymbolSelectDrawerOpen}
         onClose={() => setIsSymbolSelectDrawerOpen(false)}
-        selectedSymbol={symbolInfo.symbol}
+        selectedSymbol={symbolInfo?.symbol}
         onSelect={handleSymbolSelect}
       />
     </>

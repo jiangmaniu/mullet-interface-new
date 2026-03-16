@@ -832,7 +832,7 @@ class TradeStore {
     const tradeTimeConf = symbolInfo?.symbolConf?.tradeTimeConf || []
 
     if (this.isSymbolInHoliday(symbol)) return false
-    if (!symbolInfo.id) return false
+    if (!symbolInfo?.id) return false
 
     const now = new Date()
     const currentDay = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'][now.getDay()]

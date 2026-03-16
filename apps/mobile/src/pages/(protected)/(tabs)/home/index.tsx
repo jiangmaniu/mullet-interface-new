@@ -69,10 +69,10 @@ function HomeHeader() {
 const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
   return (
     <View className="gap-medium flex-1 flex-row items-center">
-      <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
+      <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
       <View className="flex-1">
-        <Text className="text-paragraph-p2 text-content-1">{symbolInfo.alias}</Text>
-        <Text className="text-paragraph-p3 text-content-4">{symbolInfo.alias}</Text>
+        <Text className="text-paragraph-p2 text-content-1">{symbolInfo?.alias}</Text>
+        <Text className="text-paragraph-p3 text-content-4">{symbolInfo?.alias}</Text>
       </View>
     </View>
   )
@@ -83,9 +83,9 @@ const MarketRow = observer(
     const { trade } = useStores()
 
     const handlePress = () => {
-      trade.switchSymbol(symbolInfo.symbol)
+      trade.switchSymbol(symbolInfo?.symbol)
       subscribeCurrentAndPositionSymbol({ cover: true })
-      router.push(`/${symbolInfo.symbol}`)
+      router.push(`/${symbolInfo?.symbol}`)
     }
 
     return (
@@ -109,13 +109,13 @@ interface AssetMarketRowProps {
 
 const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
   const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.askDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   // 获取 K线历史数据
-  const { data: chartData = [], isLoading } = useSymbolKline(symbolInfo.symbol)
+  const { data: chartData = [], isLoading } = useSymbolKline(symbolInfo?.symbol)
 
   // 使用 useMemo 避免图表因行情数据变更而重绘
   const memoizedChartData = useMemo(() => chartData, [chartData])
@@ -136,7 +136,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
         <View className="h-8 w-[70px] items-center justify-center overflow-hidden">
           {isLoading ? (
             // 加载骨架屏
-            <View className="bg-content-5/10 h-full w-full rounded-xs" />
+            <View className="bg-content-5/10 rounded-xs h-full w-full" />
           ) : memoizedChartData.length > 0 ? (
             <AreaChart data={memoizedChartData} lineColor={chartColor} lineWidth={1} />
           ) : null}
@@ -204,7 +204,7 @@ interface AssetPriceRowProps {
 
 const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
 
   return (
     <View className="p-xl gap-xl flex-row items-center">

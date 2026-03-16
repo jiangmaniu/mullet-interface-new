@@ -82,7 +82,7 @@ function SymbolInfoCell({
 }) {
   return (
     <View className="gap-medium flex-1 flex-row">
-      <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
+      <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
       <View className="flex-1">
         <HighlightText
           text={renderFormatSymbolName(symbolInfo)}
@@ -90,7 +90,7 @@ function SymbolInfoCell({
           className="text-paragraph-p2 text-content-1"
         />
         <HighlightText
-          text={symbolInfo.remark ?? ''}
+          text={symbolInfo?.remark ?? ''}
           searchChars={searchChars}
           className="text-paragraph-p3 text-content-4 flex-wrap"
         />
@@ -110,7 +110,7 @@ const SearchAssetRow = observer(function SearchAssetRow({
   onSelect: () => void
 }) {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   return (
@@ -120,7 +120,7 @@ const SearchAssetRow = observer(function SearchAssetRow({
       <View className="min-w-[150px] flex-shrink-0 flex-row gap-2">
         <View className="flex-1">
           <Text className="text-paragraph-p1 text-content-1">
-            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="items-end">
@@ -153,7 +153,7 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
   onSelect: () => void
 }) {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
@@ -163,21 +163,21 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo.bid, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo.bid, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>最高</Trans> {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbolInfo.symbolDecimal })}
+            <Trans>最高</Trans> {BNumber.toFormatNumber(symbolMarketInfo.high, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-fall">
-              {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">
-            <Trans>最低</Trans> {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbolInfo.symbolDecimal })}
+            <Trans>最低</Trans> {BNumber.toFormatNumber(symbolMarketInfo.low, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
       </View>

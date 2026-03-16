@@ -39,13 +39,13 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
         <CardContent className="gap-medium">
           <View className="flex-row items-center gap-2">
             <View className="bg-content-5 size-4 rounded-full opacity-10" />
-            <View className="bg-content-5 h-4 w-16 rounded-xs opacity-10" />
+            <View className="bg-content-5 rounded-xs h-4 w-16 opacity-10" />
           </View>
           <View className="gap-1">
-            <View className="bg-content-5 h-4 w-20 rounded-xs opacity-10" />
-            <View className="bg-content-5 h-3 w-12 rounded-xs opacity-10" />
+            <View className="bg-content-5 rounded-xs h-4 w-20 opacity-10" />
+            <View className="bg-content-5 rounded-xs h-3 w-12 opacity-10" />
           </View>
-          <View className="bg-content-5 h-[60px] w-full rounded-xs opacity-10" />
+          <View className="bg-content-5 rounded-xs h-[60px] w-full opacity-10" />
         </CardContent>
       </Card>
     )
@@ -83,9 +83,9 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   const shouldShowChart = !isChartLoading && chartData.length > 0
 
   const handlePress = () => {
-    trade.switchSymbol(symbolInfo.symbol)
+    trade.switchSymbol(symbolInfo?.symbol)
     subscribeCurrentAndPositionSymbol({ cover: true })
-    router.push(`/${symbolInfo.symbol}`)
+    router.push(`/${symbolInfo?.symbol}`)
   }
 
   return (
@@ -93,7 +93,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
       <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
         <CardContent className="gap-medium">
           <View className="flex-row items-center gap-2">
-            <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-4 flex-shrink-0 rounded-full" />
+            <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-4 flex-shrink-0 rounded-full" />
             <Text className="text-content-1 text-sm font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
           </View>
 
@@ -108,7 +108,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
           <View className="h-[60px] w-full overflow-hidden" pointerEvents="none">
             {isChartLoading ? (
               // 加载骨架屏
-              <View className="bg-content-5 h-full w-full rounded-xs opacity-10" />
+              <View className="bg-content-5 rounded-xs h-full w-full opacity-10" />
             ) : shouldShowChart ? (
               <AreaChart
                 data={chartData}

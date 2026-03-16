@@ -30,7 +30,7 @@ class KlineStore {
   @observable socketState = 0
   @observable bars = []
   @observable activeSymbolInfo = {
-    symbolInfo: {}
+    symbolInfo: {},
   }
   @observable loading = true
   @observable switchSymbolLoading = false // 切换品种状态
@@ -46,13 +46,13 @@ class KlineStore {
   updateKlineData(quotes: Map<string, IQuoteItem>) {
     const symbolInfo = this.activeSymbolInfo.symbolInfo
     if (symbolInfo && quotes.size) {
-      const symbol = symbolInfo.name
-      // const dataSourceCode = symbolInfo.dataSourceCode
-      const accountGroupId = symbolInfo.accountGroupId
+      const symbol = symbolInfo?.name
+      // const dataSourceCode = symbolInfo?.dataSourceCode
+      const accountGroupId = symbolInfo?.accountGroupId
       const data = quotes.get(`${accountGroupId}/${symbol}`)
       if (data && data.symbol === symbol) {
         const resolution = this.activeSymbolInfo.resolution
-        const precision = symbolInfo.precision
+        const precision = symbolInfo?.precision
         // 通过ws更新k线数据
         const newLastBar = this.updateBar(data, { resolution, precision, symbolInfo })
         if (newLastBar) {
@@ -113,7 +113,7 @@ class KlineStore {
         open: NP.round(ask, precision),
         high: NP.round(ask, precision),
         low: NP.round(ask, precision),
-        close: NP.round(ask, precision)
+        close: NP.round(ask, precision),
       }
       // log('新建k线', newLastBar)
     } else {
@@ -122,7 +122,7 @@ class KlineStore {
         open: lastBar.open,
         high: NP.round(Math.max(lastBar.high, ask), precision),
         low: NP.round(Math.min(lastBar.low, ask), precision),
-        close: NP.round(ask, precision)
+        close: NP.round(ask, precision),
       }
       // log('更新k线', newLastBar)
     }
@@ -138,7 +138,7 @@ class KlineStore {
    * @returns
    */
   getHttpHistoryBars = async (symbolInfo, resolution, from, to, countBack) => {
-    const precision = symbolInfo.precision
+    const precision = symbolInfo?.precision
     const klineType =
       {
         1: '1min',
@@ -150,18 +150,18 @@ class KlineStore {
         '1D': '1day',
         '1W': '1week',
         '1M': '1mon',
-        '1Y': '1year'
+        '1Y': '1year',
       }[resolution] || '1min'
 
     // const symbolName = [
-    //   ...stringToBin(symbolInfo.name, 12),
+    //   ...stringToBin(symbolInfo?.name, 12),
     //   ...intToBin(resolutionToMin),
     //   ...intToBin(300), // 请求返回多少个数据
     //   ...intToBin(0),
     //   ...intToBin(to + 8 * 60 * 60)
     // ]
     // const b = Base64.btoa(
-    //   quoteUtil.stringToBin(symbolInfo.mtName || symbolInfo.name, 12) + // 品种
+    //   quoteUtil.stringToBin(symbolInfo?.mtName || symbolInfo?.name, 12) + // 品种
     //     quoteUtil.intToBin(resolutionToMin) + // K线周期
     //     quoteUtil.intToBin(countBack) + // 请求返回多少个数据
     //     quoteUtil.timeToBin(to + 8 * 60 * 60) +
@@ -170,14 +170,14 @@ class KlineStore {
     try {
       const res = await request('/api/trade-market/marketApi/kline/symbol/klineList', {
         params: {
-          symbol: symbolInfo.symbol, // 品种
+          symbol: symbolInfo?.symbol, // 品种
           first: firstDataRequest, // 标识是否首次请求
           current: 1,
           size: 200, // 条数
           klineType, // 时间类型
           // klineTime: to + 8 * 60 * 60 // 查询截止时间之前的k线数据
-          klineTime: to * 1000 // 数据库存的都是零时区的，查询参数也必须是零时区
-        }
+          klineTime: to * 1000, // 数据库存的都是零时区的，查询参数也必须是零时区
+        },
       })
         .catch((e) => e)
         .finally(() => {
@@ -199,7 +199,7 @@ class KlineStore {
               low: NP.round(low, precision),
               // volume: NP.round(vol, precision),
               time: timeStamp,
-              mytime: dayjs(timeStamp).format('YYYY-MM-DD HH:mm:ss')
+              mytime: dayjs(timeStamp).format('YYYY-MM-DD HH:mm:ss'),
             }
           })
           .reverse() // 反转数据，按时间从大到小排序
@@ -265,7 +265,7 @@ class KlineStore {
   setActiveSymbolInfo = (data) => {
     this.activeSymbolInfo = {
       ...this.activeSymbolInfo,
-      ...data
+      ...data,
     }
   }
 

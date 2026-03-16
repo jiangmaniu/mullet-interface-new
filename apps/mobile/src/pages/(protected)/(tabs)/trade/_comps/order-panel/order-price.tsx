@@ -49,8 +49,8 @@ export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
         <>
           <NumberInput
             labelText={t`价格`}
-            placeholder={BNumber.toFormatNumber(0, { volScale: symbolInfo.symbolDecimal })}
-            decimalScale={symbolInfo.symbolDecimal}
+            placeholder={BNumber.toFormatNumber(0, { volScale: symbolInfo?.symbolDecimal })}
+            decimalScale={symbolInfo?.symbolDecimal}
             value={orderPrice}
             disabled={disabledInput}
             onValueChange={({ value }, { source }) => {

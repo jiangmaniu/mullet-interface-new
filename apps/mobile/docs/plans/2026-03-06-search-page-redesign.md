@@ -73,25 +73,30 @@ SearchPage
 ### 1. 搜索筛选与排序
 
 **字符拆分与匹配：**
+
 ```typescript
 // 按空格拆分输入，过滤空字符
-const searchChars = debouncedQuery.trim().split('').filter(c => c.trim())
+const searchChars = debouncedQuery
+  .trim()
+  .split('')
+  .filter((c) => c.trim())
 
 // 计算匹配权重
 const calculateMatchScore = (item: SymbolItem, chars: string[]) => {
   const searchText = `${item.symbol} ${item.alias} ${item.name}`.toLowerCase()
-  return chars.filter(char => searchText.includes(char.toLowerCase())).length
+  return chars.filter((char) => searchText.includes(char.toLowerCase())).length
 }
 
 // 筛选并排序
 const filtered = symbolList
-  .map(item => ({ item, score: calculateMatchScore(item, searchChars) }))
+  .map((item) => ({ item, score: calculateMatchScore(item, searchChars) }))
   .filter(({ score }) => score > 0)
   .sort((a, b) => b.score - a.score)
   .map(({ item }) => item)
 ```
 
 **搜索示例：**
+
 - 输入：`"BTC E"`
 - 拆分：`['B', 'T', 'C', 'E']`
 - 匹配结果：
@@ -103,6 +108,7 @@ const filtered = symbolList
 ### 2. 高亮组件
 
 **HighlightText 组件：**
+
 ```typescript
 const HighlightText = ({ text, searchChars }: { text: string; searchChars: string[] }) => {
   return (
@@ -123,23 +129,25 @@ const HighlightText = ({ text, searchChars }: { text: string; searchChars: strin
 ### 3. 行情数据集成
 
 **获取实时行情：**
+
 ```typescript
 const getCurrentQuote = useGetCurrentQuoteCallback()
-const symbolMarketInfo = getCurrentQuote(symbolInfo.symbol)
+const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
 
 // 格式化显示
 const price = BNumber.toFormatNumber(symbolMarketInfo.ask, {
-  volScale: symbolInfo.symbolDecimal
+  volScale: symbolInfo?.symbolDecimal,
 })
 const percent = BNumber.toFormatPercent(symbolMarketInfo.percent, {
   forceSign: true,
-  isRaw: false
+  isRaw: false,
 })
 ```
 
 ### 4. 布局调整
 
 **SearchAssetRow 布局变更：**
+
 - **原布局：** `[Avatar + Symbol/Name] [AreaChart] [Price + Percent]`
 - **新布局：** `[Avatar + Symbol/Name] [Price] [Percent]`
 - 移除 AreaChart 组件
@@ -150,6 +158,7 @@ const percent = BNumber.toFormatPercent(symbolMarketInfo.percent, {
 ### React Compiler 自动优化
 
 项目已启用 `reactCompiler: true`，无需手动使用 `useMemo`、`useCallback`、`memo`。编译器自动优化：
+
 - 自动 memoization 计算结果
 - 自动缓存函数引用
 - 自动优化组件重渲染
@@ -170,10 +179,12 @@ useEffect(() => {
 ## 用户体验优化
 
 ### 标题动态切换
+
 - 无搜索词：显示 `<Trans>热门品种</Trans>`
 - 有搜索词：显示 `<Trans>搜索结果</Trans>`
 
 ### 空状态处理
+
 ```typescript
 {filteredSymbols.length === 0 && (
   <View className="py-[96px]">
@@ -183,6 +194,7 @@ useEffect(() => {
 ```
 
 ### 路由跳转
+
 ```typescript
 const handleSelect = (symbol: string) => {
   trade.switchSymbol(symbol)
@@ -201,22 +213,26 @@ const handleSelect = (symbol: string) => {
 ## 实施计划
 
 ### 阶段 1：数据层改造
+
 1. 添加页面初始化逻辑，调用 `getSymbolList()`
 2. 实现热门品种筛选函数
 3. 集成 `useGetCurrentQuoteCallback` 获取行情数据
 
 ### 阶段 2：搜索功能实现
+
 1. 实现字符拆分与匹配逻辑
 2. 实现权重计算与排序
 3. 添加防抖优化
 
 ### 阶段 3：UI 组件改造
+
 1. 创建 HighlightText 组件
 2. 重构 SearchAssetRow 布局（移除 AreaChart）
 3. 重构 SearchAssetTradeRow 布局
 4. 更新标题动态切换逻辑
 
 ### 阶段 4：路由与交互
+
 1. 实现点击跳转到 `/trade/[symbol]`
 2. 添加空状态处理
 3. 测试完整交互流程
@@ -224,12 +240,14 @@ const handleSelect = (symbol: string) => {
 ## 风险与注意事项
 
 ### 潜在风险
+
 1. **性能风险**：大量品种列表（>500）时，字符级匹配可能影响性能
    - **缓解措施**：React Compiler 自动优化 + 防抖
 2. **行情数据延迟**：WebSocket 行情可能有延迟
    - **缓解措施**：显示加载状态，避免闪烁
 
 ### 注意事项
+
 1. HOT_SYMBOL_LIST 需要转小写匹配 Alias 字段
 2. 高亮逻辑需要处理大小写不敏感
 3. 路由跳转前需要调用 `trade.switchSymbol()` 更新状态
@@ -249,11 +267,13 @@ const handleSelect = (symbol: string) => {
 ## 附录
 
 ### HOT_SYMBOL_LIST 配置
+
 ```typescript
 const HOT_SYMBOL_LIST = ['SOL', 'XAU', 'BTC', 'ETH', 'EURUSD']
 ```
 
 ### 相关文件
+
 - `/apps/mobile/src/pages/(protected)/(home)/search.tsx` - 搜索页面
 - `/apps/mobile/src/v1/stores/trade.ts` - 交易状态管理
 - `/apps/mobile/src/v1/utils/wsUtil.ts` - WebSocket 工具函数

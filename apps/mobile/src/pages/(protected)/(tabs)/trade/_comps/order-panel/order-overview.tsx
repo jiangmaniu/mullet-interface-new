@@ -18,7 +18,7 @@ export const OrderOverview = observer(({ symbol }: { symbol: string }) => {
   const { currentAccountInfo } = trade
   const { i18n } = useLingui()
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
-  const lotVolScale = parseSymbolLotsVolScale(symbolInfo.symbolConf)
+  const lotVolScale = parseSymbolLotsVolScale(symbolInfo?.symbolConf)
   const { maxOpenVolume } = useOpenVolumn() // 最大可开仓量
 
   return (

@@ -37,7 +37,7 @@ export const OrderDirection = observer(({ symbol }: { symbol: string }) => {
         className={`px-xl rounded-small h-[40px] flex-1 flex-row items-center justify-center ${isBuy ? 'bg-market-rise' : 'bg-button'}`}
       >
         <Text className={`text-button-2 font-medium ${isBuy ? 'text-market-rise-foreground' : 'text-content-4'}`}>
-          {BNumber.toFormatNumber(quoteInfo?.bid, { volScale: symbolInfo.symbolDecimal })}
+          {BNumber.toFormatNumber(quoteInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}
         </Text>
         <Text className={`text-button-2 ml-xs ${isBuy ? 'text-market-rise-foreground' : 'text-content-4'}`}>
           <Trans>买入/做多</Trans>
@@ -56,7 +56,7 @@ export const OrderDirection = observer(({ symbol }: { symbol: string }) => {
         }`}
       >
         <Text className={`text-button-2 font-medium ${isSell ? 'text-market-fall-foreground' : 'text-content-4'}`}>
-          {BNumber.toFormatNumber(quoteInfo?.ask, { volScale: symbolInfo.symbolDecimal })}
+          {BNumber.toFormatNumber(quoteInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
         </Text>
         <Text className={`text-button-2 ml-xs ${isSell ? 'text-market-fall-foreground' : 'text-content-4'}`}>
           <Trans>卖出/做空</Trans>

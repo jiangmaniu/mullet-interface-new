@@ -53,7 +53,7 @@ const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const isOrderDirectionBuy = trade.buySell === TradePositionDirectionEnum.BUY
 
-  const takeProfitPrice = BNumber.from(spValuePrice)?.cutDecimalPlaces(symbolInfo.symbolDecimal)?.toString()
+  const takeProfitPrice = BNumber.from(spValuePrice)?.cutDecimalPlaces(symbolInfo?.symbolDecimal)?.toString()
 
   return (
     <View className="gap-xs">
@@ -91,7 +91,7 @@ const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
           <Trans>范围</Trans> {` ${isOrderDirectionBuy ? '≥' : '≤'} `}
           <Text className="text-market-fall text-paragraph-p3">
             {BNumber.toFormatNumber(sp_scope, {
-              volScale: symbolInfo.symbolDecimal,
+              volScale: symbolInfo?.symbolDecimal,
             })}
           </Text>
         </Text>
@@ -133,7 +133,7 @@ const SetStopLoss = observer(({ symbol }: { symbol: string }) => {
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const isOrderDirectionBuy = trade.buySell === TradePositionDirectionEnum.BUY
 
-  const stopLossPrice = BNumber.from(slValuePrice)?.cutDecimalPlaces(symbolInfo.symbolDecimal)?.toString()
+  const stopLossPrice = BNumber.from(slValuePrice)?.cutDecimalPlaces(symbolInfo?.symbolDecimal)?.toString()
 
   return (
     <View className="gap-xs">
@@ -171,7 +171,7 @@ const SetStopLoss = observer(({ symbol }: { symbol: string }) => {
           <Trans>范围</Trans> {` ${isOrderDirectionBuy ? '≤' : '≥'} `}
           <Text className="text-market-fall text-paragraph-p3">
             {BNumber.toFormatNumber(sl_scope, {
-              volScale: symbolInfo.symbolDecimal,
+              volScale: symbolInfo?.symbolDecimal,
             })}
           </Text>
         </Text>

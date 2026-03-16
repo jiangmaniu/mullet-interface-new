@@ -494,7 +494,7 @@ class WSStore {
     toSend.set(
       ws.symbolToString({
         accountGroupId: trade.currentAccountInfo.accountGroupId,
-        symbol: symbolInfo.symbol,
+        symbol: symbolInfo?.symbol,
       }),
       true,
     )
@@ -505,10 +505,10 @@ class WSStore {
   subscribeDepth = (symbolInfo?: Account.TradeSymbolListItem, cancel?: boolean) => {
     // const symbolInfo = trade.getActiveSymbolInfo()
     // 深度为0 不需要订阅深度
-    if (!symbolInfo?.symbol || symbolInfo.symbolConf?.depthOfMarket === 0) return
+    if (!symbolInfo?.symbol || symbolInfo?.symbolConf?.depthOfMarket === 0) return
 
-    // const topicNoAccount = `/000000/depth/${symbolInfo.dataSourceCode}/${symbolInfo.symbol}`
-    const topicAccount = `/000000/depth/${symbolInfo.symbol}/${symbolInfo?.accountGroupId}`
+    // const topicNoAccount = `/000000/depth/${symbolInfo?.dataSourceCode}/${symbolInfo?.symbol}`
+    const topicAccount = `/000000/depth/${symbolInfo?.symbol}/${symbolInfo?.accountGroupId}`
     // 区分带账户组id和不带账户组情况
     // const topic = symbolInfo?.accountGroupId ? topicAccount : topicNoAccount
     const topic = topicAccount

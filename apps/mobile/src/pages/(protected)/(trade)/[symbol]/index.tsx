@@ -44,10 +44,10 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
-  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo.symbol)
+  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo?.symbol)
 
   const handleFavoriteToggle = () => {
-    trade.toggleSymbolFavorite(symbolInfo.symbol)
+    trade.toggleSymbolFavorite(symbolInfo?.symbol)
   }
 
   const handleViewChange = (view: 'chart' | 'depth') => {
@@ -64,8 +64,8 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
       left={
         <View className="gap-medium flex-row items-center">
           <Pressable onPress={onSymbolPress} className="gap-medium flex-row items-center">
-            <AvatarImage source={getImgSource(symbolInfo.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
-            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbolInfo.symbol}</Text>
+            <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
+            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbolInfo?.symbol}</Text>
             <Text
               className={
                 percentChangeInfo.isRise
@@ -163,7 +163,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
               <Trans>最高</Trans>
             </Text>
             <Text className="text-paragraph-p4 text-content-1">
-              {BNumber.toFormatNumber(high, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(high, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <View className="items-end">
@@ -171,7 +171,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
               <Trans>最低</Trans>
             </Text>
             <Text className="text-paragraph-p4 text-content-1">
-              {BNumber.toFormatNumber(low, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(low, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
         </View>
@@ -181,7 +181,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
               <Trans>开盘价</Trans>
             </Text>
             <Text className="text-paragraph-p4 text-content-1">
-              {BNumber.toFormatNumber(open, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(open, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <View className="items-end">
@@ -189,7 +189,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
               <Trans>收盘价</Trans>
             </Text>
             <Text className="text-paragraph-p4 text-content-1">
-              {BNumber.toFormatNumber(close, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(close, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
         </View>
@@ -347,7 +347,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-rise h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-rise-foreground font-medium">
-              {BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-rise-foreground">
               <Trans>买入/做多</Trans>
@@ -355,7 +355,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
           </Pressable>
 
           {/* Spread Badge */}
-          <View className="absolute top-1/2 left-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
+          <View className="rounded-xs absolute left-1/2 top-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white p-[2px]">
             <Text className="text-paragraph-p3 text-market-content-foreground">{BNumber.toFormatNumber(spread)}</Text>
           </View>
 
@@ -364,7 +364,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-fall h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-fall-foreground font-medium">
-              {BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-fall-foreground">
               <Trans>卖出/做空</Trans>
