@@ -136,10 +136,10 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
         <View className="h-8 w-[70px] items-center justify-center overflow-hidden">
           {isLoading ? (
             // 加载骨架屏
-            <View className="bg-content-5/10 rounded-xs h-full w-full" />
-          ) : memoizedChartData.length > 0 ? (
+            <View className="bg-content-5/10 h-full w-full rounded-xs" />
+          ) : (
             <SparkLine data={memoizedChartData} color={chartColor} width={70} height={32} strokeWidth={1} />
-          ) : null}
+          )}
         </View>
 
         <View className="flex-1 items-end">

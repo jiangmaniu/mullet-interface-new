@@ -39,13 +39,13 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
         <CardContent className="gap-medium">
           <View className="flex-row items-center gap-2">
             <View className="bg-content-5 size-4 rounded-full opacity-10" />
-            <View className="bg-content-5 rounded-xs h-4 w-16 opacity-10" />
+            <View className="bg-content-5 h-4 w-16 rounded-xs opacity-10" />
           </View>
           <View className="gap-1">
-            <View className="bg-content-5 rounded-xs h-4 w-20 opacity-10" />
-            <View className="bg-content-5 rounded-xs h-3 w-12 opacity-10" />
+            <View className="bg-content-5 h-4 w-20 rounded-xs opacity-10" />
+            <View className="bg-content-5 h-3 w-12 rounded-xs opacity-10" />
           </View>
-          <View className="bg-content-5 rounded-xs h-[60px] w-full opacity-10" />
+          <View className="bg-content-5 h-[60px] w-full rounded-xs opacity-10" />
         </CardContent>
       </Card>
     )
@@ -110,10 +110,10 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
           {/* Mini Chart - SVG */}
           <View className="overflow-hidden" style={{ height: CARD_CHART_HEIGHT }} pointerEvents="none">
             {isChartLoading ? (
-              <View className="bg-content-5 rounded-xs mx-xl h-full opacity-10" />
+              <View className="bg-content-5 mx-xl h-full rounded-xs opacity-10" />
             ) : shouldShowChart ? (
               <SparkLine
-                data={chartData}
+                data={[]}
                 color={changeColor}
                 width={CARD_CHART_WIDTH}
                 height={CARD_CHART_HEIGHT}

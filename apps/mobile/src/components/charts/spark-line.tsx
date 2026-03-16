@@ -55,7 +55,7 @@ function buildAreaPath(linePath: string, width: number, height: number): string 
 }
 
 export const SparkLine = React.memo(function SparkLine({
-  data,
+  data = [],
   color,
   width,
   height,
@@ -64,21 +64,12 @@ export const SparkLine = React.memo(function SparkLine({
   style,
 }: SparkLineProps) {
   const { linePath, areaPath } = useMemo(() => {
-    // 空数组时画居中横线
-    if (data.length === 0) {
+    // 空数组或只有 1 个点时画居中横线
+    if (data.length < 2) {
       const midY = height / 2
-      return {
-        linePath: `M0,${midY.toFixed(2)} L${width.toFixed(2)},${midY.toFixed(2)}`,
-        areaPath: '',
-      }
-    }
-    // 只有 1 个点时也画居中横线
-    if (data.length === 1) {
-      const midY = height / 2
-      return {
-        linePath: `M0,${midY.toFixed(2)} L${width.toFixed(2)},${midY.toFixed(2)}`,
-        areaPath: '',
-      }
+      const line = `M0,${midY.toFixed(2)} L${width.toFixed(2)},${midY.toFixed(2)}`
+      const area = fillEnabled ? buildAreaPath(line, width, height) : ''
+      return { linePath: line, areaPath: area }
     }
     const line = buildLinePath(data, width, height)
     const area = fillEnabled ? buildAreaPath(line, width, height) : ''
@@ -99,10 +90,15 @@ export const SparkLine = React.memo(function SparkLine({
           </LinearGradient>
         </Defs>
       )}
-      {fillEnabled && areaPath ? (
-        <Path d={areaPath} fill={`url(#${gradientId})`} />
-      ) : null}
-      <Path d={linePath} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" />
+      {fillEnabled && areaPath ? <Path d={areaPath} fill={`url(#${gradientId})`} /> : null}
+      <Path
+        d={linePath}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </Svg>
   )
 })
