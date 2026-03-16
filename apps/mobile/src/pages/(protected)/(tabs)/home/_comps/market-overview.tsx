@@ -113,7 +113,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
               <View className="bg-content-5 mx-xl h-full rounded-xs opacity-10" />
             ) : shouldShowChart ? (
               <SparkLine
-                data={[]}
+                data={chartData}
                 color={changeColor}
                 width={CARD_CHART_WIDTH}
                 height={CARD_CHART_HEIGHT}
