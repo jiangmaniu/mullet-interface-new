@@ -15,7 +15,7 @@ import { getWithdrawalStatusEnumOption } from '@/options/deposit/status'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
-import { formatTxHash } from '@mullet/utils/web3'
+import { formatAddress, formatTxHash } from '@mullet/utils/web3'
 
 import { FundFlowHistoryItem, useFundFlowHistory } from '../_apis/use-fund-flow-history'
 import { useBillsScreenContext } from '../index'
@@ -133,7 +133,7 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
       <CardContent className="gap-medium">
         <BillsCardRow
           label={<Trans>取现金额</Trans>}
-          value={BNumber.toFormatNumber(record.amount, {
+          value={BNumber.toFormatNumber(record.amountDisplay, {
             unit: account.currencyUnit,
             volScale: account.currencyDecimal,
           })}
@@ -147,6 +147,16 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
         />
 
         <BillsCardRow
+          label={<Trans>取现账户</Trans>}
+          valueComponent={
+            <View className="gap-xs flex-row items-center">
+              {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(account.id)}</Text>
+            </View>
+          }
+        />
+
+        <BillsCardRow
           label={<Trans>收款地址</Trans>}
           valueComponent={
             <View className="gap-xs flex-row items-center">
@@ -157,18 +167,8 @@ const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryI
                   }
                 }}
               >
-                <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.withdrawalToAddress)}</Text>
+                <Text className="text-paragraph-p3 text-content-1">{formatAddress(record.withdrawalToAddress)}</Text>
               </Pressable>
-            </View>
-          }
-        />
-
-        <BillsCardRow
-          label={<Trans>取现账户</Trans>}
-          valueComponent={
-            <View className="gap-xs flex-row items-center">
-              {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(account.id)}</Text>
             </View>
           }
         />

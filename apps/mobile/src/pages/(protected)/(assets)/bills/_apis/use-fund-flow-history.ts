@@ -65,8 +65,10 @@ export interface FundFlowHistoryItem {
   chain: string | null
   /** 代币符号，如 USDC */
   token: string | null
-  /** 本次事件涉及金额（USDC，人类可读小数） */
+  /** 本次事件涉及金额（USDC，合约精度） */
   amount: string | null
+  /** 本次事件涉及金额（USDC，人类可读小数） */
+  amountDisplay: string | null
   /** 操作前余额快照 */
   balanceBefore: string | null
   /** 操作后余额快照 */
