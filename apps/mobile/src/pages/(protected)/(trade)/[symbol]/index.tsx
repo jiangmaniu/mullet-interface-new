@@ -15,7 +15,7 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { parseSymbolLotsVolScale } from '@/helpers/symbol'
+import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { t } from '@/locales/i18n'
@@ -65,7 +65,7 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
         <View className="gap-medium flex-row items-center">
           <Pressable onPress={onSymbolPress} className="gap-medium flex-row items-center">
             <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
-            <Text className="text-paragraph-p1 text-content-1 font-medium">{symbolInfo?.symbol}</Text>
+            <Text className="text-paragraph-p1 text-content-1 font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
             <Text
               className={
                 percentChangeInfo.isRise
@@ -140,7 +140,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
           <Text
             className={`text-title-h3 ${askPriceChangeInfo.isRise ? 'text-market-rise' : askPriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}
           >
-            {latestPrice}
+            {BNumber.toFormatNumber(latestPrice, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
 
           <View className={cn('gap-xs flex-row')}>
@@ -355,7 +355,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
           </Pressable>
 
           {/* Spread Badge */}
-          <View className="rounded-xs absolute left-1/2 top-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center bg-white p-[2px]">
+          <View className="absolute top-1/2 left-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
             <Text className="text-paragraph-p3 text-market-content-foreground">{BNumber.toFormatNumber(spread)}</Text>
           </View>
 
