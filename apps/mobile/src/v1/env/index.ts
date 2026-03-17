@@ -1,7 +1,7 @@
-import { STORAGE_GET_ENV, STORAGE_SET_ENV } from '@/v1/utils/storage'
-import { Config } from '@/v1/platform/config'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { Config } from '@/v1/platform/config'
 import { isDomainAvailable } from '@/v1/utils/dns'
+import { STORAGE_GET_ENV, STORAGE_SET_ENV } from '@/v1/utils/storage'
 
 export type IEnv = typeof Config & {
   baseURL: string
@@ -33,8 +33,8 @@ export const getEnv = async (): Promise<IEnv> => {
       LogoSmall: `${envConfig.websiteURL}/platform/img/app/logo-small.png`,
       LogoText: `${envConfig.websiteURL}/platform/img/app/logo-text.png`,
       LogoGray: `${envConfig.websiteURL}/platform/img/app/logo-gray.png`,
-      LogoHomeHeader: `${envConfig.websiteURL}/platform/img/app/logo-home-header.png`
-    }
+      LogoHomeHeader: `${envConfig.websiteURL}/platform/img/app/logo-home-header.png`,
+    },
   }
 
   try {
@@ -49,8 +49,8 @@ export const getEnv = async (): Promise<IEnv> => {
         LogoSmall: `${envConfig.websiteURL}/platform/img/app/logo-small.png`,
         LogoText: `${envConfig.websiteURL}/platform/img/app/logo-text.png`,
         LogoGray: `${envConfig.websiteURL}/platform/img/app/logo-gray.png`,
-        LogoHomeHeader: `${envConfig.websiteURL}/platform/img/app/logo-home-header.png`
-      }
+        LogoHomeHeader: `${envConfig.websiteURL}/platform/img/app/logo-home-header.png`,
+      },
     }
   } catch (e) {
     console.log('getEnv error:', e)
@@ -64,12 +64,13 @@ export const setEnv = async (data: any) => {
   try {
     const env = {
       ...Config,
+
       baseURL: EXPO_ENV_CONFIG.API_BASE_URL,
       ws: EXPO_ENV_CONFIG.WS_URL,
       imgDomain: EXPO_ENV_CONFIG.IMG_DOMAIN,
       websiteURL: EXPO_ENV_CONFIG.WEBSITE_URL,
       ...data,
-      updateTime: Date.now()
+      updateTime: Date.now(),
     }
     await STORAGE_SET_ENV(env)
   } catch (e) {
@@ -117,10 +118,10 @@ export const fetchRemoteConfig = async () => {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-      signal: controller.signal
+      signal: controller.signal,
     })
     clearTimeout(timeoutId)
 
@@ -136,7 +137,7 @@ export const fetchRemoteConfig = async () => {
       const availableBaseURL = await checkBaseURL(config)
       await setEnv({
         ...config,
-        baseURL: availableBaseURL
+        baseURL: availableBaseURL,
       })
     }
   } catch (error: any) {

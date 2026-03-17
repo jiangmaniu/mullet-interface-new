@@ -44,7 +44,7 @@ declare namespace User {
     phoneAreaCode?: string
     /** 刷新token */
     refresh_token?: string
-    /** 租户ID：默认值 000000 */
+    /** 租户ID：默认值 999999 */
     tenanId?: string
     /** 登录传的类型，账户密码登录传account */
     type?: 'account'

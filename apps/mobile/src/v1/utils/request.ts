@@ -1,6 +1,7 @@
 import { Base64 } from 'js-base64'
 
 import { toast } from '@/components/ui/toast'
+import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { handle401Error, setCancelAllRequestsCallback } from '@/lib/auth-handler'
 import { useRootStore } from '@/stores'
 import { getEnv } from '@/v1/env'
@@ -81,13 +82,15 @@ async function buildHeaders(config?: IRequestConfig): Promise<Record<string, str
   // Content-Type
   headers['Content-Type'] = 'application/json'
 
+  headers['Blade-Requested-With'] = 'BladeHttpRequest'
+
   // Language
   if (i18n.locale) {
     headers['Language'] = i18n.locale
   }
 
   // Tenant-Id
-  headers['Tenant-Id'] = '000000'
+  headers['Tenant-Id'] = DEFAULT_TENANT_ID
 
   // 合并传入的 headers，过滤掉 undefined/null 值
   if (config?.headers) {

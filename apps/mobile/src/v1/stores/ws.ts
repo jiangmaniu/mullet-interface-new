@@ -15,6 +15,7 @@ import { useRootStore } from '@/stores'
 import type Reactotron from 'reactotron-react-native'
 import { Account } from '../services/tradeCore/account/typings'
 import { Symbol } from '../services/tradeCore/symbol/typings'
+import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -349,23 +350,23 @@ class WSStore {
     // 岗位订阅：/{租户ID}/post/{岗位ID}
     // 用户订阅：/{租户ID}/user/{用户ID}
     this.send({
-      topic: `/000000/public/1`,
+      topic: `/${DEFAULT_TENANT_ID}/public/1`,
       cancel,
     })
     this.send({
-      topic: `/000000/role/${userInfo.role_id}`,
+      topic: `/${DEFAULT_TENANT_ID}/role/${userInfo.role_id}`,
       cancel,
     })
     this.send({
-      topic: `/000000/dept/${userInfo.dept_id}`,
+      topic: `/${DEFAULT_TENANT_ID}/dept/${userInfo.dept_id}`,
       cancel,
     })
     this.send({
-      topic: `/000000/post/${userInfo.post_id}`,
+      topic: `/${DEFAULT_TENANT_ID}/post/${userInfo.post_id}`,
       cancel,
     })
     this.send({
-      topic: `/000000/user/${userInfo?.user_id}`,
+      topic: `/${DEFAULT_TENANT_ID}/user/${userInfo?.user_id}`,
       cancel,
     })
   }
@@ -375,9 +376,9 @@ class WSStore {
     const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
     if (!userInfo?.user_id) return
 
-    console.log('=========订阅响应消息', `/000000/msg/${userInfo?.user_id}`, cancel)
+    console.log('=========订阅响应消息', `/${DEFAULT_TENANT_ID}/msg/${userInfo?.user_id}`, cancel)
     this.send({
-      topic: `/000000/msg/${userInfo?.user_id}`,
+      topic: `/${DEFAULT_TENANT_ID}/msg/${userInfo?.user_id}`,
       cancel,
     })
   }
@@ -453,7 +454,7 @@ class WSStore {
     const topics = symbolList
       .map((item) => {
         // const topicNoAccount = `/000000/symbol/${item.dataSourceCode}/${item.symbol}`
-        const topicAccount = `/000000/symbol/${item.symbol}/${item.accountGroupId}`
+        const topicAccount = `/${DEFAULT_TENANT_ID}/symbol/${item.symbol}/${item.accountGroupId}`
         // 如果有账户id，订阅该账户组下的行情，此时行情会加上点差
         // return item.accountGroupId ? topicAccount : topicNoAccount
         return topicAccount
@@ -505,7 +506,7 @@ class WSStore {
     if (!symbolInfo?.symbol || symbolInfo?.symbolConf?.depthOfMarket === 0) return
 
     // const topicNoAccount = `/000000/depth/${symbolInfo?.dataSourceCode}/${symbolInfo?.symbol}`
-    const topicAccount = `/000000/depth/${symbolInfo?.symbol}/${symbolInfo?.accountGroupId}`
+    const topicAccount = `/${DEFAULT_TENANT_ID}/depth/${symbolInfo?.symbol}/${symbolInfo?.accountGroupId}`
     // 区分带账户组id和不带账户组情况
     // const topic = symbolInfo?.accountGroupId ? topicAccount : topicNoAccount
     const topic = topicAccount
@@ -524,7 +525,7 @@ class WSStore {
     const accountId = currentAccountInfo?.id
     if (!accountId) return
     this.send({
-      topic: `/000000/trade/${accountId}`,
+      topic: `/${DEFAULT_TENANT_ID}/trade/${accountId}`,
       cancel,
     })
   }
@@ -536,7 +537,7 @@ class WSStore {
     const userId = userInfo?.user_id || '123456789'
     if (this.socket && this.socket.readyState === 1) {
       const payload = {
-        header: { tenantId: '000000', userId, msgId: 'subscribe', flowId: Date.now(), ...header },
+        header: { tenantId: DEFAULT_TENANT_ID, userId, msgId: 'subscribe', flowId: Date.now(), ...header },
         body: {
           cancel: false,
           ...cmd,
