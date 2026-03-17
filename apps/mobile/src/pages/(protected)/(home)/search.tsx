@@ -31,11 +31,22 @@ import { HighlightText } from './_comps/highlight-text'
 
 /**
  * 筛选热门品种
- * 根据预定义的热门品种列表，从所有品种中筛选出匹配的品种
+ * 根据预定义的热门品种列表，从所有品种中筛选出匹配的品种，并按照 HOT_SYMBOL_LIST 的顺序返回
  */
 function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
-  const hotSymbolsLower = HOT_SYMBOL_LIST.map((s) => s.toLowerCase())
-  return symbolListAll.filter((item) => hotSymbolsLower.some((hot) => item.alias?.toLowerCase().includes(hot)))
+  const result: Account.TradeSymbolListItem[] = []
+
+  // 按照 HOT_SYMBOL_LIST 的顺序遍历
+  for (const hotSymbol of HOT_SYMBOL_LIST) {
+    const hotSymbolLower = hotSymbol.toLowerCase()
+    // 在 symbolListAll 中查找匹配的品种
+    const matchedSymbol = symbolListAll.find((item) => item.alias?.toLowerCase().includes(hotSymbolLower))
+    if (matchedSymbol) {
+      result.push(matchedSymbol)
+    }
+  }
+
+  return result
 }
 
 /**

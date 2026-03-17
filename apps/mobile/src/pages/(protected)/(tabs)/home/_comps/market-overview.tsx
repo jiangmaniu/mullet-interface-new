@@ -8,7 +8,7 @@ import { AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
-import { HOT_SYMBOL_LIST } from '@/constants/market'
+import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { getImgSource } from '@/utils/img'
@@ -133,7 +133,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
 export const MarketOverview = () => {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
-      {HOT_SYMBOL_LIST.map((symbol) => (
+      {MARKET_OVERVIEW_SYMBOL_LIST.map((symbol) => (
         <MarketCard key={symbol} symbol={symbol} />
       ))}
     </ScrollView>
