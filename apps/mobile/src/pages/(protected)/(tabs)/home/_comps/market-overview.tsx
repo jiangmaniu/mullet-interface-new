@@ -6,6 +6,7 @@ import { router } from 'expo-router'
 import { SparkLine } from '@/components/charts/spark-line'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
 import { HOT_SYMBOL_LIST } from '@/constants/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
@@ -33,19 +34,19 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
   // 如果账户信息未加载，或 symbolMapAll 未加载，或 symbolInfo 未加载，显示骨架屏
   const isDataLoading = !hasAccountInfo || !hasSymbolData || !symbolInfo
 
-  if (isDataLoading) {
+  if (true) {
     return (
       <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
         <CardContent className="gap-medium">
           <View className="flex-row items-center gap-2">
-            <View className="bg-content-5 size-4 rounded-full opacity-10" />
-            <View className="bg-content-5 h-4 w-16 rounded-xs opacity-10" />
+            <Skeleton className="size-4 rounded-full" />
+            <Skeleton className="h-4 w-16 rounded-xs" />
           </View>
           <View className="gap-1">
-            <View className="bg-content-5 h-4 w-20 rounded-xs opacity-10" />
-            <View className="bg-content-5 h-3 w-12 rounded-xs opacity-10" />
+            <Skeleton className="h-4 w-20 rounded-xs" />
+            <Skeleton className="h-3 w-12 rounded-xs" />
           </View>
-          <View className="bg-content-5 h-[60px] w-full rounded-xs opacity-10" />
+          <Skeleton className="h-[60px] w-full rounded-xs" />
         </CardContent>
       </Card>
     )
@@ -110,7 +111,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
           {/* Mini Chart - SVG */}
           <View className="overflow-hidden" style={{ height: CARD_CHART_HEIGHT }} pointerEvents="none">
             {isChartLoading ? (
-              <View className="bg-content-5 mx-xl h-full rounded-xs opacity-10" />
+              <Skeleton className="mx-xl h-[60px] w-full rounded-xs" />
             ) : shouldShowChart ? (
               <SparkLine
                 data={chartData}

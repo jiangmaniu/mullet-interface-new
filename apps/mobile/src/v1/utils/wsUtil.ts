@@ -12,6 +12,7 @@ import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { toFixed } from '.'
+import { Account } from '../services/tradeCore/account/typings'
 import { Order } from '../services/tradeCore/order/typings'
 import { multiply, subtract } from './float'
 
