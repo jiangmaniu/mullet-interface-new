@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
+import dotenv from 'dotenv'
 import inquirer from 'inquirer'
 import shelljs from 'shelljs'
 
@@ -30,6 +31,25 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const PROJECT_DIR = path.resolve(__dirname, '..')
 
+// --- 加载环境变量 ---
+
+/**
+ * 从 fastlane/.env.[env].local 加载环境变量
+ * @param {string} env - 环境名称 (dev/test/prod)
+ */
+function loadEnvFile(env) {
+  const fileName = `.env.${env}.local`
+  const envPath = path.join(PROJECT_DIR, 'fastlane', fileName)
+  if (fs.existsSync(envPath)) {
+    const result = dotenv.config({ path: envPath })
+    if (result.error) {
+      console.warn(chalk.yellow(`  警告: 加载 ${fileName} 文件失败: ${result.error.message}`))
+    }
+    return result.parsed || {}
+  }
+  return {}
+}
+
 // --- 工具函数 ---
 
 function run(cmd, cwd = PROJECT_DIR) {
@@ -45,63 +65,7 @@ function run(cmd, cwd = PROJECT_DIR) {
 // --- 参数解析 ---
 
 async function parseArgs() {
-  const args = process.argv.slice(2)
-
-  // 命令行模式
-  if (args.length >= 2) {
-    const platform = args[0]
-    const env = args[1]
-    const flags = args.slice(2)
-
-    if (!['ios', 'android'].includes(platform)) {
-      console.error(chalk.red("错误: 平台必须是 'ios' 或 'android'"))
-      process.exit(1)
-    }
-    if (!['dev', 'test', 'prod'].includes(env)) {
-      console.error(chalk.red("错误: 环境必须是 'dev'、'test' 或 'prod'"))
-      process.exit(1)
-    }
-
-    let iosDist = env === 'dev' ? 'local' : env === 'test' ? 'adhoc' : 'testflight'
-    const distFlag = flags.find((f) => f.startsWith('--dist='))
-    if (distFlag) {
-      iosDist = distFlag.split('=')[1]
-      if (!['local', 'adhoc', 'testflight'].includes(iosDist)) {
-        console.error(chalk.red("错误: --dist 必须是 'local'、'adhoc' 或 'testflight'"))
-        process.exit(1)
-      }
-    }
-
-    // 解析 --clean / --no-clean 参数
-    let clean = true // 默认清理
-    if (flags.includes('--no-clean')) {
-      clean = false
-    } else if (flags.includes('--clean')) {
-      clean = true
-    }
-
-    // 解析 --force-regenerate-certificates 参数
-    const forceRegenerateCertificates = flags.includes('--force-regenerate-certificates')
-
-    // 解析 --apple-id 和 --apple-password 参数
-    let appleId = null
-    let applePassword = null
-
-    const appleIdFlag = flags.find((f) => f.startsWith('--apple-id='))
-    if (appleIdFlag) {
-      appleId = appleIdFlag.split('=')[1]
-    }
-
-    const applePasswordFlag = flags.find((f) => f.startsWith('--apple-password='))
-    if (applePasswordFlag) {
-      applePassword = applePasswordFlag.split('=')[1]
-    }
-
-    return { platform, env, iosDist, clean, forceRegenerateCertificates, appleId, applePassword }
-  }
-
-  // 交互模式
-  const answers = await inquirer.prompt([
+  const platformAnswer = await inquirer.prompt([
     {
       name: 'platform',
       type: 'select',
@@ -111,6 +75,9 @@ async function parseArgs() {
         { name: '🤖 Android', value: 'android' },
       ],
     },
+  ])
+
+  const envAnswer = await inquirer.prompt([
     {
       name: 'env',
       type: 'select',
@@ -122,20 +89,26 @@ async function parseArgs() {
       ],
       default: 'test',
     },
+  ])
+
+  // 加载对应环境的 .env 文件
+  const envVars = loadEnvFile(envAnswer.env)
+
+  const answers = await inquirer.prompt([
     {
       name: 'iosDist',
       type: 'select',
       message: chalk.magentaBright('选择 iOS 分发方式'),
-      when: (ans) => ans.platform === 'ios',
+      when: () => platformAnswer.platform === 'ios',
       choices: [
         { name: '📱 本地直装 (development 签名)', value: 'local' },
         { name: '📦 AdHoc 分发 (发 ipa 给他人安装)', value: 'adhoc' },
         { name: '🚀 TestFlight (上传到 TestFlight)', value: 'testflight' },
       ],
-      default: (ans) => {
-        if (ans.env === 'dev') {
+      default: () => {
+        if (envAnswer.env === 'dev') {
           return 'local'
-        } else if (ans.env === 'test') {
+        } else if (envAnswer.env === 'test') {
           return 'adhoc'
         } else {
           return 'testflight'
@@ -147,7 +120,7 @@ async function parseArgs() {
       type: 'select',
       message: chalk.magentaBright('是否强制重新生成证书？（用于证书过期、添加新设备、修改 Capabilities）'),
       default: false,
-      when: (ans) => ans.platform === 'ios',
+      when: () => platformAnswer.platform === 'ios',
       choices: [
         { name: '是', value: true },
         { name: '否', value: false },
@@ -157,7 +130,8 @@ async function parseArgs() {
       name: 'appleId',
       type: 'input',
       message: chalk.magentaBright('请输入 Apple Developer 账号:'),
-      when: (ans) => ans.platform === 'ios',
+      when: () => platformAnswer.platform === 'ios',
+      default: envVars.APPLE_ID || '',
       validate: (input) => {
         if (!input || !input.includes('@')) {
           return '请输入有效的邮箱地址'
@@ -167,7 +141,6 @@ async function parseArgs() {
     },
     {
       name: 'applePassword',
-      // type: 'password',
       type: 'input',
       message: chalk.magentaBright('请输入 Apple 专用密码:'),
       when: (ans) => {
@@ -183,6 +156,7 @@ async function parseArgs() {
         }
         return needsPassword
       },
+      default: envVars.APPLE_PASSWORD || '',
       validate: (input) => {
         if (!input || input.length < 4) {
           return '请输入有效的专用密码'
@@ -203,8 +177,8 @@ async function parseArgs() {
   ])
 
   return {
-    platform: answers.platform,
-    env: answers.env,
+    platform: platformAnswer.platform,
+    env: envAnswer.env,
     clean: answers.clean,
     iosDist: answers.iosDist || 'local',
     forceRegenerateCertificates: answers.forceRegenerateCertificates || false,
@@ -283,7 +257,7 @@ async function main() {
       console.error(chalk.red('\n错误: TestFlight 上传或重新生成证书需要 Apple 专用密码'))
       process.exit(1)
     }
-    shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
+    shelljs.env.APPLE_PASSWORD = applePassword
     if (forceRegenerateCertificates) {
       shelljs.env.FORCE_REGENERATE_CERTIFICATES = 'true'
     }
