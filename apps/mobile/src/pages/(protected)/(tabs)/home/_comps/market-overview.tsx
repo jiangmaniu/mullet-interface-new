@@ -34,7 +34,7 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
   // 如果账户信息未加载，或 symbolMapAll 未加载，或 symbolInfo 未加载，显示骨架屏
   const isDataLoading = !hasAccountInfo || !hasSymbolData || !symbolInfo
 
-  if (true) {
+  if (isDataLoading) {
     return (
       <Card className="border-brand-default rounded-medium bg-navigation w-[153px] border p-0">
         <CardContent className="gap-medium">
