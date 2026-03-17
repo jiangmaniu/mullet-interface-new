@@ -214,7 +214,7 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
@@ -224,7 +224,7 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-fall">
-              {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">

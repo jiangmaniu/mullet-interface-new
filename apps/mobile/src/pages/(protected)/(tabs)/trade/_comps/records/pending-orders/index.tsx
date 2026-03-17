@@ -21,7 +21,7 @@ import { Order } from '@/v1/services/tradeCore/order/typings'
 import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
-import { PositionCurrentPrice } from '../../common/position-current-price'
+import { PendingCurrentPrice } from '../../common/position-current-price'
 
 // ============ PendingOrderItem ============
 interface PendingOrderItemProps {
@@ -82,7 +82,7 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>标记价</Trans>
           </Text>
-          <PositionCurrentPrice info={pendingOrderInfo} className={'text-paragraph-p3'} />
+          <PendingCurrentPrice info={pendingOrderInfo} className={'text-paragraph-p3'} />
         </View>
       </View>
     </View>

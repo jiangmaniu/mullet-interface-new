@@ -347,7 +347,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-rise h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-rise-foreground font-medium">
-              {BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-rise-foreground">
               <Trans>买入/做多</Trans>
@@ -364,7 +364,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-fall h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-fall-foreground font-medium">
-              {BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-fall-foreground">
               <Trans>卖出/做空</Trans>
