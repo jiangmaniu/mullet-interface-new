@@ -179,6 +179,10 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withAndroidSigning.js',
       // iOS Debug 自动签名 - prebuild --clean 后无需手动到 Xcode 重新开启
       './plugins/withDebugAutoSigning.js',
+      // Android APK 体积优化
+      './plugins/withApkOptimization.js',
+      './plugins/withSplitApks.js',
+      './plugins/withProguardRules.js',
     ],
     experiments: {
       typedRoutes: true,

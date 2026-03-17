@@ -96,6 +96,24 @@ async function parseArgs() {
 
   const answers = await inquirer.prompt([
     {
+      name: 'androidArchs',
+      type: 'checkbox',
+      message: chalk.magentaBright('选择 Android 架构（多选）'),
+      when: () => platformAnswer.platform === 'android',
+      choices: [
+        { name: 'arm64-v8a (🔥 主流64位设备，覆盖95%的设备，推荐)', value: 'arm64-v8a', checked: true },
+        { name: 'armeabi-v7a (旧32位设备，覆盖5%的设备)', value: 'armeabi-v7a', checked: false },
+        { name: 'x86 (模拟器)', value: 'x86', checked: false },
+        { name: 'x86_64 (模拟器)', value: 'x86_64', checked: false },
+      ],
+      validate: (answer) => {
+        if (answer.length < 1) {
+          return '请至少选择一个架构'
+        }
+        return true
+      },
+    },
+    {
       name: 'iosDist',
       type: 'select',
       message: chalk.magentaBright('选择 iOS 分发方式'),
@@ -180,6 +198,7 @@ async function parseArgs() {
     platform: platformAnswer.platform,
     env: envAnswer.env,
     clean: answers.clean,
+    androidArchs: answers.androidArchs || ['arm64-v8a'],
     iosDist: answers.iosDist || 'local',
     forceRegenerateCertificates: answers.forceRegenerateCertificates || false,
     appleId: answers.appleId,
@@ -189,51 +208,108 @@ async function parseArgs() {
 
 // --- 产物整理 ---
 
-function organizeArtifacts(platform, env, version, versionCode) {
-  // 将 YYMMDDHHMM 转换为 YYYYMMDDHHMM 用于文件名
-  const yy = versionCode.slice(0, 2)
-  const rest = versionCode.slice(2)
-  const timestamp = `20${yy}${rest}`
+/**
+ * 分析 APK 体积（仅 Android）
+ */
+function analyzeApkSize(apkPath) {
+  if (!fs.existsSync(apkPath)) {
+    return null
+  }
 
-  const dirName = `Mullet-${platform}-${version}-${env}-${timestamp}`
+  const stats = fs.statSync(apkPath)
+  const sizeMB = (stats.size / 1024 / 1024).toFixed(2)
+
+  return {
+    path: apkPath,
+    size: stats.size,
+    sizeMB,
+  }
+}
+
+function organizeArtifacts(platform, env, version, versionCode, selectedArchs = []) {
+  // versionCode 已经是 YYYYMMDDHHMM 格式，直接使用
+  const timestamp = versionCode
+
   const buildDir = path.join(PROJECT_DIR, 'build')
-  const outputDir = path.join(buildDir, dirName)
 
-  fs.mkdirSync(outputDir, { recursive: true })
+  if (platform === 'android') {
+    // Android: 所有架构放在同一个目录下
+    const dirName = `Mullet-android-${version}-${env}-${timestamp}`
+    const outputDir = path.join(buildDir, dirName)
+    fs.mkdirSync(outputDir, { recursive: true })
 
-  const ext = platform === 'ios' ? 'ipa' : 'apk'
-  const srcName = `Mullet-${env}.${ext}`
-  const src = path.join(buildDir, srcName)
+    const apkDir = path.join(PROJECT_DIR, 'android', 'app', 'build', 'outputs', 'apk', 'release')
+    const copiedFiles = []
 
-  if (fs.existsSync(src)) {
-    fs.renameSync(src, path.join(outputDir, `${dirName}.${ext}`))
-    // iOS build also produces a dSYM zip
-    if (platform === 'ios') {
+    if (fs.existsSync(apkDir)) {
+      const allApkFiles = fs.readdirSync(apkDir).filter((f) => f.endsWith('.apk'))
+
+      allApkFiles.forEach((apkFile) => {
+        // 提取架构名称，例如 app-arm64-v8a-release.apk -> arm64-v8a
+        const archMatch = apkFile.match(/app-(.+?)-release\.apk/)
+        if (!archMatch) return
+
+        const arch = archMatch[1]
+
+        // 只复制选中的架构
+        if (selectedArchs.length > 0 && !selectedArchs.includes(arch)) {
+          return
+        }
+
+        // 创建新的文件名：Mullet-android-arm64-v8a-0.0.1-test-202603171243.apk
+        const newFileName = `Mullet-android-${arch}-${version}-${env}-${timestamp}.apk`
+
+        const src = path.join(apkDir, apkFile)
+        const dest = path.join(outputDir, newFileName)
+        fs.copyFileSync(src, dest)
+
+        console.log(chalk.gray(`  已复制: ${arch} -> ${newFileName}`))
+        copiedFiles.push({ arch, outputDir, fileName: newFileName })
+      })
+    }
+
+    return copiedFiles
+  } else if (platform === 'ios') {
+    // iOS: 保持原有逻辑
+    const dirName = `Mullet-${platform}-${version}-${env}-${timestamp}`
+    const outputDir = path.join(buildDir, dirName)
+    fs.mkdirSync(outputDir, { recursive: true })
+
+    const ext = 'ipa'
+    const srcName = `Mullet-${env}.${ext}`
+    const src = path.join(buildDir, srcName)
+
+    if (fs.existsSync(src)) {
+      fs.renameSync(src, path.join(outputDir, `${dirName}.${ext}`))
+      // iOS build also produces a dSYM zip
       const dsym = path.join(buildDir, `Mullet-${env}.app.dSYM.zip`)
       if (fs.existsSync(dsym)) {
         fs.renameSync(dsym, path.join(outputDir, `${dirName}.app.dSYM.zip`))
       }
+    } else {
+      console.log(chalk.yellow(`  警告: ${srcName} 未在 build/ 目录中找到`))
     }
-  } else {
-    console.log(chalk.yellow(`  警告: ${srcName} 未在 build/ 目录中找到`))
+
+    return [{ outputDir }]
   }
 
-  return outputDir
+  return []
 }
 
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist, clean, forceRegenerateCertificates, appleId, applePassword } = await parseArgs()
+  const { platform, env, iosDist, clean, androidArchs, forceRegenerateCertificates, appleId, applePassword } =
+    await parseArgs()
 
   // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
   const version = pkg.version
 
-  // versionCode 使用 YYMMDDHHMM 格式的时间戳，保证每次构建唯一且递增
+  // versionCode 使用 YYYYMMDDHHMM 格式的时间戳，保证每次构建唯一且递增
   const now = new Date()
   const versionCode = [
-    String(now.getFullYear()).slice(2),
+    String(now.getFullYear()),
     String(now.getMonth() + 1).padStart(2, '0'),
     String(now.getDate()).padStart(2, '0'),
     String(now.getHours()).padStart(2, '0'),
@@ -310,7 +386,23 @@ async function main() {
 
   // Step 4: Organize build artifacts
   console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
-  const outputDir = organizeArtifacts(platform, env, version, versionCode)
+  const outputResults = organizeArtifacts(platform, env, version, versionCode, androidArchs)
+
+  // 分析 APK 体积（仅 Android）
+  const apkSizes = []
+  if (platform === 'android' && outputResults.length > 0) {
+    outputResults.forEach((result) => {
+      const apkPath = path.join(result.outputDir, result.fileName)
+      const sizeInfo = analyzeApkSize(apkPath)
+      if (sizeInfo) {
+        apkSizes.push({
+          name: result.fileName,
+          arch: result.arch,
+          ...sizeInfo,
+        })
+      }
+    })
+  }
 
   // 构建成功汇总
   console.log('')
@@ -321,7 +413,27 @@ async function main() {
   console.log(chalk.white(` 应用版本:  v${version} (${versionCode})`))
   console.log(chalk.white(` 构建平台:  ${platform === 'ios' ? '🍎 iOS' : '🤖 Android'}`))
   console.log(chalk.white(` 构建环境:  ${env}`))
-  console.log(chalk.white(` 产物目录:  ${path.relative(PROJECT_DIR, outputDir)}/`))
+
+  if (platform === 'android' && outputResults.length > 0) {
+    console.log(chalk.white(` 构建架构:  ${androidArchs.join(', ')}`))
+  }
+  console.log(chalk.white(` 产物目录:  ${path.relative(PROJECT_DIR, outputResults[0].outputDir)}/`))
+
+  // 显示 APK 体积信息
+  if (apkSizes.length > 0) {
+    console.log('')
+    console.log(chalk.cyan(' 📦 生成的 APK 文件:'))
+    apkSizes.forEach((apk) => {
+      console.log(chalk.white(`    • ${apk.name.padEnd(40)} `) + chalk.green(`${apk.sizeMB} MB`))
+    })
+    console.log('')
+    console.log(chalk.cyan(' 💡 体积优化提示:'))
+    console.log(chalk.gray('    • 已启用 Split APKs（按架构拆分）'))
+    console.log(chalk.gray('    • 已启用 R8 混淆和资源压缩'))
+    console.log(chalk.gray('    • 单架构 APK 体积约为通用 APK 的 25-30%'))
+    console.log(chalk.gray('    • arm64-v8a: 主流设备（覆盖 95%）'))
+    console.log(chalk.gray('    • armeabi-v7a: 旧设备'))
+  }
 
   if (platform === 'ios' && iosDist === 'testflight') {
     console.log('')
