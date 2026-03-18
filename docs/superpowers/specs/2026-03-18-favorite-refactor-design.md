@@ -16,6 +16,7 @@
 - [Actions 设计](#actions-设计)
 - [数据迁移方案](#数据迁移方案)
 - [使用示例](#使用示例)
+- [账户切换订阅](#账户切换订阅)
 - [测试计划](#测试计划)
 - [风险评估](#风险评估)
 
@@ -486,7 +487,6 @@ export function createMarketFavoriteSlice(
 
 参考迁移模板（生产环境使用）：
 
-
 ```typescript
 // stores/market-slice/favorite-migration.ts
 
@@ -665,6 +665,76 @@ const handleSwitchAccount = async (account: User.AccountItem) => {
 
   // 3. 加载品种列表
   await trade.getSymbolList({ accountId: account.id })
+}
+```
+
+---
+
+## 账户切换订阅
+
+### 设计说明
+
+当 `activeTradeAccountId` 变化时，需要自动重新调用 `fetchTradeSymbolList` 加载新账户的品种列表。
+
+使用 `subscribeWithSelector` 中间件提供的 `subscribe` API 实现响应式订阅，在 `stores/index.ts` 中完成初始化。
+
+### 实现位置
+
+**在 `stores/index.ts` 中，store 创建完毕后初始化订阅**，避免在 slice 内部引用 store 实例导致循环依赖。
+
+```typescript
+// stores/index.ts
+
+export const useRootStore = createSelectors(useRootStoreBase)
+
+// ⭐ 订阅 activeTradeAccountId 变化，自动重新加载品种列表
+useRootStoreBase.subscribe(
+  // selector：选取要订阅的状态片段
+  (state) => state.user.info.activeTradeAccountId,
+  // listener：状态变化时的回调
+  (accountId, prevAccountId) => {
+    // 账户切换时重新获取品种列表
+    if (accountId && accountId !== prevAccountId) {
+      useRootStoreBase.getState().market.fetchTradeSymbolList(accountId)
+    }
+  }
+)
+```
+
+### 账户切换数据流向
+
+```text
+setActiveTradeAccountId(account.id)
+    ↓
+subscribeWithSelector 触发订阅回调
+    ↓
+market.fetchTradeSymbolList(accountId)
+    ↓
+更新 marketMap 和 marketAllList
+    ↓
+marketCurrentFavoriteSymbolsSelector 自动重新计算
+（过滤掉新账户品种列表中不存在的收藏）
+    ↓
+UI 更新
+```
+
+### 与账户切换的配合
+
+账户切换时只需要设置 `activeTradeAccountId`，品种列表会自动刷新：
+
+```typescript
+// components/drawers/trade-account-switch-drawer.tsx
+const handleSwitchAccount = async (account: User.AccountItem) => {
+  // 1. 设置当前账户 ID（Zustand）
+  // ⭐ 触发订阅，自动调用 fetchTradeSymbolList
+  useRootStore.getState().user.info.setActiveTradeAccountId(account.id)
+
+  // 2. 设置账户信息（MobX - 兼容旧代码）
+  await trade.setCurrentAccountInfo(account)
+
+  // 3. 其他切换操作...
+  await trade.setCurrentLiquidationSelectBgaId('CROSS_MARGIN')
+  await onSwitchSuccess?.(account)
 }
 ```
 
