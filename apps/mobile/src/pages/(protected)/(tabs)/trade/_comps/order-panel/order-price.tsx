@@ -6,19 +6,20 @@ import { Pressable, View } from 'react-native'
 import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input'
 import { Text } from '@/components/ui/text'
 import { t } from '@/locales/i18n'
+import { useRootStore } from '@/stores'
+import { tradeFormDataLimitPriceSelector } from '@/stores/trade-slice'
 import useDisabled from '@/v1/hooks/trade/useDisabled'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-
-import { useOrderPanelStore } from './store/order-panel-store'
 
 export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
   const { trade } = useStores()
   const orderType = trade.orderType
 
   const { setOrderPrice, orderPrice } = trade
-  const { setOrderPrice: setOrderPricePanel } = useOrderPanelStore()
+  const limitPrice = useRootStore(tradeFormDataLimitPriceSelector)
+  const setFormData = useRootStore.getState().trade.formData.setFormData
 
   const isBuyOrder = trade.buySell === 'BUY'
   const isMarket = orderType === 'MARKET_ORDER'
@@ -28,13 +29,9 @@ export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const { disabledInput } = useDisabled()
   const handleSetLatestPrice = () => {
-    if (isBuyOrder) {
-      setOrderPrice(quoteInfo?.bid)
-      setOrderPricePanel(quoteInfo?.bid)
-    } else {
-      setOrderPrice(quoteInfo?.ask)
-      setOrderPricePanel(quoteInfo?.ask)
-    }
+    const price = isBuyOrder ? quoteInfo?.bid : quoteInfo?.ask
+    setOrderPrice(price)
+    setFormData({ limitPrice: price })
   }
 
   return (
@@ -61,7 +58,7 @@ export const OrderPrice = observer(({ symbol }: { symbol: string }) => {
               if (source === NumberInputSourceType.EVENT) {
                 console.log('price event', value)
                 setOrderPrice(value)
-                setOrderPricePanel(value)
+                setFormData({ limitPrice: value })
               }
             }}
             keyboardType="decimal-pad"

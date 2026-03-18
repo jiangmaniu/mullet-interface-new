@@ -8,19 +8,18 @@ import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { useRootStore } from '@/stores'
 import useDisabled from '@/v1/hooks/trade/useDisabled'
 import useQuote from '@/v1/hooks/trade/useQoute'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
-import { useOrderPanelStore } from './store/order-panel-store'
-
 export const OrderAmount = observer(({ symbol }: { symbol: string }) => {
   const { vmax, vmin } = useQuote()
   const { trade } = useStores()
   const { orderVolume, setOrderVolume } = trade
-  const { setOrderVolume: setOrderVolumePanel } = useOrderPanelStore()
+  const setFormData = useRootStore.getState().trade.formData.setFormData
   const { disabledInput } = useDisabled()
   const disabled = disabledInput
 
@@ -38,7 +37,7 @@ export const OrderAmount = observer(({ symbol }: { symbol: string }) => {
         onValueChange={({ value }, { source }) => {
           if (source === NumberInputSourceType.EVENT) {
             setOrderVolume(value)
-            setOrderVolumePanel(value)
+            setFormData({ orderLots: value })
           }
         }}
         placeholder={renderFallbackPlaceholder({
