@@ -1,23 +1,25 @@
-import React from 'react'
-import { ActivityIndicator, FlatList, View } from 'react-native'
 import { Trans } from '@lingui/react/macro'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
-import { Text } from '@/components/ui/text'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { AvatarImage } from '@/components/ui/avatar'
+import React from 'react'
+import { ActivityIndicator, FlatList, View } from 'react-native'
+
 import { EmptyState } from '@/components/states/empty-state'
-import { renderFallback } from '@mullet/utils/fallback'
+import { AvatarImage } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Text } from '@/components/ui/text'
+import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
+import { renderFormatLeverage } from '@/helpers/trade'
+import { useI18n } from '@/hooks/use-i18n'
+import { getOrderStatusEnumOption, getOrderTypeEnumOption, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
+import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { getOrderPage } from '@/v1/services/tradeCore/order'
-import { getImgSource } from '@/utils/img'
-import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
-import { getOrderStatusEnumOption, getOrderTypeEnumOption, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
-import { useI18n } from '@/hooks/use-i18n'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
-import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 
 const PAGE_SIZE = 10
 
@@ -36,103 +38,118 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
 
   const ITEM_OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
     {
-      label: <><Trans>挂单价格</Trans>
-        {
-          order.status !== OrderStatusEnum.CANCEL ?
-            <>/<Trans>成交价格</Trans></>
-            : null
-        }
-      </>,
-      content: <>
-        {order.type === OrderTypeEnum.MARKET_ORDER ? (
-          <Trans>市价</Trans>
-        ) : (
-          BNumber.toFormatNumber(order.limitPrice, {
-            volScale: currentAccountInfo?.currencyDecimal
-          })
-        )}
-        {
-          order.type === OrderTypeEnum.MARKET_ORDER ?
+      label: (
+        <>
+          <Trans>挂单价格</Trans>
+          {order.status !== OrderStatusEnum.CANCEL ? (
+            <>
+              /<Trans>成交价格</Trans>
+            </>
+          ) : null}
+        </>
+      ),
+      content: (
+        <>
+          {order.type === OrderTypeEnum.MARKET_ORDER ? (
+            <Trans>市价</Trans>
+          ) : (
+            BNumber.toFormatNumber(order.limitPrice, {
+              volScale: currentAccountInfo?.currencyDecimal,
+            })
+          )}
+          {order.type === OrderTypeEnum.MARKET_ORDER ? (
             <>
               {' / '}
               {BNumber.toFormatNumber(order?.tradePrice, {
-                volScale: currentAccountInfo?.currencyDecimal
+                volScale: currentAccountInfo?.currencyDecimal,
               })}
             </>
-            :
-            null
-        }
-      </>,
+          ) : null}
+        </>
+      ),
     },
     {
       label: <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>,
       content: BNumber.toFormatNumber(order.orderVolume, { volScale: lotsVolScale }),
     },
-    ... (
-      order.status !== OrderStatusEnum.CANCEL ? [
+    ...(order.status !== OrderStatusEnum.CANCEL
+      ? [
+          {
+            label: <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>,
+            content: BNumber.toFormatNumber(order.handlingFees, { volScale: currentAccountInfo.currencyDecimal }),
+          },
 
-        {
-          label: <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>,
-          content: BNumber.toFormatNumber(order.handlingFees, { volScale: currentAccountInfo.currencyDecimal }),
-        },
-
-        {
-          label: <Trans>订单号</Trans>,
-          content: renderFallback(order.id),
-        },
-        {
-          label: <Trans>交易时间</Trans>,
-          content: renderFallback(order.finishTime),
-        },
-      ] : [])
+          {
+            label: <Trans>订单号</Trans>,
+            content: renderFallback(order.id),
+          },
+          {
+            label: <Trans>交易时间</Trans>,
+            content: renderFallback(order.finishTime),
+          },
+        ]
+      : []),
   ]
 
+  const formatedLeverage = renderFormatLeverage({
+    leverage: order.leverageMultiple,
+    symbolInfo: order.conf,
+  })
   return (
-    <Card className="bg-background-secondary border border-brand-default">
+    <Card className="bg-background-secondary border-brand-default border">
       <CardContent className="gap-medium">
         {/* Header: Symbol, Direction Badge, and Status */}
         <View className="flex-row items-center justify-between">
-          <View className="flex-1 flex-row items-center gap-2">
-            <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full">
-            </AvatarImage>
+          <View className="gap-medium flex-1 flex-row items-center">
+            <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full"></AvatarImage>
 
             <View className="flex-row items-center gap-2">
-              <Text className="text-paragraph-p2 text-content-1">
-                {renderFormatSymbolName(order)}
-              </Text>
+              <Text className="text-paragraph-p2 text-content-1">{renderFormatSymbolName(order)}</Text>
               <Badge color={isBuy ? 'rise' : 'fall'}>
-                <Text className="text-paragraph-p3">
-                  {isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}
-                </Text>
+                <Text className="text-paragraph-p3">{isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
               </Badge>
             </View>
+
+            {formatedLeverage && (
+              <View className="px-xs rounded-xs bg-white">
+                <Text className="text-paragraph-p3">{renderFallback(formatedLeverage)}</Text>
+              </View>
+            )}
           </View>
 
           {order.status && (
             <Badge className="px-medium py-small">
-              <Text className="text-paragraph-p3">{renderLinguiMsg(getOrderStatusEnumOption({ value: order.status })?.label, order.status ?? <Trans>未知状态</Trans>)}</Text>
+              <Text className="text-paragraph-p3">
+                {renderLinguiMsg(
+                  getOrderStatusEnumOption({ value: order.status })?.label,
+                  order.status ?? <Trans>未知状态</Trans>,
+                )}
+              </Text>
             </Badge>
           )}
         </View>
 
         {/* Order Type and Time */}
         <View className="flex-row items-start gap-3">
-          <Text className="text-paragraph-p3 text-content-1">{renderLinguiMsg(getOrderTypeEnumOption({ value: order.type })?.label, order.type ?? <Trans>未知类型</Trans>)}</Text>
+          <Text className="text-paragraph-p3 text-content-1">
+            {renderLinguiMsg(
+              getOrderTypeEnumOption({ value: order.type })?.label,
+              order.type ?? <Trans>未知类型</Trans>,
+            )}
+          </Text>
           <Text className="text-paragraph-p3 text-content-4">{renderFallback(order.createTime)}</Text>
         </View>
 
         {/* Order Details */}
         <View className="gap-2">
-          {
-            ITEM_OPTIONS.map((item, key) => {
-              return <View key={key} className="flex-row items-center justify-between">
-                <Text className="text-paragraph-p3 text-content-4">
-                  {item.label}
-                </Text>
+          {ITEM_OPTIONS.map((item, key) => {
+            return (
+              <View key={key} className="flex-row items-center justify-between">
+                <Text className="text-paragraph-p3 text-content-4">{item.label}</Text>
                 <Text className="text-paragraph-p3 text-content-1">{item.content}</Text>
               </View>
-            })
-          }
+            )
+          })}
         </View>
       </CardContent>
     </Card>
@@ -146,15 +163,7 @@ export const HistoryOrderList = observer(() => {
   const { trade } = useStores()
   const accountId = trade.currentAccountInfo?.id
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    refetch,
-    isRefetching,
-  } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
     queryKey: ['historyOrders', accountId],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await getOrderPage({
@@ -177,9 +186,9 @@ export const HistoryOrderList = observer(() => {
 
   const records = React.useMemo(() => {
     if (!data?.pages) return []
-    const all = data.pages.flatMap(page => page?.records ?? [])
+    const all = data.pages.flatMap((page) => page?.records ?? [])
     const seen = new Set<number>()
-    return all.filter(item => {
+    return all.filter((item) => {
       if (item.id == null || seen.has(item.id)) return false
       seen.add(item.id)
       return true
@@ -201,7 +210,9 @@ export const HistoryOrderList = observer(() => {
     if (!hasNextPage && records.length > 0) {
       return (
         <View className="py-xl items-center">
-          <Text className="text-paragraph-p3 text-content-4"><Trans>没有更多了</Trans></Text>
+          <Text className="text-paragraph-p3 text-content-4">
+            <Trans>没有更多了</Trans>
+          </Text>
         </View>
       )
     }
@@ -217,7 +228,7 @@ export const HistoryOrderList = observer(() => {
       )
     }
     return (
-      <View className="py-[60px] items-center">
+      <View className="items-center py-[60px]">
         <EmptyState message={<Trans>暂无历史委托</Trans>} />
       </View>
     )
