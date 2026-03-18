@@ -5,6 +5,12 @@ export interface FormDataSliceState {
   limitPrice: string
   /** 手数 */
   orderLots: string
+  /** 止盈价 */
+  tpPrice: string
+  /** 止损价 */
+  slPrice: string
+  /** 携带止盈止损 */
+  hasTpSl: boolean
 }
 
 export interface FormDataSliceActions {
@@ -18,12 +24,14 @@ export type FormDataSlice = FormDataSliceState & FormDataSliceActions
  * 创建 formData 命名空间切片（状态 + actions）
  * 访问路径: state.trade.formData.xxx
  */
-export function createTradeFormDataSlice(
-  setRoot: (fn: (state: any) => void) => void,
-): FormDataSlice {
+export function createTradeFormDataSlice(setRoot: (fn: (state: any) => void) => void): FormDataSlice {
   return {
     limitPrice: '',
     orderLots: '',
+
+    hasTpSl: false,
+    tpPrice: '',
+    slPrice: '',
 
     setFormData: (partial) =>
       setRoot((state) => {
