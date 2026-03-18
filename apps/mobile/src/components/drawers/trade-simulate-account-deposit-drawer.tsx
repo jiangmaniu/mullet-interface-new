@@ -20,6 +20,7 @@ import {
   DEFAULT_SIMULATE_ACCOUNT_DAILY_DEPOSIT_AMOUNT,
   DEFAULT_SIMULATE_ACCOUNT_SINGLE_TIME_DEPOSIT_AMOUNT,
 } from '@/constants/config/trade'
+import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { rechargeSimulate } from '@/v1/services/tradeCore/account'
 import { BNumber } from '@mullet/utils/number'
@@ -55,7 +56,7 @@ export const TradeSimulateAccountDepositDrawer = observer(
         const result = await rechargeSimulate({
           accountId: account.id,
           money: singleTimeDepositAmount,
-          type: 'DEPOSIT_SIMULATE',
+          type: TradeFundFlowTypeEnum.DEPOSIT_SIMULATE,
         })
 
         if (result.success) {
