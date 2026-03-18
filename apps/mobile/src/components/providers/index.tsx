@@ -19,6 +19,7 @@ import { V1Provider } from '@/v1/provider'
 import { QueryProvider } from './query-provider'
 import { InspectorProvider } from './inspector-provider'
 import { WalletStateInjector } from './wallet-state-injector'
+import { VersionCheckProvider } from '@/components/app-update/version-check-provider'
 import { Toaster } from '@/components/ui/toast'
 import { Loading } from '@/components/ui/loading'
 import * as SystemUI from 'expo-system-ui'
@@ -82,7 +83,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
                       <V1Provider>
-                        {children}
+                        <VersionCheckProvider>
+                          {children}
+                        </VersionCheckProvider>
                       </V1Provider>
                       <Toaster position="center" />
                       <Loading />

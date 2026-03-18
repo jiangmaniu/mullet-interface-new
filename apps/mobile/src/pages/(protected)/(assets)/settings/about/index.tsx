@@ -1,24 +1,33 @@
 import { Trans } from '@lingui/react/macro'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 
+import { performNativeUpdate } from '@/components/app-update/_utils/native-update'
+import { UpgradeModal } from '@/components/app-update/upgrade-modal'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useVersionCheck } from '@/hooks/use-version-check'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useAppUpdateStore } from '@/stores/app-update'
 
 import { ClearCacheModal } from './_comps/clear-cache-modal'
-import { UpgradeModal } from './_comps/upgrade-modal'
 
 export default function AboutScreen() {
   const { textColorContent4 } = useThemeColors()
   const [cacheSize, setCacheSize] = useState('137.97MB')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
-  const [newVersion, setNewVersion] = useState<string | null>(null)
+
+  const { checkUpdate } = useVersionCheck()
+  const hasUpdate = useAppUpdateStore((s) => s.hasUpdate)
+  const latestVersion = useAppUpdateStore((s) => s.latestVersion)
+  const updateContent = useAppUpdateStore((s) => s.updateContent)
+  const downloadUrl = useAppUpdateStore((s) => s.downloadUrl)
+  const isForceUpdate = useAppUpdateStore((s) => s.isForceUpdate)
 
   // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
   const APP_VERSION = useMemo(() => {
@@ -27,19 +36,14 @@ export default function AboutScreen() {
     return `${versionStr} (${buildTime})`
   }, [])
 
-  const handleCheckUpdate = useCallback(() => {
-    // TODO: 替换为实际的版本检查 API
-    const latestVersion: string = 'v1.1.0'
-    if (latestVersion !== APP_VERSION) {
-      setNewVersion(latestVersion)
+  const handleCheckUpdate = useCallback(async () => {
+    const result = await checkUpdate()
+    if (result.hasUpdate) {
+      setUpdateVisible(true)
     } else {
       toast.success('当前已是最新版本')
     }
-  }, [APP_VERSION])
-
-  useEffect(() => {
-    handleCheckUpdate()
-  }, [handleCheckUpdate])
+  }, [checkUpdate])
 
   const handleClearCache = useCallback(() => {
     setClearCacheVisible(false)
@@ -49,10 +53,10 @@ export default function AboutScreen() {
 
   const handleConfirmUpdate = useCallback(() => {
     setUpdateVisible(false)
-    toast.warning('敬请期待')
-
-    // TODO: 实际更新逻辑，跳转到应用商店
-  }, [])
+    if (downloadUrl) {
+      performNativeUpdate(downloadUrl)
+    }
+  }, [downloadUrl])
 
   return (
     <View className="bg-secondary flex-1">
@@ -98,19 +102,23 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 检查更新 */}
-        <Pressable onPress={newVersion ? () => setUpdateVisible(true) : handleCheckUpdate}>
+        <Pressable onPress={hasUpdate ? () => setUpdateVisible(true) : handleCheckUpdate}>
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>检查更新</Trans>
             </Text>
             <View className="gap-xs flex-row items-center">
-              {newVersion ? (
+              {hasUpdate ? (
                 <>
                   <View className="bg-status-danger h-[8px] w-[8px] rounded-full" />
-                  <Text className="text-paragraph-p2 text-content-4">发现新版本{newVersion}</Text>
+                  <Text className="text-paragraph-p2 text-content-4">
+                    <Trans>发现新版本 v{latestVersion}</Trans>
+                  </Text>
                 </>
               ) : (
-                <Text className="text-paragraph-p2 text-content-4">{APP_VERSION} 当前最新版本</Text>
+                <Text className="text-paragraph-p2 text-content-4">
+                  <Trans>当前最新版本</Trans>
+                </Text>
               )}
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
@@ -139,7 +147,14 @@ export default function AboutScreen() {
       />
 
       {/* 更新版本 Modal */}
-      <UpgradeModal visible={updateVisible} onClose={() => setUpdateVisible(false)} onConfirm={handleConfirmUpdate} />
+      <UpgradeModal
+        visible={updateVisible}
+        onClose={() => setUpdateVisible(false)}
+        onConfirm={handleConfirmUpdate}
+        latestVersion={latestVersion ?? undefined}
+        updateContent={updateContent}
+        isForceUpdate={isForceUpdate}
+      />
     </View>
   )
 }
