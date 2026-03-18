@@ -376,7 +376,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
         return
       }
 
-      const { msg, code } = data || {}
+      const { msg, message, code } = data || {}
 
       if (
         !['api/blade-auth/oauth/token'].some((item) => {
@@ -387,8 +387,16 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
           console.log(`请求失败，接口地址:${baseURL}${requestUrl}`, data)
 
           // 客户端请求失败了统一提示，是否跳过错误提示
-          if (!skipErrorHandler && msg) {
-            toast.error(msg)
+          const errorMessage = msg ?? message ?? '未知的错误'
+          if (!skipErrorHandler) {
+            toast.error(errorMessage)
+            resolve({
+              success: false,
+              ...data,
+            })
+            return
+          } else {
+            reject(new Error(errorMessage))
           }
         }
 
