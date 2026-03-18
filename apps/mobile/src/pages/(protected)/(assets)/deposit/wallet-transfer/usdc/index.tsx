@@ -88,6 +88,15 @@ const UsdcDepositScreen = observer(function UsdcDepositScreen() {
               })}
             </Trans>
           </Text>
+          <Text className="text-paragraph-p3 text-content-4">
+            <Trans>
+              最低转入
+              {BNumber.toFormatNumber(selectedTokenBalance?.minAmount, {
+                unit: selectedTokenConfig?.symbol,
+                volScale: selectedTokenConfig?.displayDecimals,
+              })}
+            </Trans>
+          </Text>
         </View>
 
         <View className="gap-3xl">
