@@ -6,6 +6,7 @@ import {
   Bell,
   CandlestickChart,
   ChatBubbleWarning,
+  ChatBubbleXmark,
   Check,
   CoinsSwap,
   Copy,
@@ -75,6 +76,7 @@ export const IconifyDownloadCircle = withUniwind(DownloadCircle)
 export const IconifyDataTransferBoth = withUniwind(DataTransferBoth)
 export const IconifyArrowRightTagSolid = withUniwind(ArrowRightTagSolid)
 export const IconifyChatBubbleWarning = withUniwind(ChatBubbleWarning)
+export const IconifyChatBubbleXmark = withUniwind(ChatBubbleXmark)
 export const IconifyWalletSolid = withUniwind(WalletSolid)
 export const IconifyFlashSolid = withUniwind(FlashSolid)
 export const IconifyCreditCardSolid = withUniwind(CreditCardSolid)

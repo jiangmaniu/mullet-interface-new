@@ -6,13 +6,16 @@ import { ActivityIndicator, Pressable, View } from 'react-native'
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
-import { IconifyNavArrowRight } from '@/components/ui/icons'
+import { IconifyChatBubbleXmark, IconifyNavArrowRight } from '@/components/ui/icons'
+import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
 import { getImgSource } from '@/utils/img'
@@ -149,13 +152,17 @@ export const TradePendingOrders = observer(() => {
 
 const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem }) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
   const { trade } = useStores()
 
   const onCancel = async () => {
     setIsLoading(true)
     try {
-      await trade.cancelOrder({ id: order.id })
-      toast.success(<Trans>取消成功</Trans>)
+      const { success } = await trade.cancelOrder({ id: order.id })
+      if (success) {
+        setShowConfirm(false)
+        toast.success(<Trans>取消成功</Trans>)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -166,12 +173,42 @@ const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem 
       {isLoading ? (
         <Spinning width={16} height={16} />
       ) : (
-        <Pressable onPress={onCancel}>
+        <Pressable onPress={() => setShowConfirm(true)}>
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>取消</Trans>
           </Text>
         </Pressable>
       )}
+
+      <Modal visible={showConfirm} onClose={() => setShowConfirm(false)}>
+        <ModalContent>
+          <ModalHeader>
+            <ModalTitle>
+              <Trans>取消挂单</Trans>
+            </ModalTitle>
+          </ModalHeader>
+
+          <View className="gap-medium items-center">
+            <IconifyChatBubbleXmark width={32} height={32} className="text-content-1" />
+            <Text className="text-paragraph-p2 text-content-1 text-center">
+              <Trans>确定要取消挂单吗？</Trans>
+            </Text>
+          </View>
+
+          <ModalFooter>
+            <Button className="flex-1" size="lg" onPress={() => setShowConfirm(false)}>
+              <Text>
+                <Trans>取消</Trans>
+              </Text>
+            </Button>
+            <Button className="flex-1" size="lg" color="primary" loading={isLoading} onPress={onCancel}>
+              <Text>
+                <Trans>确定</Trans>
+              </Text>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 })
