@@ -234,6 +234,23 @@ export interface InfoSliceActions {
 }
 ```
 
+### activeTradeAccountId 初始化
+
+**初始化时机**：在调用 `trade.setCurrentAccountInfo` 的地方同步设置
+
+**需要修改的位置**：
+
+1. **trade-account-switch-drawer.tsx** - 账户切换
+2. **v1/stores/user.ts** - 登录后自动选择账户
+
+**实现方式**：
+
+```typescript
+// 在调用 setCurrentAccountInfo 后立即设置
+await trade.setCurrentAccountInfo(account)
+useRootStore.getState().user.info.setActiveTradeAccountId(account.id)
+```
+
 ### 持久化配置
 
 ```typescript
@@ -456,40 +473,67 @@ export function createMarketFavoriteSlice(
 
 ## 数据迁移方案
 
-### 测试环境简化方案
+### 测试环境策略
 
-由于当前是测试环境，采用简化迁移策略：
+**当前测试环境不需要实现数据迁移机制**，原因：
+- 测试环境没有生产用户数据
+- 可以直接清空旧数据重新开始
+- 简化开发流程，加快迭代速度
+
+### 生产环境要求
+
+⚠️ **重要**：当上线正式环境时，如果做了 store 格式的调整，**必须实现数据迁移方案**。
+
+参考迁移模板（生产环境使用）：
+
 
 ```typescript
 // stores/market-slice/favorite-migration.ts
 
 /**
- * 测试环境：简化迁移方案
- * 只在首次启动时尝试迁移，失败则跳过
+ * 数据迁移：从 MobX favoriteList 迁移到 Zustand symbolFavoriteMap
+ * 版本：v1 → v2
+ * 日期：2026-03-18
+ *
+ * ⚠️ 注意：此迁移逻辑仅供生产环境参考，测试环境不需要
  */
 export async function migrateFavoriteData(state: RootStoreState) {
   try {
-    const migrationKey = 'favorite-migration-completed'
+    const migrationKey = 'favorite-migration-v2-completed'
     const isMigrated = mmkv.getBoolean(migrationKey)
 
-    if (isMigrated) return
+    if (isMigrated) {
+      console.log('[Migration] Already migrated')
+      return
+    }
 
-    // 读取旧数据
+    // 读取旧数据（MobX 格式）
     const oldConfInfo = await STORAGE_GET_CONF_INFO()
     if (!oldConfInfo) {
+      console.log('[Migration] No old data')
       mmkv.set(migrationKey, true)
       return
     }
 
     // 提取收藏数据
     const newFavoriteMap: Record<string, string[]> = {}
+
+    // 遍历所有账户的配置
     Object.keys(oldConfInfo).forEach(key => {
-      if (key.startsWith('account-')) {
-        const favoriteList = oldConfInfo[key]?.favoriteList
-        if (Array.isArray(favoriteList)) {
-          newFavoriteMap[key] = favoriteList
-            .filter(item => item?.symbol)
-            .map(item => item.symbol)
+      // 跳过非账户配置
+      if (key === 'currentAccountInfo') return
+
+      const accountData = oldConfInfo[key]
+      const favoriteList = accountData?.favoriteList
+
+      if (Array.isArray(favoriteList) && favoriteList.length > 0) {
+        // 提取 symbol 字符串
+        const symbols = favoriteList
+          .filter(item => item?.symbol)
+          .map(item => item.symbol)
+
+        if (symbols.length > 0) {
+          newFavoriteMap[key] = symbols
         }
       }
     })
@@ -497,22 +541,25 @@ export async function migrateFavoriteData(state: RootStoreState) {
     // 写入新格式
     if (Object.keys(newFavoriteMap).length > 0) {
       state.market.favorite.symbolFavoriteMap = newFavoriteMap
+      console.log('[Migration] Migrated favorite data:', newFavoriteMap)
     }
 
     // 迁移 activeTradeAccountId
     if (oldConfInfo.currentAccountInfo?.id) {
       state.user.info.activeTradeAccountId = oldConfInfo.currentAccountInfo.id
+      console.log('[Migration] Migrated activeTradeAccountId:', oldConfInfo.currentAccountInfo.id)
     }
 
     mmkv.set(migrationKey, true)
+    console.log('[Migration] Completed successfully')
   } catch (error) {
     console.error('[Migration] Failed:', error)
-    // 失败不影响应用启动
+    // 生产环境：记录错误但不影响启动
   }
 }
 ```
 
-### 集成到 Root Store
+### 生产环境集成
 
 ```typescript
 // stores/index.ts
@@ -530,9 +577,9 @@ const useRootStoreBase = create<RootStoreState>()(
         partialize: createPartialize<RootStoreState>('trade.formData'),
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
 
-        // ⭐ 迁移逻辑：在 onRehydrateStorage 中执行
+        // ⭐ 生产环境：在 onRehydrateStorage 中执行迁移
         onRehydrateStorage: () => (state) => {
-          if (state) {
+          if (state && __PROD__) {  // 只在生产环境执行
             migrateFavoriteData(state)
           }
         },
@@ -541,6 +588,17 @@ const useRootStoreBase = create<RootStoreState>()(
   ),
 )
 ```
+
+### 迁移检查清单
+
+上线生产环境前，确保：
+
+- [ ] 已实现完整的数据迁移逻辑
+- [ ] 已测试迁移逻辑（使用生产数据副本）
+- [ ] 已添加迁移失败的错误处理
+- [ ] 已添加迁移日志和监控
+- [ ] 已准备回滚方案
+- [ ] 已通知用户可能的数据迁移时间
 
 ---
 
