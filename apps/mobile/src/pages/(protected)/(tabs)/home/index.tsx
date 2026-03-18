@@ -32,6 +32,8 @@ import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 
 import { MarketOverview } from './_comps/market-overview'
 import { useSymbolKline } from './_hooks/use-symbol-kline'
@@ -240,7 +242,8 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
 const AssetTabListContent = observer(
   ({ viewMode, categoryOption }: { viewMode: ViewMode; categoryOption: SymbolCategoryOption }) => {
     const { trade } = useStores()
-    let tradeList = trade.favoriteList
+    const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
+    let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
 
     if (categoryOption.value !== SymbolCategory.Favorite) {
       tradeList =

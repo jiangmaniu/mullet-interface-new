@@ -32,7 +32,10 @@ const useRootStoreBase = create<RootStoreState>()(
       {
         name: 'mullet-root-store',
         storage: createJSONStorage(() => mmkvStorage),
-        partialize: createPartialize<RootStoreState>('trade.formData'),
+        partialize: createPartialize<RootStoreState>(
+          'trade.formData',
+          'market.fetchMarketListLoading',
+        ),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
       },
@@ -41,3 +44,13 @@ const useRootStoreBase = create<RootStoreState>()(
 )
 
 export const useRootStore = createSelectors(useRootStoreBase)
+
+// 订阅 activeTradeAccountId 变化，自动刷新品种列表
+useRootStoreBase.subscribe(
+  (state) => state.user.info.activeTradeAccountId,
+  (accountId, prevAccountId) => {
+    if (accountId && accountId !== prevAccountId) {
+      useRootStoreBase.getState().market.fetchTradeSymbolList(accountId)
+    }
+  },
+)

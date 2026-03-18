@@ -21,6 +21,8 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 
 import { CommonFeaturesDrawer } from './common-features-drawer'
 
@@ -34,7 +36,8 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
 
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
-  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo?.symbol)
+  const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
+  const isFavorite = favoriteSet.has(symbolInfo?.symbol ?? '')
 
   const handleViewChange = (view: 'chart' | 'depth') => {
     if (view === 'chart') {
@@ -106,7 +109,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
                   })
                 }}
                 onFavorites={() => {
-                  trade.toggleSymbolFavorite(symbolInfo?.symbol)
+                  useRootStore.getState().market.favorite.toggleFavorite(symbolInfo?.symbol ?? '')
                 }}
               />
             </>

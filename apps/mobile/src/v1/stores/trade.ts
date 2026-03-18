@@ -1,5 +1,5 @@
 import { cloneDeep, keyBy } from 'lodash-es'
-import { action, computed, configure, makeObservable, observable, runInAction } from 'mobx'
+import { action, configure, makeObservable, observable, runInAction } from 'mobx'
 
 import { stores } from '@/v1/provider/mobxProvider'
 import { t } from '@lingui/core/macro'
@@ -54,8 +54,6 @@ import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 export type UserConfInfo = Record<
   string,
   {
-    /** 自选列表 */
-    favoriteList?: Account.TradeSymbolListItem[]
     /** 激活的品种名称 */
     activeSymbolName?: string
     /** 打开的品种名称列表 */
@@ -111,7 +109,6 @@ class TradeStore {
   // 当前accountId的配置信息从userConfInfo展开，切换accountId时，重新设置更新
   @observable activeSymbolName = '' // 当前激活的品种名
   @observable openSymbolNameList = [] as Account.TradeSymbolListItem[] // 记录打开的品种名称列表
-  @observable favoriteList = [] as Account.TradeSymbolListItem[] // 自选列表
 
   @observable currentAccountInfo = {} as User.AccountItem // 当前切换的账户信息
   @observable showBalanceEmptyModal = false // 余额为空弹窗
@@ -167,8 +164,6 @@ class TradeStore {
   init = async () => {
     // 初始化打开的品种列表
     this.initOpenSymbolNameList()
-    // 初始化自选列表
-    this.initFavoriteList()
     // 获取全部品种列表作为汇率校验
     this.getAllSimbleSymbols()
     // debug：這裡需要獲取持倉列表，用於計算可用預付款
@@ -722,66 +717,6 @@ class TradeStore {
   }
 
   // =========== 收藏、取消收藏 ==============
-
-  // 是否收藏品种
-  @computed get isFavoriteSymbol() {
-    return this.favoriteList.some((item) => item.symbol === this.activeSymbolName && item.checked)
-  }
-
-  // 获取本地自选
-  @action async initFavoriteList() {
-    // const data = await STORAGE_GET_FAVORITE()
-    const data = (await STORAGE_GET_CONF_INFO(`${this.currentAccountInfo?.id}.favoriteList`)) || []
-    if (Array.isArray(data) && data.length) {
-      runInAction(() => {
-        this.favoriteList = data
-      })
-    } else {
-      // 重置
-      this.favoriteList = []
-      this.setDefaultFavorite()
-    }
-  }
-
-  // 设置默认自选
-  @action setDefaultFavorite() {
-    // 设置本地默认自选 @TODO 品种动态加载的，先不加默认
-    // this.setSymbolFavoriteToLocal(DEFAULT_QUOTE_FAVORITES_CURRENCY)
-  }
-
-  // 设置本地自选
-  @action async setSymbolFavoriteToLocal(data: any) {
-    // if (Array.isArray(data) && data.length) {
-    this.favoriteList = data
-    // STORAGE_SET_FAVORITE(data)
-    STORAGE_SET_CONF_INFO(data, `${this.currentAccountInfo?.id}.favoriteList`)
-    // } else {
-    // this.setDefaultFavorite()
-    // }
-  }
-
-  // 切换收藏选中状态
-  @action toggleSymbolFavorite(name?: string) {
-    const symbolName = name || this.activeSymbolName // 不传name，使用当前激活的
-    const index = this.favoriteList.findIndex((v) => v.symbol === symbolName)
-    const item = this.symbolMapAll?.[symbolName]
-    // 删除
-    if (index !== -1) {
-      // this.favoriteList.splice(index, 1)
-      // 直接 splice ， mobx 监听失效
-      this.favoriteList = this.favoriteList.filter((v) => v.symbol !== symbolName)
-
-      message.info(t`Favorite Cancel Success`)
-    } else {
-      // 添加到已选列表
-      item.checked = true
-      // this.favoriteList.push(item)
-      // 直接 push ， mobx 监听失效
-      this.favoriteList = [...this.favoriteList, item]
-      message.info(t`Favorite Success`)
-    }
-    this.setSymbolFavoriteToLocal(this.favoriteList)
-  }
 
   // ============================
   // 查询品种分类

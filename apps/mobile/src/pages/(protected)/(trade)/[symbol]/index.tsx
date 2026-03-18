@@ -29,6 +29,8 @@ import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
@@ -44,10 +46,11 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
-  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbolInfo?.symbol)
+  const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
+  const isFavorite = favoriteSet.has(symbolInfo?.symbol ?? '')
 
   const handleFavoriteToggle = () => {
-    trade.toggleSymbolFavorite(symbolInfo?.symbol)
+    useRootStore.getState().market.favorite.toggleFavorite(symbolInfo?.symbol ?? '')
   }
 
   const handleViewChange = (view: 'chart' | 'depth') => {

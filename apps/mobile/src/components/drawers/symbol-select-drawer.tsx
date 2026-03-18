@@ -19,6 +19,8 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 
 // ============ Types ============
 interface SymbolSelectDrawerProps {
@@ -197,7 +199,8 @@ const CategoryTabListContent = observer(
     onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
   }) => {
     const { trade } = useStores()
-    let tradeList = trade.favoriteList
+    const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
+    let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
 
     if (categoryOption.value !== SymbolCategory.Favorite) {
       tradeList =

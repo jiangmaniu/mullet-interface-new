@@ -1,6 +1,7 @@
 import { observer } from 'mobx-react-lite';
 import { AccountSwitchDrawer } from './account-switch-drawer';
 import { useStores } from '@/v1/provider/mobxProvider';
+import { useRootStore } from '@/stores';
 
 interface AccountSwitchDrawerProps {
 	selectedAccountId: string;
@@ -26,6 +27,8 @@ export const TradeAccountSwitchDrawer = observer(({
 		// 切换账户 重新更新查询品种列表
 		await Promise.resolve(trade.getSymbolList({ accountId: account.id }))
 		await Promise.resolve(trade.setCurrentAccountInfo(account))
+		// 同步设置 Zustand activeTradeAccountId（触发订阅自动刷新品种列表）
+		useRootStore.getState().user.info.setActiveTradeAccountId(account.id)
 		await Promise.resolve(trade.setCurrentLiquidationSelectBgaId('CROSS_MARGIN'))
 		await Promise.resolve(onSwitchSuccess?.(account));
 	}

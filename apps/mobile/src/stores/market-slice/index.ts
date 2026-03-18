@@ -1,9 +1,12 @@
 import { keyBy } from 'lodash-es'
 import type { ImmerStateCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
+import type { MarketFavoriteSlice } from './favorite-slice'
 
 import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
+
+import { createMarketFavoriteSlice } from './favorite-slice'
 
 export interface MarketSliceState {
   /** 品种列表加载状态 */
@@ -21,12 +24,19 @@ export interface MarketSliceActions {
 }
 
 /** Market 命名空间完整类型（状态直接展平） */
-export type MarketSlice = MarketSliceState & MarketSliceActions
+export type MarketSlice = MarketSliceState &
+  MarketSliceActions & {
+    /** 收藏子命名空间 */
+    favorite: MarketFavoriteSlice
+  }
 
 export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> = (set, get) => ({
   fetchMarketListLoading: false,
   marketMap: {},
   marketAllList: [],
+
+  // 收藏子命名空间
+  favorite: createMarketFavoriteSlice(set),
 
   setMarket: (partial) =>
     set((state) => {

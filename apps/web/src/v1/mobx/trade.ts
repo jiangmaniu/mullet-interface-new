@@ -44,8 +44,6 @@ import { toast } from '@mullet/ui/toast'
 export type UserConfInfo = Record<
   string,
   {
-    /**自选列表 */
-    favoriteList?: Account.TradeSymbolListItem[]
     /**激活的品种名称 */
     activeSymbolName?: string
     /**打开的品种名称列表 */
