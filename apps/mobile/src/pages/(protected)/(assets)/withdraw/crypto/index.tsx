@@ -14,6 +14,7 @@ import { msg } from '@lingui/core/macro'
 import { BNumber } from '@mullet/utils/number'
 import { isValidSolanaAddress } from '@mullet/web3/helpers'
 
+import { useAccountExtractable } from '../_apis/use-account-extractable'
 import { useSelectedWithdrawAccount } from '../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../_hooks/use-selected-chain-info'
 import { useWithdrawState } from '../_hooks/use-withdraw-state'
@@ -25,6 +26,9 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
   const { selectedTokenSymbol, selectedChainId, toWalletAddress } = useWithdrawState()
   const { chainInfo, tokenInfo } = useSelectedChainInfo()
+
+  // 获取可提取余额
+  const { data: extractableBalance } = useAccountExtractable(selectedAccount?.id)
 
   // 判断是否可以提交：必须有代币、链、且有地址
   const canSubmit = selectedTokenSymbol && selectedChainId && chainInfo && toWalletAddress.trim().length > 0
@@ -66,7 +70,7 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
             <Text className="text-paragraph-p3 text-content-4">
               <Trans>
                 余额：
-                {BNumber.toFormatNumber(selectedAccount?.money, {
+                {BNumber.toFormatNumber(extractableBalance, {
                   unit: selectedAccount?.currencyUnit,
                   volScale: selectedAccount?.currencyDecimal,
                 })}

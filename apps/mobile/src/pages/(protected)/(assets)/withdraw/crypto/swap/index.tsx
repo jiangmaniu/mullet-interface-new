@@ -27,6 +27,7 @@ import { t } from '@lingui/core/macro'
 import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useAccountExtractable } from '../../_apis/use-account-extractable'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useSelectedChainInfo, useSelectedTokenConfig } from '../../_hooks/use-selected-chain-info'
 import { useUSDCTokenConfig } from '../../_hooks/use-token-config'
@@ -53,6 +54,9 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
   const { chainInfo } = useSelectedChainInfo()
   const selectedAccount = useSelectedWithdrawAccount()
   const usdcTokenConfig = useUSDCTokenConfig()
+
+  // 获取可提取余额
+  const { data: extractableBalance } = useAccountExtractable(selectedAccount?.id)
 
   const [sendAmount, setSendAmount] = useState<string>('')
   const [receiveAmount, setReceiveAmount] = useState<string>('')
@@ -117,7 +121,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
     if (forwardQuoteData) setLatestQuoteData(forwardQuoteData)
   }, [forwardQuoteData])
 
-  const isInsufficientBalance = BNumber.from(sendAmount).gt(selectedAccount?.money ?? 0)
+  const isInsufficientBalance = BNumber.from(sendAmount).gt(extractableBalance ?? 0)
   const isValid = BNumber.from(sendAmount).gt(0) && !isInsufficientBalance && !!quoteData && !!toWalletAddress?.trim()
 
   useEffect(() => {
@@ -167,7 +171,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
     setSelectedQuickAmount('')
     const pct = Number(value)
     if (pct > 0) {
-      const calculated = BNumber.from(selectedAccount?.money ?? 0)
+      const calculated = BNumber.from(extractableBalance ?? 0)
         .multipliedBy(pct)
         .dividedBy(100)
         .toString()
@@ -208,7 +212,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
             <Text className="text-paragraph-p2 text-content-4">
               <Trans>
                 余额：
-                {BNumber.toFormatNumber(selectedAccount?.money, {
+                {BNumber.toFormatNumber(extractableBalance, {
                   unit: selectedAccount?.currencyUnit,
                   volScale: selectedAccount?.currencyDecimal,
                 })}
@@ -252,7 +256,7 @@ const SwapWithdrawScreen = observer(function SwapWithdrawScreen() {
                 <Text className="text-paragraph-p3 text-content-4">
                   <Trans>
                     可用：
-                    {BNumber.toFormatNumber(selectedAccount?.money, {
+                    {BNumber.toFormatNumber(extractableBalance, {
                       unit: selectedAccount?.currencyUnit,
                       volScale: selectedAccount?.currencyDecimal,
                     })}

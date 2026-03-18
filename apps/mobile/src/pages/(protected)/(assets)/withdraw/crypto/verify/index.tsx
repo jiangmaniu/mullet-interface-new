@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Pressable, TextInput, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
 import { router } from 'expo-router'
 
@@ -16,8 +16,8 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { useSendOtp } from '../../_apis/use-send-otp'
 import { useSolanaWithdraw } from '../../_apis/use-solana-transfer'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
-import { useSelectedChainInfo } from '../../_hooks/use-selected-chain-info'
-import { useWithdrawActions, useWithdrawState } from '../../_hooks/use-withdraw-state'
+import { useSelectedChainInfo, useSelectedTokenConfig } from '../../_hooks/use-selected-chain-info'
+import { useWithdrawState } from '../../_hooks/use-withdraw-state'
 import { WithdrawSuccessModal } from '../../../../../../components/modals/withdraw-success-modal'
 
 const CODE_LENGTH = 6
@@ -31,11 +31,12 @@ const VerifyScreen = observer(function VerifyScreen() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [countdown, setCountdown] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const { reset } = useWithdrawActions()
+  const hasAutoSubmittedRef = useRef(false) // 标记是否已自动提交
+  const selectedTokenConfig = useSelectedTokenConfig()
 
   // 出金相关数据
   const selectedAccount = useSelectedWithdrawAccount()
-  const { toWalletAddress, withdrawAmount, selectedAccountId } = useWithdrawState()
+  const { toWalletAddress, withdrawAmount } = useWithdrawState()
   const { tokenInfo } = useSelectedChainInfo()
   const { mutate: transfer, isPending: isTransferring } = useSolanaWithdraw()
 
@@ -139,11 +140,24 @@ const VerifyScreen = observer(function VerifyScreen() {
     )
   }, [code, selectedAccount, toWalletAddress, withdrawAmount, tokenInfo, transfer])
 
+  // 验证码输入完成后自动确认
+  useEffect(() => {
+    if (code.length === CODE_LENGTH && !isTransferring && !hasAutoSubmittedRef.current) {
+      hasAutoSubmittedRef.current = true
+      handleConfirm()
+    }
+  }, [code, isTransferring, handleConfirm])
+
+  // 当验证码被清空时，重置自动提交标志
+  useEffect(() => {
+    if (code.length === 0) {
+      hasAutoSubmittedRef.current = false
+    }
+  }, [code])
+
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false)
-    const accountId = selectedAccountId
-    reset() // 重置 store 状态
-    router.replace({ pathname: '/(protected)/(assets)/withdraw', params: { accountId } }) // 跳转到 提现 页面
+    router.dismissAll()
   }
 
   const isCodeComplete = code.length === CODE_LENGTH
@@ -175,19 +189,21 @@ const VerifyScreen = observer(function VerifyScreen() {
           keyboardType="number-pad"
           textContentType="oneTimeCode"
           autoComplete="sms-otp"
+          editable={!isTransferring}
           renderCell={({ index, symbol, isFocused }) => (
-            <TextInput
+            <View
               key={index}
-              value={symbol}
               onLayout={getCellOnLayoutHandler(index)}
-              editable={false}
-              className={cn('text-title-h2 text-content-1 rounded-small h-10 w-10 border text-center', {
-                'border-brand-important': isFocused,
-                'border-brand-default': !isFocused,
+              className={cn('text-title-h2 text-content-1 rounded-small h-10 w-10 border items-center justify-center', {
+                'border-brand-important': isFocused && !isTransferring,
+                'border-brand-default': !isFocused || isTransferring,
+                'opacity-50': isTransferring,
               })}
             >
-              {symbol || (isFocused ? <Cursor /> : null)}
-            </TextInput>
+              <Text className="text-title-h2 text-content-1">
+                {symbol || (isFocused && !isTransferring ? <Cursor /> : null)}
+              </Text>
+            </View>
           )}
         />
 
@@ -220,7 +236,13 @@ const VerifyScreen = observer(function VerifyScreen() {
         </View>
       </View>
 
-      <WithdrawSuccessModal visible={showSuccessModal} onClose={handleCloseSuccessModal} />
+      <WithdrawSuccessModal
+        visible={showSuccessModal}
+        onClose={handleCloseSuccessModal}
+        address={toWalletAddress}
+        amount={withdrawAmount}
+        tokenConfig={selectedTokenConfig}
+      />
     </View>
   )
 })

@@ -20,6 +20,7 @@ import { getImgSource } from '@/utils/img'
 import { renderFallback, renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useAccountExtractable } from '../../_apis/use-account-extractable'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useSelectedChainInfo } from '../../_hooks/use-selected-chain-info'
 import { useWithdrawAmount, useWithdrawState } from '../../_hooks/use-withdraw-state'
@@ -37,10 +38,13 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
   const { tokenInfo } = useSelectedChainInfo()
   const selectedAccount = useSelectedWithdrawAccount()
 
+  // 获取可提取余额
+  const { data: extractableBalance } = useAccountExtractable(selectedAccount?.id)
+
   const [amount, setAmount] = useState<string>('')
   const [selectedPercent, setSelectedPercent] = useState<string>('')
 
-  const accountBalance = selectedAccount?.money
+  const accountBalance = extractableBalance
   const minWithdraw = tokenInfo?.minWithdraw
 
   // 是否余额不足
@@ -86,7 +90,7 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>
               余额：
-              {BNumber.toFormatNumber(selectedAccount?.money, {
+              {BNumber.toFormatNumber(extractableBalance, {
                 unit: selectedAccount?.currencyUnit,
                 volScale: selectedAccount?.currencyDecimal,
               })}

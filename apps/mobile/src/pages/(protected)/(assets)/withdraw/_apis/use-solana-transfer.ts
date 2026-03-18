@@ -35,17 +35,19 @@ export function useSolanaWithdraw() {
       walletSignature,
       withdrawMessage,
     }: SolanaTransferParams) => {
+      const data = {
+        tradeAccountId,
+        toAddress,
+        token,
+        amount,
+        ...(withdrawMessage ? { withdrawMessage } : {}),
+        ...(verifyCode ? { verifyCode } : {}),
+        ...(walletSignature ? { walletSignature } : {}),
+      }
+
       const response = await depositRequest<SolanaTransferResponse>('/api/solana-wallet/transfer', {
         method: 'POST',
-        data: {
-          tradeAccountId,
-          toAddress,
-          token,
-          amount,
-          withdrawMessage,
-          ...(verifyCode ? { verifyCode } : {}),
-          ...(walletSignature ? { walletSignature } : {}),
-        },
+        data,
       })
       return response.data
     },

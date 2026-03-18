@@ -9,11 +9,13 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowDown, IconifyUserCircle } from '@/components/ui/icons'
+import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 
+import { useAccountExtractable } from '../../_apis/use-account-extractable'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
@@ -26,6 +28,9 @@ export const AccountSelection = observer(function AccountSelection() {
 
   const selectedAccount = useSelectedWithdrawAccount()
   const drawerRef = useRef<DrawerRef>(null)
+
+  // 获取可提取余额
+  const { data: extractableBalance, isLoading: isLoadingBalance } = useAccountExtractable(selectedAccount?.id)
 
   // 使用 ref 保存最新的 setter 函数
   const setSelectedAccountIdRef = useRef(setSelectedAccountId)
@@ -91,16 +96,18 @@ export const AccountSelection = observer(function AccountSelection() {
               </View>
               <IconifyNavArrowDown width={16} height={16} className="text-content-4" />
             </View>
-            <View>
+            <View className="gap-xs flex-row items-center">
               <Text className="text-paragraph-p3 text-content-1">
                 <Trans>
                   余额：
-                  {BNumber.toFormatNumber(selectedAccount?.money, {
-                    unit: selectedAccount?.currencyUnit,
-                    volScale: selectedAccount?.currencyDecimal,
-                  })}
+                  {!isLoadingBalance &&
+                    BNumber.toFormatNumber(extractableBalance, {
+                      unit: selectedAccount?.currencyUnit,
+                      volScale: selectedAccount?.currencyDecimal,
+                    })}
                 </Trans>
               </Text>
+              {isLoadingBalance && <Spinning height={12} width={12} />}
             </View>
           </CardContent>
         </Card>
