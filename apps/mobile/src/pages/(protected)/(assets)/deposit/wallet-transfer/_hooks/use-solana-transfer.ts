@@ -146,25 +146,35 @@ export function useSolanaTransfer() {
 
       // 保存上下文
       saveContext(WalletActionType.SignTransaction)
-      const signatureResult = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
-      console.log('✅ 钱包返回签名:', signatureResult)
+      const signatureData = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
+      console.log('✅ 钱包返回签名数据:', signatureData)
 
-      if (!signatureResult) {
+      if (!signatureData) {
         throw new Error('签名失败：钱包未返回签名')
       }
 
-      // 钱包返回的是 base58 编码的签名字符串，需要解码后添加到交易中
-      const signatureBytes = bs58.decode(signatureResult)
+      // 智能处理：根据返回数据长度判断是完整交易还是单独签名
+      let signedTransaction: Buffer
 
-      // 将签名添加到交易的 signatures 数组中
-      // Solana Transaction 的第一个签名位置是 feePayer 的签名
-      transaction.signatures[0] = {
-        publicKey: fromTokenAccountPublicKey,
-        signature: Buffer.from(signatureBytes),
+      if (signatureData.length < 150) {
+        // 短字符串：单独的签名（64 字节，base58 编码约 88 字符）
+        console.log('-> 钱包返回单独签名，添加到交易中')
+        const signatureBytes = bs58.decode(signatureData)
+
+        // 将签名添加到交易的 signatures 数组中
+        transaction.signatures[0] = {
+          publicKey: fromTokenAccountPublicKey,
+          signature: Buffer.from(signatureBytes),
+        }
+
+        // 序列化已签名的交易
+        signedTransaction = transaction.serialize()
+      } else {
+        // 长字符串：完整的已签名交易
+        console.log('-> 钱包返回完整的已签名交易')
+        signedTransaction = Buffer.from(bs58.decode(signatureData))
       }
 
-      // 序列化已签名的交易
-      const signedTransaction = transaction.serialize()
       console.log('✅ 交易签名完成，准备发送')
 
       // 将签名后的交易发送到链上

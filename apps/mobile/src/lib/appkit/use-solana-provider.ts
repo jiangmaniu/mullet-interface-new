@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 import type { Provider } from '@reown/appkit-common-react-native'
 
 import { useAccount, useAppKitSolanaProvider } from './index'
+import { extractSignatureData, normalizeSignTransactionResult } from './solana-adapter'
 
 /**
  * 扩展的 Solana Provider 类型
@@ -48,7 +49,7 @@ export function useSolanaProvider() {
   /**
    * 签名交易
    * @param transaction - 序列化的交易（base64）
-   * @returns 签名后的交易（base64）
+   * @returns 签名后的交易（base64 或 base58）
    */
   const signTransaction = useCallback(
     async (transaction: string): Promise<string | undefined> => {
@@ -56,7 +57,7 @@ export function useSolanaProvider() {
         throw new Error('Provider not available')
       }
 
-      const result = (await provider.request(
+      const result = await provider.request(
         {
           method: 'solana_signTransaction',
           params: {
@@ -64,11 +65,11 @@ export function useSolanaProvider() {
           },
         },
         `${chainNamespace}:${chainId}`,
-      )) as { signature?: string }
+      )
 
-      console.log('[signTransaction] 返回结果:', result)
-
-      return result?.signature
+      // 使用适配器标准化不同钱包的返回格式
+      const normalized = normalizeSignTransactionResult(result, 'AppKit')
+      return extractSignatureData(normalized)
     },
     [provider, chainId, chainNamespace],
   )
