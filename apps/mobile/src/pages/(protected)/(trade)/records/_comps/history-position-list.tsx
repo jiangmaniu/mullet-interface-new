@@ -38,7 +38,7 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
 
   const OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
     {
-      label: <Trans>盈亏</Trans>,
+      label: <Trans>已实现盈亏</Trans>,
       content: (
         <Text
           className={cn(
@@ -103,12 +103,20 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
       content: <>{renderFallback(order.id)}</>,
     },
     {
-      label: <Trans>交易账号</Trans>,
-      content: <>{renderFallback(order.tradeAccountId)}</>,
+      label: <Trans>平仓时间</Trans>,
+      content: <>{renderFallback(order.finishTime)}</>,
     },
     {
-      label: <Trans>地址</Trans>,
-      content: <>{renderFallback()}</>,
+      label: <Trans>手续费</Trans>,
+      content: (
+        <>
+          {BNumber.toFormatNumber(order.handlingFees, {
+            unit: currentAccountInfo.currencyUnit,
+            positive: false,
+            volScale: currentAccountInfo.currencyDecimal,
+          })}
+        </>
+      ),
     },
     {
       label: <Trans>手续费/库存费</Trans>,

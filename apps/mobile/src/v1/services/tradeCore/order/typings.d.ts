@@ -551,6 +551,8 @@ declare namespace Order {
     limitPrice?: number
     /** 账户组ID */
     accountGroupId?: string
+    /** 平仓时间 */
+    finishTime?: string
   }
   // 成交记录-分页-参数
   type TradeRecordsPageListParams = {
