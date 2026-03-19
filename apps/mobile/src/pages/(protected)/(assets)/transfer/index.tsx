@@ -16,11 +16,12 @@ import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
+import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { transferAccount } from '@/v1/services/tradeCore/account'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { t } from '@lingui/core/macro'
+import { msg, t } from '@lingui/core/macro'
 import { BNumber } from '@mullet/utils/number'
 
 import { AccountSelectionDrawer } from './_comps/account-selection-drawer'
@@ -31,6 +32,7 @@ export default function TransferScreen() {
   const router = useRouter()
   const { accountId } = useLocalSearchParams<{ accountId?: string }>()
   const { user } = useStores()
+  const { renderLinguiMsg } = useI18n()
 
   const [fromAccount, setFromAccount] = useState<User.AccountItem>()
   const [toAccount, setToAccount] = useState<User.AccountItem>()
@@ -50,17 +52,17 @@ export default function TransferScreen() {
               if (!val || !fromAccount?.money) return true
               return BNumber.from(val).lte(BNumber.from(fromAccount.money))
             },
-            { message: t`转账金额超过可用余额` },
+            { message: renderLinguiMsg(msg`转账金额超过可用余额`) },
           )
           .refine(
             (val) => {
               if (!val) return true
               return BNumber.from(val).gte(10)
             },
-            { message: t`转账金额需≥10 USDC` },
+            { message: renderLinguiMsg(msg`转账金额需≥10 USDC`) },
           ),
       }),
-    [fromAccount?.money],
+    [fromAccount?.money, renderLinguiMsg],
   )
 
   const form = useForm<z.infer<typeof formSchema>>({
