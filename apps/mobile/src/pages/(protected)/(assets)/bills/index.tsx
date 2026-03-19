@@ -14,7 +14,8 @@ import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { createRealAccountInfoSelector, userInfoRealAccountListSelector } from '@/stores/user-slice/infoSlice'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { msg } from '@lingui/core/macro'
 
@@ -51,7 +52,7 @@ export interface DepositRecord {
 }
 
 interface BillsScreenContextProps {
-  selectedAccount: User.AccountItem
+  selectedAccount: User.AccountItem | undefined
   setSelectedAccount: (account: User.AccountItem) => void
   dateRange: DateRange
 }
@@ -70,17 +71,17 @@ const BillsScreen = observer(() => {
     startDate: null,
     endDate: null,
   })
-  const { user } = useStores()
-
-  const accountList = user.realAccountList ?? []
-  const [selectedAccount, setSelectedAccount] = useState<User.AccountItem>(accountList[0])
+  const [selectedAccount, setSelectedAccount] = useState<User.AccountItem | undefined>(undefined)
 
   useEffect(() => {
-    if (accountId && !selectedAccount) {
-      const account = user.currentUser.accountList?.find((a) => a.id === accountId)
-      if (account) setSelectedAccount(account)
-    }
-  }, [accountId, selectedAccount, user.currentUser.accountList])
+    if (selectedAccount) return
+    const state = useRootStore.getState()
+    const account =
+      createRealAccountInfoSelector(accountId)(state) ??
+      userInfoRealAccountListSelector(state)[0]
+    if (account) setSelectedAccount(account)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId])
 
   const handleFilterPress = () => {
     setDateFilterVisible(true)
@@ -155,6 +156,9 @@ export default BillsScreen
 const BillsAccountSelector = observer(() => {
   const { selectedAccount, setSelectedAccount } = useBillsScreenContext()
   const realAccountSelectionDrawerRef = useRef<DrawerRef>(null)
+
+  if (!selectedAccount) return null
+
   return (
     <>
       <AccountSelector

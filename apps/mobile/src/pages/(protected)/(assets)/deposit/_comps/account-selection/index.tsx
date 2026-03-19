@@ -9,30 +9,37 @@ import { BNumber } from '@mullet/utils/number';
 import { useDepositState, useDepositActions } from '../../_hooks/use-deposit-state';
 import { useSelectedDepositAccount } from '../../_hooks/use-selected-account';
 import { useStores } from '@/v1/provider/mobxProvider';
+import { useRootStore } from '@/stores';
+import { createRealAccountInfoSelector, userInfoRealAccountListSelector } from '@/stores/user-slice/infoSlice';
 import { useLocalSearchParams } from 'expo-router';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Pressable, View } from 'react-native';
 import { RealAccountSelectionDrawer } from '@/components/drawers/real-account-selector-drawer';
 
 export const DepositAccountSelector = observer(function DepositAccountSelector() {
-	const { user, trade } = useStores();
+	const { trade } = useStores();
 	const { selectedAccountId } = useDepositState();
 	const { setSelectedAccountId } = useDepositActions();
 	const selectedAccount = useSelectedDepositAccount();
 	const drawerRef = useRef<DrawerRef>(null);
-
-	const accountList = useMemo(() => user.realAccountList ?? [], [user.realAccountList]);
 	const { accountId } = useLocalSearchParams<{ accountId?: string }>();
 
-	// 初始化目标账户
+	// 初始化目标账户，只监听 accountId 变化，内部通过 get 方式读取最新状态
 	useEffect(() => {
-		if (accountList.length === 0 || selectedAccountId) return;
-		const account = accountId
-			? accountList.find((a) => a.id === accountId) ?? accountList[0]
-			: accountList.find((a) => a.id === trade.currentAccountInfo?.id) ?? accountList[0];
+		if (selectedAccountId) return;
+		const state = useRootStore.getState();
+		const realAccountList = userInfoRealAccountListSelector(state);
+		if (realAccountList.length === 0) return;
+
+		const account =
+			createRealAccountInfoSelector(accountId)(state) ??
+			createRealAccountInfoSelector(trade.currentAccountInfo?.id)(state) ??
+			realAccountList[0];
+
 		if (account) setSelectedAccountId(account.id);
-	}, [accountId, accountList, trade.currentAccountInfo?.id, selectedAccountId, setSelectedAccountId]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [accountId]);
 
 	const synopsis = useAccountSynopsis(selectedAccount?.synopsis);
 

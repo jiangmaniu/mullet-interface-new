@@ -96,9 +96,29 @@ export const userInfoClientInfoSelector = (state: RootStoreState) => state.user.
 export const userInfoAccountListSelector = (state: RootStoreState) => state.user.info.accountList
 export const userInfoAccountMapSelector = (state: RootStoreState) => state.user.info.accountMap
 export const userInfoActiveTradeAccountIdSelector = (state: RootStoreState) => state.user.info.activeTradeAccountId
+export const userInfoRealAccountListSelector = (state: RootStoreState) =>
+  state.user.info.accountList.filter((item) => !item.isSimulate)
+export const userInfoSimulateAccountListSelector = (state: RootStoreState) =>
+  state.user.info.accountList.filter((item) => item.isSimulate)
 
-/** 生成式 selector - 根据 accountId 查找对应的账户信息 */
+/** 生成式 selector - 根据 accountId 查找对应的账户信息（O(1)） */
 export const createAccountInfoSelector =
   (accountId?: string | number | null) =>
   (state: RootStoreState): User.AccountItem | undefined =>
     accountId != null ? state.user.info.accountMap[String(accountId)] : undefined
+
+/** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
+export const createRealAccountInfoSelector =
+  (accountId?: string | number | null) =>
+  (state: RootStoreState): User.AccountItem | undefined => {
+    const account = createAccountInfoSelector(accountId)(state)
+    return account && !account.isSimulate ? account : undefined
+  }
+
+/** 生成式 selector - 根据 accountId 查找模拟账户，依赖 createAccountInfoSelector（O(1)） */
+export const createSimulateAccountInfoSelector =
+  (accountId?: string | number | null) =>
+  (state: RootStoreState): User.AccountItem | undefined => {
+    const account = createAccountInfoSelector(accountId)(state)
+    return account && account.isSimulate ? account : undefined
+  }

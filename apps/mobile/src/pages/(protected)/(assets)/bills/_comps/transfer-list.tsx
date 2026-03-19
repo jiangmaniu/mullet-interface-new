@@ -8,7 +8,7 @@ import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
@@ -131,11 +131,8 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
   const remark = record.remark
   const { selectedAccount } = useBillsScreenContext()
 
-  const { user } = useStores()
-
-  // 获取转出账户和转入账户的 synopsis
-  const fromAccount = user.realAccountList.find((item) => item.id === remark?.fromAccountId)
-  const toAccount = user.realAccountList.find((item) => item.id === remark?.toAccountId)
+  const fromAccount = useAccountInfo(remark?.fromAccountId)
+  const toAccount = useAccountInfo(remark?.toAccountId)
 
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)

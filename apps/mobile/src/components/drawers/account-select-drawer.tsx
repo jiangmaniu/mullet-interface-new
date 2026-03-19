@@ -1,9 +1,7 @@
 import { IconifyUserCircle } from '@/components/ui/icons';
 import { SwipeableTabs } from '@/components/ui/tabs';
 import { useThemeColors } from '@/hooks/use-theme-colors';
-import { t } from '@/locales/i18n';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useCallback, useMemo } from 'react';
 import { ScrollView, Pressable, View } from 'react-native';
 import type { Route } from 'react-native-tab-view';
 import { Text } from '@/components/ui/text';
@@ -12,7 +10,8 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { observer } from 'mobx-react-lite';
-import { useStores } from '@/v1/provider/mobxProvider';
+import { useRootStore } from '@/stores';
+import { userInfoRealAccountListSelector, userInfoSimulateAccountListSelector } from '@/stores/user-slice/infoSlice';
 import { BNumber } from '@mullet/utils/number';
 import { toast } from '../ui/toast';
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis';
@@ -44,10 +43,9 @@ export const AccountSelectDrawer = observer(({
 	onSelect,
 }: AccountSelectDrawerProps) => {
 
-	const { user } = useStores()
 	const { t } = useLingui();
-	const realAccountList = user.realAccountList || []
-	const simulateAccountList = user.simulateAccountList || []
+	const realAccountList = useRootStore(userInfoRealAccountListSelector)
+	const simulateAccountList = useRootStore(userInfoSimulateAccountListSelector)
 
 	const handleSelect = (account: User.AccountItem) => {
 		if (!account?.enableConnect || account.status === 'DISABLED') {

@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { useMemo } from 'react'
+import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { View } from 'react-native'
 
 import { Badge } from '@/components/ui/badge'
@@ -9,7 +9,6 @@ import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
@@ -33,16 +32,8 @@ export function TransferConfirmDrawer({
   toAccountId,
   amount,
 }: TransferConfirmDrawerProps) {
-  const { user } = useStores()
-
-  const fromAccount = useMemo(
-    () => user.currentUser.accountList?.find((a) => a.id === fromAccountId),
-    [user.currentUser.accountList, fromAccountId],
-  )
-  const toAccount = useMemo(
-    () => user.currentUser.accountList?.find((a) => a.id === toAccountId),
-    [user.currentUser.accountList, toAccountId],
-  )
+  const fromAccount = useAccountInfo(fromAccountId)
+  const toAccount = useAccountInfo(toAccountId)
 
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)

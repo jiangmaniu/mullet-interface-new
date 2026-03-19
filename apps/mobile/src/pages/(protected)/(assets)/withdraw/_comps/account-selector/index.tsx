@@ -13,6 +13,8 @@ import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { createRealAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { BNumber } from '@mullet/utils/number'
 
 import { useAccountExtractable } from '../../_apis/use-account-extractable'
@@ -20,9 +22,8 @@ import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
 export const AccountSelection = observer(function AccountSelection() {
-  const { user, trade } = useStores()
+  const { trade } = useStores()
   const params = useLocalSearchParams<{ accountId?: string }>()
-
   const setSelectedAccountId = useWithdrawStore((s) => s.setSelectedAccountId)
   const selectedAccountId = useWithdrawStore((s) => s.selectedAccountId)
 
@@ -38,14 +39,13 @@ export const AccountSelection = observer(function AccountSelection() {
     setSelectedAccountIdRef.current = setSelectedAccountId
   }, [setSelectedAccountId])
 
-  // 初始化选中的账户
+  // 初始化选中的账户，只监听 params.accountId，内部通过 get 方式读取最新状态
   useEffect(() => {
-    // 如果已经有选中的账户，不再初始化
     if (selectedAccountId) return
+    const state = useRootStore.getState()
 
-    // 优先使用路由参数中的 accountId
     if (params.accountId) {
-      const account = user.realAccountList.find((a) => a.id === params.accountId)
+      const account = createRealAccountInfoSelector(params.accountId)(state)
       if (account) {
         setSelectedAccountIdRef.current(account.id)
         return
@@ -53,14 +53,12 @@ export const AccountSelection = observer(function AccountSelection() {
     }
 
     // Fallback 到当前交易账户
-    if (trade.currentAccountInfo?.id) {
-      const account = user.realAccountList.find((a) => a.id === trade.currentAccountInfo?.id)
-      if (account) {
-        setSelectedAccountIdRef.current(account.id)
-      }
+    const account = createRealAccountInfoSelector(trade.currentAccountInfo?.id)(state)
+    if (account) {
+      setSelectedAccountIdRef.current(account.id)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [params.accountId, selectedAccountId])
+  }, [params.accountId])
 
   const synopsis = useAccountSynopsis(selectedAccount?.synopsis)
 

@@ -19,6 +19,8 @@ import { toast } from '@/components/ui/toast'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { createRealAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { transferAccount } from '@/v1/services/tradeCore/account'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { msg, t } from '@lingui/core/macro'
@@ -73,13 +75,13 @@ export default function TransferScreen() {
 
   const amount = form.watch('amount')
 
-  // 从路由参数初始化 fromAccount
+  // 从路由参数初始化 fromAccount，只监听 accountId
   useEffect(() => {
-    if (accountId) {
-      const account = user.currentUser.accountList?.find((a) => a.id === accountId)
-      if (account) setFromAccount(account)
-    }
-  }, [accountId, user.currentUser.accountList])
+    if (!accountId) return
+    const account = createRealAccountInfoSelector(accountId)(useRootStore.getState())
+    if (account) setFromAccount(account)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId])
 
   const handleSwap = () => {
     setFromAccount(toAccount)

@@ -3,7 +3,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Drawer, DrawerContent, DrawerHeader, DrawerRef } from '@/components/ui/drawer';
 import { Text } from '@/components/ui/text';
-import { useStores } from '@/v1/provider/mobxProvider';
+import { useRootStore } from '@/stores';
+import { userInfoRealAccountListSelector } from '@/stores/user-slice/infoSlice';
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis';
 import { Trans } from '@lingui/react/macro';
 import { BNumber } from '@mullet/utils/number';
@@ -25,8 +26,7 @@ export const RealAccountSelectionDrawer = observer(({
 	title,
 	ref
 }: RealAccountSelectionDrawerProps) => {
-	const { user } = useStores()
-
+	const accountList = useRootStore(userInfoRealAccountListSelector)
 	const [isOpen, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle()
 
 	useImperativeHandle(ref, () => ({
@@ -35,7 +35,6 @@ export const RealAccountSelectionDrawer = observer(({
 		toggle: toggle,
 	}))
 
-	const accountList = user.currentUser.accountList?.filter((accountGroup) => !accountGroup.isSimulate) ?? []
 	return (
 		<Drawer open={isOpen} onOpenChange={setToggle}>
 			<DrawerContent className='h-[240px] gap-0 py-xl'>
