@@ -488,9 +488,18 @@ const handleSelect = () => {
 
 修改为：
 
+在组件顶层添加 hook：
+
+```typescript
+// 在 SearchPage 组件顶层
+const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+```
+
+修改 handleSelect 函数：
+
 ```typescript
 const handleSelect = (symbol: string) => {
-  trade.switchSymbol(symbol)
+  switchTradeActiveSymbol(symbol)
   router.push(`/trade/${symbol}`)
 }
 ```

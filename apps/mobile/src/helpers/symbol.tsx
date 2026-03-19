@@ -11,6 +11,6 @@ export const parseSymbolLotsVolScale = (symbolConf?: Symbol.SymbolConf) => {
  * @param symbolInfo 品种信息
  * @returns 格式化后的品种名称
  */
-export const renderFormatSymbolName = (symbolInfo: Pick<Symbol.SymbolListItem, 'alias' | 'symbol'>) => {
+export const renderFormatSymbolName = (symbolInfo?: Pick<Symbol.SymbolListItem, 'alias' | 'symbol'>) => {
   return renderFallback(symbolInfo?.alias || symbolInfo?.symbol)
 }

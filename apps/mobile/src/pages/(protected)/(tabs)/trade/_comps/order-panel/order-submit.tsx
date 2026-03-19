@@ -6,29 +6,32 @@ import { View } from 'react-native'
 import { Button } from '@/components/ui/button'
 import { DrawerRef } from '@/components/ui/drawer'
 import { Text } from '@/components/ui/text'
-import { TradePositionDirectionEnum } from '@/options/trade/position'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { useRootStore } from '@/stores'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { tradeFormDataDirectionSelector } from '@/stores/trade-slice/formDataSlice'
+import { tradeSettingOrderConfirmationSelector } from '@/stores/trade-slice/settingSlice'
 
+import { useVerifyCreateOrderData } from '../../hooks/use-verify-order'
 import useSubmitOrder from '../../hooks/useSubmitOrder'
 import { OrderConfirmDrawer } from '../open-order-confirm-drawer'
 
-export const OrderSubmit = observer(() => {
+export const OrderSubmit = observer(({ symbol }: { symbol?: string }) => {
   const orderConfirmDrawerRef = useRef<DrawerRef>(null)
-  const { trade } = useStores()
-  const { buySell } = trade
-  const isBuy = buySell === TradePositionDirectionEnum.BUY
+  const direction = useRootStore(tradeFormDataDirectionSelector)
+  const { isBuy } = parseTradeDirectionInfo(direction)
 
-  const orderConfirmation = useRootStore((state) => state.trade.setting.orderConfirmation)
+  const orderConfirmation = useRootStore(tradeSettingOrderConfirmationSelector)
+  const { verifyCreateOrderData } = useVerifyCreateOrderData({ symbol })
 
-  const { onSubmitOrder, onCheckSubmit, isSubmitLoading } = useSubmitOrder()
+  const { onSubmitOrder, isSubmitLoading } = useSubmitOrder({ symbol })
 
   const handleSubmitOrder = async () => {
     await onSubmitOrder()
   }
 
   const handleConfirm = () => {
-    if (!onCheckSubmit()) {
+    if (!verifyCreateOrderData()) {
       return
     }
 
@@ -47,7 +50,7 @@ export const OrderSubmit = observer(() => {
         </Text>
       </Button>
 
-      <OrderConfirmDrawer ref={orderConfirmDrawerRef} onConfirm={handleSubmitOrder} />
+      <OrderConfirmDrawer ref={orderConfirmDrawerRef} symbol={symbol} onConfirm={handleSubmitOrder} />
     </View>
   )
 })

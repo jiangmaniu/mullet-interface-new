@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
-import type { LoginType } from '@/stores/user-slice'
+import type { LoginType } from '@/stores/user-slice/authSlice'
 
 import { useRootStore } from '@/stores'
 import { stores } from '@/v1/provider/mobxProvider'

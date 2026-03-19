@@ -20,12 +20,14 @@ import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
+import { useRootStore } from '@/stores'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
+import { useTradeSwitchActiveSymbol } from '../(trade)/_hooks/use-trade-switch-symbol'
 // 相对路径导入
 import { HighlightText } from './_comps/highlight-text'
 
@@ -208,7 +210,7 @@ const SearchPage = observer(function SearchPage() {
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useRootStore.getState().market.fetchMarketSymbolInfoList(trade.currentAccountInfo?.id)
   }, [])
 
   console.log(trade.symbolListAll)
@@ -226,14 +228,15 @@ const SearchPage = observer(function SearchPage() {
       .filter((c) => c.trim())
   }, [debouncedQuery])
 
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+
   const handleSelect = useCallback(
     (symbol: string) => {
-      trade.switchSymbol(symbol)
-      subscribeCurrentAndPositionSymbol({ cover: true })
+      switchTradeActiveSymbol(symbol)
 
       router.push(`/${symbol}`)
     },
-    [router, trade],
+    [router, switchTradeActiveSymbol],
   )
 
   return (

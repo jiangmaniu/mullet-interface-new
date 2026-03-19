@@ -18,11 +18,13 @@ import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { newCalcYieldRate, subscribeCurrentAndPositionSymbol, useCovertProfitCallback } from '@/v1/utils/wsUtil'
+import { newCalcYieldRate, useCovertProfitCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
@@ -104,7 +106,8 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
       ? 'text-market-fall'
       : 'text-content-1'
 
-  const activeSymbol = trade.activeSymbolName
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
 
   const closePositionDrawerRef = useRef<DrawerRef>(null)
   const positionTpSlDrawerRef = useRef<DrawerRef>(null)
@@ -133,8 +136,7 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
         <Pressable
           onPress={() => {
             if (!position.symbol || activeSymbol === position.symbol) return
-            trade.switchSymbol(position.symbol)
-            subscribeCurrentAndPositionSymbol({ cover: true })
+            switchTradeActiveSymbol(position.symbol)
           }}
         >
           <View className="flex-1 flex-row items-center gap-[10px]">

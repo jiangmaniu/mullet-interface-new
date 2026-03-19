@@ -134,18 +134,7 @@ declare namespace User {
      * 是否绑定银行卡
      */
     isBankcardBind?: boolean
-    /**
-     * 是否KYC认证
-     */
-    isKycAuth?: boolean
-    /**
-     * KYC认证信息
-     */
-    kycAuth?: KycAuth.ListItem[]
-    /**
-     * KYC身份认证ID
-     */
-    kycAuthId?: number
+
     /**
      * 备注
      */
@@ -165,19 +154,7 @@ declare namespace User {
       /** 区号 eg.599 */
       areaCode: string
     }
-    /** 国家-简称 */
-    country?: string
-    /** 是否基礎認證 */
-    isBaseAuth?: boolean
-    /** 證件類型 */
-    identificationType?: 'ID_CARD' | 'PASSPORT'
-    /** 姓 */
-    lastName?: string
-    /** 名 */
-    firstName?: string
-    /** 證件號 */
-    identificationCode?: string
-    // 业务线信息
+    // 账户组
     clientGroup?: {
       /**
        * 账户组ID

@@ -11,6 +11,8 @@ import { Text } from '@/components/ui/text'
 import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
@@ -28,7 +30,7 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
 
   // 检查账户信息和 symbolMapAll 是否已加载
   const hasAccountInfo = !!trade.currentAccountInfo?.id
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
   const hasSymbolData = Object.keys(trade.symbolMapAll).length > 0
 
   // 如果账户信息未加载，或 symbolMapAll 未加载，或 symbolInfo 未加载，显示骨架屏
@@ -67,7 +69,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   const { data: chartData = [], isLoading: isChartLoading } = useSymbolKline(symbol)
   const { colorStatusSuccess, colorStatusDanger } = useThemeColors()
   const { trade } = useStores()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
   const getCurrentQuote = useGetCurrentQuoteCallback()
 
   // 获取行情数据
@@ -86,9 +88,14 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   // 判断是否应该显示图表
   const shouldShowChart = !isChartLoading && chartData.length > 0
 
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+
   const handlePress = () => {
-    trade.switchSymbol(symbolInfo?.symbol)
-    subscribeCurrentAndPositionSymbol({ cover: true })
+    if (!symbolInfo?.symbol) {
+      return
+    }
+
+    switchTradeActiveSymbol(symbolInfo?.symbol)
     router.push(`/${symbolInfo?.symbol}`)
   }
 

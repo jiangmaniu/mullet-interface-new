@@ -1,21 +1,18 @@
-import { Account } from '@/v1/services/tradeCore/account/typings'
-
 import type { Setter } from '../_helpers/createSetter'
-import { createSetter } from '../_helpers/createSetter'
 import type { ImmerStateCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
-import { createTradeSettingSlice, type SettingSlice } from './settingSlice'
-import { createTradeFormDataSlice, type FormDataSlice } from './formDataSlice'
+import type { FormDataSlice } from './formDataSlice'
+import type { SettingSlice } from './settingSlice'
 
-// 导出 selectors 和类型
-export * from './settingSlice'
-export * from './formDataSlice'
+import { createSetter } from '../_helpers/createSetter'
+import { createTradeFormDataSlice } from './formDataSlice'
+import { createTradeSettingSlice } from './settingSlice'
 
 /** Trade 根级状态 */
 export interface TradeSliceState {
-  /** 当前激活的交易品种 */
-  activeTradeSymbol: Account.TradeSymbolListItem | null
-  setActiveTradeSymbol: Setter<Account.TradeSymbolListItem | null>
+  /** 当前激活的交易品种 symbol */
+  activeTradeSymbol: string | undefined
+  setActiveTradeSymbol: Setter<string | undefined>
 }
 
 /** Trade 命名空间完整类型 */
@@ -30,7 +27,7 @@ export const createTradeSlice: ImmerStateCreator<RootStoreState, TradeSlice> = (
   const tradeSetter = createSetter<TradeSlice>(set, (s) => s.trade)
 
   return {
-    activeTradeSymbol: null,
+    activeTradeSymbol: undefined,
     setActiveTradeSymbol: tradeSetter('activeTradeSymbol'),
 
     setting: createTradeSettingSlice(set, get),
@@ -41,3 +38,10 @@ export const createTradeSlice: ImmerStateCreator<RootStoreState, TradeSlice> = (
 // ============ Selectors ============
 
 export const tradeActiveTradeSymbolSelector = (state: RootStoreState) => state.trade.activeTradeSymbol
+
+/** 获取当前激活交易品种的完整信息（从 symbolInfoMap 中查找） */
+export const tradeActiveTradeSymbolInfoSelector = (state: RootStoreState) => {
+  const activeSymbol = state.trade.activeTradeSymbol
+  if (!activeSymbol) return null
+  return state.market.symbolInfoMap[activeSymbol] || null
+}

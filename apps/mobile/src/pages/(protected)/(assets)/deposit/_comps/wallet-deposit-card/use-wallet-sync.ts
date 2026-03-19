@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { useAccount } from '@/lib/appkit'
 import { useRootStore } from '@/stores'
-import { LoginType } from '@/stores/user-slice'
+import { LoginType } from '@/stores/user-slice/authSlice'
 
 import { useDepositActions, useDepositState } from '../../_hooks/use-deposit-state'
 

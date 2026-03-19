@@ -196,8 +196,12 @@ useEffect(() => {
 ### 路由跳转
 
 ```typescript
+// 在组件顶层调用 hook
+const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+
+// 在事件处理函数中使用
 const handleSelect = (symbol: string) => {
-  trade.switchSymbol(symbol)
+  switchTradeActiveSymbol(symbol)
   router.push(`/trade/${symbol}`)
 }
 ```
@@ -250,7 +254,7 @@ const handleSelect = (symbol: string) => {
 
 1. HOT_SYMBOL_LIST 需要转小写匹配 Alias 字段
 2. 高亮逻辑需要处理大小写不敏感
-3. 路由跳转前需要调用 `trade.switchSymbol()` 更新状态
+3. 路由跳转前需要在组件顶层调用 `useTradeSwitchActiveSymbol()` hook，然后使用返回的 `switchTradeActiveSymbol()` 方法更新状态
 
 ## 验收标准
 

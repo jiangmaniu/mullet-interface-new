@@ -26,7 +26,7 @@ export type AuthSlice = AuthSliceState & AuthSliceActions
  * 访问路径: state.user.auth.xxx
  */
 export function createUserAuthSlice(
-  setRoot: (fn: (state: any) => void) => void,
+  setRoot: (fn: (state: RootStoreState) => void) => void,
 ): AuthSlice {
   return {
     accessToken: undefined,

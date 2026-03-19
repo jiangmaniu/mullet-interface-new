@@ -15,13 +15,14 @@ import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
-import { useThemeColors } from '@/hooks/use-theme-colors'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { PendingCurrentPrice } from '../../common/position-current-price'
@@ -34,8 +35,8 @@ interface PendingOrderItemProps {
 const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
   const { renderLinguiMsg } = useI18n()
   const pendingOrderInfo = parseTradePendingOrderInfo(order)
-  const { trade } = useStores()
-  const activeSymbol = trade.activeSymbolName
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
 
   return (
     <View className="py-xl gap-xl">
@@ -45,8 +46,7 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
           onPress={() => {
             if (!order.symbol || activeSymbol === order.symbol) return
 
-            trade.switchSymbol(order.symbol)
-            subscribeCurrentAndPositionSymbol({ cover: true })
+            switchTradeActiveSymbol(order.symbol)
           }}
         >
           <View className="flex-1 flex-row items-center gap-[10px]">

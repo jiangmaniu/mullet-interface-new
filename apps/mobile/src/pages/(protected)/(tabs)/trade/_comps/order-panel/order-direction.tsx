@@ -1,39 +1,42 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 
 import { Text } from '@/components/ui/text'
-import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
+import { TRADE_POSITION_DIRECTION_ENUM_OPTIONS, TradePositionDirectionEnum } from '@/options/trade/position'
+import { useRootStore } from '@/stores'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { tradeFormDataDirectionSelector, tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
-export const OrderDirection = observer(({ symbol }: { symbol: string }) => {
-  const { trade } = useStores()
-  const { buySell, setBuySell } = trade
-  const isBuy = buySell === TradePositionDirectionEnum.BUY
-  const isSell = buySell === TradePositionDirectionEnum.SELL
-
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+export const OrderDirection = observer(({ symbol }: { symbol?: string }) => {
+  const symbolInfo = useMarketSymbolInfo(symbol)
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const quoteInfo = getCurrentQuote(symbol)
 
   // Get URL params
-  const { direction } = useLocalSearchParams<{ direction?: TradePositionDirectionEnum }>()
+  const { direction: urlDirection } = useLocalSearchParams<{ direction?: TradePositionDirectionEnum }>()
+  const direction = useRootStore(tradeFormDataDirectionSelector)
+  const { isBuy, isSell } = parseTradeDirectionInfo(direction)
+
+  const setDirection = useCallback((direction: TradePositionDirectionEnum) => {
+    tradeFormDataSelector(useRootStore.getState()).setFormData({ direction })
+  }, [])
 
   useEffect(() => {
-    if (direction) {
-      setBuySell(direction)
+    if (urlDirection && TRADE_POSITION_DIRECTION_ENUM_OPTIONS.some((option) => option.value === urlDirection)) {
+      setDirection(urlDirection)
     }
-  }, [direction])
+  }, [setDirection, urlDirection])
 
-  console.log(quoteInfo?.spread)
   return (
     <View className="gap-medium relative flex-row items-center">
       <Pressable
-        onPress={() => setBuySell(TradePositionDirectionEnum.BUY)}
+        onPress={() => setDirection(TradePositionDirectionEnum.BUY)}
         className={`px-xl rounded-small h-[40px] flex-1 flex-row items-center justify-center ${isBuy ? 'bg-market-rise' : 'bg-button'}`}
       >
         <Text className={`text-button-2 font-medium ${isBuy ? 'text-market-rise-foreground' : 'text-content-4'}`}>
@@ -50,7 +53,7 @@ export const OrderDirection = observer(({ symbol }: { symbol: string }) => {
       </View>
 
       <Pressable
-        onPress={() => setBuySell(TradePositionDirectionEnum.SELL)}
+        onPress={() => setDirection(TradePositionDirectionEnum.SELL)}
         className={`px-xl rounded-small h-[40px] flex-1 flex-row items-center justify-center ${
           isSell ? 'bg-market-fall' : 'bg-button'
         }`}

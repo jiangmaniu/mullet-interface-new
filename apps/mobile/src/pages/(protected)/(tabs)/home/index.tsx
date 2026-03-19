@@ -27,13 +27,14 @@ import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
 import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
 import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useRootStore } from '@/stores'
-import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 
 import { MarketOverview } from './_comps/market-overview'
 import { useSymbolKline } from './_hooks/use-symbol-kline'
@@ -82,11 +83,10 @@ const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
 
 const MarketRow = observer(
   ({ viewMode, symbolInfo }: { viewMode: ViewMode; symbolInfo: Account.TradeSymbolListItem }) => {
-    const { trade } = useStores()
+    const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
 
     const handlePress = () => {
-      trade.switchSymbol(symbolInfo?.symbol)
-      subscribeCurrentAndPositionSymbol({ cover: true })
+      switchTradeActiveSymbol(symbolInfo?.symbol)
       router.push(`/${symbolInfo?.symbol}`)
     }
 
@@ -138,7 +138,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
         <View className="h-8 w-[70px] items-center justify-center overflow-hidden">
           {isLoading ? (
             // 加载骨架屏
-            <View className="bg-zinc-300/10 h-full w-full rounded-xs" />
+            <View className="h-full w-full rounded-xs bg-zinc-300/10" />
           ) : (
             <SparkLine data={memoizedChartData} color={chartColor} width={70} height={32} strokeWidth={1} />
           )}
@@ -298,6 +298,7 @@ export default function Index() {
   useLayoutEffect(() => {
     // 重新刷新品种列表
     stores.trade.getSymbolList()
+    useRootStore.getState().market.fetchMarketSymbolInfoList(stores.trade.currentAccountInfo?.id)
   }, [])
 
   return (

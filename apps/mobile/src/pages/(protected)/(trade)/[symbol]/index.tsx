@@ -21,9 +21,10 @@ import { t } from '@/locales/i18n'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useRootStore } from '@/stores'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { transferWeekDay } from '@/v1/constants'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { formatTimeStr } from '@/v1/utils/business'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { msg } from '@lingui/core/macro'
@@ -34,14 +35,13 @@ import { SymbolSelector } from '../../(tabs)/trade/_comps/header'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
-  symbol: string
+  symbol?: string
   onSymbolPress?: () => void
 }
 
 const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeaderProps) => {
   const router = useRouter()
-  const { trade } = useStores()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
 
   const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
   const isFavorite = favoriteSet.has(symbolInfo?.symbol ?? '')
@@ -61,7 +61,7 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
   return (
     <ScreenHeader
       showBackButton={false}
-      left={<SymbolSelector symbolInfo={symbolInfo} />}
+      left={<SymbolSelector symbol={symbol} />}
       right={
         <View className="gap-xl flex-row items-center">
           <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
@@ -94,13 +94,12 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
 
 // ============ PriceInfo Component ============
 interface PriceInfoProps {
-  symbol: string
+  symbol?: string
 }
 
 const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
-  const { trade } = useStores()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
   const symbolMarketInfo = getCurrentQuote(symbol)
   const latestPrice = symbolMarketInfo?.ask
   const high = symbolMarketInfo?.high
@@ -179,7 +178,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
 })
 
 // ============ ChartView Component ============
-function ChartView({ symbol }: { symbol: string }) {
+function ChartView({ symbol }: { symbol?: string }) {
   return (
     // <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
     <View className="flex-1">
@@ -192,7 +191,7 @@ function ChartView({ symbol }: { symbol: string }) {
 }
 
 // ============ DetailsView Component ============
-function DetailsView({ symbol }: { symbol: string }) {
+function DetailsView({ symbol }: { symbol?: string }) {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbol)
   const tradeTimeConf = symbolMarketInfo?.tradeTimeConf as any[]
@@ -304,16 +303,15 @@ function DetailsView({ symbol }: { symbol: string }) {
 
 // ============ BottomActionBar Component ============
 interface BottomActionBarProps {
-  symbol: string
+  symbol?: string
   onBuy: () => void
   onSell: () => void
 }
 
 const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
-  const { trade } = useStores()
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbol)
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
   const buyPrice = symbolMarketInfo?.bid
   const sellPrice = symbolMarketInfo?.ask
   const spread = symbolMarketInfo?.spread
@@ -360,8 +358,8 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
 const SymbolDepth = observer(() => {
   const router = useRouter()
   // const { symbol } = useLocalSearchParams<{ symbol: string }>()
-  const { trade } = useStores()
-  const symbol = trade.activeSymbolName
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
+  const symbol = activeSymbol
   const [currentIndex, setCurrentIndex] = React.useState(0)
 
   const routes = useMemo<Route[]>(

@@ -5,6 +5,8 @@ import { useStores } from '@/v1/provider/mobxProvider'
 import { toFixed, formatNum, toNegativeOrEmpty } from '@/v1/utils'
 import { calcExchangeRate } from '@/v1/utils/wsUtil'
 import { add, subtract, throttle } from 'lodash-es'
+import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
+import { useRootStore } from '@/stores'
 
 export default function useSpSl() {
   const { trade } = useStores()
@@ -326,16 +328,8 @@ export default function useSpSl() {
     [isBuy, slValuePrice, sl_scope]
   )
 
-  const disabledInfo = useMemo(() => {
-    const disabledBtn = trade.disabledTrade() || trade.disabledTradeAction()
-    const disabledTrade = trade.disabledTrade()
-    const disabledInput = trade.disabledTradeAction()
-    return {
-      disabledBtn,
-      disabledTrade,
-      disabledInput
-    }
-  }, [trade.currentAccountInfo, symbol, trade.symbolListAll.length])
+  const activeTradeAccountId = useRootStore((s) => s.user.info.activeTradeAccountId)
+  const disabledInfo = useDisabledTrade({ accountId: activeTradeAccountId, symbol })
 
   // 禁用交易输入框
   const disabledInput = disabledInfo.disabledInput

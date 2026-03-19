@@ -35,10 +35,15 @@ class UserStore {
       const localUserInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
 
       const id = localUserInfo?.user_id
+      await useRootStore.getState().user.info.fetchClientInfo(id)
+
       // 查询客户信息
-      const clientInfo = await getClientDetail({
+      const res = await getClientDetail({
         id,
       })
+
+      if (!res?.success) return
+      const clientInfo = res.data
 
       const currentUser = {
         ...localUserInfo,
@@ -102,19 +107,20 @@ class UserStore {
       // 20241021：这里不主动选择账号，由用户选择
       // 20240227 自动选择第一个真实的账号
       stores.trade.setCurrentAccountInfo(currentUser.accountList?.[0] as User.AccountItem)
-      useRootStore.getState().user.info.setActiveTradeAccountId(
-        currentUser.accountList?.[0]?.id ?? null
-      )
+      useRootStore.getState().user.info.setActiveTradeAccountId(currentUser.accountList?.[0]?.id ?? null)
     } else if (localAccountId) {
       // 更新本地存在的账号信息，确保证数据是最新的
       stores.trade.setCurrentAccountInfo(
         currentUser.accountList?.find((item) => item.id === localAccountId) as User.AccountItem,
       )
-      useRootStore.getState().user.info.setActiveTradeAccountId(
-        currentUser.accountList?.find((item) => item.id === localAccountId)?.id ?? null
-      )
+      useRootStore
+        .getState()
+        .user.info.setActiveTradeAccountId(
+          currentUser.accountList?.find((item) => item.id === localAccountId)?.id ?? null,
+        )
     } else {
       stores.trade.getSymbolList()
+      useRootStore.getState().market.fetchMarketSymbolInfoList(stores.trade.currentAccountInfo?.id)
     }
   }
 }

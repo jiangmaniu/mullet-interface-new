@@ -10,7 +10,7 @@ import { Text } from '@/components/ui/text'
 import { WITHDRAW_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccount, useWalletInfo } from '@/lib/appkit'
 import { useRootStore } from '@/stores'
-import { LoginType } from '@/stores/user-slice'
+import { LoginType } from '@/stores/user-slice/authSlice'
 import { getImgSource } from '@/utils/img'
 import { formatAddress } from '@mullet/utils/web3'
 

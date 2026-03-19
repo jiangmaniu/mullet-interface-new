@@ -115,16 +115,16 @@ export const marketCurrentFavoriteSetSelector = createSelector(
 
 /**
  * 当前账户的收藏品种完整信息列表
- * 自动过滤 marketMap 中不存在的品种（已下架）
+ * 自动过滤 symbolInfoMap 中不存在的品种（已下架）
  */
 export const marketCurrentFavoriteSymbolInfoListSelector = createSelector(
   [
     marketCurrentFavoriteSymbolListSelector,
-    (state: RootStoreState) => state.market.marketMap,
+    (state: RootStoreState) => state.market.symbolInfoMap,
   ],
-  (symbolList, marketMap): Account.TradeSymbolListItem[] =>
+  (symbolList, symbolInfoMap): Account.TradeSymbolListItem[] =>
     symbolList
-      .map((symbol) => marketMap[symbol])
+      .map((symbol) => symbolInfoMap[symbol])
       .filter(Boolean) as Account.TradeSymbolListItem[],
 )
 
@@ -153,10 +153,10 @@ export const getMarketFavoriteSymbolInfoListByAccountId = (accountId: string) =>
   createSelector(
     [
       (state: RootStoreState) => state.market.favorite.symbolFavoriteMap[accountId] || [],
-      (state: RootStoreState) => state.market.marketMap,
+      (state: RootStoreState) => state.market.symbolInfoMap,
     ],
-    (symbolList, marketMap): Account.TradeSymbolListItem[] =>
+    (symbolList, symbolInfoMap): Account.TradeSymbolListItem[] =>
       symbolList
-        .map((symbol: string) => marketMap[symbol])
+        .map((symbol: string) => symbolInfoMap[symbol])
         .filter(Boolean) as Account.TradeSymbolListItem[],
   )

@@ -48,7 +48,7 @@ declare namespace Order {
     /**
      * 交易账户ID
      */
-    tradeAccountId: number
+    tradeAccountId: string
     /**
      * 订单类型
      */

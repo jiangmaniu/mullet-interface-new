@@ -132,6 +132,46 @@ export const tradeSettingColorSchemeSelector = (state: RootStoreState) => state.
 export const tradeSettingOrderConfirmationSelector = (state: RootStoreState) => state.trade.setting.orderConfirmation
 ```
 
+#### 生成式 Selector（参数化 Selector）
+
+**命名格式：`create{完整命名空间路径}{状态字段}Selector`**
+
+生成式 selector 用于根据参数动态查询状态，统一使用 `create` 前缀：
+
+```ts
+// market-slice/index.ts
+
+/** 生成式 selector - 根据 symbol 查找对应的 symbolInfo */
+export const createSymbolInfoSelector = (symbol: string) => (state: RootStoreState) =>
+  state.market.symbolInfoMap[symbol] || null
+
+// 使用示例
+const symbolInfo = useRootStore(createSymbolInfoSelector('BTCUSD'))
+```
+
+**生成式 selector 的特点：**
+
+1. 接受参数并返回一个 selector 函数
+2. 统一使用 `create` 前缀命名
+3. 适用于需要根据动态参数查询状态的场景
+4. 返回值应该有合理的默认值（如 `null`、`undefined` 或空数组）
+
+**常见使用场景：**
+
+```ts
+// 根据 ID 查找实体
+export const createOrderByIdSelector = (orderId: string) => (state: RootStoreState) =>
+  state.trade.orders.find(order => order.id === orderId)
+
+// 根据条件过滤列表
+export const createFilteredOrdersSelector = (status: OrderStatus) => (state: RootStoreState) =>
+  state.trade.orders.filter(order => order.status === status)
+
+// 从 Map 中查找
+export const createSymbolInfoSelector = (symbol: string) => (state: RootStoreState) =>
+  state.market.symbolInfoMap[symbol] || null
+```
+
 #### 强制规则
 
 1. **使用状态前必须先创建对应的 selector**

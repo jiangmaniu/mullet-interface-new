@@ -16,24 +16,26 @@ import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { cn } from '@/lib/utils'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { CommonFeaturesDrawer } from './common-features-drawer'
 
 interface TradeHeaderProps {
-  symbol: string
+  symbol?: string
 }
 
 export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const router = useRouter()
   const { trade } = useStores()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
+  const symbolInfo = useMarketSymbolInfo(symbol)
 
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
   const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
@@ -44,6 +46,9 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
       // Already on chart view, do nothing
       return
     } else {
+      if (!symbolInfo) {
+        return
+      }
       // Navigate to symbol depth page with default symbol (e.g., SOL-USDC)
       router.push({ pathname: '/(protected)/(trade)/[symbol]', params: { symbol: symbolInfo?.symbol } })
     }
@@ -55,7 +60,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
     <>
       <ScreenHeader
         showBackButton={false}
-        left={<SymbolSelector symbolInfo={symbolInfo} />}
+        left={<SymbolSelector symbol={symbol} />}
         right={
           <View className="gap-xl flex-row items-center">
             <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
@@ -120,9 +125,10 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   )
 })
 
-export const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
-  const { trade } = useStores()
+export const SymbolSelector = observer(({ symbol }: { symbol?: string }) => {
   const [isSymbolSelectDrawerOpen, setIsSymbolSelectDrawerOpen] = useState(false)
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+  const symbolInfo = useMarketSymbolInfo(symbol)
 
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
@@ -134,10 +140,9 @@ export const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.Tr
 
   const handleSymbolSelect = useCallback(
     (symbolInfo: Account.TradeSymbolListItem) => {
-      trade.switchSymbol(symbolInfo?.symbol)
-      subscribeCurrentAndPositionSymbol({ cover: true })
+      switchTradeActiveSymbol(symbolInfo?.symbol)
     },
-    [trade],
+    [switchTradeActiveSymbol],
   )
 
   return (

@@ -52,8 +52,8 @@ function applyColorSchemeWithColors(scheme: ColorScheme) {
  * 访问路径: state.trade.setting.xxx
  */
 export function createTradeSettingSlice(
-  setRoot: (fn: (state: any) => void) => void,
-  getRoot: () => any,
+  setRoot: (fn: (state: RootStoreState) => void) => void,
+  getRoot: () => RootStoreState,
 ): SettingSlice {
   return {
     colorScheme: 'green-up',

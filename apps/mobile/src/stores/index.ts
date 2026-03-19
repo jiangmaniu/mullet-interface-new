@@ -32,10 +32,7 @@ const useRootStoreBase = create<RootStoreState>()(
       {
         name: 'mullet-root-store',
         storage: createJSONStorage(() => mmkvStorage),
-        partialize: createPartialize<RootStoreState>(
-          'trade.formData',
-          'market.fetchMarketListLoading',
-        ),
+        partialize: createPartialize<RootStoreState>('trade.formData', 'market.fetchMarketListLoading'),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
       },
@@ -50,7 +47,7 @@ useRootStoreBase.subscribe(
   (state) => state.user.info.activeTradeAccountId,
   (accountId, prevAccountId) => {
     if (accountId && accountId !== prevAccountId) {
-      useRootStoreBase.getState().market.fetchTradeSymbolList(accountId)
+      useRootStoreBase.getState().market.fetchMarketSymbolInfoList(accountId)
     }
   },
 )

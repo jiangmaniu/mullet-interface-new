@@ -24,11 +24,12 @@ export class BNumber extends BigNumberBase {
   constructor(n: BNumberValue, base?: number) {
     n = n === '' ? 0 : n
 
+    const value = n.toString().replace(/,/g, '')
     // v10 中 base 参数不接受 undefined，需要条件传递
     if (base !== undefined) {
-      super(n.toString(), base)
+      super(value, base)
     } else {
-      super(n.toString())
+      super(value)
     }
   }
 
@@ -116,7 +117,9 @@ export class BNumber extends BigNumberBase {
     if (isNil(n)) return
 
     const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.multipliedBy(value.toString(), base) : super.multipliedBy(value.toString()))
+    return BNumber.from(
+      base !== undefined ? super.multipliedBy(value.toString(), base) : super.multipliedBy(value.toString()),
+    )
   }
 
   div(n: BNumberValue, base?: number): BNumber

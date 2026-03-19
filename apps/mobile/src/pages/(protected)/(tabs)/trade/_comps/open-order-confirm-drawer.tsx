@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useImperativeHandle, useState } from 'react'
 import { Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 import { useToggle } from 'ahooks'
 
 import { AvatarImage } from '@/components/ui/avatar'
@@ -10,26 +11,30 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Drawer, DrawerContent, DrawerFooter, DrawerHeader, DrawerRef, DrawerTitle } from '@/components/ui/drawer'
 import { Text } from '@/components/ui/text'
+import { parseSymbolContractSize } from '@/helpers/parse/symbol'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
-import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useRootStore } from '@/stores'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { getImgSource } from '@/utils/img'
 import useMargin from '@/v1/hooks/trade/useMargin'
-import useQuote from '@/v1/hooks/trade/useQoute'
-import useSpSl from '@/v1/hooks/trade/useSpSl'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useCreateOrderPrice } from './order-panel/_hooks/use-order-price'
+
 interface OrderConfirmDrawerProps {
   ref: React.RefObject<Nilable<DrawerRef>>
   onConfirm?: () => void
+  symbol?: string
 }
 
-export function OrderConfirmDrawer({ ref, onConfirm }: OrderConfirmDrawerProps) {
+export function OrderConfirmDrawer({ ref, onConfirm, symbol }: OrderConfirmDrawerProps) {
   const [open, { toggle, setLeft: setFalse, setRight: setTrue, set: onSet }] = useToggle()
   useImperativeHandle(ref, () => ({
     open: () => setTrue(),
@@ -46,18 +51,28 @@ export function OrderConfirmDrawer({ ref, onConfirm }: OrderConfirmDrawerProps) 
           </DrawerTitle>
         </DrawerHeader>
 
-        <OrderConfirmDrawerContent onConfirm={onConfirm} onClose={setFalse} />
+        <OrderConfirmDrawerContent onConfirm={onConfirm} symbol={symbol} onClose={setFalse} />
       </DrawerContent>
     </Drawer>
   )
 }
 
 const OrderConfirmDrawerContent = observer(
-  ({ onConfirm, onClose }: { onConfirm?: () => void; onClose: () => void }) => {
+  ({ onConfirm, onClose, symbol }: { symbol?: string; onConfirm?: () => void; onClose: () => void }) => {
     const [isConfirmLoading, { setLeft: setFalse, setRight: setTrue }] = useToggle(false)
     const { trade } = useStores()
-    const activeSymbolInfo = trade.getActiveSymbolInfo(trade.activeSymbolName)
-    const isBuy = trade.buySell === TradePositionDirectionEnum.BUY
+
+    const { direction, amount, tpPrice, slPrice } = useRootStore(
+      useShallow((s) => {
+        const { direction, amount, tpPrice, slPrice } = tradeFormDataSelector(s)
+        return { direction, amount, tpPrice, slPrice }
+      }),
+    )
+
+    const directionInfo = parseTradeDirectionInfo(direction)
+
+    const symbolInfo = useMarketSymbolInfo(symbol)
+
     const currentAccountInfo = trade.currentAccountInfo
 
     const orderConfirmation = useRootStore((s) => s.trade.setting.orderConfirmation)
@@ -65,13 +80,14 @@ const OrderConfirmDrawerContent = observer(
     const setOrderConfirmation = useRootStore((s) => s.trade.setting.setOrderConfirmation)
     const { renderLinguiMsg } = useI18n()
 
-    const { slValuePrice, spValuePrice } = useSpSl()
-    const { currentPrice } = useQuote()
+    const lotsVolScale = parseSymbolLotsVolScale(symbolInfo)
 
-    const lotsVolScale = parseSymbolLotsVolScale(activeSymbolInfo)
-    const { orderPrice, orderVolume, orderType } = trade
-    const openOrderPrice = orderType === 'MARKET_ORDER' ? currentPrice : orderPrice
-    const orderAmountValue = BNumber.from(orderVolume).multipliedBy(openOrderPrice)
+    const openOrderPrice = useCreateOrderPrice({
+      symbol,
+    })
+    const contractSize = parseSymbolContractSize(symbolInfo?.symbolConf)
+    const orderAmountValue = BNumber.from(amount).multipliedBy(openOrderPrice)?.multipliedBy(contractSize)
+
     // 接口计算预估保证金
     const expectedMargin = useMargin()
 
@@ -79,7 +95,9 @@ const OrderConfirmDrawerContent = observer(
       try {
         setTrue()
         await Promise.resolve(onConfirm?.())
-        setOrderConfirmation(dontAskAgain)
+        if (dontAskAgain) {
+          setOrderConfirmation(false)
+        }
         onClose?.()
       } catch {
       } finally {
@@ -93,11 +111,11 @@ const OrderConfirmDrawerContent = observer(
           <View className="gap-xl">
             {/* Symbol and Direction */}
             <View className="gap-medium flex-row items-center">
-              <AvatarImage source={getImgSource(activeSymbolInfo?.imgUrl)} className="size-6 rounded-full" />
+              <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-6 rounded-full" />
 
-              <Text className="text-important-1 text-content-1">{renderFormatSymbolName(activeSymbolInfo)}</Text>
-              <Badge color={isBuy ? 'rise' : 'fall'}>
-                <Text>{isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+              <Text className="text-important-1 text-content-1">{renderFormatSymbolName(symbolInfo)}</Text>
+              <Badge color={directionInfo.isBuy ? 'rise' : 'fall'}>
+                <Text>{directionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
               </Badge>
             </View>
 
@@ -110,7 +128,7 @@ const OrderConfirmDrawerContent = observer(
                 </Text>
                 <Text className="text-paragraph-p2 text-market-rise">
                   {BNumber.toFormatNumber(openOrderPrice, {
-                    volScale: activeSymbolInfo.symbolDecimal,
+                    volScale: symbolInfo?.symbolDecimal,
                   })}
                 </Text>
               </View>
@@ -134,7 +152,7 @@ const OrderConfirmDrawerContent = observer(
                   <Trans>数量</Trans>
                 </Text>
                 <Text className="text-paragraph-p2 text-content-1">
-                  {BNumber.toFormatNumber(orderVolume, {
+                  {BNumber.toFormatNumber(amount, {
                     unit: renderLinguiMsg(LOTS_UNIT_LABEL),
                     volScale: lotsVolScale,
                   })}
@@ -161,11 +179,11 @@ const OrderConfirmDrawerContent = observer(
                 </Text>
                 <Text className="text-paragraph-p2 text-content-4">
                   {renderFallback(
-                    BNumber.toFormatNumber(spValuePrice, {
-                      volScale: activeSymbolInfo.symbolDecimal,
+                    BNumber.toFormatNumber(tpPrice, {
+                      volScale: symbolInfo?.symbolDecimal,
                       defaultLabel: renderLinguiMsg(msg`未设置`),
                     }),
-                    { verify: !!spValuePrice },
+                    { verify: !!tpPrice },
                   )}
                 </Text>
               </View>
@@ -177,11 +195,11 @@ const OrderConfirmDrawerContent = observer(
                 </Text>
                 <Text className="text-paragraph-p2 text-content-4">
                   {renderFallback(
-                    BNumber.toFormatNumber(slValuePrice, {
-                      volScale: activeSymbolInfo.symbolDecimal,
+                    BNumber.toFormatNumber(slPrice, {
+                      volScale: symbolInfo?.symbolDecimal,
                       defaultLabel: renderLinguiMsg(msg`未设置`),
                     }),
-                    { verify: !!slValuePrice },
+                    { verify: !!slPrice },
                   )}
                 </Text>
               </View>

@@ -1,7 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 
-import type { ChartPosition } from '@/stores/trade-slice'
+import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { ChartPosition } from '@/stores/trade-slice/settingSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 
 import { OrderAmount } from './order-amount'
@@ -19,12 +21,8 @@ interface OrderPanelProps {
 
 export const OrderPanel = observer(({ chartPosition }: OrderPanelProps) => {
   const { trade } = useStores()
-  const activeSymbolName = trade.activeSymbolName
 
-  // 添加安全检查，确保 symbol 存在
-  if (!activeSymbolName) {
-    return null
-  }
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   return (
     <View className="px-xl gap-xl" style={{ paddingBottom: chartPosition === 'bottom' ? 243 : 0 }}>
@@ -32,20 +30,20 @@ export const OrderPanel = observer(({ chartPosition }: OrderPanelProps) => {
       <OrderType />
 
       {/* Buy/Sell Buttons */}
-      <OrderDirection symbol={activeSymbolName} />
+      <OrderDirection symbol={activeSymbol} />
 
       {/* Price Input - Different UI for Market vs Limit */}
-      <OrderPrice symbol={activeSymbolName} />
+      <OrderPrice symbol={activeSymbol} />
 
       {/* Quantity Input */}
-      <OrderAmount symbol={activeSymbolName} />
+      <OrderAmount symbol={activeSymbol} />
 
       {/* Stop Loss */}
-      <OrderTpSl symbol={activeSymbolName} />
+      <OrderTpSl symbol={activeSymbol} />
 
-      <OrderSubmit />
+      <OrderSubmit symbol={activeSymbol} />
 
-      <OrderOverview symbol={activeSymbolName} />
+      <OrderOverview symbol={activeSymbol} />
     </View>
   )
 })

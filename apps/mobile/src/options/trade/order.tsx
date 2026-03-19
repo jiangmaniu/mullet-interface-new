@@ -1,5 +1,5 @@
-import { msg } from "@lingui/core/macro"
-import { EnumOption, getEnumOption } from "@/options/enum"
+import { EnumOption, getEnumOption } from '@/options/enum'
+import { msg } from '@lingui/core/macro'
 
 // ============ 订单状态 ============
 
@@ -19,6 +19,26 @@ export const ORDER_STATUS_ENUM_OPTIONS: EnumOption<OrderStatusEnum>[] = [
 
 export const getOrderStatusEnumOption = (option: Partial<EnumOption<OrderStatusEnum>>) => {
   return getEnumOption(ORDER_STATUS_ENUM_OPTIONS, option)
+}
+
+// ============ 订单创建类型 ============
+
+export enum OrderCreateTypeEnum {
+  /** 市价单 */
+  MARKET_ORDER = 'MARKET_ORDER',
+  /** 限价单 */
+  LIMIT_ORDER = 'LIMIT_ORDER',
+  /** 停损单 */
+  STOP_LIMIT_ORDER = 'STOP_LIMIT_ORDER',
+}
+
+export const ORDER_CREATE_TYPE_ENUM_OPTIONS: EnumOption<OrderCreateTypeEnum>[] = [
+  { label: msg`市价`, value: OrderCreateTypeEnum.MARKET_ORDER },
+  { label: msg`限价`, value: OrderCreateTypeEnum.LIMIT_ORDER },
+]
+
+export const getOrderCreateTypeEnumOption = (option: Partial<EnumOption<OrderCreateTypeEnum>>) => {
+  return getEnumOption(ORDER_CREATE_TYPE_ENUM_OPTIONS, option)
 }
 
 // ============ 订单类型 ============
@@ -84,4 +104,3 @@ export const ORDER_COMPLETION_TYPE_ENUM_OPTIONS: EnumOption<OrderCompletionTypeE
 export const getOrderCompletionTypeEnumOption = (option: Partial<EnumOption<OrderCompletionTypeEnum>>) => {
   return getEnumOption(ORDER_COMPLETION_TYPE_ENUM_OPTIONS, option)
 }
-

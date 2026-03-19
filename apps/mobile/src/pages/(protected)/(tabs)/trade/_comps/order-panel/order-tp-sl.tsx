@@ -1,32 +1,46 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
+import { useMemo } from 'react'
 import { View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input'
 import { Switch } from '@/components/ui/switch'
 import { Text } from '@/components/ui/text'
+import { calcOrderTpSlScopePriceInfo, calcPnlInfo, TpSlDirectionEnum } from '@/helpers/calc/order'
+import { calcCurrencyExchangeRate } from '@/helpers/calc/trade'
 import { cn } from '@/lib/utils'
-import { TradePositionDirectionEnum } from '@/options/trade/position'
-import useSpSl from '@/v1/hooks/trade/useSpSl'
+import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
+import { useRootStore } from '@/stores'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 
-export const OrderTpSl = observer(({ symbol }: { symbol: string }) => {
-  const { trade } = useStores()
-  const { setOrderSpslChecked, orderSpslChecked } = trade
+import { useCreateOrderPrice } from './_hooks/use-order-price'
+
+export const OrderTpSl = observer(({ symbol }: { symbol?: string }) => {
+  const hasTpSl = useRootStore((s) => {
+    return tradeFormDataSelector(s).hasTpSl
+  })
 
   return (
     <View className="gap-xl">
       {/* Stop Loss Toggle */}
       <View className="gap-medium flex-row items-center">
-        <Switch checked={orderSpslChecked} onCheckedChange={setOrderSpslChecked} />
+        <Switch
+          checked={hasTpSl}
+          onCheckedChange={(v) => {
+            tradeFormDataSelector(useRootStore.getState()).setFormData({ hasTpSl: v })
+          }}
+        />
         <Text className="text-paragraph-p3 text-content-4">
           <Trans>止盈/止损</Trans>
         </Text>
       </View>
 
       {/* Stop Loss/Take Profit Inputs - Only show when enabled */}
-      {orderSpslChecked && (
+      {hasTpSl && (
         <>
           {/* Take Profit Section */}
           <SetTakeProfit symbol={symbol} />
@@ -39,31 +53,67 @@ export const OrderTpSl = observer(({ symbol }: { symbol: string }) => {
   )
 })
 
-const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
+const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
   const { trade } = useStores()
   const { currentAccountInfo } = trade
 
-  let {
-    setSp,
-    sp_scope,
-    spValueEstimateRaw, // 使用 formatNum 格式化之前的值
-    spValuePrice,
-    disabledInput: disabled,
-  } = useSpSl()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
-  const isOrderDirectionBuy = trade.buySell === TradePositionDirectionEnum.BUY
+  const { disabledInput } = useDisabledTrade({ symbol, accountId: currentAccountInfo.id })
 
-  const takeProfitPrice = BNumber.from(spValuePrice)?.cutDecimalPlaces(symbolInfo?.symbolDecimal)?.toString()
+  const symbolInfo = useMarketSymbolInfo(symbol)
+  const { direction, tpPrice, amount, setFormData } = useRootStore(
+    useShallow((s) => {
+      const { amount, direction, tpPrice, setFormData } = tradeFormDataSelector(s)
+      return {
+        amount,
+        direction,
+        tpPrice,
+        setFormData,
+      }
+    }),
+  )
+
+  const createOrderPrice = useCreateOrderPrice({ symbol })
+
+  const pnlInfo = calcPnlInfo({
+    direction,
+    openPrice: createOrderPrice,
+    amount: amount,
+    contractSize: symbolInfo?.symbolConf?.contractSize,
+    closePrice: tpPrice,
+  })
+
+  const pnlInAccountCurrency = calcCurrencyExchangeRate({
+    value: pnlInfo?.pnl,
+    unit: symbolInfo?.symbolConf?.profitCurrency,
+    buySell: direction,
+  })
+
+  const { scopePrice, scopePriceFlag, isGte, isLte } = useMemo(() => {
+    const tpScopePriceInfo = calcOrderTpSlScopePriceInfo({
+      direction,
+      price: createOrderPrice,
+      TpSlDirection: TpSlDirectionEnum.TP,
+      level: symbolInfo?.symbolConf?.limitStopLevel,
+      decimals: symbolInfo?.symbolDecimal,
+    })
+    return tpScopePriceInfo
+  }, [createOrderPrice, direction, symbolInfo?.symbolConf?.limitStopLevel, symbolInfo?.symbolDecimal])
+
+  const isOutScope = isGte
+    ? BNumber.from(tpPrice)?.lt(scopePrice)
+    : isLte
+      ? BNumber.from(tpPrice)?.gt(scopePrice)
+      : false
 
   return (
     <View className="gap-xs">
       <View className="gap-xl flex-row">
         <NumberInput
           labelText={<Trans>止盈触发价</Trans>}
-          value={takeProfitPrice}
+          value={tpPrice}
           onValueChange={({ value }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
-              setSp(value)
+              setFormData({ tpPrice: value })
             }
           }}
           keyboardType="decimal-pad"
@@ -71,7 +121,7 @@ const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
           variant="outlined"
           size="md"
           className="flex-1"
-          disabled={disabled}
+          disabled={disabledInput}
         />
         {/* <Input
         labelText={t`百分比`}
@@ -88,26 +138,23 @@ const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
       </View>
       <View className="flex-row justify-between">
         <Text className="text-paragraph-p3 text-content-4">
-          <Trans>范围</Trans> {` ${isOrderDirectionBuy ? '≥' : '≤'} `}
-          <Text className="text-market-fall text-paragraph-p3">
-            {BNumber.toFormatNumber(sp_scope, {
+          <Trans>范围</Trans> {` ${scopePriceFlag} `}
+          <Text className={cn('text-paragraph-p3', isOutScope ? 'text-market-fall' : 'text-content-1')}>
+            {BNumber.toFormatNumber(scopePrice, {
               volScale: symbolInfo?.symbolDecimal,
             })}
           </Text>
         </Text>
+
         <Text className="text-paragraph-p3 text-content-4">
           <Trans>预计盈亏</Trans>{' '}
           <Text
             className={cn(
               'text-paragraph-p3',
-              BNumber.from(spValueEstimateRaw).gt(0)
-                ? 'text-market-rise'
-                : BNumber.from(spValueEstimateRaw).lt(0)
-                  ? 'text-market-fall'
-                  : 'text-content-1',
+              pnlInfo?.isProfit ? 'text-market-rise' : pnlInfo?.isLoss ? 'text-market-fall' : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(spValueEstimateRaw, {
+            {BNumber.toFormatNumber(pnlInAccountCurrency, {
               forceSign: true,
               positive: false,
               volScale: currentAccountInfo.currencyDecimal,
@@ -120,30 +167,70 @@ const SetTakeProfit = observer(({ symbol }: { symbol: string }) => {
   )
 })
 
-const SetStopLoss = observer(({ symbol }: { symbol: string }) => {
+const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
   const { trade } = useStores()
   const { currentAccountInfo } = trade
-  let {
-    setSl,
-    sl_scope,
-    slValueEstimateRaw, // 使用 formatNum 格式化之前的值
-    slValuePrice,
-    disabledInput: disabled,
-  } = useSpSl()
-  const symbolInfo = trade.getActiveSymbolInfo(symbol)
-  const isOrderDirectionBuy = trade.buySell === TradePositionDirectionEnum.BUY
+  const { disabledInput } = useDisabledTrade({
+    accountId: currentAccountInfo.id,
+    symbol,
+  })
 
-  const stopLossPrice = BNumber.from(slValuePrice)?.cutDecimalPlaces(symbolInfo?.symbolDecimal)?.toString()
+  const symbolInfo = useMarketSymbolInfo(symbol)
+
+  const { direction, slPrice, amount, setFormData } = useRootStore(
+    useShallow((s) => {
+      const { amount, direction, slPrice, setFormData } = tradeFormDataSelector(s)
+      return {
+        direction,
+        slPrice,
+        amount,
+        setFormData,
+      }
+    }),
+  )
+
+  const createOrderPrice = useCreateOrderPrice({ symbol })
+
+  const pnlInfo = calcPnlInfo({
+    direction,
+    openPrice: createOrderPrice,
+    contractSize: symbolInfo?.symbolConf?.contractSize,
+    amount: amount,
+    closePrice: slPrice,
+  })
+
+  const pnlInAccountCurrency = calcCurrencyExchangeRate({
+    value: pnlInfo?.pnl,
+    unit: symbolInfo?.symbolConf?.profitCurrency,
+    buySell: direction,
+  })
+
+  const { scopePrice, scopePriceFlag, isGte, isLte } = useMemo(() => {
+    const tpScopePriceInfo = calcOrderTpSlScopePriceInfo({
+      direction,
+      price: createOrderPrice,
+      TpSlDirection: TpSlDirectionEnum.SL,
+      level: symbolInfo?.symbolConf?.limitStopLevel,
+      decimals: symbolInfo?.symbolDecimal,
+    })
+    return tpScopePriceInfo
+  }, [createOrderPrice, direction, symbolInfo?.symbolConf?.limitStopLevel, symbolInfo?.symbolDecimal])
+
+  const isOutScope = isGte
+    ? BNumber.from(slPrice)?.lt(scopePrice)
+    : isLte
+      ? BNumber.from(slPrice)?.gt(scopePrice)
+      : false
 
   return (
     <View className="gap-xs">
       <View className="gap-xl flex-row">
         <NumberInput
           labelText={<Trans>止损触发价</Trans>}
-          value={stopLossPrice}
+          value={slPrice}
           onValueChange={({ value }, { source }) => {
             if (source === NumberInputSourceType.EVENT) {
-              setSl(value)
+              setFormData({ slPrice: value })
             }
           }}
           keyboardType="decimal-pad"
@@ -151,7 +238,7 @@ const SetStopLoss = observer(({ symbol }: { symbol: string }) => {
           variant="outlined"
           size="md"
           className="flex-1"
-          disabled={disabled}
+          disabled={disabledInput}
         />
         {/* <Input
         labelText={t`百分比`}
@@ -168,26 +255,23 @@ const SetStopLoss = observer(({ symbol }: { symbol: string }) => {
       </View>
       <View className="flex-row justify-between">
         <Text className="text-paragraph-p3 text-content-4">
-          <Trans>范围</Trans> {` ${isOrderDirectionBuy ? '≤' : '≥'} `}
-          <Text className="text-market-fall text-paragraph-p3">
-            {BNumber.toFormatNumber(sl_scope, {
+          <Trans>范围</Trans> {` ${scopePriceFlag} `}
+          <Text className={cn('text-paragraph-p3', isOutScope ? 'text-market-fall' : 'text-content-1')}>
+            {BNumber.toFormatNumber(scopePrice, {
               volScale: symbolInfo?.symbolDecimal,
             })}
           </Text>
         </Text>
+
         <Text className="text-paragraph-p3 text-content-4">
           <Trans>预计盈亏</Trans>{' '}
           <Text
             className={cn(
               'text-paragraph-p3',
-              BNumber.from(slValueEstimateRaw).gt(0)
-                ? 'text-market-rise'
-                : BNumber.from(slValueEstimateRaw).lt(0)
-                  ? 'text-market-fall'
-                  : 'text-content-1',
+              pnlInfo?.isProfit ? 'text-market-rise' : pnlInfo?.isLoss ? 'text-market-fall' : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(slValueEstimateRaw, {
+            {BNumber.toFormatNumber(pnlInAccountCurrency, {
               forceSign: true,
               positive: false,
               volScale: currentAccountInfo.currencyDecimal,

@@ -1,4 +1,5 @@
 import type { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
+import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 declare namespace Account {
   // 账号交易品种及配置-集合-参数
@@ -62,7 +63,7 @@ declare namespace Account {
      */
     symbolConfId?: number
     /**
-     * 品种小数位
+     * 品种的价格小数位
      */
     symbolDecimal?: number
     /**

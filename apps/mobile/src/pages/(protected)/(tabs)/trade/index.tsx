@@ -16,6 +16,7 @@ import { IconifyPage } from '@/components/ui/icons'
 import { useAppState } from '@/hooks/use-app-state'
 import { useI18n } from '@/hooks/use-i18n'
 import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 
@@ -31,7 +32,7 @@ const Trade = observer(() => {
   const router = useRouter()
   const { trade, user } = useStores()
   const { renderLinguiMsg } = useI18n()
-  const symbol = trade.activeSymbolName
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   // Safe Area Insets
   const insets = useSafeAreaInsets()
@@ -90,7 +91,7 @@ const Trade = observer(() => {
         renderHeader={() => (
           <CollapsibleStickyHeader>
             <CollapsibleStickyNavBar fixed>
-              <TradeHeader symbol={symbol} />
+              <TradeHeader symbol={activeSymbol} />
             </CollapsibleStickyNavBar>
 
             <CollapsibleStickyContent>

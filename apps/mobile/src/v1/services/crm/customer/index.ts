@@ -1,6 +1,7 @@
 import qs from 'qs'
 
 import { onBackendLogout } from '@/hooks/use-logout'
+import { ClientInfo } from '@/stores/user-slice/info-slice-type'
 import { getCurrentRouteName } from '@/v1/utils/navigation'
 import { request } from '@/v1/utils/request'
 
@@ -30,7 +31,7 @@ export async function getClientList(params?: API.PageParam) {
 
 // 客户用户-详情
 export async function getClientDetail(params: API.IdParam) {
-  return request<API.Response<Customer.ListItem>>('/api/trade-crm/crmApi/client/detail', {
+  return request<API.Response<User.ClientInfo>>('/api/trade-crm/crmApi/client/detail', {
     method: 'GET',
     skipErrorHandler: true,
     params,
@@ -39,7 +40,7 @@ export async function getClientDetail(params: API.IdParam) {
       if (getCurrentRouteName() !== 'Welcome') {
         onBackendLogout()
       }
-      return {}
+      return
     }
 
     if (res.data?.accountList?.length) {
@@ -54,7 +55,7 @@ export async function getClientDetail(params: API.IdParam) {
         return item
       })
     }
-    return res?.data || {}
+    return res
   })
 }
 
