@@ -50,14 +50,14 @@ export default function TransferScreen() {
               if (!val || !fromAccount?.money) return true
               return BNumber.from(val).lte(BNumber.from(fromAccount.money))
             },
-            { message: t`金额不可大于可用余额` },
+            { message: t`转账金额超过可用余额` },
           )
           .refine(
             (val) => {
               if (!val) return true
-              return BNumber.from(val).gte(0)
+              return BNumber.from(val).gte(10)
             },
-            { message: t`金额不能小于0` },
+            { message: t`转账金额需≥10 USDC` },
           ),
       }),
     [fromAccount?.money],
@@ -96,7 +96,7 @@ export default function TransferScreen() {
     }
   }
 
-  const isSubmitDisabled = !fromAccount || !toAccount || !amount || submitLoading
+  const isSubmitDisabled = !fromAccount || !toAccount || !BNumber.from(amount).gt(0) || submitLoading
 
   // 点击确定按钮，显示确认 Drawer
   const handleSubmit = form.handleSubmit(async () => {
@@ -182,8 +182,7 @@ export default function TransferScreen() {
                   <FormItem>
                     <FormControl>
                       <NumberInput
-                        max={fromAccount?.money}
-                        decimalScale={fromAccount?.currencyDecimal}
+                        decimalScale={2}
                         placeholder="请输入金额"
                         value={field.value}
                         onValueChange={({ value }, { source }) => {
