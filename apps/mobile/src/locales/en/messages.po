@@ -18,6 +18,10 @@ msgstr ""
 msgid "止损触发价"
 msgstr "Stop-loss Trigger Price"
 
+#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/position-tp-sl-drawer.tsx
+msgid "账户禁用或休市，无法进行交易"
+msgstr "Account disabled or market closed, trading unavailable"
+
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx
 msgid "创建多个账户后可进行资金划转"
 msgstr "Fund transfers available after creating multiple accounts"
@@ -31,6 +35,10 @@ msgstr "Authorized Wallet"
 msgid "每日可存款{0}"
 msgstr "Daily deposit limit {0}"
 
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "转账详情"
+msgstr "Transfer Details"
+
 #: src/v1/constants/enum.ts
 msgid "周六"
 msgstr "Saturday"
@@ -42,6 +50,7 @@ msgstr "Calculating..."
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
@@ -60,6 +69,10 @@ msgstr "Copy failed"
 #: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "下单失败"
 msgstr "Order failed"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
+msgid "交易账户信息不存在"
+msgstr "Trading account information not found"
 
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "成交价格"
@@ -88,7 +101,7 @@ msgstr "Watchlist"
 
 #: src/pages/(public)/login/_comps/web2-login-section.tsx
 msgid "登录服务正在初始化，请检查网络"
-msgstr ""
+msgstr "Login service initializing, please check your network"
 
 #: src/pages/(protected)/(trade)/records/_comps/fund-flow-list.tsx
 msgid "暂无资金流水"
@@ -96,10 +109,11 @@ msgstr "No fund flow records"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/index.tsx
 msgid "接收的钱包地址不得与账户地址一致"
-msgstr ""
+msgstr "Receiving wallet address must not match the account address"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
@@ -108,12 +122,20 @@ msgid "订单确认"
 msgstr "Order Confirmation"
 
 #: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
-msgid "交易账号"
-msgstr "Trading Account"
+#~ msgid "交易账号"
+#~ msgstr "Trading Account"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
+msgid "订单类型不存在"
+msgstr "Order type not found"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx
 msgid "暂无模拟账户"
 msgstr "No demo accounts"
+
+#: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
+msgid "确定要取消挂单吗？"
+msgstr "Are you sure you want to cancel this pending order?"
 
 #: src/pages/(protected)/(home)/search.tsx
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx
@@ -145,6 +167,10 @@ msgstr "Transfer"
 msgid "指数"
 msgstr "Index"
 
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止损价格不能小于0"
+msgstr "Stop-loss price cannot be less than 0"
+
 #: src/pages/(protected)/(assets)/bills/_comps/date-filter-drawer.tsx
 msgid "重置"
 msgstr "Reset"
@@ -161,7 +187,7 @@ msgstr "Inter-account transfer"
 msgid "范围"
 msgstr "Range"
 
-#: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-type.tsx
+#: src/options/trade/order.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "市价"
 msgstr "Market"
@@ -172,8 +198,8 @@ msgid "资产"
 msgstr "Assets"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
-msgid "余额：{MOCK_BALANCE} SOL"
-msgstr "Balance: {MOCK_BALANCE} SOL"
+#~ msgid "余额：{MOCK_BALANCE} SOL"
+#~ msgstr "Balance: {MOCK_BALANCE} SOL"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/header/common-features-drawer.tsx
 msgid "常用功能"
@@ -187,6 +213,10 @@ msgstr "Copy failed, please retry"
 #: src/pages/(protected)/(assets)/transfer/index.tsx
 msgid "到"
 msgstr "To"
+
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "转账成功，等待链上确认交易"
+msgstr "Transfer submitted, awaiting on-chain confirmation"
 
 #: src/components/states/connect-state.tsx
 #: src/pages/(protected)/(assets)/deposit/_comps/wallet-deposit-card/connect-wallet-drawer.tsx
@@ -208,8 +238,8 @@ msgid "总资产"
 msgstr "Total Assets"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx
-msgid "提示"
-msgstr "Tip"
+#~ msgid "提示"
+#~ msgstr "Tip"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx
 msgid "登录失败，重试"
@@ -220,6 +250,7 @@ msgid "K线"
 msgstr "Candlestick"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/_comps/signature-success-modal.tsx
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "您收到"
 msgstr "You receive"
 
@@ -241,6 +272,11 @@ msgstr "Password symbol"
 msgid "成功"
 msgstr "Success"
 
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "交易品种信息不存在"
+msgstr "Instrument information not found"
+
 #: src/options/deposit/event.tsx
 msgid "交易功能开启"
 msgstr "Trading enabled"
@@ -252,10 +288,14 @@ msgstr "Trading enabled"
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
 #: src/pages/(protected)/(assets)/settings/about/_comps/clear-cache-modal.tsx
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
 #: src/pages/(protected)/(assets)/transfer/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web2-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web2-confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
+#: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
 msgid "确定"
 msgstr "Confirm"
@@ -280,6 +320,10 @@ msgstr "Withdrawal Swap Started"
 msgid "确认"
 msgstr "Confirm"
 
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+msgid "转账金额"
+msgstr "Transfer Amount"
+
 #: src/pages/(protected)/(trade)/records/_comps/fund-flow-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
@@ -291,6 +335,10 @@ msgstr "Unknown Type"
 #: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "开仓手数/价格"
 msgstr "Open Lots/Price"
+
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web2-confirm/index.tsx
+msgid "出金成功"
+msgstr "Withdrawal Successful"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx
 msgid "隐私政策"
@@ -311,6 +359,10 @@ msgstr "Refreshing..."
 msgid "暂无数据"
 msgstr "No data"
 
+#: src/pages/(protected)/(assets)/settings/about/index.tsx
+msgid "当前最新版本"
+msgstr "Current Latest Version"
+
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
 msgid "浮动盈亏"
 msgstr "Unrealized P&L"
@@ -320,6 +372,7 @@ msgid "开仓价格/成交价格"
 msgstr "Open Price/Fill Price"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/_comps/wallet-address-selector.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 msgid "接收钱包"
 msgstr "Receive Wallet"
@@ -333,6 +386,7 @@ msgid "继续"
 msgstr "Continue"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 msgid "交易失败"
 msgstr "Transaction Failed"
@@ -347,6 +401,10 @@ msgstr "Trading Settings"
 msgid "全部"
 msgstr "All"
 
+#: src/pages/(protected)/(assets)/transfer/index.tsx
+msgid "转账金额超过可用余额"
+msgstr "Transfer amount exceeds available balance"
+
 #: src/pages/(protected)/(assets)/deposit/qr-deposit/_comps/deposit-address-section.tsx
 msgid "跨链桥服务由多个桥服务商提供，Mullet会采用最优报价交易"
 msgstr "Bridge service is provided by multiple bridge providers. Mullet uses the best available quote."
@@ -360,13 +418,13 @@ msgstr "Mullet only supports USDC on Solana. Depositing USDC from other chains w
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/index.tsx
-#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "余额不足"
 msgstr "Insufficient Balance"
 
 #: src/components/drawers/symbol-select-drawer.tsx
 #: src/pages/(protected)/(tabs)/home/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
+#: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-price.tsx
 #: src/pages/symbol-selector.tsx
 msgid "价格"
 msgstr "Price"
@@ -381,9 +439,14 @@ msgid "保证金类型"
 msgstr "Margin Type"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/_comps/wallet-address-selector.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
 msgid "请输入钱包地址"
 msgstr "Please enter wallet address"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止盈价格不能大于可设置范围"
+msgstr "Take-profit price cannot exceed the allowable range"
 
 #: src/pages/(protected)/(home)/search.tsx
 msgid "暂无搜索内容"
@@ -404,6 +467,7 @@ msgstr "Cancelled"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
 msgid "付"
@@ -412,6 +476,10 @@ msgstr "Pay"
 #: src/pages/(protected)/(assets)/deposit/qr-deposit/_comps/deposit-address-section.tsx
 msgid "加载失败"
 msgstr "Load Failed"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止损价格不能大于可设置范围"
+msgstr "Stop-loss price cannot exceed the allowable range"
 
 #: src/pages/(protected)/(tabs)/_layout.tsx
 msgid "交易"
@@ -434,6 +502,7 @@ msgstr "Failed to send verification code"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 msgid "滑点"
@@ -494,6 +563,10 @@ msgstr "Deposit Swap Started"
 msgid "仅作确认您是此钱包的所有权"
 msgstr "To confirm you own this wallet only"
 
+#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/position-tp-sl-drawer.tsx
+msgid "修改止盈止损成功"
+msgstr "TP/SL updated successfully"
+
 #: src/options/deposit/event.tsx
 msgid "交易功能关闭"
 msgstr "Trading disabled"
@@ -530,6 +603,10 @@ msgstr "No deposit records"
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "未知状态"
 msgstr "Unknown Status"
+
+#: src/pages/(protected)/(assets)/transfer/index.tsx
+msgid "转账金额需≥10 USDC"
+msgstr "Transfer amount must be ≥10 USDC"
 
 #: src/pages/(protected)/(trade)/settings.tsx
 msgid "平仓确认"
@@ -582,8 +659,8 @@ msgid "收益率"
 msgstr "ROI"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx
-msgid "金额不可大于可用余额"
-msgstr "Amount cannot exceed available balance"
+#~ msgid "金额不可大于可用余额"
+#~ msgstr "Amount cannot exceed available balance"
 
 #: src/components/modals/withdraw-success-modal.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/_comps/signature-fail-modal.tsx
@@ -610,6 +687,8 @@ msgstr "Short"
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
@@ -633,6 +712,10 @@ msgstr "Stop Limit Buy Order"
 msgid "正在打开钱包连接"
 msgstr "Opening wallet connection"
 
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "单笔交易量不得低于最小交易量"
+msgstr "Order size cannot be below the minimum trade size"
+
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx
 msgid "连接"
@@ -640,6 +723,7 @@ msgstr "Connect"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
 msgid "收"
@@ -650,11 +734,20 @@ msgstr "Receive"
 msgid "最高"
 msgstr "High"
 
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+msgid "转账确认"
+msgstr "Transfer Confirmation"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "单笔交易量不得超出可交易范围"
+msgstr "Order size exceeds the maximum allowable trade size"
+
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx
 msgid "您将收到 1 个安全登录签名请求。签名是免费的，不会触发任何交易。"
 msgstr "You will receive 1 secure login signature request. Signing is free and will not trigger any transaction."
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
@@ -671,9 +764,10 @@ msgid "{0}"
 msgstr "{0}"
 
 #: src/v1/stores/trade.ts
-msgid "Favorite Cancel Success"
-msgstr "Favorite Cancel Success"
+#~ msgid "Favorite Cancel Success"
+#~ msgstr "Favorite Cancel Success"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/verify/index.tsx
 msgid "提现失败"
@@ -702,6 +796,7 @@ msgstr "Limit and Stop Distance"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 msgid "自动"
@@ -717,10 +812,12 @@ msgstr "Coming Soon"
 msgid "创建账户"
 msgstr "Create Account"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
 msgid "提交中"
-msgstr ""
+msgstr "Submitting"
 
 #: src/hooks/use-close-position.tsx
 #: src/hooks/use-close-position.tsx
@@ -732,7 +829,7 @@ msgstr "Close Position Failed"
 msgid "标记价"
 msgstr "Mark Price"
 
-#. placeholder {0}: currentAccountInfo.currencyUnit
+#. placeholder {0}: currentAccountCurrencyInfo?.currencyUnit
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 msgid "库存费({0})"
 msgstr "Funding Fee({0})"
@@ -773,7 +870,7 @@ msgstr "Wednesday"
 msgid "手续费/库存费"
 msgstr "Fee/Funding"
 
-#. placeholder {0}: currentAccountInfo.currencyUnit
+#. placeholder {0}: currentAccountCurrencyInfo?.currencyUnit
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 msgid "保证金({0})"
 msgstr "Margin({0})"
@@ -815,6 +912,10 @@ msgstr "Pending"
 msgid "取现金额"
 msgstr "Withdrawal Amount"
 
+#: src/components/app-update/_utils/native-update.ts
+msgid "无法打开更新链接"
+msgstr "Unable to open update link"
+
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-overview.tsx
 msgid "可开"
@@ -850,6 +951,7 @@ msgstr "Red up, Green down"
 msgid "Upload Failed"
 msgstr "Upload Failed"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/verify/index.tsx
 msgid "缺少必要参数"
@@ -857,7 +959,11 @@ msgstr "Missing required parameters"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/index.tsx
 msgid "无效的钱包地址"
-msgstr ""
+msgstr "Invalid wallet address"
+
+#: src/components/app-update/upgrade-modal.tsx
+msgid "稍后再说"
+msgstr "Later"
 
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "挂单价格"
@@ -900,6 +1006,10 @@ msgstr "Estimated margin required to open position"
 msgid "余额更新"
 msgstr "Balance Updated"
 
+#: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
+msgid "平仓时间"
+msgstr "Close Time"
+
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/position-tp-sl-drawer.tsx
 msgid "止盈止损"
@@ -910,12 +1020,13 @@ msgid "止损"
 msgstr "Stop Loss"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx
-msgid "更新App，体验最新版本"
-msgstr "Update App for the latest version"
+#~ msgid "更新App，体验最新版本"
+#~ msgstr "Update App for the latest version"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
@@ -962,7 +1073,6 @@ msgid "取消成功"
 msgstr "Cancelled successfully"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx
-#: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "地址"
 msgstr "Address"
 
@@ -1001,6 +1111,8 @@ msgstr "Unknown position, cannot close"
 
 #: src/options/trade/fund-flow.tsx
 #: src/options/trade/fund-flow.tsx
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "手续费"
 msgstr "Fee"
 
@@ -1014,8 +1126,8 @@ msgid "继续充值"
 msgstr "Continue Deposit"
 
 #: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
-msgid "止盈止损设置错误"
-msgstr "Invalid TP/SL settings"
+#~ msgid "止盈止损设置错误"
+#~ msgstr "Invalid TP/SL settings"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
@@ -1049,18 +1161,20 @@ msgstr "Deposit Amount"
 
 #: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "下单成功"
-msgstr ""
+msgstr "Order Placed Successfully"
 
 #: src/pages/(protected)/(home)/notifications/index.tsx
 msgid "通知"
 msgstr "Notifications"
 
-#. placeholder {0}: currentAccountInfo.currencyUnit
+#. placeholder {0}: currentAccountCurrencyInfo?.currencyUnit
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 msgid "浮动盈亏({0})"
 msgstr "Unrealized P&L({0})"
 
 #: src/pages/(protected)/(assets)/bills/_comps/transfer-list.tsx
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "转出账户"
 msgstr "From Account"
 
@@ -1086,6 +1200,11 @@ msgstr "Search Results"
 msgid "止盈/止损"
 msgstr "TP/SL"
 
+#. placeholder {0}: BNumber.toFormatNumber(selectedTokenBalance?.minAmount, { unit: selectedTokenConfig?.symbol, volScale: selectedTokenConfig?.displayDecimals, })
+#: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/index.tsx
+msgid "最低转入{0}"
+msgstr "Min. deposit {0}"
+
 #: src/pages/(protected)/(home)/search.tsx
 #: src/pages/(protected)/(tabs)/home/index.tsx
 msgid "查询"
@@ -1096,8 +1215,13 @@ msgid "最大"
 msgstr "Max"
 
 #: src/v1/stores/trade.ts
-msgid "Favorite Success"
-msgstr "Favorite Success"
+#~ msgid "Favorite Success"
+#~ msgstr "Favorite Success"
+
+#: src/components/app-update/upgrade-modal.tsx
+#: src/pages/(protected)/(assets)/settings/about/index.tsx
+msgid "发现新版本 v{latestVersion}"
+msgstr "New version available v{latestVersion}"
 
 #: src/options/trade/order.tsx
 msgid "止损单"
@@ -1123,13 +1247,17 @@ msgstr "Demo Account"
 msgid "交易签名"
 msgstr "Tx Signature"
 
+#: src/helpers/trade.tsx
+msgid "固定"
+msgstr "Fixed"
+
 #: src/pages/(protected)/(assets)/withdraw/index.tsx
 msgid "选择适合您的出金方式"
 msgstr "Choose your withdrawal method"
 
-#. placeholder {0}: BNumber.toFormatNumber(selectedAccount?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
-#. placeholder {0}: BNumber.toFormatNumber(selectedAccount?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
-#. placeholder {0}: BNumber.toFormatNumber(selectedAccount?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
+#. placeholder {0}: !isLoadingBalance && BNumber.toFormatNumber(extractableBalance, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
+#. placeholder {0}: BNumber.toFormatNumber(extractableBalance, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
+#. placeholder {0}: BNumber.toFormatNumber(extractableBalance, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
 #: src/pages/(protected)/(assets)/deposit/_comps/account-selection/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/_comps/account-selector/index.tsx
@@ -1144,8 +1272,8 @@ msgid "暂无真实账户组"
 msgstr "No real account groups"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
-msgid "可用：{MOCK_BALANCE} SOL"
-msgstr "Available: {MOCK_BALANCE} SOL"
+#~ msgid "可用：{MOCK_BALANCE} SOL"
+#~ msgstr "Available: {MOCK_BALANCE} SOL"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/verify/index.tsx
 msgid "请输入邮箱验证码"
@@ -1205,7 +1333,7 @@ msgstr "This is an authentication for secure login, no transaction will be made"
 msgid "入金跨链开始"
 msgstr "Deposit Bridge Started"
 
-#. placeholder {0}: BNumber.toFormatNumber(selectedAccount?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
+#. placeholder {0}: BNumber.toFormatNumber(extractableBalance, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal, })
 #. placeholder {0}: BNumber.toFormatNumber(selectedTokenBalance?.amount, { unit: selectedTokenConfig?.symbol, volScale: selectedTokenConfig?.displayDecimals, })
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
@@ -1219,7 +1347,7 @@ msgstr "OK"
 #. placeholder {0}: formatAddress(address)
 #: src/components/modals/withdraw-success-modal.tsx
 msgid "向{0}转入"
-msgstr ""
+msgstr "Transfer to {0}"
 
 #: src/pages/(protected)/(trade)/records/_comps/fund-flow-list.tsx
 msgid "变动前"
@@ -1228,6 +1356,10 @@ msgstr "Before Change"
 #: src/pages/(protected)/(assets)/bills/_comps/deposit-list.tsx
 msgid "充值状态"
 msgstr "Deposit Status"
+
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "哈希地址"
+msgstr "Transaction Hash"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/account-list.tsx
 msgid "暂无真实账户"
@@ -1247,24 +1379,29 @@ msgstr "Scan to Deposit"
 msgid "交易时间"
 msgstr "Trading Time"
 
+#: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
+msgid "已实现盈亏"
+msgstr "Realised P&L"
+
 #: src/components/modals/withdraw-success-modal.tsx
 msgid "等待链上交易确认后Mullet以站内消息通知您，请您注意关注站内消息"
 msgstr "Mullet will notify you via in-app message after on-chain confirmation. Please check your messages."
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx
-msgid "确定更新"
-msgstr "Confirm Update"
+#~ msgid "确定更新"
+#~ msgstr "Confirm Update"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 msgid "确认兑换"
 msgstr "Confirm Swap"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
-msgid "兑换服务由 Jup Swap 提供"
-msgstr "Swap powered by Jup Swap"
+#~ msgid "兑换服务由 Jup Swap 提供"
+#~ msgstr "Swap powered by Jup Swap"
 
-#: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx
+#: src/components/app-update/upgrade-modal.tsx
 msgid "更新版本"
 msgstr "Update Version"
 
@@ -1273,8 +1410,8 @@ msgid "全仓"
 msgstr "Cross"
 
 #: src/pages/(protected)/(assets)/bills/_comps/withdrawal-list.tsx
-msgid "充值账户"
-msgstr "Deposit Account"
+#~ msgid "充值账户"
+#~ msgstr "Deposit Account"
 
 #: src/options/deposit/event.tsx
 msgid "异常事件"
@@ -1306,8 +1443,8 @@ msgstr "Signing out..."
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/_comps/signature-fail-modal.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
-#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
-#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web3-confirm/index.old.tsx
 msgid "等待签名"
 msgstr "Awaiting Signature"
 
@@ -1318,6 +1455,10 @@ msgstr "Settings"
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx
 msgid "模拟账户存款"
 msgstr "Demo Account Deposit"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止盈价格不能小于可设置范围"
+msgstr "Take-profit price cannot be below the allowable range"
 
 #: src/options/deposit/status.tsx
 msgid "处理中"
@@ -1365,6 +1506,10 @@ msgstr "Failed"
 msgid "买入/做多"
 msgstr "Buy/Long"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web2-confirm/index.tsx
+msgid "出金失败"
+msgstr "Withdrawal Failed"
+
 #. placeholder {0}: renderLinguiMsg(LOTS_UNIT_LABEL)
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
@@ -1393,16 +1538,16 @@ msgid "确定卖出"
 msgstr "Confirm Sell"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx
-msgid "金额不能小于0"
-msgstr "Amount cannot be less than 0"
+#~ msgid "金额不能小于0"
+#~ msgstr "Amount cannot be less than 0"
 
 #: src/components/drawers/trade-simulate-account-deposit-drawer.tsx
 msgid "存款失败"
 msgstr "Deposit Failed"
 
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
-msgid "最低取现 200 USDC"
-msgstr "Min. withdrawal 200 USDC"
+#~ msgid "最低取现 200 USDC"
+#~ msgstr "Min. withdrawal 200 USDC"
 
 #: src/pages/(protected)/(assets)/withdraw/_comps/bank-withdraw-card/index.tsx
 msgid "即将推出"
@@ -1444,7 +1589,7 @@ msgstr "No more"
 
 #: src/pages/(protected)/(assets)/bills/_comps/withdrawal-list.tsx
 msgid "收款地址"
-msgstr ""
+msgstr "Beneficiary Address"
 
 #: src/options/trade/fund-flow.tsx
 msgid "模拟充值"
@@ -1460,9 +1605,9 @@ msgid "逐仓"
 msgstr "Isolated"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/clear-cache-modal.tsx
-#: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx
 #: src/pages/(protected)/(home)/search.tsx
 #: src/pages/(protected)/(tabs)/assets/_comps/transfer-hint-modal.tsx
+#: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
 msgid "取消"
 msgstr "Cancel"
@@ -1485,6 +1630,8 @@ msgid "钱包转入"
 msgstr "Wallet Deposit"
 
 #: src/pages/(protected)/(assets)/bills/_comps/transfer-list.tsx
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "转入账户"
 msgstr "To Account"
 
@@ -1551,7 +1698,6 @@ msgstr "Order Price"
 
 #: src/options/trade/fund-flow.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
-#: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "盈亏"
 msgstr "P&L"
 
@@ -1592,6 +1738,14 @@ msgstr "Close"
 msgid "持仓"
 msgstr "Positions"
 
+#: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/_comps/web2-confirm/index.tsx
+msgid "参数缺失"
+msgstr "Missing parameters"
+
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止盈价格不能小于0"
+msgstr "Take-profit price cannot be less than 0"
+
 #: src/options/trade/position.tsx
 msgid "持仓中"
 msgstr "Open"
@@ -1628,9 +1782,14 @@ msgstr "Demo"
 msgid "断开"
 msgstr "Disconnect"
 
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "转入地址"
+msgstr "Deposit Address"
+
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/_comps/withdraw-success-modal.tsx
-msgid "向{0} 转入"
-msgstr "Transfer to {0}"
+#~ msgid "向{0} 转入"
+#~ msgstr "Transfer to {0}"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
@@ -1646,7 +1805,7 @@ msgstr "Balance below min. deposit. Please use another token."
 msgid "重新发送失败"
 msgstr "Resend failed"
 
-#. placeholder {0}: currentAccountInfo.currencyUnit
+#. placeholder {0}: currentAccountCurrencyInfo?.currencyUnit
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "手续费({0})"
@@ -1655,6 +1814,10 @@ msgstr "Fee({0})"
 #: src/pages/(protected)/(assets)/withdraw/crypto/verify/index.tsx
 msgid "重新发送"
 msgstr "Resend"
+
+#: src/pages/(protected)/(tabs)/trade/_comps/records/pending-orders/index.tsx
+msgid "取消挂单"
+msgstr "Cancel Pending Order"
 
 #: src/pages/(protected)/(trade)/records/index.tsx
 msgid "资金流水"
@@ -1726,7 +1889,7 @@ msgstr "Deposit Completed"
 msgid "真实账户"
 msgstr "Real Account"
 
-#: src/pages/(protected)/(tabs)/trade/_comps/order-panel/order-type.tsx
+#: src/options/trade/order.tsx
 msgid "限价"
 msgstr "Limit"
 
@@ -1799,7 +1962,16 @@ msgstr "Friday"
 
 #: src/pages/(protected)/(assets)/bills/_comps/withdrawal-list.tsx
 msgid "未知"
-msgstr ""
+msgstr "Unknown"
+
+#: src/components/app-update/upgrade-modal.tsx
+msgid "立即更新"
+msgstr "Update Now"
+
+#: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "转出地址"
+msgstr "Withdrawal Address"
 
 #: src/pages/(public)/login/_comps/web3-login-drawer.tsx
 msgid "登录中"
@@ -1812,6 +1984,10 @@ msgstr "Open Price"
 #: src/pages/(protected)/(trade)/records/_comps/fund-flow-list.tsx
 msgid "金额"
 msgstr "Amount"
+
+#: src/components/app-update/_utils/native-update.ts
+msgid "无法打开下载链接"
+msgstr "Unable to open download link"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/position-tp-sl-drawer.tsx
 msgid "由于行情变动快，止损触发价不宜离预估强平价过近，避免触发失败"
@@ -1835,12 +2011,13 @@ msgstr "Announcements"
 
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 msgid "兑换服务由Jup Swap提供"
 msgstr "Swap powered by Jup Swap"
 
-#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
 msgid "请输入价格"
 msgstr "Please enter price"
 
@@ -1849,8 +2026,8 @@ msgid "货币单位"
 msgstr "Currency Unit"
 
 #: src/pages/(protected)/(assets)/transfer/index.tsx
-msgid "转账成功"
-msgstr "Transfer successful"
+#~ msgid "转账成功"
+#~ msgstr "Transfer successful"
 
 #: src/options/trade/order.tsx
 msgid "止损限价卖出单"
@@ -1867,6 +2044,7 @@ msgstr "Bonus"
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/swap/index.tsx
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/confirm/index.tsx
+#: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.old.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/confirm/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/confirm/index.tsx
@@ -1885,6 +2063,10 @@ msgstr "Loading address..."
 #: src/pages/(protected)/(assets)/withdraw/_comps/bank-withdraw-card/index.tsx
 msgid "最低$1000 · 5分钟"
 msgstr "Min. $1000 · 5 min"
+
+#: src/pages/(protected)/(assets)/transfer/detail/index.tsx
+msgid "查看详情"
+msgstr "View Details"
 
 #: src/options/trade/order.tsx
 msgid "限价买入单"
@@ -1909,11 +2091,15 @@ msgstr "Bottom"
 msgid "涨跌幅"
 msgstr "Change %"
 
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
+msgid "止损价格不能小于可设置范围"
+msgstr "Stop-loss price cannot be below the allowable range"
+
 #: src/pages/(protected)/(trade)/settings.tsx
 msgid "绿涨红跌"
 msgstr "Green up, Red down"
 
-#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-verify-order.tsx
 msgid "请输入手数"
 msgstr "Please enter lots"
 
@@ -1925,6 +2111,10 @@ msgstr "Contract Specs"
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
 msgid "未设置"
 msgstr "Not Set"
+
+#: src/components/app-update/upgrade-modal.tsx
+msgid "更新内容"
+msgstr "Release Notes"
 
 #. js-lingui-explicit-id
 #: src/components/drawers/symbol-select-drawer.tsx
