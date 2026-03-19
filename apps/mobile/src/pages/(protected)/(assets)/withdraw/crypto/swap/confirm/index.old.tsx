@@ -19,11 +19,12 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
-import { useAccountWithdraw } from '../../../_apis/use-account-withdraw'
+import { useSwapWithdraw } from '../../../_apis/use-swap-withdraw'
 import { useSelectedWithdrawAccount } from '../../../_hooks/use-selected-account'
-import { useSelectedChainInfo, useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'
+import { useSelectedTokenConfig } from '../../../_hooks/use-selected-chain-info'
 import { useUSDCTokenConfig } from '../../../_hooks/use-token-config'
 import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
+import { useWithdrawWalletSign } from '../../../_hooks/use-withdraw-wallet-sign'
 import { WithdrawSuccessModal } from '../../../../../../../components/modals/withdraw-success-modal'
 import { SignatureFailModal } from '../../../../deposit/wallet-transfer/_comps/signature-fail-modal'
 
@@ -34,16 +35,16 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
   const usdcTokenConfig = useUSDCTokenConfig()
   const selectedTokenConfig = useSelectedTokenConfig()
   const selectedAccount = useSelectedWithdrawAccount()
-  const selectedChainInfo = useSelectedChainInfo()
 
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS)
   const [showModal, setShowModal] = useState(false)
-  const [txStatus, setTxStatus] = useState<'idle' | 'submitting' | 'success' | 'failed'>('idle')
+  const [txStatus, setTxStatus] = useState<'idle' | 'signing' | 'submitting' | 'success' | 'failed'>('idle')
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  const { mutateAsync: accountWithdraw } = useAccountWithdraw()
+  const { signWithdrawMessage } = useWithdrawWalletSign()
+  const { mutateAsync: swapWithdraw } = useSwapWithdraw()
 
-  const isLoading = txStatus === 'submitting'
+  const isLoading = txStatus === 'signing' || txStatus === 'submitting'
 
   const quoteParams = useMemo(() => {
     if (
@@ -100,22 +101,30 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
   }, [handleCountdownExpire])
 
   const handleConfirmSwap = useCallback(async () => {
-    if (!toWalletAddress || !selectedAccountId || !selectedTokenConfig || !withdrawAmount) {
+    if (!toWalletAddress || !quoteParams || !selectedAccountId || !selectedTokenConfig) {
       console.error('Missing required parameters')
       return
     }
     setShowModal(true)
-    setTxStatus('submitting')
+    setTxStatus('signing')
     try {
-      await accountWithdraw({
-        tradeAccountId: selectedAccountId,
-        amount: withdrawAmount,
-        toAddress: toWalletAddress,
-        isSwap: true,
-        swapChain: selectedChainInfo?.chainInfo?.chainId,
-        swapChainToken: selectedTokenConfig.symbol,
-      })
-      console.log('[SwapWithdraw] 出金成功')
+      // 1. 钱包签名
+      console.log('[SwapWithdraw] 开始签名流程')
+      const signatureData = await signWithdrawMessage()
+      console.log('[SwapWithdraw] 签名完成')
+
+      // 2. 调用 swap withdraw API
+      setTxStatus('submitting')
+      const requestParams = {
+        accountId: selectedAccountId,
+        toToken: selectedTokenConfig?.symbol,
+        usdcAmount: quoteParams.amount,
+        destinationAddress: toWalletAddress,
+        walletSignature: signatureData.signature,
+        slippageBps: quoteData?.slippageBps,
+      }
+      const result = await swapWithdraw(requestParams)
+      console.log('[SwapWithdraw] 出金成功, txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {
@@ -123,7 +132,15 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
       console.error('[SwapWithdraw] 出金失败:', error)
       toast.error(error?.message ?? error?.msg ?? <Trans>交易失败</Trans>)
     }
-  }, [toWalletAddress, selectedAccountId, selectedTokenConfig, withdrawAmount, accountWithdraw, selectedChainInfo])
+  }, [
+    toWalletAddress,
+    quoteParams,
+    selectedAccountId,
+    signWithdrawMessage,
+    swapWithdraw,
+    selectedTokenConfig,
+    quoteData?.slippageBps,
+  ])
 
   const handleCloseSuccessModal = () => {
     setShowModal(false)
@@ -271,9 +288,17 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
             color="primary"
             onPress={handleConfirmSwap}
             disabled={txStatus !== 'idle' || countdown <= 0}
-            loading={txStatus === 'submitting'}
+            loading={txStatus === 'signing' || txStatus === 'submitting'}
           >
-            <Text>{txStatus === 'submitting' ? <Trans>提交中</Trans> : <Trans>确认兑换</Trans>}</Text>
+            <Text>
+              {txStatus === 'signing' ? (
+                <Trans>等待签名</Trans>
+              ) : txStatus === 'submitting' ? (
+                <Trans>提交中</Trans>
+              ) : (
+                <Trans>确认兑换</Trans>
+              )}
+            </Text>
           </Button>
         </View>
       </SafeAreaView>

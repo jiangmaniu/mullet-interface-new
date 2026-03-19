@@ -123,7 +123,10 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
           <InfoRow label={<Trans>到账时间</Trans>} value={estimateData?.estimatedTime} />
           <InfoRow
             label={<Trans>Gas费</Trans>}
-            value={`${estimateData?.networkFee} ${estimateData?.feeToken} ≈ ${estimateData?.networkFeeUsdc} ${USDC_TOKEN_SYMBOL}`}
+            value={renderFallback(
+              `${estimateData?.networkFee} ${estimateData?.feeToken} ≈ ${estimateData?.networkFeeUsdc} ${USDC_TOKEN_SYMBOL}`,
+              { verify: !!estimateData },
+            )}
           />
           <InfoRow
             label={<Trans>预计到账</Trans>}
