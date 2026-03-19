@@ -3,8 +3,8 @@ import { router } from 'expo-router'
 import type { LoginType } from '@/stores/user-slice/authSlice'
 
 import { useRootStore } from '@/stores'
-import { stores } from '@/v1/provider/mobxProvider'
 import { login } from '@/v1/services/user'
+import user from '@/v1/stores/user'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseBackendLoginOptions {
@@ -43,7 +43,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       })
 
       // 重新获取用户信息
-      await stores.user.handleLoginSuccess(userinfo)
+      await user.fetchUserInfo(true)
       console.log('Backend login successful')
 
       return userinfo

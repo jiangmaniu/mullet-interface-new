@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { useAccountInfo } from '@/hooks/account/use-account-info'
+import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
 import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
@@ -22,7 +23,8 @@ import { BillsCardRow } from './card-row'
 const PAGE_SIZE = 10
 
 export const TransferList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
-  const { selectedAccount, dateRange } = useBillsScreenContext()
+  const { selectedAccountId, dateRange } = useBillsScreenContext()
+  const selectedAccount = useAccountInfo(selectedAccountId)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
     queryKey: ['transferRecords', selectedAccount?.id, dateRange.startDate?.getTime(), dateRange.endDate?.getTime()],
@@ -30,7 +32,7 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
       const res = await getMoneyRecordsPageList({
         current: pageParam,
         size: PAGE_SIZE,
-        type: 'TRANSFER',
+        type: TradeFundFlowTypeEnum.TRANSFER,
         accountId: selectedAccount?.id,
         startTime: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD 00:00:00') : undefined,
         endTime: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD 23:59:59') : undefined,
@@ -129,7 +131,8 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
 // 划转卡片组件
 const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageListItem }) => {
   const remark = record.remark
-  const { selectedAccount } = useBillsScreenContext()
+  const { selectedAccountId } = useBillsScreenContext()
+  const selectedAccount = useAccountInfo(selectedAccountId)
 
   const fromAccount = useAccountInfo(remark?.fromAccountId)
   const toAccount = useAccountInfo(remark?.toAccountId)

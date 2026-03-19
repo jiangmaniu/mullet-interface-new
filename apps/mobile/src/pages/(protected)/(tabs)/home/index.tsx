@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { useShallow } from 'zustand/react/shallow'
 import { router, useRouter } from 'expo-router'
 import { useResolveClassNames } from 'uniwind'
 
@@ -29,7 +30,9 @@ import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_com
 import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
+import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { stores, useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
@@ -113,8 +116,8 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
-  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.askDiff)
-  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   // 获取 K线历史数据
   const { data: chartData = [], isLoading } = useSymbolKline(symbolInfo?.symbol)
@@ -155,7 +158,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
                   : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
           <Text
             className={cn(
@@ -241,15 +244,15 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
 // ============ Main Index ============
 const AssetTabListContent = observer(
   ({ viewMode, categoryOption }: { viewMode: ViewMode; categoryOption: SymbolCategoryOption }) => {
-    const { trade } = useStores()
     const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
     let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
+    const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
 
     if (categoryOption.value !== SymbolCategory.Favorite) {
       tradeList =
         categoryOption.value === SymbolCategory.All
-          ? trade.symbolListAll
-          : trade.symbolListAll.filter((item) => item.classify === categoryOption.value)
+          ? symbolListAll
+          : symbolListAll.filter((item) => item.classify === categoryOption.value)
     }
 
     return (
@@ -295,11 +298,14 @@ export default function Index() {
     [],
   )
 
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+
   useLayoutEffect(() => {
     // 重新刷新品种列表
-    stores.trade.getSymbolList()
-    useRootStore.getState().market.fetchMarketSymbolInfoList(stores.trade.currentAccountInfo?.id)
-  }, [])
+    stores.trade.getSymbolList({ accountId: activeTradeAccountId })
+
+    useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId)
+  }, [activeTradeAccountId])
 
   return (
     <View className="bg-secondary flex-1">

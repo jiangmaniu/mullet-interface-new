@@ -119,8 +119,9 @@ class UserStore {
           currentUser.accountList?.find((item) => item.id === localAccountId)?.id ?? null,
         )
     } else {
-      stores.trade.getSymbolList()
-      useRootStore.getState().market.fetchMarketSymbolInfoList(stores.trade.currentAccountInfo?.id)
+      const activeTradeAccountId = useRootStore.getState().user.info.activeTradeAccountId
+      stores.trade.getSymbolList({ accountId: activeTradeAccountId })
+      useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId)
     }
   }
 }

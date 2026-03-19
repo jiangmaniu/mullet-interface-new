@@ -7,17 +7,15 @@ import { useShallow } from 'zustand/react/shallow'
 import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input'
 import { Text } from '@/components/ui/text'
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
+import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
-import useDisabled from '@/v1/hooks/trade/useDisabled'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
-  const { trade } = useStores()
-
   const { limitPrice, type, direction } = useRootStore(
     useShallow((s) => {
       const formatData = tradeFormDataSelector(s)
@@ -35,10 +33,13 @@ export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const quoteInfo = getCurrentQuote(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const { disabledInput } = useDisabled()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const { disabledInput } = useDisabledTrade({
+    accountId: activeTradeAccountId,
+    symbol,
+  })
   const handleSetLatestPrice = () => {
     const price = isBuyOrder ? quoteInfo?.bid : quoteInfo?.ask
-    trade.setOrderPrice(price)
     setFormData({ limitPrice: price })
   }
 
@@ -64,8 +65,6 @@ export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
               }
 
               if (source === NumberInputSourceType.EVENT) {
-                console.log('price event', value)
-                trade.setOrderPrice(value)
                 setFormData({ limitPrice: value })
               }
             }}

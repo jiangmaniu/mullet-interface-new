@@ -549,7 +549,7 @@ class TradeStore {
     compelCloseRatio = compelCloseRatio ? compelCloseRatio / 100 : 0
     if (isCrossMargin) {
       // 全仓占用的保证金
-      const occupyMargin = Number(toFixed(Number(currentAccountInfo.margin || 0), 2))
+      const occupyMargin = Number(toFixed(Number(currentAccountInfo?.margin || 0), 2))
       // 判断是否存在全仓单
       const hasCrossMarginOrder = positionList.some((item) => item.marginType === 'CROSS_MARGIN')
       if (hasCrossMarginOrder) {

@@ -57,7 +57,7 @@ export default function useQuote() {
     // if (typing) {
     //   return symbolConfRMI || prevQuoteInfo.current?.symbolConf
     // }
-    return symbolConfRMI || quoteInfo.symbolConf
+    return symbolConfRMI || quoteInfo?.symbolConf
   }, [symbolConfRMI, quoteInfo])
 
   // 输入时取最后一次行情缓存计算
@@ -85,7 +85,7 @@ export default function useQuote() {
 
   const buySell = useMemo(() => buySellRMI || trade.buySell, [buySellRMI, trade.buySell])
 
-  const stopl = useMemo(() => Number(symbolConf?.limitStopLevel || 1) * Math.pow(10, -d), [symbolConf, d]) // 交易-限价和停损级别
+  const stopl = useMemo(() => Number(symbolConf?.limitStopLevel || 1) * Math.pow(10, -(d ?? 0)), [symbolConf, d]) // 交易-限价和停损级别
   const vmax = useMemo(() => symbolConf?.maxTrade as number, [symbolConf])
   const vmin = useMemo(() => symbolConf?.minTrade || 0.01, [symbolConf])
   const countPrecision = useMemo(() => getPrecisionByNumber(symbolConf?.minTrade), [symbolConf]) // 手数精度
@@ -109,11 +109,14 @@ export default function useQuote() {
   const getInitPriceValue = () => {
     return isBuy ? (ask ? toFixed(ask - stopl, d, false) : 0) : bid ? toFixed(bid + stopl, d, false) : 0
   }
-  const step = useMemo(() => Number(symbolConf?.tradeStep || 0) || Math.pow(10, -d), [symbolConf, d]) // 手数步长
+  const step = useMemo(() => Number(symbolConf?.tradeStep || 0) || Math.pow(10, -(d ?? 0)), [symbolConf, d]) // 手数步长
   // 根据品种小数点位数计算步长，独立于手数步长step。获取计算的小数位倒数第二位开始作为累加步长
   // 限价、止盈止损、停损挂单，加减时，连动报价小数位倒数第二位
   // 报价大小 * Math.pow(10, -d)
-  const step2 = useMemo(() => Number(symbolConf?.quotationSize || 0) * Math.pow(10, -d) || step, [d, symbolConf, step])
+  const step2 = useMemo(
+    () => Number(symbolConf?.quotationSize || 0) * Math.pow(10, -(d ?? 0)) || step,
+    [d, symbolConf, step],
+  )
 
   const isBuy = useMemo(() => {
     if (isBuyRMI !== undefined) {

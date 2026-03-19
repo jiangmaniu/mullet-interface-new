@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { EmptyState } from '@/components/states/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useI18n } from '@/hooks/use-i18n'
@@ -24,8 +25,8 @@ import { AccountTypeBadge, BillsCardRow } from './card-row'
 const PAGE_SIZE = 20
 
 export const WithdrawalList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
-  const { dateRange } = useBillsScreenContext()
-  const { selectedAccount } = useBillsScreenContext()
+  const { dateRange, selectedAccountId } = useBillsScreenContext()
+  const selectedAccount = useAccountInfo(selectedAccountId)
 
   // 格式化时间为 API 需要的格式
   const formatDateTime = (date: Date | null) => {
@@ -35,7 +36,7 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useFundFlowHistory(
     {
-      accountId: selectedAccount.id,
+      accountId: selectedAccount?.id,
       eventType: DepositEventTypeEnum.WITHDRAWAL_COMPLETED,
       startTime: formatDateTime(dateRange.startDate),
       endTime: formatDateTime(dateRange.endDate),
@@ -123,11 +124,12 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
 })
 
 // 提现卡片组件
-const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem }) => {
+const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem | undefined }) => {
   const { renderLinguiMsg } = useI18n()
 
-  const synopsis = useAccountSynopsis(account.synopsis)
+  const synopsis = useAccountSynopsis(account?.synopsis)
   const copyText = useCopyText()
+  if (!account) return null
   return (
     <Card>
       <CardContent className="gap-medium">

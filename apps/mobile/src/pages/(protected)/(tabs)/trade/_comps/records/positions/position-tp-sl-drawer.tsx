@@ -1,14 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import React, {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useImperativeHandle,
-  useLayoutEffect,
-  useState,
-} from 'react'
+import React, { createContext, Dispatch, SetStateAction, useContext, useImperativeHandle, useState } from 'react'
 import { View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 import { useToggle } from 'ahooks'
@@ -87,23 +79,12 @@ export const PositionTpSlDrawer = observer(
   }) => {
     const [open, toggleActions] = useToggle()
     const { toggle, setLeft: setFalse, setRight: setTrue, set: onSet } = toggleActions
-    const { trade } = useStores()
 
     useImperativeHandle(ref, () => ({
       open: () => setTrue(),
       close: () => setFalse(),
       toggle: () => toggle(),
     }))
-
-    useLayoutEffect(() => {
-      if (position) {
-        // 持仓列表核心赋值操作 ！！！
-        if (!position.symbol) return
-        trade.setActiveSymbolName(position.symbol)
-      }
-
-      return () => {}
-    }, [position])
 
     const [tpPrice, setTpPrice] = useState(position?.takeProfit?.toString() || '')
     const [slPrice, setSlPrice] = useState(position?.stopLoss?.toString() || '')

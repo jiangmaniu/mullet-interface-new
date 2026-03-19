@@ -23,7 +23,7 @@ export interface MarketSliceState {
 export interface MarketSliceActions {
   setMarket: (partial: Partial<MarketSliceState>) => void
   /** 获取交易品种列表 */
-  fetchMarketSymbolInfoList: (accountId: string) => Promise<void>
+  fetchMarketSymbolInfoList: (accountId?: string) => Promise<void>
 }
 
 /** Market 命名空间完整类型（状态直接展平） */
@@ -46,7 +46,7 @@ export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> =
       Object.assign(state.market, partial)
     }),
 
-  fetchMarketSymbolInfoList: async (accountId: string) => {
+  fetchMarketSymbolInfoList: async (accountId?: string) => {
     // 如果 symbolInfoList 为空，显示 loading
     if (!get().market.symbolInfoList.length) {
       set((state) => {
@@ -85,8 +85,8 @@ export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> =
 
 export const marketSelector = (state: RootStoreState) => state.market
 export const marketFetchMarketListLoadingSelector = (state: RootStoreState) => state.market.fetchMarketListLoading
-export const symbolInfoMapSelector = (state: RootStoreState) => state.market.symbolInfoMap
-export const symbolInfoListSelector = (state: RootStoreState) => state.market.symbolInfoList
+export const marketSymbolInfoMapSelector = (state: RootStoreState) => state.market.symbolInfoMap
+export const marketSymbolInfoListSelector = (state: RootStoreState) => state.market.symbolInfoList
 
 /** 生成式 selector - 根据 symbol 查找对应的 symbolInfo */
 export const createSymbolInfoSelector = (symbol?: string) => (state: RootStoreState) =>

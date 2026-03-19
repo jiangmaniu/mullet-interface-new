@@ -14,7 +14,6 @@ import { Text } from '@/components/ui/text'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useRootStore } from '@/stores'
 import { createRealAccountInfoSelector, userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 
 import { useAccountExtractable } from '../../_apis/use-account-extractable'

@@ -2,6 +2,8 @@ import { isUndefined } from 'lodash-es'
 import { toJS } from 'mobx'
 
 import { TradePositionDirectionEnum } from '@/options/trade/position'
+import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { TRADE_BUY_SELL } from '@/v1/constants'
 import { stores } from '@/v1/provider/mobxProvider'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
@@ -42,8 +44,10 @@ export const calcCurrencyExchangeRate = ({ value, unit, buySell }: IExchangeRate
   const isBuy = buySell === TRADE_BUY_SELL.BUY // 是否买入
   const isSell = buySell === TRADE_BUY_SELL.SELL // 是否卖出
 
+  const currentAccountInfo = userInfoActiveTradeAccountInfoSelector(useRootStore.getState())
+
   // 交易品种配置的盈利货币单位和账户组配置的货币单位不一致时，需要转换
-  if (trade.currentAccountInfo?.currencyUnit !== unit) {
+  if (currentAccountInfo?.currencyUnit !== unit) {
     // USD开头是除法，USD结尾是乘法
     // 除法
     const divName = ('USD' + unit).toUpperCase() // 如 USDNZD
@@ -53,7 +57,7 @@ export const calcCurrencyExchangeRate = ({ value, unit, buySell }: IExchangeRate
     // 使用汇率品种的dataSourceCode去获取行情
     // const dataSourceCode = (allSimpleSymbolsMap[divName] || allSimpleSymbolsMap[mulName] || {})?.dataSourceCode
     const symbol = (allSimpleSymbolsMap[divName] || allSimpleSymbolsMap[mulName] || {})?.symbol
-    const accountGroupId = trade.currentAccountInfo?.accountGroupId
+    const accountGroupId = currentAccountInfo?.accountGroupId
     const divNameKey = symbol ? `${accountGroupId}/${divName}` : ''
     const mulNameKey = symbol ? `${accountGroupId}/${mulName}` : ''
 

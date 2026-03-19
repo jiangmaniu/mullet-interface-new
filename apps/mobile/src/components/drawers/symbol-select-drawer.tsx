@@ -2,6 +2,7 @@ import { Trans, useLingui } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo, useState } from 'react'
 import { FlatList, Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 import type { Route } from 'react-native-tab-view'
 
 import { EmptyState } from '@/components/states/empty-state'
@@ -15,9 +16,9 @@ import { parseRiseAndFallInfo } from '@/helpers/market'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
 import { useRootStore } from '@/stores'
+import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
@@ -147,8 +148,8 @@ interface SymbolMarketRowProps {
 const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
-  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.askDiff)
-  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   return (
     <View className="p-xl gap-xl flex-row items-center">
@@ -166,7 +167,7 @@ const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
                   : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="items-end">
@@ -198,15 +199,15 @@ const CategoryTabListContent = observer(
     categoryOption: SymbolCategoryOption
     onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
   }) => {
-    const { trade } = useStores()
+    const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
     const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
     let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
 
     if (categoryOption.value !== SymbolCategory.Favorite) {
       tradeList =
         categoryOption.value === SymbolCategory.All
-          ? trade.symbolListAll
-          : trade.symbolListAll.filter((item) => item.classify === categoryOption.value)
+          ? symbolListAll
+          : symbolListAll?.filter((item) => item.classify === categoryOption.value)
     }
 
     if (searchQuery) {

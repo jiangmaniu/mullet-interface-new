@@ -21,6 +21,8 @@ export interface InfoSliceActions {
   setActiveTradeAccountId: Setter<string | undefined>
   setClientInfo: Setter<ClientInfo | undefined>
   fetchClientInfo: (accountId?: string) => Promise<void>
+  setAccountList: (accountList: User.AccountItem[]) => void
+  updateAccount: (account: User.AccountItem) => void
 }
 
 /** info 命名空间（状态 + actions 扁平化） */
@@ -50,6 +52,44 @@ export function createUserInfoSlice(
 
     setClientInfo: infoSetter('clientInfo'),
 
+    updateAccount: (account: User.AccountItem) => {
+      const oldAccountList = get().user.info.accountList
+      const oldAccountMap = keyBy(oldAccountList, 'id')
+      const oldAccount = oldAccountMap[account.id]
+
+      const newAccount = {
+        ...oldAccount,
+        ...account,
+      }
+
+      const newAccountList = oldAccountList.map((item) => (item.id === account.id ? newAccount : item))
+      const newAccountMap = keyBy(newAccountList, 'id')
+
+      setRoot((state) => {
+        state.user.info.accountMap = newAccountMap
+        state.user.info.accountList = newAccountList
+      })
+
+      const activeTradeAccountId = userInfoActiveTradeAccountIdSelector(get())
+      if (!activeTradeAccountId || !newAccountMap[activeTradeAccountId]) {
+        userInfoSelector(get()).setActiveTradeAccountId(newAccountList?.[0]?.id)
+      }
+    },
+
+    setAccountList: (accountList: User.AccountItem[]) => {
+      const accountMap = keyBy(accountList, 'id')
+
+      setRoot((state) => {
+        state.user.info.accountList = accountList
+        state.user.info.accountMap = accountMap
+      })
+
+      const activeTradeAccountId = userInfoActiveTradeAccountIdSelector(get())
+      if (!activeTradeAccountId || !accountMap[activeTradeAccountId]) {
+        userInfoSelector(get()).setActiveTradeAccountId(accountList?.[0]?.id)
+      }
+    },
+
     fetchClientInfo: async (userId?: string) => {
       // 如果 symbolInfoList 为空，显示 loading
       if (!get().user.info.clientInfo) {
@@ -65,18 +105,9 @@ export function createUserInfoSlice(
           return
         }
         const { accountList = [], ...clientInfo } = res.data ?? {}
-        const accountMap = keyBy(accountList, 'id')
 
-        setRoot((state) => {
-          state.user.info.clientInfo = clientInfo
-          state.user.info.accountList = accountList
-          state.user.info.accountMap = accountMap
-        })
-
-        const activeTradeAccountId = userInfoActiveTradeAccountIdSelector(get())
-        if (!activeTradeAccountId || !accountMap[activeTradeAccountId]) {
-          userInfoSelector(get()).setActiveTradeAccountId(accountList?.[0]?.id)
-        }
+        get().user.info.setAccountList(accountList)
+        get().user.info.setClientInfo(clientInfo)
       } catch (error) {
         console.error('Failed to fetch client info:', error)
       } finally {

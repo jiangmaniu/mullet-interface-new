@@ -107,7 +107,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
   const open = symbolMarketInfo?.open
   const close = symbolMarketInfo?.close
   const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
-  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   return (
     <View className="p-xl flex-row items-center justify-between">

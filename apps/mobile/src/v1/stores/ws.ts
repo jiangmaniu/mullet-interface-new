@@ -16,6 +16,12 @@ import type Reactotron from 'reactotron-react-native'
 import { Account } from '../services/tradeCore/account/typings'
 import { Symbol } from '../services/tradeCore/symbol/typings'
 import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
+import {
+  userInfoActiveTradeAccountIdSelector,
+  userInfoActiveTradeAccountInfoSelector,
+} from '@/stores/user-slice/infoSlice'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { marketSymbolInfoMapSelector } from '@/stores/market-slice'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -194,19 +200,21 @@ class WSStore {
 
   // 工具方法：通过符号列表，生成成品符号列表
   makeWsSymbol = (symbols: string[], _accountGroupId?: string) => {
-    const symbolMap = trade.symbolMapAll
+    // const symbolMap = trade.symbolMapAll
     const symbolSemis = symbols.map((symbol) => ({
       symbol,
       // dataSourceCode: symbolMap?.[symbol]?.dataSourceCode
     })) as SymbolWSItemSemi[]
 
-    const accountGroupId = _accountGroupId || trade.currentAccountInfo.accountGroupId
+    const accountGroupId =
+      _accountGroupId || userInfoActiveTradeAccountInfoSelector(useRootStore.getState())?.accountGroupId
     return symbolSemis.map((symbolSemi) => ({ ...symbolSemi, accountGroupId })) as SymbolWSItem[]
   }
 
   // 工具方法：通过半成品符号列表，生成成品符号列表
   makeWsSymbolBySemi = (symbolSemis: SymbolWSItemSemi[], _accountGroupId?: string) => {
-    const accountGroupId = _accountGroupId || trade.currentAccountInfo.accountGroupId
+    const accountGroupId =
+      _accountGroupId || userInfoActiveTradeAccountInfoSelector(useRootStore.getState())?.accountGroupId
     return symbolSemis.map((symbolSemi) => ({ ...symbolSemi, accountGroupId })) as SymbolWSItem[]
   }
 
@@ -471,8 +479,14 @@ class WSStore {
 
   // 动态订阅汇率品种行情
   subscribeExchangeRateQuote = (symbolConf?: Symbol.SymbolConf, symbolName?: string) => {
-    const activeSymbolName = symbolName || trade.activeSymbolName
-    const quote = getCurrentQuoteV2(this.quotes, activeSymbolName, trade.symbolMapAll)
+    const activeSymbolName = symbolName || tradeActiveTradeSymbolSelector(useRootStore.getState())
+    if (!activeSymbolName) {
+      return
+    }
+
+    const symbolMapAll = marketSymbolInfoMapSelector(useRootStore.getState())
+
+    const quote = getCurrentQuoteV2(this.quotes, activeSymbolName, symbolMapAll)
     // 如果不传，使用当前激活的品种配置
     const conf = symbolConf || quote?.symbolConf
     if (!conf) return
@@ -488,10 +502,11 @@ class WSStore {
 
     if (!symbolInfo) return
 
+    const activeAccountInfo = userInfoActiveTradeAccountInfoSelector(useRootStore.getState())
     const toSend = new Map<string, boolean>()
     toSend.set(
       ws.symbolToString({
-        accountGroupId: trade.currentAccountInfo.accountGroupId,
+        accountGroupId: activeAccountInfo?.accountGroupId,
         symbol: symbolInfo?.symbol,
       }),
       true,
@@ -521,8 +536,7 @@ class WSStore {
 
   // 订阅持仓记录、挂单记录、账户余额信息
   subscribePosition = (cancel?: boolean) => {
-    const currentAccountInfo = trade.currentAccountInfo
-    const accountId = currentAccountInfo?.id
+    const accountId = userInfoActiveTradeAccountIdSelector(useRootStore.getState())
     if (!accountId) return
     this.send({
       topic: `/${DEFAULT_TENANT_ID}/trade/${accountId}`,
@@ -862,6 +876,8 @@ class WSStore {
               ...accountInfo,
             }
           })
+
+          useRootStore.getState().user.info.updateAccount(accountInfo)
         }
         // 持仓列表
         else if (type === 'MARKET_ORDER') {

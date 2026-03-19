@@ -54,7 +54,7 @@ export const OrderTpSl = observer(({ symbol }: { symbol?: string }) => {
 })
 
 const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
-  const currentAccountCurrencyInfo = useRootStore(userInfoActiveTradeAccountCurrencyInfoSelector)
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
 
   const { disabledInput } = useDisabledTrade({ symbol, accountId: currentAccountCurrencyInfo?.id })
 
@@ -167,7 +167,7 @@ const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
 })
 
 const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
-  const currentAccountCurrencyInfo = useRootStore(userInfoActiveTradeAccountCurrencyInfoSelector)
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { disabledInput } = useDisabledTrade({
     accountId: currentAccountCurrencyInfo?.id,
     symbol,

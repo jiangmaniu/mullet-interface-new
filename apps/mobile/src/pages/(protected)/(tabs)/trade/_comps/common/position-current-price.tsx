@@ -21,9 +21,9 @@ export const PositionCurrentPrice = observer(
     const currentPrice = info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.ask : symbolMarketInfo?.bid
     const priceDiff =
       info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.askDiff : symbolMarketInfo?.bidDiff
-    const priceDiffColor = BNumber.from(priceDiff).gt(0)
+    const priceDiffColor = BNumber.from(priceDiff)?.gt(0)
       ? 'text-market-rise'
-      : BNumber.from(priceDiff).lt(0)
+      : BNumber.from(priceDiff)?.lt(0)
         ? 'text-market-fall'
         : 'text-content-1'
 
@@ -64,9 +64,9 @@ export const PendingCurrentPrice = observer(
         : isLimitOrder
           ? symbolMarketInfo?.askDiff
           : symbolMarketInfo?.bidDiff
-    const priceDiffColor = BNumber.from(priceDiff).gt(0)
+    const priceDiffColor = BNumber.from(priceDiff)?.gt(0)
       ? 'text-market-rise'
-      : BNumber.from(priceDiff).lt(0)
+      : BNumber.from(priceDiff)?.lt(0)
         ? 'text-market-fall'
         : 'text-content-1'
 

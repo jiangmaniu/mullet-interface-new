@@ -1,9 +1,9 @@
-import { BNumber, BNumberValue } from "@mullet/utils/number"
+import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 export enum RiseAndFallTypeEnum {
   Rise = 'rise',
   Fall = 'fall',
-  Same = 'same'
+  Same = 'same',
 }
 
 export interface RiseAndFallInfo {
@@ -13,9 +13,13 @@ export interface RiseAndFallInfo {
   isSame: boolean
 }
 
-export const parseRiseAndFallInfo = (priceDiff: BNumberValue) => {
+export const parseRiseAndFallInfo = (priceDiff?: BNumberValue) => {
   const bPriceDiff = BNumber.from(priceDiff)
-  const type = bPriceDiff.gt(0) ? RiseAndFallTypeEnum.Rise : bPriceDiff.lt(0) ? RiseAndFallTypeEnum.Fall : RiseAndFallTypeEnum.Same
+  const type = bPriceDiff?.gt(0)
+    ? RiseAndFallTypeEnum.Rise
+    : bPriceDiff?.lt(0)
+      ? RiseAndFallTypeEnum.Fall
+      : RiseAndFallTypeEnum.Same
 
   const info: RiseAndFallInfo = {
     type,

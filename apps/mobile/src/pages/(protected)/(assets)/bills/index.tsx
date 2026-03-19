@@ -12,11 +12,16 @@ import { IconifyFilter, IconifyNavArrowDown, IconifyUserCircle } from '@/compone
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
+import { useAccountInfo } from '@/hooks/account/use-account-info'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useRootStore } from '@/stores'
-import { createRealAccountInfoSelector, userInfoRealAccountListSelector } from '@/stores/user-slice/infoSlice'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import {
+  createRealAccountInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+  userInfoRealAccountListSelector,
+} from '@/stores/user-slice/infoSlice'
 import { msg } from '@lingui/core/macro'
 
 import { DateFilterDrawer, DateRange } from './_comps/date-filter-drawer'
@@ -52,8 +57,8 @@ export interface DepositRecord {
 }
 
 interface BillsScreenContextProps {
-  selectedAccount: User.AccountItem | undefined
-  setSelectedAccount: (account: User.AccountItem) => void
+  selectedAccountId: string | undefined
+  setSelectedAccountId: (id: string) => void
   dateRange: DateRange
 }
 
@@ -71,17 +76,21 @@ const BillsScreen = observer(() => {
     startDate: null,
     endDate: null,
   })
-  const [selectedAccount, setSelectedAccount] = useState<User.AccountItem | undefined>(undefined)
+  const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if (selectedAccount) return
+    if (selectedAccountId) return
     const state = useRootStore.getState()
-    const account =
-      createRealAccountInfoSelector(accountId)(state) ??
-      userInfoRealAccountListSelector(state)[0]
-    if (account) setSelectedAccount(account)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountId])
+    // 1. URL accountId（真实账户）
+    const fromUrl = createRealAccountInfoSelector(accountId)(state)
+    if (fromUrl) return setSelectedAccountId(fromUrl.id)
+    // 2. activeTradeAccountId
+    const activeId = userInfoActiveTradeAccountIdSelector(state)
+    if (activeId) return setSelectedAccountId(activeId)
+    // 3. 兜底：第一个真实账户
+    const first = userInfoRealAccountListSelector(state)[0]
+    if (first) setSelectedAccountId(first.id)
+  }, [accountId, selectedAccountId])
 
   const handleFilterPress = () => {
     setDateFilterVisible(true)
@@ -121,7 +130,7 @@ const BillsScreen = observer(() => {
   }
 
   return (
-    <BillsScreenContext.Provider value={{ selectedAccount, setSelectedAccount, dateRange }}>
+    <BillsScreenContext.Provider value={{ selectedAccountId, setSelectedAccountId, dateRange }}>
       <ScreenHeader
         showBackButton={true}
         content={<Trans>账单</Trans>}
@@ -154,7 +163,8 @@ const BillsScreen = observer(() => {
 export default BillsScreen
 
 const BillsAccountSelector = observer(() => {
-  const { selectedAccount, setSelectedAccount } = useBillsScreenContext()
+  const { selectedAccountId, setSelectedAccountId } = useBillsScreenContext()
+  const selectedAccount = useAccountInfo(selectedAccountId)
   const realAccountSelectionDrawerRef = useRef<DrawerRef>(null)
 
   if (!selectedAccount) return null
@@ -170,7 +180,7 @@ const BillsAccountSelector = observer(() => {
         ref={realAccountSelectionDrawerRef}
         selectedAccountId={selectedAccount.id}
         onSelect={(account) => {
-          setSelectedAccount(account)
+          setSelectedAccountId(account.id)
         }}
       />
     </>

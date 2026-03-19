@@ -13,10 +13,9 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
-import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { marketSymbolInfoListSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
@@ -28,13 +27,12 @@ interface MarketCardProps {
 }
 
 const MarketCard = observer(({ symbol }: MarketCardProps) => {
-  const { trade } = useStores()
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const hasSymbolData = useRootStore((s) => marketSymbolInfoListSelector(s).length > 0)
 
   // 检查账户信息和 symbolMapAll 是否已加载
   const hasAccountInfo = !!activeTradeAccountId
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const hasSymbolData = Object.keys(trade.symbolMapAll).length > 0
 
   // 如果账户信息未加载，或 symbolMapAll 未加载，或 symbolInfo 未加载，显示骨架屏
   const isDataLoading = !hasAccountInfo || !hasSymbolData || !symbolInfo
@@ -71,7 +69,6 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   // 获取 K线历史数据
   const { data: chartData = [], isLoading: isChartLoading } = useSymbolKline(symbol)
   const { colorStatusSuccess, colorStatusDanger } = useThemeColors()
-  const { trade } = useStores()
   const symbolInfo = useMarketSymbolInfo(symbol)
   const getCurrentQuote = useGetCurrentQuoteCallback()
 
@@ -82,9 +79,9 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   const price = symbolMarketInfo?.ask
   const change = symbolMarketInfo?.percent
 
-  const changeColor = BNumber.from(change).gt(0)
+  const changeColor = BNumber.from(change)?.gt(0)
     ? colorStatusSuccess
-    : BNumber.from(change).lt(0)
+    : BNumber.from(change)?.lt(0)
       ? colorStatusDanger
       : 'text-content-1'
 

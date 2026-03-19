@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { createContext, useContext, useImperativeHandle, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { NumberFormatValues } from 'react-number-format'
+import { useShallow } from 'zustand/react/shallow'
 import { useToggle } from 'ahooks'
 import { Actions } from 'ahooks/lib/useToggle'
 
@@ -21,7 +22,6 @@ import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useRootStore } from '@/stores'
-import { useShallow } from 'zustand/react/shallow'
 import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -35,7 +35,7 @@ interface ClosePositionDrawerProps {
 }
 
 const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerProps) => {
-  const [closedLots, setClosedLots] = useState('')
+  const [closedLots, setClosedLots] = useState(position.orderVolume?.toString() ?? '')
   const [sliderValue, setSliderValue] = useState(0)
   const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
   const setCloseConfirmation = useRootStore((s) => s.trade.setting.setCloseConfirmation)

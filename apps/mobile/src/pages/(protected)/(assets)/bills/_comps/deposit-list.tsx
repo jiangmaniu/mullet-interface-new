@@ -12,6 +12,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { DepositEventTypeEnum } from '@/options/deposit/event'
 import { DepositStatusEnum, getDepositStatusEnumOption } from '@/options/deposit/status'
+import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -24,7 +25,8 @@ import { AccountTypeBadge, BillsCardRow } from './card-row'
 const PAGE_SIZE = 20
 
 export const DepositList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
-  const { dateRange } = useBillsScreenContext()
+  const { dateRange, selectedAccountId } = useBillsScreenContext()
+  const selectedAccount = useAccountInfo(selectedAccountId)
 
   // 格式化时间为 API 需要的格式
   const formatDateTime = (date: Date | null) => {
@@ -32,11 +34,9 @@ export const DepositList = observer(({ accountSelector }: { accountSelector: Rea
     return format(date, 'yyyy-MM-dd HH:mm:ss')
   }
 
-  const { selectedAccount } = useBillsScreenContext()
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useFundFlowHistory(
     {
-      accountId: selectedAccount.id,
+      accountId: selectedAccount?.id,
       eventType: DepositEventTypeEnum.DEPOSIT_COMPLETED,
       startTime: formatDateTime(dateRange.startDate),
       endTime: formatDateTime(dateRange.endDate),
@@ -124,10 +124,11 @@ export const DepositList = observer(({ accountSelector }: { accountSelector: Rea
 })
 
 // 充值卡片组件
-const DepositCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem }) => {
+const DepositCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem | undefined }) => {
   const { renderLinguiMsg } = useI18n()
 
-  const synopsis = useAccountSynopsis(account.synopsis)
+  const synopsis = useAccountSynopsis(account?.synopsis)
+  if (!account) return null
   return (
     <Card>
       <CardContent className="gap-medium">

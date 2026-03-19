@@ -132,7 +132,7 @@ export const SymbolSelector = observer(({ symbol }: { symbol?: string }) => {
 
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
-  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
+  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   const handleSymbolPress = () => {
     setIsSymbolSelectDrawerOpen(true)

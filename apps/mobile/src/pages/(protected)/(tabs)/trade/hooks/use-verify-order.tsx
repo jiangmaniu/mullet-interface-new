@@ -10,15 +10,11 @@ import { useRootStore } from '@/stores'
 import { createSymbolInfoSelector } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { useCreateOrderPrice } from '../_comps/order-panel/_hooks/use-order-price'
 
 export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
-  const { trade } = useStores()
-  const { orderVolume } = trade
-
   const { maxOpenVolume } = useOpenVolumn()
 
   const createOrderPrice = useCreateOrderPrice({ symbol })
@@ -35,7 +31,6 @@ export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
       return false
     }
 
-    const count = Number(orderVolume)
     if (BNumber.from(amount).lte(0)) {
       toast.warning(<Trans>请输入手数</Trans>)
       return false
@@ -54,10 +49,10 @@ export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
 
     // 验证余额
     if (orderTypeInfo.isMarket) {
-      if (!Number(maxOpenVolume) || BNumber.from(maxOpenVolume).lt(count)) {
-        toast.warning(<Trans>余额不足</Trans>)
-        return false
-      }
+      // if (!Number(maxOpenVolume) || BNumber.from(maxOpenVolume).lt(amount)) {
+      //   toast.warning(<Trans>余额不足</Trans>)
+      //   return false
+      // }
     }
 
     // 验证止盈止损

@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Pressable, View } from 'react-native'
-
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
+import { useRef, useState } from 'react'
+import { Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
@@ -12,10 +12,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconifyNavArrowDown, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
@@ -26,7 +26,7 @@ export const AccountCard = observer(({}: AccountCardProps) => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const { trade } = useStores()
-  const currentAccountInfo = useRootStore(userInfoActiveTradeAccountInfoSelector)
+  const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
   const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {
     setIsAccountDrawerOpen(true)
@@ -101,12 +101,7 @@ export const AccountCard = observer(({}: AccountCardProps) => {
       />
 
       {/* Add Balance Drawer */}
-      {currentAccountInfo && (
-        <AddBalanceDrawer
-          ref={addBalanceDrawerRef}
-          accountInfo={currentAccountInfo}
-        />
-      )}
+      {currentAccountInfo && <AddBalanceDrawer ref={addBalanceDrawerRef} accountInfo={currentAccountInfo} />}
     </>
   )
 })

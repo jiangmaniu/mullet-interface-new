@@ -9,16 +9,21 @@ import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
-import useDisabled from '@/v1/hooks/trade/useDisabled'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 export const OrderAmount = observer(({ symbol }: { symbol?: string }) => {
   const setFormData = useRootStore.getState().trade.formData.setFormData
-  const { disabledInput } = useDisabled()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const { disabledInput } = useDisabledTrade({
+    accountId: activeTradeAccountId,
+    symbol,
+  })
   const disabled = disabledInput
 
   const { amount, direction } = useRootStore(
