@@ -57,7 +57,7 @@ msgstr "Pull to refresh"
 msgid "复制失败"
 msgstr "Copy failed"
 
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "下单失败"
 msgstr "Order failed"
 
@@ -360,7 +360,7 @@ msgstr "Mullet only supports USDC on Solana. Depositing USDC from other chains w
 #: src/pages/(protected)/(assets)/deposit/wallet-transfer/usdc/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/index.tsx
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "余额不足"
 msgstr "Insufficient Balance"
 
@@ -1013,7 +1013,7 @@ msgstr "No filled orders"
 msgid "继续充值"
 msgstr "Continue Deposit"
 
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "止盈止损设置错误"
 msgstr "Invalid TP/SL settings"
 
@@ -1047,7 +1047,7 @@ msgstr "Add Balance"
 msgid "充值金额"
 msgstr "Deposit Amount"
 
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "下单成功"
 msgstr ""
 
@@ -1840,7 +1840,7 @@ msgstr "Announcements"
 msgid "兑换服务由Jup Swap提供"
 msgstr "Swap powered by Jup Swap"
 
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "请输入价格"
 msgstr "Please enter price"
 
@@ -1913,7 +1913,7 @@ msgstr "Change %"
 msgid "绿涨红跌"
 msgstr "Green up, Red down"
 
-#: src/pages/(protected)/(tabs)/trade/hooks/useSubmitOrder.tsx
+#: src/pages/(protected)/(tabs)/trade/_hooks/use-submit-order.tsx
 msgid "请输入手数"
 msgstr "Please enter lots"
 

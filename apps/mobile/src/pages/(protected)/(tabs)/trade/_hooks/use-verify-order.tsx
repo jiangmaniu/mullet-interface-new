@@ -9,13 +9,13 @@ import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores'
 import { createSymbolInfoSelector } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
-import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
+// import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { useCreateOrderPrice } from '../_comps/order-panel/_hooks/use-order-price'
 
 export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
-  const { maxOpenVolume } = useOpenVolumn()
+  // const { maxOpenVolume } = useOpenVolumn()
 
   const createOrderPrice = useCreateOrderPrice({ symbol })
 

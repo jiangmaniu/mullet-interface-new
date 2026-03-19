@@ -30,7 +30,7 @@ import { modifyStopProfitLoss } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 
-import { useVerifyOrderTpSlData } from '../../../hooks/use-verify-order'
+import { useVerifyOrderTpSlData } from '../../../_hooks/use-verify-order'
 import { PositionCurrentPrice } from '../../common/position-current-price'
 
 interface PositionTpSlDrawerProps {

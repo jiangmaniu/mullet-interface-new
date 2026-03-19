@@ -8,12 +8,11 @@ import { DrawerRef } from '@/components/ui/drawer'
 import { Text } from '@/components/ui/text'
 import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { useRootStore } from '@/stores'
-import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { tradeFormDataDirectionSelector } from '@/stores/trade-slice/formDataSlice'
 import { tradeSettingOrderConfirmationSelector } from '@/stores/trade-slice/settingSlice'
 
-import { useVerifyCreateOrderData } from '../../hooks/use-verify-order'
-import useSubmitOrder from '../../hooks/useSubmitOrder'
+import useSubmitOrder from '../../_hooks/use-submit-order'
+import { useVerifyCreateOrderData } from '../../_hooks/use-verify-order'
 import { OrderConfirmDrawer } from '../open-order-confirm-drawer'
 
 export const OrderSubmit = observer(({ symbol }: { symbol?: string }) => {
