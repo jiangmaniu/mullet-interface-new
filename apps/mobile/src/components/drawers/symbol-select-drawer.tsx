@@ -14,13 +14,13 @@ import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useRootStore } from '@/stores'
-import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 
 // ============ Types ============
 interface SymbolSelectDrawerProps {
@@ -169,7 +169,7 @@ const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
             {BNumber.toFormatNumber(symbolMarketInfo.ask, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
-        <View className="max-w-[60px] items-end">
+        <View className="items-end">
           <Text
             className={cn(
               'text-paragraph-p2',
