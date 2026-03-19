@@ -3,7 +3,9 @@ import { round } from 'number-precision'
 import type { BarData, BridgeSymbolInfo, RequestBarsPayload } from '@mullet/trading-view'
 import type { WebView } from 'react-native-webview'
 
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { createSymbolInfoSelector } from '@/stores/market-slice'
 import { request } from '@/v1/utils/request'
 import { BridgeIncoming, BridgeOutgoing } from '@mullet/trading-view'
 
@@ -24,7 +26,7 @@ const RESOLUTION_MAP: Record<string, string> = {
  * 监听 WebView 的数据请求（历史 K 线、品种信息），从 Native 侧获取数据后返回
  */
 export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null>) {
-  const { trade } = useStores()
+  const activeTradeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
   const lastBarTimeRef = useRef<number | null>(null)
 
   const postResponse = useCallback(
@@ -44,7 +46,7 @@ export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null
       try {
         const res = await request<{ data: string[] }>('/api/trade-market/marketApi/kline/symbol/klineList', {
           params: {
-            symbol: trade.activeSymbolName,
+            symbol: activeTradeSymbol,
             klineType,
             size: 300,
             klineTime: toTimestamp * 1000,
@@ -57,7 +59,7 @@ export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null
           return
         }
 
-        const symbolItem = trade.symbolMapAll[symbol]
+        const symbolItem = createSymbolInfoSelector(symbol)(useRootStore.getState())
         const precision = symbolItem?.symbolDecimal ?? 2
 
         const bars: BarData[] = list
@@ -86,13 +88,13 @@ export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null
         postResponse({ type: BridgeIncoming.BarsResponse, callId, payload: { bars: [], noData: true } })
       }
     },
-    [postResponse, trade],
+    [postResponse, activeTradeSymbol],
   )
 
   /** 返回品种信息给 WebView */
   const handleResolveSymbol = useCallback(
     (callId: string, symbol: string) => {
-      const symbolItem = trade.symbolMapAll[symbol]
+      const symbolItem = createSymbolInfoSelector(symbol)(useRootStore.getState())
       const info: BridgeSymbolInfo = {
         name: symbol,
         description: symbolItem?.alias ?? symbol,
@@ -102,7 +104,7 @@ export function useBridgeDataProvider(webviewRef: React.RefObject<WebView | null
       }
       postResponse({ type: BridgeIncoming.SymbolResponse, callId, payload: info })
     },
-    [postResponse, trade],
+    [postResponse],
   )
 
   /** WebView onMessage 处理器 — 处理数据请求 */

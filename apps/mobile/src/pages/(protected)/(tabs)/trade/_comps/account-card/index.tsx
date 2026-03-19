@@ -12,6 +12,8 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconifyNavArrowDown, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
@@ -24,14 +26,14 @@ export const AccountCard = observer(({}: AccountCardProps) => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
-  const synopsis = useAccountSynopsis(currentAccountInfo.synopsis)
+  const currentAccountInfo = useRootStore(userInfoActiveTradeAccountInfoSelector)
+  const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {
     setIsAccountDrawerOpen(true)
   }
 
   const getAccountBalance = useGetAccountBalanceCallback()
-  const { availableMargin } = getAccountBalance(trade.currentAccountInfo, trade.positionList)
+  const { availableMargin } = getAccountBalance(currentAccountInfo, trade.positionList)
 
   return (
     <>
@@ -44,12 +46,12 @@ export const AccountCard = observer(({}: AccountCardProps) => {
                 {/* User + ID */}
                 <View className="gap-xs flex-row items-center">
                   <IconifyUserCircle width={20} height={20} className="text-content-1" />
-                  <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo.id}</Text>
+                  <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo?.id}</Text>
                 </View>
                 {/* Badges */}
                 <View className="gap-medium flex-row items-center">
-                  <Badge color={!currentAccountInfo.isSimulate ? 'green' : 'secondary'}>
-                    <Text>{!currentAccountInfo.isSimulate ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
+                  <Badge color={!currentAccountInfo?.isSimulate ? 'green' : 'secondary'}>
+                    <Text>{!currentAccountInfo?.isSimulate ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
                   </Badge>
                   <Badge color="default">
                     <Text>{synopsis.abbr}</Text>
@@ -72,8 +74,8 @@ export const AccountCard = observer(({}: AccountCardProps) => {
               <View className="gap-xs flex-row items-center">
                 <Text className="text-paragraph-p3 text-content-1">
                   {BNumber.toFormatNumber(availableMargin, {
-                    unit: currentAccountInfo.currencyUnit,
-                    volScale: currentAccountInfo.currencyDecimal,
+                    unit: currentAccountInfo?.currencyUnit,
+                    volScale: currentAccountInfo?.currencyDecimal,
                   })}
                 </Text>
                 <IconButton
@@ -95,14 +97,16 @@ export const AccountCard = observer(({}: AccountCardProps) => {
       <TradeAccountSwitchDrawer
         visible={isAccountDrawerOpen}
         onClose={() => setIsAccountDrawerOpen(false)}
-        selectedAccountId={currentAccountInfo.id}
+        selectedAccountId={currentAccountInfo?.id}
       />
 
       {/* Add Balance Drawer */}
-      <AddBalanceDrawer
-        ref={addBalanceDrawerRef}
-        accountInfo={currentAccountInfo}
-      />
+      {currentAccountInfo && (
+        <AddBalanceDrawer
+          ref={addBalanceDrawerRef}
+          accountInfo={currentAccountInfo}
+        />
+      )}
     </>
   )
 })

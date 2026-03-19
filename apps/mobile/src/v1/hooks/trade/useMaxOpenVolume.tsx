@@ -3,6 +3,9 @@ import { formatNum } from "@/v1/utils"
 import { useGetAccountBalanceCallback } from "@/v1/utils/wsUtil"
 import { useState, useEffect } from "react"
 import useOrderParams from "./useOrderParams"
+import { useRootStore } from "@/stores"
+import { useShallow } from 'zustand/react/shallow'
+import { userInfoActiveTradeAccountCurrencyInfoSelector } from "@/stores/user-slice/infoSlice"
 
 
 type IProps = {
@@ -14,7 +17,8 @@ type IProps = {
 export default function useMaxOpenVolume(props?: IProps) {
   const { isLimit = false } = props || {}
   const orderParams = useOrderParams()
-  const accountGroupPrecision = trade.currentAccountInfo?.currencyDecimal || 2
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
+  const accountGroupPrecision = currentAccountCurrencyInfo?.currencyDecimal || 2
   const getAccountBalance = useGetAccountBalanceCallback()
   const { availableMargin } = getAccountBalance()
 

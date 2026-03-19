@@ -51,6 +51,43 @@
 
 ### 注意事项
 
+## ⚠️ 强制规范：Zustand useShallow（极其重要，必须执行）
+
+**selector 返回对象或数组时，必须用 `useShallow` 包裹，否则每次渲染都是新引用，导致无限重渲染。**
+
+```ts
+import { useShallow } from 'zustand/react/shallow'
+
+// ❌ 禁止：对象 selector 不加 useShallow
+const formData = useRootStore(tradeFormDataSelector)
+
+// ✅ 强制：加 useShallow 做浅比较
+const formData = useRootStore(useShallow(tradeFormDataSelector))
+```
+
+返回原始值（`string` / `number` / `boolean`）不需要 `useShallow`。详见 [store-pattern.md](./store-pattern.md) ✅ Do 第 2 条。
+
+---
+
+## ⚠️ 强制规范：Zustand 状态读取
+
+> 详细范式见 `./store-pattern.md` ❌ Don't 第 2 条
+
+**在 callback / 事件处理器 / 异步函数中，如果数据不参与 JSX 渲染，必须用 `getState()` 读取快照，严禁订阅。**
+
+```ts
+// ❌ 禁止：订阅整个 map 导致无效重渲染
+const symbolInfoMap = useRootStore(symbolInfoMapSelector)
+const handle = useCallback((symbol) => {
+  const item = symbolInfoMap[symbol]
+}, [symbolInfoMap])
+
+// ✅ 强制：callback 内按需读取快照
+const handle = useCallback((symbol) => {
+  const item = createSymbolInfoSelector(symbol)(useRootStore.getState())
+}, [])
+```
+
 ## 扩展规则
 
 ./figma.md

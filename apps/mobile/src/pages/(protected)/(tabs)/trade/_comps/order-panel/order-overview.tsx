@@ -7,17 +7,18 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { useRootStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import useMargin from '@/v1/hooks/trade/useMargin'
 import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 
 export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
   // 接口计算预估保证金
   const expectedMargin = useMargin()
-  const { trade } = useStores()
-  const { currentAccountInfo } = trade
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const symbolInfo = useMarketSymbolInfo(symbol)
   const lotVolScale = parseSymbolLotsVolScale(symbolInfo?.symbolConf)
   const { maxOpenVolume } = useOpenVolumn() // 最大可开仓量
@@ -36,8 +37,8 @@ export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
         </Tooltip>
         <Text className="text-paragraph-p3 text-content-1">
           {BNumber.toFormatNumber(expectedMargin, {
-            unit: currentAccountInfo.currencyUnit,
-            volScale: currentAccountInfo.currencyDecimal,
+            unit: currentAccountCurrencyInfo?.currencyUnit,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
         </Text>
       </View>

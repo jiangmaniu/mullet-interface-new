@@ -14,7 +14,7 @@ import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disable
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { BNumber } from '@mullet/utils/number'
 
 import { useCreateOrderPrice } from './_hooks/use-order-price'
@@ -54,10 +54,9 @@ export const OrderTpSl = observer(({ symbol }: { symbol?: string }) => {
 })
 
 const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
-  const { trade } = useStores()
-  const { currentAccountInfo } = trade
+  const currentAccountCurrencyInfo = useRootStore(userInfoActiveTradeAccountCurrencyInfoSelector)
 
-  const { disabledInput } = useDisabledTrade({ symbol, accountId: currentAccountInfo.id })
+  const { disabledInput } = useDisabledTrade({ symbol, accountId: currentAccountCurrencyInfo?.id })
 
   const symbolInfo = useMarketSymbolInfo(symbol)
   const { direction, tpPrice, amount, setFormData } = useRootStore(
@@ -157,8 +156,8 @@ const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
             {BNumber.toFormatNumber(pnlInAccountCurrency, {
               forceSign: true,
               positive: false,
-              volScale: currentAccountInfo.currencyDecimal,
-              unit: currentAccountInfo.currencyUnit,
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              unit: currentAccountCurrencyInfo?.currencyUnit,
             })}
           </Text>
         </Text>
@@ -168,10 +167,9 @@ const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
 })
 
 const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
-  const { trade } = useStores()
-  const { currentAccountInfo } = trade
+  const currentAccountCurrencyInfo = useRootStore(userInfoActiveTradeAccountCurrencyInfoSelector)
   const { disabledInput } = useDisabledTrade({
-    accountId: currentAccountInfo.id,
+    accountId: currentAccountCurrencyInfo?.id,
     symbol,
   })
 
@@ -274,8 +272,8 @@ const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
             {BNumber.toFormatNumber(pnlInAccountCurrency, {
               forceSign: true,
               positive: false,
-              volScale: currentAccountInfo.currencyDecimal,
-              unit: currentAccountInfo.currencyUnit,
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              unit: currentAccountCurrencyInfo?.currencyUnit,
             })}
           </Text>
         </Text>

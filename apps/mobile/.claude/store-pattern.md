@@ -426,16 +426,75 @@ export async function checkout() {
 ### ✅ Do
 
 1. **使用 selector 避免不必要的重渲染**
+
    ```ts
    const colorScheme = useRootStore(tradeColorSchemeSelector)  // ✅ 只在 colorScheme 变化时重渲染
    ```
 
-2. **函数式更新避免竞态**
+2. **【强制】selector 返回对象时必须使用 `useShallow`**
+
+   Zustand 默认用 `===` 比较返回值，对象每次都是新引用，会导致无限重渲染。返回对象（包括数组）时必须包裹 `useShallow`：
+
+   ```ts
+   import { useShallow } from 'zustand/react/shallow'
+
+   // ❌ 禁止：返回对象，每次渲染都是新引用，触发无限重渲染
+   const formData = useRootStore(tradeFormDataSelector)
+
+   // ✅ 强制：useShallow 做浅比较，只有字段值变化才重渲染
+   const formData = useRootStore(useShallow(tradeFormDataSelector))
+
+   // ✅ 内联 selector 同理
+   const { limitPrice, volume } = useRootStore(
+     useShallow((s) => ({ limitPrice: s.trade.formData.limitPrice, volume: s.trade.formData.volume }))
+   )
+   ```
+
+   **判断标准：** selector 返回值类型是 `object`、`array`、或包含多个字段的结构体，必须加 `useShallow`。返回原始值（`string`、`number`、`boolean`）不需要。
+
+3. **【强制】selector 只返回业务中实际用到的字段，禁止订阅多余数据**
+
+   每个 `useRootStore(selector)` 调用只应返回当前组件/hook 实际使用的最小数据集，避免因无关字段变化触发重渲染：
+
+   ```ts
+   // ❌ 禁止：订阅整个 formData，任何字段变化都触发重渲染
+   const formData = useRootStore(useShallow(tradeFormDataSelector))
+   // 实际只用了 limitPrice
+
+   // ✅ 强制：只订阅用到的字段
+   const limitPrice = useRootStore(tradeFormDataLimitPriceSelector)
+   ```
+
+   **判断标准：** 检查组件 JSX 和逻辑中实际引用了哪些字段，selector 只返回这些字段。
+
+4. **【强制】常用状态的 selector 必须定义为静态函数，抽取到对应 store 文件中**
+
+   禁止在组件内内联定义会被复用的 selector，应统一抽取到对应的 `xxxSelector.ts` 或 slice 文件末尾：
+
+   ```ts
+   // ❌ 禁止：在组件内内联定义 selector（无法复用，每次渲染创建新函数引用）
+   const price = useRootStore((s) => s.trade.formData.limitPrice)
+
+   // ✅ 强制：在 store 文件中定义静态 selector，组件直接引用
+   // trade-slice/formDataSelector.ts
+   export const tradeFormDataLimitPriceSelector = (state: RootStoreState) =>
+     state.trade.formData.limitPrice
+
+   // 组件中
+   import { tradeFormDataLimitPriceSelector } from '@/stores/trade-slice/formDataSelector'
+   const limitPrice = useRootStore(tradeFormDataLimitPriceSelector)
+   ```
+
+   **例外：** 仅在单个组件内使用且逻辑复杂的派生计算，可内联但需加注释说明原因。
+
+5. **函数式更新避免竞态**
+
    ```ts
    setActiveTradeSymbol((prev) => prev ?? defaultSymbol)  // ✅ 基于最新值更新
    ```
 
-3. **persist 只持久化必要数据**
+6. **persist 只持久化必要数据**
+
    ```ts
    partialize: createPartialize<RootStoreState>(
      'trade.formData',           // 临时表单数据
@@ -443,7 +502,8 @@ export async function checkout() {
    )
    ```
 
-4. **子命名空间扁平化状态和 actions**
+7. **子命名空间扁平化状态和 actions**
+
    ```ts
    export type SettingSlice = SettingSliceState & SettingSliceActions  // ✅ 扁平化
    ```
@@ -456,18 +516,34 @@ export async function checkout() {
    const token = useRootStore(userAccessTokenSelector)          // ✅ 响应式
    ```
 
-2. **不要手动 mmkv.set()**
+2. **【强制】在 callback/事件处理器/异步函数中，禁止通过订阅方式获取仅用于逻辑计算的数据**
+   ```ts
+   // ❌ 错误：在 hook 层级订阅整个 map，任何 symbol 变化都触发重渲染
+   const symbolInfoMap = useRootStore(symbolInfoMapSelector)
+   const handleRequest = useCallback((symbol: string) => {
+     const item = symbolInfoMap[symbol]  // 仅在回调内使用，不参与渲染
+   }, [symbolInfoMap])
+
+   // ✅ 正确：在 callback 内部按需读取快照，零订阅零重渲染
+   const handleRequest = useCallback((symbol: string) => {
+     const item = createSymbolInfoSelector(symbol)(useRootStore.getState())
+   }, [])
+   ```
+   **判断标准：** 如果数据只在方法内部使用、不直接参与 JSX 渲染，必须用 `getState()` 读取快照，严禁在 hook 层级订阅。
+
+3. **不要手动 mmkv.set()**
+
    ```ts
    mmkv.set('key', value)  // ❌ persist 已自动处理
    ```
 
-3. **不要在 selector 中使用 `_hasHydrated`**
+4. **不要在 selector 中使用 `_hasHydrated`**
    ```ts
    // ❌ MMKV 是同步的，不需要 hydration 状态
    const isHydrated = useRootStore((s) => s.user._hasHydrated)
    ```
 
-4. **不要创建嵌套的命名空间对象**
+5. **不要创建嵌套的命名空间对象**
    ```ts
    // ❌ 双重嵌套
    export type MarketSlice = { market: MarketSliceState } & MarketSliceActions

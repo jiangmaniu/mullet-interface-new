@@ -3,8 +3,10 @@ import type { IEnv } from '@/v1/env'
 
 import { i18n } from '@/locales/i18n'
 import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getEnv } from '@/v1/env'
-import { useStores } from '@/v1/provider/mobxProvider'
 
 import { getTradingviewLocale } from '../utils'
 
@@ -13,16 +15,16 @@ export interface UseTradingviewConfigOpts {
 }
 
 export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
-  const { trade } = useStores()
+  const currentAccountInfo = useRootStore(userInfoActiveTradeAccountInfoSelector)
 
   const [env, setEnv] = useState<IEnv | null>(null)
 
   // 派生值
   const locale = i18n.locale
   const tvLocale = getTradingviewLocale(locale)
-  const symbolName = trade.activeSymbolName
-  const symbolItem = trade.symbolMapAll[symbolName]
-  const accountGroupId = Number(trade.currentAccountInfo?.accountGroupId ?? 0)
+  const symbolName = useRootStore(tradeActiveTradeSymbolSelector)
+  const symbolItem = useMarketSymbolInfo(symbolName)
+  const accountGroupId = Number(currentAccountInfo?.accountGroupId ?? 0)
   const colorScheme = useRootStore((s) => s.trade.setting.colorScheme)
   const colorType = colorScheme === 'green-up' ? '1' : '2'
 

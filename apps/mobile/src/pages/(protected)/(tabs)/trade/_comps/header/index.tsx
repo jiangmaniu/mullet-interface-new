@@ -20,8 +20,8 @@ import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/u
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
@@ -34,8 +34,8 @@ interface TradeHeaderProps {
 
 export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   const router = useRouter()
-  const { trade } = useStores()
   const symbolInfo = useMarketSymbolInfo(symbol)
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const [isCommonFeaturesDrawerOpen, setIsCommonFeaturesDrawerOpen] = useState(false)
   const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
@@ -96,14 +96,14 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
                   setIsCommonFeaturesDrawerOpen(false)
                   router.push({
                     pathname: '/(protected)/(assets)/deposit',
-                    params: { accountId: trade.currentAccountInfo?.id },
+                    params: { accountId: activeTradeAccountId },
                   })
                 }}
                 onTransfer={() => {
                   setIsCommonFeaturesDrawerOpen(false)
                   router.push({
                     pathname: '/(protected)/(assets)/transfer',
-                    params: { accountId: trade.currentAccountInfo?.id },
+                    params: { accountId: activeTradeAccountId },
                   })
                 }}
                 onBill={() => {

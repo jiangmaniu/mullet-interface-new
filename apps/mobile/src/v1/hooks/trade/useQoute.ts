@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 
+import { useRootStore } from '@/stores'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -8,9 +10,9 @@ import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 
 export default function useQuote() {
   const { trade } = useStores()
+  const activeTradeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   const {
-    activeSymbolName,
     recordModalItem,
     isBuy: isBuyT,
     marginType: marginTypeT,
@@ -38,7 +40,7 @@ export default function useQuote() {
     [buySellRMI],
   )
 
-  const symbol = useMemo(() => symbolRMI || activeSymbolName, [activeSymbolName, symbolRMI])
+  const symbol = useMemo(() => symbolRMI || activeTradeSymbol, [activeTradeSymbol, symbolRMI])
 
   const getCurrentQuote = useGetCurrentQuoteCallback()
   const quoteInfo = getCurrentQuote(symbol)

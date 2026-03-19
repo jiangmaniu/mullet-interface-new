@@ -4,7 +4,6 @@ import { View } from 'react-native'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { ChartPosition } from '@/stores/trade-slice/settingSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 
 import { OrderAmount } from './order-amount'
 import { OrderDirection } from './order-direction'
@@ -20,8 +19,6 @@ interface OrderPanelProps {
 }
 
 export const OrderPanel = observer(({ chartPosition }: OrderPanelProps) => {
-  const { trade } = useStores()
-
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   return (

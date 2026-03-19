@@ -20,8 +20,10 @@ import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { cancelOrder } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 
@@ -97,14 +99,14 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
 export const TradePendingOrders = observer(() => {
   const { trade, user } = useStores()
   const pendingList = trade.pendingList
-  const currentAccountInfo = trade.currentAccountInfo
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const pendingListLoading = trade.pendingListLoading
 
   const [refreshing, setRefreshing] = useState(false)
   useEffect(() => {
-    if (!currentAccountInfo.id) return
+    if (!activeTradeAccountId) return
     trade.getPositionList(true)
-  }, [currentAccountInfo.id])
+  }, [activeTradeAccountId])
 
   const onRefresh = async () => {
     if (refreshing) return
@@ -158,8 +160,10 @@ const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem 
   const onCancel = async () => {
     setIsLoading(true)
     try {
-      const { success } = await trade.cancelOrder({ id: order.id })
+      const { success } = await cancelOrder({ id: order.id })
       if (success) {
+        await trade.getPendingList()
+
         setShowConfirm(false)
         toast.success(<Trans>取消成功</Trans>)
       }

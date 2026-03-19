@@ -12,10 +12,12 @@ import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSymbolKline } from '../_hooks/use-symbol-kline'
@@ -27,9 +29,10 @@ interface MarketCardProps {
 
 const MarketCard = observer(({ symbol }: MarketCardProps) => {
   const { trade } = useStores()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   // 检查账户信息和 symbolMapAll 是否已加载
-  const hasAccountInfo = !!trade.currentAccountInfo?.id
+  const hasAccountInfo = !!activeTradeAccountId
   const symbolInfo = useMarketSymbolInfo(symbol)
   const hasSymbolData = Object.keys(trade.symbolMapAll).length > 0
 

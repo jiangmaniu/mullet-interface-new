@@ -19,9 +19,9 @@ import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
+import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import useMargin from '@/v1/hooks/trade/useMargin'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -60,7 +60,7 @@ export function OrderConfirmDrawer({ ref, onConfirm, symbol }: OrderConfirmDrawe
 const OrderConfirmDrawerContent = observer(
   ({ onConfirm, onClose, symbol }: { symbol?: string; onConfirm?: () => void; onClose: () => void }) => {
     const [isConfirmLoading, { setLeft: setFalse, setRight: setTrue }] = useToggle(false)
-    const { trade } = useStores()
+    const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
 
     const { direction, amount, tpPrice, slPrice } = useRootStore(
       useShallow((s) => {
@@ -72,8 +72,6 @@ const OrderConfirmDrawerContent = observer(
     const directionInfo = parseTradeDirectionInfo(direction)
 
     const symbolInfo = useMarketSymbolInfo(symbol)
-
-    const currentAccountInfo = trade.currentAccountInfo
 
     const orderConfirmation = useRootStore((s) => s.trade.setting.orderConfirmation)
     const [dontAskAgain, setDontAskAgain] = useState(!orderConfirmation)
@@ -140,8 +138,8 @@ const OrderConfirmDrawerContent = observer(
                 </Text>
                 <Text className="text-paragraph-p2 text-content-1">
                   {BNumber.toFormatNumber(expectedMargin, {
-                    unit: currentAccountInfo.currencyUnit,
-                    volScale: currentAccountInfo.currencyDecimal,
+                    unit: currentAccountCurrencyInfo?.currencyUnit,
+                    volScale: currentAccountCurrencyInfo?.currencyDecimal,
                   })}
                 </Text>
               </View>
@@ -166,8 +164,8 @@ const OrderConfirmDrawerContent = observer(
                 </Text>
                 <Text className="text-paragraph-p2 text-content-1">
                   {BNumber.toFormatNumber(orderAmountValue, {
-                    unit: currentAccountInfo.currencyUnit,
-                    volScale: currentAccountInfo.currencyDecimal,
+                    unit: currentAccountCurrencyInfo?.currencyUnit,
+                    volScale: currentAccountCurrencyInfo?.currencyDecimal,
                   })}
                 </Text>
               </View>

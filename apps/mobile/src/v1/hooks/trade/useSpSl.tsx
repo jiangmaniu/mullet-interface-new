@@ -7,9 +7,12 @@ import { calcExchangeRate } from '@/v1/utils/wsUtil'
 import { add, subtract, throttle } from 'lodash-es'
 import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
 import { useRootStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
+import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 
 export default function useSpSl() {
   const { trade } = useStores()
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const {
     orderVolume,
     symbol,
@@ -58,7 +61,7 @@ export default function useSpSl() {
   // const step2 = useMemo(() => Math.pow(10, -(d - 1)) || step, [d, step])
   // 报价大小 * Math.pow(10, -d)
   const step2 = useMemo(() => Number(symbolConf?.quotationSize || 0) * Math.pow(10, -d) || step, [d, symbolConf, step])
-  const accountGroupPrecision = useMemo(() => trade.currentAccountInfo.currencyDecimal || 2, [trade.currentAccountInfo.currencyDecimal])
+  const accountGroupPrecision = useMemo(() => currentAccountCurrencyInfo?.currencyDecimal || 2, [currentAccountCurrencyInfo?.currencyDecimal])
 
   // 格式化数据
   const sl = useMemo(() => Number(slValue), [slValue])

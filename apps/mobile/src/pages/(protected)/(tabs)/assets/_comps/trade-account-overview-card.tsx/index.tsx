@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
 import { Pressable, TouchableHighlight, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
 import { Badge } from '@/components/ui/badge'
@@ -22,7 +23,8 @@ import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
@@ -34,11 +36,10 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
   const { textColorContent4, textColorContent1 } = useThemeColors()
 
-  const { trade } = useStores()
-  const tradeAccount = trade.currentAccountInfo
-  const isReal = !tradeAccount.isSimulate
+  const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
+  const isReal = !currentAccountInfo?.isSimulate
 
-  const synopsis = useAccountSynopsis(tradeAccount.synopsis)
+  const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
 
   const [isSwitcherVisible, setIsSwitcherVisible] = useState(false)
   const onPressSwitch = () => {
@@ -46,15 +47,12 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
   }
 
   const getAccountBalance = useGetAccountBalanceCallback()
-  const { balance, availableMargin, totalProfit, occupyMargin } = getAccountBalance(
-    trade.currentAccountInfo,
-    trade.positionList,
-  )
+  const { balance, availableMargin, totalProfit, occupyMargin } = getAccountBalance(currentAccountInfo, undefined)
 
   // 获取钱包地址
   const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
     DEPOSIT_SOLANA_CHAIN_ID,
-    tradeAccount.id,
+    currentAccountInfo?.id,
   )
   const walletAddress = depositAddressInfo?.address
 
@@ -75,7 +73,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
             <View className="gap-medium flex-row items-center">
               <View className="gap-xs flex-row items-center">
                 <IconifyUserCircle width={20} height={20} className="text-content-1" />
-                <Text className="text-content-1 text-paragraph-p2">{tradeAccount.id}</Text>
+                <Text className="text-content-1 text-paragraph-p2">{currentAccountInfo?.id}</Text>
               </View>
               <Badge color={isReal ? 'rise' : 'secondary'}>
                 <Text>{isReal ? <Trans>真实</Trans> : <Trans>模拟</Trans>}</Text>
@@ -89,7 +87,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
         </TouchableHighlight>
 
         <TradeAccountSwitchDrawer
-          selectedAccountId={tradeAccount.id}
+          selectedAccountId={currentAccountInfo?.id}
           visible={isSwitcherVisible}
           onClose={() => setIsSwitcherVisible(false)}
         />
@@ -132,9 +130,9 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
               <Text className="text-title-h3 text-content-1">
                 {isBalanceHidden
                   ? '******'
-                  : `${BNumber.toFormatNumber(balance, { volScale: tradeAccount.currencyDecimal })}`}
+                  : `${BNumber.toFormatNumber(balance, { volScale: currentAccountInfo?.currencyDecimal })}`}
               </Text>
-              <Text className="text-paragraph-p2 text-content-1">{tradeAccount.currencyUnit}</Text>
+              <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo?.currencyUnit}</Text>
             </View>
             <Text
               className={cn(
@@ -149,8 +147,8 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
               {isBalanceHidden
                 ? '******'
                 : `${BNumber.toFormatNumber(totalProfit, {
-                    unit: tradeAccount.currencyUnit,
-                    volScale: tradeAccount.currencyDecimal,
+                    unit: currentAccountInfo?.currencyUnit,
+                    volScale: currentAccountInfo?.currencyDecimal,
                     positive: false,
                     forceSign: true,
                   })}`}
@@ -171,7 +169,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
               ? '******'
-              : `${BNumber.toFormatNumber(tradeAccount.money, { unit: tradeAccount.currencyUnit, volScale: tradeAccount.currencyDecimal })}`}
+              : `${BNumber.toFormatNumber(currentAccountInfo?.money, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
@@ -181,7 +179,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
               ? '******'
-              : `${BNumber.toFormatNumber(availableMargin, { unit: tradeAccount.currencyUnit, volScale: tradeAccount.currencyDecimal })}`}
+              : `${BNumber.toFormatNumber(availableMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
@@ -191,7 +189,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
               ? '******'
-              : `${BNumber.toFormatNumber(occupyMargin, { unit: tradeAccount.currencyUnit, volScale: tradeAccount.currencyDecimal })}`}
+              : `${BNumber.toFormatNumber(occupyMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
       </View>

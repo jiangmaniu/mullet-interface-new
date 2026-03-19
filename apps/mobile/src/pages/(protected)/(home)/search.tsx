@@ -21,6 +21,7 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
@@ -203,6 +204,7 @@ const SearchPage = observer(function SearchPage() {
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
   const { trade } = useStores()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   // 使用 ahooks 的 useDebounce 进行防抖处理
   const debouncedQuery = useDebounce(searchQuery, { wait: 300 })
@@ -210,8 +212,8 @@ const SearchPage = observer(function SearchPage() {
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
-    useRootStore.getState().market.fetchMarketSymbolInfoList(trade.currentAccountInfo?.id)
-  }, [])
+    useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId ?? '')
+  }, [activeTradeAccountId])
 
   console.log(trade.symbolListAll)
 

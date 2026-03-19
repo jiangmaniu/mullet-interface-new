@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
@@ -21,6 +22,10 @@ import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/pos
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import {
+  userInfoActiveTradeAccountCurrencyInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+} from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
@@ -35,12 +40,12 @@ import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 export const TradePositions = observer(() => {
   const { trade } = useStores()
   const positionList = trade.positionList
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   useEffect(() => {
-    if (!currentAccountInfo.id) return
+    if (!currentAccountId) return
     trade.getPositionList(true).catch((err) => {})
-  }, [currentAccountInfo.id])
+  }, [currentAccountId])
 
   const positionListLoading = trade.positionListLoading
 
@@ -92,7 +97,7 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
   const positionInfo = parseTradePositionInfo(position)
   const { isExpanded } = AccordionPrimitive.useItemContext()
   const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const covertProfit = useCovertProfitCallback(false)
   const { renderLinguiMsg } = useI18n()
 
@@ -156,13 +161,13 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
         <View className="flex-row justify-between">
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>浮动盈亏({currentAccountInfo.currencyUnit})</Trans>
+              <Trans>浮动盈亏({currentAccountCurrencyInfo?.currencyUnit})</Trans>
             </Text>
             <Text className={`text-paragraph-p2 ${profitColor}`}>
               {BNumber.toFormatNumber(positionProfit, {
                 forceSign: true,
                 positive: false,
-                volScale: currentAccountInfo.currencyDecimal,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
               })}
             </Text>
           </View>
@@ -201,11 +206,11 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
           </View>
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>保证金({currentAccountInfo.currencyUnit})</Trans>
+              <Trans>保证金({currentAccountCurrencyInfo?.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
               {BNumber.toFormatNumber(positionInfo.marginByType, {
-                volScale: currentAccountInfo.currencyDecimal,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
               })}
             </Text>
           </View>
@@ -229,22 +234,22 @@ const PositionItemContent = observer(({ position }: PositionItemProps) => {
           </View>
           <View className="w-[100px]">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>
+              <Trans>手续费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
               {BNumber.toFormatNumber(position.handlingFees, {
-                volScale: currentAccountInfo.currencyDecimal,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
                 positive: false,
               })}
             </Text>
           </View>
           <View className="w-[100px] items-end">
             <Text className="text-paragraph-p3 text-content-4">
-              <Trans>库存费({currentAccountInfo.currencyUnit})</Trans>
+              <Trans>库存费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
             </Text>
             <Text className="text-paragraph-p3 text-content-1">
               {BNumber.toFormatNumber(position.interestFees, {
-                volScale: currentAccountInfo.currencyDecimal,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
                 positive: false,
               })}
             </Text>

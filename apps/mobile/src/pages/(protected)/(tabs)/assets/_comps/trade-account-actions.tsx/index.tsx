@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useRef } from 'react'
 import { Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 import { useRouter } from 'expo-router'
 
 import {
@@ -10,7 +11,8 @@ import {
 } from '@/components/drawers/trade-simulate-account-deposit-drawer'
 import { IconifyCoinsSwap, IconPayment, IconRecord, IconWithdrawFunds } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 
 const RealAccountActions = observer(({ account }: { account: User.AccountItem }) => {
   const router = useRouter()
@@ -124,9 +126,9 @@ const SimulateAccountActions = observer(({ account }: { account: User.AccountIte
 })
 
 export const TradeAccountActions = observer(() => {
-  const { trade } = useStores()
-  const account = trade.currentAccountInfo
+  const account = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
 
+  if (!account) return null
   if (account.isSimulate) {
     return <SimulateAccountActions account={account} />
   }

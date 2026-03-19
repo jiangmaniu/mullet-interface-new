@@ -1,15 +1,16 @@
 import { useMemo } from 'react'
 
+import { useRootStore } from '@/stores'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { ORDER_TYPE } from '@/v1/constants'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 
 import useQuote from './useQoute'
 import useSpSl from './useSpSl'
 
 export default function useOrderParams() {
-  const { trade } = useStores()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { symbol, leverageMultiple, buySell, orderVolume, marginType, orderType, orderPrice, isBuy } = useQuote()
 
   // 止损止盈
@@ -33,7 +34,7 @@ export default function useOrderParams() {
       takeProfit,
       // 浮动杠杆默认1
       leverageMultiple,
-      tradeAccountId: trade.currentAccountInfo?.id,
+      tradeAccountId: activeTradeAccountId,
       marginType,
       type: orderType,
       limitPrice: orderPrice,
@@ -63,7 +64,7 @@ export default function useOrderParams() {
     stopLoss,
     takeProfit,
     leverageMultiple,
-    trade.currentAccountInfo?.id,
+    activeTradeAccountId,
     marginType,
     orderType,
     orderPrice,

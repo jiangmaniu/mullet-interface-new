@@ -17,6 +17,7 @@ import { useAppState } from '@/hooks/use-app-state'
 import { useI18n } from '@/hooks/use-i18n'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 
@@ -33,6 +34,7 @@ const Trade = observer(() => {
   const { trade, user } = useStores()
   const { renderLinguiMsg } = useI18n()
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   // Safe Area Insets
   const insets = useSafeAreaInsets()
@@ -55,9 +57,9 @@ const Trade = observer(() => {
   }
 
   useEffect(() => {
-    if (!trade.currentAccountInfo.id) return
+    if (!activeTradeAccountId) return
     initData()
-  }, [trade.currentAccountInfo.id])
+  }, [activeTradeAccountId])
 
   useAppState(() => {
     // 页面回到前台刷新持仓列表

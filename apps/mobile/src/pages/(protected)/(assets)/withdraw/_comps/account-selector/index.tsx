@@ -12,9 +12,9 @@ import { IconifyNavArrowDown, IconifyUserCircle } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { useRootStore } from '@/stores'
-import { createRealAccountInfoSelector } from '@/stores/user-slice/infoSlice'
+import { createRealAccountInfoSelector, userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { BNumber } from '@mullet/utils/number'
 
 import { useAccountExtractable } from '../../_apis/use-account-extractable'
@@ -22,7 +22,7 @@ import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
 export const AccountSelection = observer(function AccountSelection() {
-  const { trade } = useStores()
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const params = useLocalSearchParams<{ accountId?: string }>()
   const setSelectedAccountId = useWithdrawStore((s) => s.setSelectedAccountId)
   const selectedAccountId = useWithdrawStore((s) => s.selectedAccountId)
@@ -53,7 +53,7 @@ export const AccountSelection = observer(function AccountSelection() {
     }
 
     // Fallback 到当前交易账户
-    const account = createRealAccountInfoSelector(trade.currentAccountInfo?.id)(state)
+    const account = createRealAccountInfoSelector(activeTradeAccountId)(state)
     if (account) {
       setSelectedAccountIdRef.current(account.id)
     }

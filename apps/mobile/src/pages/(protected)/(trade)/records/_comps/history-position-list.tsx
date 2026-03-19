@@ -17,7 +17,9 @@ import { getOrderMarginTypeEnumOption } from '@/options/trade/order'
 import { TradePositionStatusEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
+import { userInfoActiveTradeAccountIdSelector, userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getBgaOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { renderFallback } from '@mullet/utils/fallback'
@@ -31,8 +33,7 @@ const PAGE_SIZE = 10
 
 const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
-  const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const lotVolScale = parseSymbolLotsVolScale(order.conf)
   const { renderLinguiMsg } = useI18n()
 
@@ -53,8 +54,8 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
           {BNumber.toFormatNumber(order.profit, {
             forceSign: true,
             positive: false,
-            volScale: currentAccountInfo.currencyDecimal,
-            unit: currentAccountInfo.currencyUnit,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
+            unit: currentAccountCurrencyInfo?.currencyUnit,
           })}
         </Text>
       ),
@@ -111,9 +112,9 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
       content: (
         <>
           {BNumber.toFormatNumber(order.handlingFees, {
-            unit: currentAccountInfo.currencyUnit,
+            unit: currentAccountCurrencyInfo?.currencyUnit,
             positive: false,
-            volScale: currentAccountInfo.currencyDecimal,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
         </>
       ),
@@ -123,15 +124,15 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
       content: (
         <>
           {BNumber.toFormatNumber(order.handlingFees, {
-            unit: currentAccountInfo.currencyUnit,
+            unit: currentAccountCurrencyInfo?.currencyUnit,
             positive: false,
-            volScale: currentAccountInfo.currencyDecimal,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
           {' / '}
           {BNumber.toFormatNumber(order.interestFees, {
-            unit: currentAccountInfo.currencyUnit,
+            unit: currentAccountCurrencyInfo?.currencyUnit,
             positive: false,
-            volScale: currentAccountInfo.currencyDecimal,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
         </>
       ),
@@ -184,16 +185,15 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
 // ============================================================================
 
 export const HistoryPositionList = observer(() => {
-  const { trade } = useStores()
-  const accountId = trade.currentAccountInfo?.id
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
-    queryKey: ['historyPositions', accountId],
+    queryKey: ['historyPositions', activeTradeAccountId],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await getBgaOrderPage({
         current: pageParam,
         size: PAGE_SIZE,
-        accountId: accountId!,
+        accountId: activeTradeAccountId!,
         status: TradePositionStatusEnum.FINISH,
       })
       return res.data
@@ -203,7 +203,7 @@ export const HistoryPositionList = observer(() => {
       if (!lastPage) return undefined
       return lastPage.current < lastPage.pages ? lastPage.current + 1 : undefined
     },
-    enabled: !!accountId,
+    enabled: !!activeTradeAccountId,
     placeholderData: keepPreviousData,
     refetchOnMount: 'always',
   })

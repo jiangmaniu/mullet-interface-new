@@ -122,3 +122,17 @@ export const createSimulateAccountInfoSelector =
     const account = createAccountInfoSelector(accountId)(state)
     return account && account.isSimulate ? account : undefined
   }
+
+/** 当前激活交易账户的账户信息 */
+export const userInfoActiveTradeAccountInfoSelector = (state: RootStoreState): User.AccountItem | undefined => {
+  const { activeTradeAccountId, accountMap } = state.user.info
+  return activeTradeAccountId ? accountMap[activeTradeAccountId] : undefined
+}
+
+/** 当前激活交易账户的货币信息（id + currencyDecimal + currencyUnit） */
+export const userInfoActiveTradeAccountCurrencyInfoSelector = (
+  state: RootStoreState,
+): { id: string; currencyDecimal: number | undefined; currencyUnit: string | undefined } => {
+  const { id, currencyDecimal, currencyUnit } = userInfoActiveTradeAccountInfoSelector(state) ?? {}
+  return { id, currencyDecimal, currencyUnit }
+}

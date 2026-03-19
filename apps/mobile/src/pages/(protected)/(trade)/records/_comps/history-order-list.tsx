@@ -3,6 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -14,8 +15,12 @@ import { renderFormatLeverage } from '@/helpers/trade'
 import { useI18n } from '@/hooks/use-i18n'
 import { getOrderStatusEnumOption, getOrderTypeEnumOption, OrderStatusEnum, OrderTypeEnum } from '@/options/trade/order'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
+import { useRootStore } from '@/stores'
+import {
+  userInfoActiveTradeAccountCurrencyInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+} from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { getOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { renderFallback } from '@mullet/utils/fallback'
@@ -33,8 +38,7 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
 
   const lotsVolScale = parseSymbolLotsVolScale(order.conf)
 
-  const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
 
   const ITEM_OPTIONS: { label: React.ReactNode; content: React.ReactNode }[] = [
     {
@@ -54,14 +58,14 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
             <Trans>市价</Trans>
           ) : (
             BNumber.toFormatNumber(order.limitPrice, {
-              volScale: currentAccountInfo?.currencyDecimal,
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
             })
           )}
           {order.type === OrderTypeEnum.MARKET_ORDER ? (
             <>
               {' / '}
               {BNumber.toFormatNumber(order?.tradePrice, {
-                volScale: currentAccountInfo?.currencyDecimal,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
               })}
             </>
           ) : null}
@@ -75,8 +79,10 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
     ...(order.status !== OrderStatusEnum.CANCEL
       ? [
           {
-            label: <Trans>手续费({currentAccountInfo.currencyUnit})</Trans>,
-            content: BNumber.toFormatNumber(order.handlingFees, { volScale: currentAccountInfo.currencyDecimal }),
+            label: <Trans>手续费({currentAccountCurrencyInfo?.currencyUnit})</Trans>,
+            content: BNumber.toFormatNumber(order.handlingFees, {
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
+            }),
           },
 
           {
@@ -160,8 +166,7 @@ const OrderCard = observer(({ order }: { order: Order.OrderPageListItem }) => {
 // ============================================================================
 
 export const HistoryOrderList = observer(() => {
-  const { trade } = useStores()
-  const accountId = trade.currentAccountInfo?.id
+  const accountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
     queryKey: ['historyOrders', accountId],

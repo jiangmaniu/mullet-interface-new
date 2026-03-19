@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react'
 import { View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 import { useToggle } from 'ahooks'
 import { Actions } from 'ahooks/lib/useToggle'
 
@@ -26,6 +27,11 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { cn } from '@/lib/utils'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
+import { useRootStore } from '@/stores'
+import {
+  userInfoActiveTradeAccountCurrencyInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+} from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { modifyStopProfitLoss } from '@/v1/services/tradeCore/order'
@@ -127,14 +133,14 @@ export const PositionTpSlDrawer = observer(
 )
 
 const PositionTpSlDrawerContent = observer(() => {
+  const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
 
   const { tpPrice, slPrice, position, setLeft: setFalse } = usePositionTpSlDrawerContext()
 
   const positionInfo = parseTradePositionInfo(position)
   const { disabledBtn } = useDisabledTrade({
-    accountId: currentAccountInfo.id,
+    accountId: currentAccountId,
     symbol: positionInfo.symbol,
   })
 
@@ -257,14 +263,13 @@ const PositionTpSlDrawerContent = observer(() => {
 })
 
 const PositionTpForm = observer(() => {
-  const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { setTpPrice, position, amount, tpPrice } = usePositionTpSlDrawerContext()
 
   const positionInfo = parseTradePositionInfo(position)
 
   const { disabledInput } = useDisabledTrade({
-    accountId: currentAccountInfo.id,
+    accountId: currentAccountCurrencyInfo?.id,
     symbol: positionInfo.symbol,
   })
 
@@ -354,8 +359,8 @@ const PositionTpForm = observer(() => {
             )}
           >
             {BNumber.toFormatNumber(pnlInAccountCurrency, {
-              volScale: currentAccountInfo.currencyDecimal,
-              unit: currentAccountInfo.currencyUnit,
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              unit: currentAccountCurrencyInfo?.currencyUnit,
               positive: false,
               forceSign: true,
             })}
@@ -367,14 +372,13 @@ const PositionTpForm = observer(() => {
 })
 
 const PositionSlForm = observer(() => {
-  const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { slPrice, setSlPrice, position } = usePositionTpSlDrawerContext()
 
   const positionInfo = parseTradePositionInfo(position)
 
   const { disabledInput } = useDisabledTrade({
-    accountId: currentAccountInfo.id,
+    accountId: currentAccountCurrencyInfo?.id,
     symbol: positionInfo.symbol,
   })
 
@@ -463,8 +467,8 @@ const PositionSlForm = observer(() => {
             )}
           >
             {BNumber.toFormatNumber(pnlInAccountCurrency, {
-              volScale: currentAccountInfo.currencyDecimal,
-              unit: currentAccountInfo.currencyUnit,
+              volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              unit: currentAccountCurrencyInfo?.currencyUnit,
               positive: false,
               forceSign: true,
             })}

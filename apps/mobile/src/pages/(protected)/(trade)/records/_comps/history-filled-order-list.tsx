@@ -3,6 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -14,8 +15,12 @@ import { renderFormatLeverage } from '@/helpers/trade'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { getOrderCompletionTypeEnumOption, getOrderMarginTypeEnumOption } from '@/options/trade/order'
+import { useRootStore } from '@/stores'
+import {
+  userInfoActiveTradeAccountCurrencyInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+} from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { getTradeRecordsPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { renderFallback } from '@mullet/utils/fallback'
@@ -31,8 +36,7 @@ const PAGE_SIZE = 10
 const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
   const { renderLinguiMsg } = useI18n()
-  const { trade } = useStores()
-  const currentAccountInfo = trade.currentAccountInfo
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
 
   const lotVolScale = parseSymbolLotsVolScale(order.conf)
 
@@ -53,7 +57,7 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
           {BNumber.toFormatNumber(order.profit, {
             forceSign: true,
             positive: false,
-            volScale: currentAccountInfo.currencyDecimal,
+            volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
         </Text>
       ),
@@ -164,8 +168,7 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
 // ============================================================================
 
 export const HistoryFilledOrderList = observer(() => {
-  const { trade } = useStores()
-  const accountId = trade.currentAccountInfo?.id
+  const accountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
     queryKey: ['tradeRecords', accountId],
