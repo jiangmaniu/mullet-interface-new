@@ -16,13 +16,13 @@ import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { cn } from '@/lib/utils'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { subscribeCurrentAndPositionSymbol, useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
-import { useRootStore } from '@/stores'
-import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 
 import { CommonFeaturesDrawer } from './common-features-drawer'
 
@@ -120,7 +120,7 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
   )
 })
 
-const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
+export const SymbolSelector = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
   const { trade } = useStores()
   const [isSymbolSelectDrawerOpen, setIsSymbolSelectDrawerOpen] = useState(false)
 

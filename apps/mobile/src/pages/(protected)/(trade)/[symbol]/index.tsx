@@ -7,21 +7,21 @@ import { Route } from 'react-native-tab-view'
 import { useRouter } from 'expo-router'
 
 import { TradingviewChart } from '@/components/tradingview'
-import { AvatarImage } from '@/components/ui/avatar'
-import { IconifyActivity, IconifyCandlestickChart, IconifyNavArrowDownSolid } from '@/components/ui/icons'
+import { IconifyActivity, IconifyCandlestickChart } from '@/components/ui/icons'
 import { IconStar } from '@/components/ui/icons/set/star'
 import { IconStarFill } from '@/components/ui/icons/set/star-fill'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
+import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { t } from '@/locales/i18n'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
-import { getImgSource } from '@/utils/img'
+import { useRootStore } from '@/stores'
+import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 import { transferWeekDay } from '@/v1/constants'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { formatTimeStr } from '@/v1/utils/business'
@@ -29,8 +29,8 @@ import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
-import { useRootStore } from '@/stores'
-import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
+
+import { SymbolSelector } from '../../(tabs)/trade/_comps/header'
 
 // ============ SymbolDepthHeader Component ============
 interface SymbolDepthHeaderProps {
@@ -41,10 +41,7 @@ interface SymbolDepthHeaderProps {
 const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeaderProps) => {
   const router = useRouter()
   const { trade } = useStores()
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbol)
   const symbolInfo = trade.getActiveSymbolInfo(symbol)
-  const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo.percent)
 
   const favoriteSet = useRootStore(marketCurrentFavoriteSetSelector)
   const isFavorite = favoriteSet.has(symbolInfo?.symbol ?? '')
@@ -64,27 +61,7 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
   return (
     <ScreenHeader
       showBackButton={false}
-      left={
-        <View className="gap-medium flex-row items-center">
-          <Pressable onPress={onSymbolPress} className="gap-medium flex-row items-center">
-            <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-[30px] flex-shrink-0 rounded-full" />
-            <Text className="text-paragraph-p1 text-content-1 font-medium">{renderFormatSymbolName(symbolInfo)}</Text>
-            <Text
-              className={
-                percentChangeInfo.isRise
-                  ? 'text-market-rise'
-                  : percentChangeInfo.isFall
-                    ? 'text-market-fall'
-                    : 'text-content-1'
-              }
-            >
-              {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
-            </Text>
-
-            <IconifyNavArrowDownSolid width={16} height={16} className="text-content-1" />
-          </Pressable>
-        </View>
-      }
+      left={<SymbolSelector symbolInfo={symbolInfo} />}
       right={
         <View className="gap-xl flex-row items-center">
           <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
