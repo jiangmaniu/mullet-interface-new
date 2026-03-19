@@ -1,5 +1,7 @@
 import type { RootStoreState } from '../index'
 
+import { ImmerStateCreator } from '../_helpers/types'
+
 export enum LoginType {
   Web2 = 'web2',
   Web3 = 'web3',
@@ -25,9 +27,7 @@ export type AuthSlice = AuthSliceState & AuthSliceActions
  * 创建 auth 命名空间切片（状态 + actions）
  * 访问路径: state.user.auth.xxx
  */
-export function createUserAuthSlice(
-  setRoot: (fn: (state: RootStoreState) => void) => void,
-): AuthSlice {
+export const createUserAuthSlice: ImmerStateCreator<RootStoreState, AuthSlice> = (setRoot, get) => {
   return {
     accessToken: undefined,
     loginInfo: null,

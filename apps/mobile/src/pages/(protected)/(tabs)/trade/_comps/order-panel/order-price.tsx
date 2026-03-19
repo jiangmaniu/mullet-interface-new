@@ -7,12 +7,12 @@ import { useShallow } from 'zustand/react/shallow'
 import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input'
 import { Text } from '@/components/ui/text'
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
@@ -30,8 +30,7 @@ export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
   const { isBuy: isBuyOrder } = parseTradeDirectionInfo(direction)
   const { isMarket } = parseTradeOrderCreateTypeInfo(type)
 
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const quoteInfo = getCurrentQuote(symbol)
+  const quoteInfo = useMarketQuoteInfo(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { disabledInput } = useDisabledTrade({

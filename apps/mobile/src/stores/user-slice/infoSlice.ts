@@ -1,10 +1,11 @@
-import { keyBy } from 'lodash-es'
+import { get, keyBy } from 'lodash-es'
 import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
 
 import { getClientDetail } from '@/v1/services/crm/customer'
 
 import { createSetter } from '../_helpers/createSetter'
+import { ImmerStateCreator } from '../_helpers/types'
 import { ClientInfo } from './info-slice-type'
 
 export interface InfoSliceState {
@@ -32,10 +33,7 @@ export type InfoSlice = InfoSliceState & InfoSliceActions
  * 创建 info 命名空间切片（状态 + actions）
  * 访问路径: state.user.info.xxx
  */
-export function createUserInfoSlice(
-  setRoot: (fn: (state: RootStoreState) => void) => void,
-  get: () => RootStoreState,
-): InfoSlice {
+export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> = (setRoot, get) => {
   const infoSetter = createSetter<InfoSlice>(setRoot, (s) => s.user.info)
 
   return {

@@ -1,10 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { useState } from 'react'
-import { View } from 'react-native'
-
-import { Modal } from '@/components/ui/modal'
-import { Spinning } from '@/components/ui/spinning'
-import { Text } from '@/components/ui/text'
 
 import { loading, LoadingContent } from '../ui/loading'
 import { AccountSelectDrawer } from './account-select-drawer'

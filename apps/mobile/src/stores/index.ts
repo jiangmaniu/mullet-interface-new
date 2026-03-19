@@ -32,7 +32,7 @@ const useRootStoreBase = create<RootStoreState>()(
       {
         name: 'mullet-root-store',
         storage: createJSONStorage(() => mmkvStorage),
-        partialize: createPartialize<RootStoreState>('trade.formData', 'market.fetchMarketListLoading'),
+        partialize: createPartialize<RootStoreState>('trade.formData', 'market.symbol.loading'),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
       },
@@ -42,12 +42,14 @@ const useRootStoreBase = create<RootStoreState>()(
 
 export const useRootStore = createSelectors(useRootStoreBase)
 
-// 订阅 activeTradeAccountId 变化，自动刷新品种列表
-useRootStoreBase.subscribe(
-  (state) => state.user.info.activeTradeAccountId,
-  (accountId, prevAccountId) => {
-    if (accountId && accountId !== prevAccountId) {
-      useRootStoreBase.getState().market.fetchMarketSymbolInfoList(accountId)
+// 递归调用各 slice 及子命名空间的 initSubscribe（如果存在）
+const callInitSubscribe = (slice: any) => {
+  if (!slice || typeof slice !== 'object') return
+  if (typeof slice.initSubscribe === 'function') slice.initSubscribe()
+  Object.values(slice).forEach((child) => {
+    if (child && typeof child === 'object' && typeof (child as any).initSubscribe === 'function') {
+      callInitSubscribe(child)
     }
-  },
-)
+  })
+}
+Object.values(useRootStoreBase.getState()).forEach(callInitSubscribe)

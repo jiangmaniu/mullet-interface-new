@@ -43,5 +43,5 @@ export const tradeActiveTradeSymbolSelector = (state: RootStoreState) => state.t
 export const tradeActiveTradeSymbolInfoSelector = (state: RootStoreState) => {
   const activeSymbol = state.trade.activeTradeSymbol
   if (!activeSymbol) return null
-  return state.market.symbolInfoMap[activeSymbol] || null
+  return state.market.symbol.infoMap[activeSymbol] || null
 }

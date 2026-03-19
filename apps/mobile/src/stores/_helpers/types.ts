@@ -1,4 +1,4 @@
-import type { StateCreator } from 'zustand'
+import type { StateCreator, StoreApi } from 'zustand'
 
 /**
  * 中间件下的 StateCreator 类型
@@ -12,6 +12,26 @@ export type ImmerStateCreator<TState, TSlice = TState> = StateCreator<
   [],
   TSlice
 >
+
+/**
+ * 所有 slice 可选实现的基础接口
+ * store 初始化完成后会自动调用 initSubscribe（如果存在）
+ */
+export interface BaseSlice {
+  initSubscribe?: () => void
+}
+
+/**
+ * 子 slice 工厂函数的通用参数类型
+ * 避免直接使用 ImmerStateCreator 导致类型实例化过深
+ */
+export type SliceSet<TState> = (fn: (state: TState) => void) => void
+export type SliceGet<TState> = () => TState
+export type SliceCreator<TState, TSlice> = (
+  set: SliceSet<TState>,
+  get: SliceGet<TState>,
+  store: StoreApi<TState>,
+) => TSlice
 
 /**
  * 生成对象所有链式 key 路径
@@ -51,7 +71,7 @@ type OmitByPath<T, Path extends string> =
  * createPartialize<RootStoreState>('trade.formData', 'market.fetchMarketListLoading')
  */
 export function createPartialize<T extends Record<string, any>>(
-  ...paths: DotPaths<T>[]
+  ...paths: string[]
 ) {
   return (state: T): any => {
     // 深拷贝状态（只拷贝纯数据，跳过函数）

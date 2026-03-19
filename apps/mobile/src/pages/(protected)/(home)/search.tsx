@@ -18,6 +18,7 @@ import { Text } from '@/components/ui/text'
 import { HOT_SYMBOL_LIST } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useRootStore } from '@/stores'
@@ -25,7 +26,6 @@ import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSl
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { useTradeSwitchActiveSymbol } from '../(trade)/_hooks/use-trade-switch-symbol'
@@ -123,8 +123,7 @@ const SearchAssetRow = observer(function SearchAssetRow({
   searchChars: string[]
   onSelect: () => void
 }) {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
 
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
   // 图表颜色
@@ -164,8 +163,7 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
   searchChars: string[]
   onSelect: () => void
 }) {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">
@@ -213,7 +211,7 @@ const SearchPage = observer(function SearchPage() {
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
-    useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId ?? '')
+    useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId ?? '')
   }, [activeTradeAccountId])
 
   console.log(trade.symbolListAll)

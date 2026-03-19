@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { BNumber } from '@mullet/utils/number'
 
 export const PositionCurrentPrice = observer(
@@ -16,8 +16,7 @@ export const PositionCurrentPrice = observer(
     info: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
     className?: string
   }) => {
-    const getCurrentQuote = useGetCurrentQuoteCallback()
-    const symbolMarketInfo = getCurrentQuote(info.symbol)
+    const symbolMarketInfo = useMarketQuoteInfo(info.symbol ?? '')
     const currentPrice = info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.ask : symbolMarketInfo?.bid
     const priceDiff =
       info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.askDiff : symbolMarketInfo?.bidDiff
@@ -43,8 +42,7 @@ export const PendingCurrentPrice = observer(
     info: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
     className?: string
   }) => {
-    const getCurrentQuote = useGetCurrentQuoteCallback()
-    const symbolMarketInfo = getCurrentQuote(info.symbol)
+    const symbolMarketInfo = useMarketQuoteInfo(info.symbol ?? '')
 
     const isLimitOrder = info.type !== OrderTypeEnum.MARKET_ORDER
 

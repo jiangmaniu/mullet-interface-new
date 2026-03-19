@@ -1,7 +1,11 @@
 import { createSelector } from 'reselect'
+import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
-import { createSetter, type Setter } from '../_helpers/createSetter'
+
 import { Account } from '@/v1/services/tradeCore/account/typings'
+
+import { createSetter } from '../_helpers/createSetter'
+import type { SliceCreator } from '../_helpers/types'
 
 // ============ 状态 & Actions 类型 ============
 
@@ -33,9 +37,7 @@ export type MarketFavoriteSlice = MarketFavoriteSliceState & MarketFavoriteSlice
 
 // ============ 工厂函数 ============
 
-export function createMarketFavoriteSlice(
-  setRoot: (fn: (state: any) => void) => void,
-): MarketFavoriteSlice {
+export const createMarketFavoriteSlice: SliceCreator<RootStoreState, MarketFavoriteSlice> = (setRoot, get) => {
   const favoriteSetter = createSetter<MarketFavoriteSlice>(setRoot, (s) => s.market.favorite)
 
   /** 获取目标账户 ID，优先使用传入的，否则取当前激活账户 */
@@ -118,14 +120,9 @@ export const marketCurrentFavoriteSetSelector = createSelector(
  * 自动过滤 symbolInfoMap 中不存在的品种（已下架）
  */
 export const marketCurrentFavoriteSymbolInfoListSelector = createSelector(
-  [
-    marketCurrentFavoriteSymbolListSelector,
-    (state: RootStoreState) => state.market.symbolInfoMap,
-  ],
+  [marketCurrentFavoriteSymbolListSelector, (state: RootStoreState) => state.market.symbol.infoMap],
   (symbolList, symbolInfoMap): Account.TradeSymbolListItem[] =>
-    symbolList
-      .map((symbol) => symbolInfoMap[symbol])
-      .filter(Boolean) as Account.TradeSymbolListItem[],
+    symbolList.map((symbol) => symbolInfoMap[symbol]).filter(Boolean) as Account.TradeSymbolListItem[],
 )
 
 /** 当前账户的收藏数量 */
@@ -140,10 +137,7 @@ export const marketCurrentFavoriteCountSelector = createSelector(
  * const selector = useMemo(() => createMarketIsFavoriteSelector(symbol), [symbol])
  */
 export const createMarketIsFavoriteSelector = (symbol: string) =>
-  createSelector(
-    [marketCurrentFavoriteSetSelector],
-    (favoriteSet): boolean => favoriteSet.has(symbol),
-  )
+  createSelector([marketCurrentFavoriteSetSelector], (favoriteSet): boolean => favoriteSet.has(symbol))
 
 /**
  * 获取指定账户的收藏品种完整信息列表
@@ -153,10 +147,8 @@ export const getMarketFavoriteSymbolInfoListByAccountId = (accountId: string) =>
   createSelector(
     [
       (state: RootStoreState) => state.market.favorite.symbolFavoriteMap[accountId] || [],
-      (state: RootStoreState) => state.market.symbolInfoMap,
+      (state: RootStoreState) => state.market.symbol.infoMap,
     ],
     (symbolList, symbolInfoMap): Account.TradeSymbolListItem[] =>
-      symbolList
-        .map((symbol: string) => symbolInfoMap[symbol])
-        .filter(Boolean) as Account.TradeSymbolListItem[],
+      symbolList.map((symbol: string) => symbolInfoMap[symbol]).filter(Boolean) as Account.TradeSymbolListItem[],
   )

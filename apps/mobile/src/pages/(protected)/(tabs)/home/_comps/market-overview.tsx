@@ -12,11 +12,11 @@ import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { useRootStore } from '@/stores'
 import { marketSymbolInfoListSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { useSymbolKline } from '../_hooks/use-symbol-kline'
@@ -68,12 +68,10 @@ const CARD_CHART_HEIGHT = 60
 const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   // 获取 K线历史数据
   const { data: chartData = [], isLoading: isChartLoading } = useSymbolKline(symbol)
-  const { colorStatusSuccess, colorStatusDanger } = useThemeColors()
+  const { colorStatusSuccess, colorStatusDanger, textColorContent1 } = useThemeColors()
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-
   // 获取行情数据
-  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
 
   // 计算涨跌幅和价格（从订阅数据获取）
   const price = symbolMarketInfo?.ask
@@ -83,7 +81,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
     ? colorStatusSuccess
     : BNumber.from(change)?.lt(0)
       ? colorStatusDanger
-      : 'text-content-1'
+      : textColorContent1
 
   // 判断是否应该显示图表
   const shouldShowChart = !isChartLoading && chartData.length > 0

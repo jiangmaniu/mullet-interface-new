@@ -22,6 +22,7 @@ import { IconDepth, IconDepthTB, IconifyBell, IconifySearch } from '@/components
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
@@ -34,9 +35,8 @@ import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { stores, useStores } from '@/v1/provider/mobxProvider'
+import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 import { MarketOverview } from './_comps/market-overview'
@@ -113,8 +113,7 @@ interface AssetMarketRowProps {
 }
 
 const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
   const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
@@ -208,9 +207,7 @@ interface AssetPriceRowProps {
 }
 
 const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbolInfo?.symbol)
-
+  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
   return (
     <View className="p-xl gap-xl flex-row items-center">
       <SymbolInfoCell symbolInfo={symbolInfo} />
@@ -304,7 +301,7 @@ export default function Index() {
     // 重新刷新品种列表
     stores.trade.getSymbolList({ accountId: activeTradeAccountId })
 
-    useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId)
+    useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
   }, [activeTradeAccountId])
 
   return (

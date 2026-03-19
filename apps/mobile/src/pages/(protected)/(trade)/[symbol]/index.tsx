@@ -15,6 +15,7 @@ import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { t } from '@/locales/i18n'
@@ -26,7 +27,6 @@ import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { transferWeekDay } from '@/v1/constants'
 import { formatTimeStr } from '@/v1/utils/business'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/format'
 import { BNumber } from '@mullet/utils/number'
@@ -98,9 +98,8 @@ interface PriceInfoProps {
 }
 
 const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
   const latestPrice = symbolMarketInfo?.ask
   const high = symbolMarketInfo?.high
   const low = symbolMarketInfo?.low
@@ -192,8 +191,7 @@ function ChartView({ symbol }: { symbol?: string }) {
 
 // ============ DetailsView Component ============
 function DetailsView({ symbol }: { symbol?: string }) {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
   const tradeTimeConf = symbolMarketInfo?.tradeTimeConf as any[]
   const symbolConf = symbolMarketInfo?.symbolConf
   const holdingCostConf = symbolMarketInfo?.holdingCostConf
@@ -309,8 +307,7 @@ interface BottomActionBarProps {
 }
 
 const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
-  const getCurrentQuote = useGetCurrentQuoteCallback()
-  const symbolMarketInfo = getCurrentQuote(symbol)
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const buyPrice = symbolMarketInfo?.bid
   const sellPrice = symbolMarketInfo?.ask

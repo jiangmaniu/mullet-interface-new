@@ -6,7 +6,6 @@ import type { InfoSlice } from './infoSlice'
 import { createUserAuthSlice } from './authSlice'
 import { createUserInfoSlice } from './infoSlice'
 
-
 /** User 命名空间完整类型 */
 export type UserSlice = {
   /** info 子命名空间 */
@@ -15,7 +14,7 @@ export type UserSlice = {
   auth: AuthSlice
 }
 
-export const createUserSlice: ImmerStateCreator<RootStoreState, UserSlice> = (set, get) => ({
-  info: createUserInfoSlice(set, get),
-  auth: createUserAuthSlice(set),
+export const createUserSlice: ImmerStateCreator<RootStoreState, UserSlice> = (set, get, store) => ({
+  info: createUserInfoSlice(set, get, store),
+  auth: createUserAuthSlice(set, get, store),
 })

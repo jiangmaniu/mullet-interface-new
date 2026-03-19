@@ -121,7 +121,7 @@ class UserStore {
     } else {
       const activeTradeAccountId = useRootStore.getState().user.info.activeTradeAccountId
       stores.trade.getSymbolList({ accountId: activeTradeAccountId })
-      useRootStore.getState().market.fetchMarketSymbolInfoList(activeTradeAccountId)
+      useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
     }
   }
 }

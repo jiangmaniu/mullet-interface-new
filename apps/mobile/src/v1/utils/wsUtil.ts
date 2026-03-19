@@ -991,7 +991,7 @@ export function getCurrentQuoteV2(
 export const useGetCurrentQuoteCallback = () => {
   const activeSymbolName = useRootStore(tradeActiveTradeSymbolSelector)
 
-  const { trade, ws } = stores
+  const { trade, ws } = useStores()
   const symbolMap = trade.symbolMapAll
 
   return useCallback(

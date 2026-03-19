@@ -23,7 +23,7 @@ export const TradeAccountSwitchDrawer = observer(
       }
 
       // 切换账户 重新更新查询品种列表
-      useRootStore.getState().market.fetchMarketSymbolInfoList(account.id)
+      useRootStore.getState().market.symbol.fetchInfoList(account.id)
       await Promise.resolve(trade.getSymbolList({ accountId: account.id }))
       await Promise.resolve(trade.setCurrentAccountInfo(account))
       // 同步设置 Zustand activeTradeAccountId（触发订阅自动刷新品种列表）
