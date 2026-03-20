@@ -14,7 +14,7 @@ import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbo
 import { renderFormatLeverage } from '@/helpers/trade'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
-import { getOrderCompletionTypeEnumOption, getOrderMarginTypeEnumOption } from '@/options/trade/order'
+import { getOrderCompletionTypeEnumOption } from '@/options/trade/order'
 import { useRootStore } from '@/stores'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
@@ -80,17 +80,17 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
       label: <Trans>数量(手)</Trans>,
       content: <>{BNumber.toFormatNumber(order.tradingVolume, { volScale: lotVolScale })}</>,
     },
-    {
-      label: <Trans>保证金类型</Trans>,
-      content: (
-        <>
-          {renderLinguiMsg(
-            getOrderMarginTypeEnumOption({ value: order.marginType })?.label,
-            order.marginType ?? <Trans>未知类型</Trans>,
-          )}
-        </>
-      ),
-    },
+    // {
+    //   label: <Trans>保证金类型</Trans>,
+    //   content: (
+    //     <>
+    //       {renderLinguiMsg(
+    //         getOrderMarginTypeEnumOption({ value: order.marginType })?.label,
+    //         order.marginType ?? <Trans>未知类型</Trans>,
+    //       )}
+    //     </>
+    //   ),
+    // },
     {
       label: <Trans>交易类型</Trans>,
       content: (

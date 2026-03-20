@@ -99,7 +99,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               <Text className="text-paragraph-p2 text-content-4">
-                <Trans>总资产</Trans>
+                <Trans>资产净值</Trans>
               </Text>
               <Pressable onPress={() => setIsBalanceHidden(!isBalanceHidden)}>
                 {isBalanceHidden ? (
@@ -174,7 +174,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
         </View>
         <View className="flex-row items-center justify-between">
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>可用</Trans>
+            <Trans>可用保证金</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
@@ -184,7 +184,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
         </View>
         <View className="flex-row items-center justify-between">
           <Text className="text-paragraph-p3 text-content-4">
-            <Trans>占用</Trans>
+            <Trans>占用保证金</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
