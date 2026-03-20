@@ -110,10 +110,6 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
       label: <Trans>交易签名</Trans>,
       content: <>{renderFallback(formatAddress(order.signature), { verify: !!order.signature })}</>,
     },
-    {
-      label: <Trans>交易时间</Trans>,
-      content: <>{renderFallback(order.createTime)}</>,
-    },
   ]
 
   const formatedLeverage = renderFormatLeverage({
