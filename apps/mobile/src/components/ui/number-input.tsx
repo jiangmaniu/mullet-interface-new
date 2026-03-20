@@ -33,6 +33,7 @@ const NumberInput = ({
   hideLabel,
   inputClassName,
   block,
+  displayLabelClassName,
   // NumberInput specific props
   sourceEventType = NumberInputSourceType.EVENT,
   status,
@@ -63,6 +64,7 @@ const NumberInput = ({
       hintLabel={hintLabel}
       hintValue={hintValue}
       errorMessage={errorMessage || (isError ? 'Error' : undefined)}
+      displayLabelClassName={displayLabelClassName}
     >
       <NumberInputPrimitive
         placeholder=" "

@@ -19,6 +19,7 @@ import { Text } from '@/components/ui/text'
 import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useRootStore } from '@/stores'
@@ -45,6 +46,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   const positionInfo = parseTradePositionInfo(position)
   const { renderLinguiMsg } = useI18n()
   const lotsVolScale = parseSymbolLotsVolScale(positionInfo?.conf)
+  const { backgroundColorSpecial } = useThemeColors()
 
   const covertProfit = useCovertProfitCallback(false)
   const positionProfit = covertProfit(position)
