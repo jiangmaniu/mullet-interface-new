@@ -115,8 +115,8 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
   const { selectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
 
-  const fromAccount = useAccountInfo(String(record.tradeAccountId))
-  const toAccount = useAccountInfo(String(record.toAccountId))
+  const fromAccount = useAccountInfo(record?.tradeAccountId)
+  const toAccount = useAccountInfo(record?.toAccountId)
 
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)
@@ -138,11 +138,11 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
               <Badge color="default">
                 <Text>{fromSynopsis?.abbr}</Text>
               </Badge>
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.tradeAccountId)}</Text>
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record?.tradeAccountId)}</Text>
             </View>
           }
         />
-        <BillsCardRow label={<Trans>转出地址</Trans>} value={formatAddress(record.address)} />
+        <BillsCardRow label={<Trans>转出地址</Trans>} value={formatAddress(record?.address)} />
         <BillsCardRow
           label={<Trans>转入账户</Trans>}
           valueComponent={
@@ -150,18 +150,13 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
               <Badge color="default">
                 <Text>{toSynopsis?.abbr}</Text>
               </Badge>
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.toAccountId)}</Text>
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record?.toAccountId)}</Text>
             </View>
           }
         />
-        <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(record.toAddress)} />
-        <BillsCardRow label={<Trans>哈希地址</Trans>} value={formatAddress(record.signature)} />
-        <BillsCardRow
-          label={<Trans>时间</Trans>}
-          value={renderFallback(dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss'), {
-            verify: !!record.createTime,
-          })}
-        />
+        <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(record?.toAddress)} />
+        <BillsCardRow label={<Trans>哈希地址</Trans>} value={formatAddress(record?.signature)} />
+        <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record?.createTime)} />
       </CardContent>
     </Card>
   )
