@@ -649,9 +649,9 @@ class WSStore {
                 klineList,
               }
 
-              if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
-                console.log(JSON.stringify(changedQuoteItem))
-              }
+              // if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
+              //   console.log(JSON.stringify(changedQuoteItem))
+              // }
               this.quotes.set(dataSourceKey, changedQuoteItem)
               marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
             }
@@ -661,9 +661,9 @@ class WSStore {
               ...item,
               klineList,
             }
-            if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
-              console.log(JSON.stringify(changedQuoteItem))
-            }
+            // if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
+            //   console.log(JSON.stringify(changedQuoteItem))
+            // }
 
             this.quotes.set(dataSourceKey, changedQuoteItem)
             marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
@@ -842,10 +842,10 @@ class WSStore {
       case MessageType.symbol:
         // const quoteBody = this.parseQuoteBodyData(data)
         // 先收集起来再解析
-        if (data.includes(',SOL,')) {
-          const parsedData = this.parseQuoteBodyData(data)
-          console.log(`${parsedData.dataSourceKey}: `, parsedData.priceData)
-        }
+        // if (data.includes(',SOL,')) {
+        //   const parsedData = this.parseQuoteBodyData(data)
+        //   console.log(`${parsedData.dataSourceKey}: `, parsedData.priceData)
+        // }
 
         this.batchUpdateQuoteData(data)
         // 推入缓冲区
