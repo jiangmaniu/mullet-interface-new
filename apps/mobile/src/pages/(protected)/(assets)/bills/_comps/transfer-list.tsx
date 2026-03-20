@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
@@ -8,18 +7,14 @@ import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
-import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
-import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
-import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
-import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
+import { MoneyTransferVO, useMoneyTransferList } from '../_apis/use-money-transfer-list'
 import { useBillsScreenContext } from '../index'
 import { BillsCardRow } from './card-row'
 
@@ -29,31 +24,15 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
   const { selectedAccountId, dateRange } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
-    queryKey: ['transferRecords', selectedAccount?.id, dateRange.startDate?.getTime(), dateRange.endDate?.getTime()],
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await getMoneyRecordsPageList({
-        current: pageParam,
-        size: PAGE_SIZE,
-        type: TradeFundFlowTypeEnum.TRANSFER,
-        accountId: selectedAccount?.id,
-        startTime: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD 00:00:00') : undefined,
-        endTime: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD 23:59:59') : undefined,
-      })
-      return res.data
-    },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      if (!lastPage) return undefined
-      const { current, pages } = lastPage
-      return current < pages ? current + 1 : undefined
-    },
-    enabled: !!selectedAccount?.id,
-    // 保留旧数据，queryKey 变化时先展示旧数据再后台刷新
-    placeholderData: keepPreviousData,
-    // 组件重新挂载时始终后台刷新最新数据
-    refetchOnMount: 'always',
-  })
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } =
+    useMoneyTransferList(
+      {
+        tradeAccountId: selectedAccount?.id,
+        startDate: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD') : undefined,
+        endDate: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD') : undefined,
+      },
+      PAGE_SIZE,
+    )
 
   // 将所有页的记录合并并去重
   const records = React.useMemo(() => {
@@ -74,7 +53,7 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
     }
   }
 
-  const renderItem = ({ item }: { item: Account.MoneyRecordsPageListItem }) => <TransferCard record={item} />
+  const renderItem = ({ item }: { item: MoneyTransferVO }) => <TransferCard record={item} />
 
   const renderFooter = () => {
     if (isFetchingNextPage) {
@@ -132,26 +111,25 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
 })
 
 // 划转卡片组件
-const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageListItem }) => {
-  const remark = record.remark
+const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
   const { selectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
 
-  const fromAccount = useAccountInfo(remark?.fromAccountId)
-  const toAccount = useAccountInfo(remark?.toAccountId)
+  const fromAccount = useAccountInfo(String(record.tradeAccountId))
+  const toAccount = useAccountInfo(String(record.toAccountId))
 
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)
-
-  const { data: fromDepositInfo } = useDepositAddress(DEPOSIT_SOLANA_CHAIN_ID, remark?.fromAccountId ?? '')
-  const { data: toDepositInfo } = useDepositAddress(DEPOSIT_SOLANA_CHAIN_ID, remark?.toAccountId ?? '')
 
   return (
     <Card>
       <CardContent className="gap-medium">
         <BillsCardRow
           label={<Trans>划转金额</Trans>}
-          value={`${BNumber.toFormatNumber(remark?.money, { unit: selectedAccount?.currencyUnit, volScale: selectedAccount?.currencyDecimal })}`}
+          value={BNumber.toFormatNumber(record.money, {
+            unit: selectedAccount?.currencyUnit,
+            volScale: selectedAccount?.currencyDecimal,
+          })}
         />
         <BillsCardRow
           label={<Trans>转出账户</Trans>}
@@ -160,12 +138,11 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
               <Badge color="default">
                 <Text>{fromSynopsis?.abbr}</Text>
               </Badge>
-
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.fromAccountId)}</Text>
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.tradeAccountId)}</Text>
             </View>
           }
         />
-        <BillsCardRow label={<Trans>转出地址</Trans>} value={formatAddress(fromDepositInfo?.address)} />
+        <BillsCardRow label={<Trans>转出地址</Trans>} value={formatAddress(record.address)} />
         <BillsCardRow
           label={<Trans>转入账户</Trans>}
           valueComponent={
@@ -173,13 +150,18 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
               <Badge color="default">
                 <Text>{toSynopsis?.abbr}</Text>
               </Badge>
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(remark?.toAccountId)}</Text>
+              <Text className="text-paragraph-p3 text-content-1">{renderFallback(record.toAccountId)}</Text>
             </View>
           }
         />
-        <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(toDepositInfo?.address)} />
-        <BillsCardRow label={<Trans>哈希地址</Trans>} value={renderFallback(record.signature)} />
-        <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record.createTime)} />
+        <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(record.toAddress)} />
+        <BillsCardRow label={<Trans>哈希地址</Trans>} value={formatAddress(record.signature)} />
+        <BillsCardRow
+          label={<Trans>时间</Trans>}
+          value={renderFallback(dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss'), {
+            verify: !!record.createTime,
+          })}
+        />
       </CardContent>
     </Card>
   )
