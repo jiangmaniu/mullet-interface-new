@@ -29,6 +29,7 @@ platform :ios do
       UI.error("TestFlight 上传失败: #{e.message}")
       UI.important("IPA 已构建成功: #{lane_context[SharedValues::IPA_OUTPUT_PATH]}")
       UI.important("请使用 Transporter App 或 xcrun altool 手动上传")
+      raise e
     end
   end
 

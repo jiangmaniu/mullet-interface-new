@@ -174,7 +174,7 @@ async function parseArgs() {
         }
         return needsPassword
       },
-      default: envVars.APPLE_PASSWORD || '',
+      default: envVars.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD || '',
       validate: (input) => {
         if (!input || input.length < 4) {
           return '请输入有效的专用密码'
@@ -333,7 +333,7 @@ async function main() {
       console.error(chalk.red('\n错误: TestFlight 上传或重新生成证书需要 Apple 专用密码'))
       process.exit(1)
     }
-    shelljs.env.APPLE_PASSWORD = applePassword
+    shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
     if (forceRegenerateCertificates) {
       shelljs.env.FORCE_REGENERATE_CERTIFICATES = 'true'
     }
