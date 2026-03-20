@@ -9,10 +9,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
 import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
+import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
-import { useThemeColors } from '@/hooks/use-theme-colors'
-import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { cn } from '@/lib/utils'
+import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { marketSymbolInfoListSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
@@ -75,6 +77,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
 
   // 计算涨跌幅和价格（从订阅数据获取）
   const price = symbolMarketInfo?.ask
+  const priceChangeInfo = parseRiseAndFallInfo(price)
   const change = symbolMarketInfo?.percent
 
   const changeColor = BNumber.from(change)?.gt(0)
@@ -107,7 +110,18 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
           </View>
 
           <View>
-            <Text className="text-content-1 text-sm font-medium">{BNumber.toFormatNumber(price, { volScale: 2 })}</Text>
+            <Text
+              className={cn(
+                'text-sm font-medium',
+                priceChangeInfo.isRise
+                  ? 'text-market-rise'
+                  : priceChangeInfo.isFall
+                    ? 'text-market-fall'
+                    : 'text-content-1',
+              )}
+            >
+              {BNumber.toFormatNumber(price, { volScale: symbolInfo?.symbolDecimal })}
+            </Text>
             <Text style={{ color: changeColor }} className="text-paragraph-p3">
               {BNumber.toFormatPercent(change, { forceSign: true, isRaw: false })}
             </Text>

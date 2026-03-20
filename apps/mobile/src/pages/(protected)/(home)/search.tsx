@@ -124,7 +124,8 @@ const SearchAssetRow = observer(function SearchAssetRow({
   onSelect: () => void
 }) {
   const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
-
+  const price = symbolMarketInfo?.ask
+  const priceChangeInfo = parseRiseAndFallInfo(price)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
   // 图表颜色
   const changeColor = percentChangeInfo.isRise
@@ -139,8 +140,17 @@ const SearchAssetRow = observer(function SearchAssetRow({
 
       <View className="min-w-[150px] flex-shrink-0 flex-row gap-2">
         <View className="flex-1">
-          <Text className={cn('text-paragraph-p1 text-content-1', changeColor)}>
-            {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+          <Text
+            className={cn(
+              'text-paragraph-p1',
+              priceChangeInfo.isRise
+                ? 'text-market-rise'
+                : priceChangeInfo.isFall
+                  ? 'text-market-fall'
+                  : 'text-content-1',
+            )}
+          >
+            {BNumber.toFormatNumber(price, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="items-end">
