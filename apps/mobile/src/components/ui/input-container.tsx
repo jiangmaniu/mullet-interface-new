@@ -1,14 +1,9 @@
 import * as React from 'react'
-import {
-  LayoutChangeEvent,
-  View,
-  Text,
-  Pressable,
-  TextInput,
-} from 'react-native'
+import { LayoutChangeEvent, Pressable, Text, TextInput, View } from 'react-native'
 import { cva, VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
+
 import { IconButton } from './button'
 import { IconifyXmarkCircleSolid } from './icons'
 
@@ -16,31 +11,31 @@ const InputContainerVariants = cva('bg-transparent relative', {
   variants: {
     size: {
       sm: 'py-medium px-xl rounded-medium',
-      md: 'rounded-small py-large px-xl'
+      md: 'rounded-small py-large px-xl',
     },
     variant: {
       default: '',
-      outlined: 'border-zinc-base border'
-    }
+      outlined: 'border-zinc-base border',
+    },
   },
 
   compoundVariants: [
     {
       variant: 'outlined',
       size: 'sm',
-      className: 'py-medium px-xl'
+      className: 'py-medium px-xl',
     },
     {
       variant: 'outlined',
       size: 'md',
-      className: 'py-large px-xl'
-    }
+      className: 'py-large px-xl',
+    },
   ],
 
   defaultVariants: {
     size: 'sm',
-    variant: 'outlined'
-  }
+    variant: 'outlined',
+  },
 })
 
 type Prettify<T> = {
@@ -166,28 +161,28 @@ const InputContainer = <T,>({
   // 注入 ref 和事件处理到 children (Input)
   const validChildren = React.isValidElement(children)
     ? React.cloneElement(children as React.ReactElement<any>, {
-      ref: (node: any) => {
-        // 保持原有 ref (如果有)
-        const childRef = (children as any).ref
-        if (typeof childRef === 'function') {
-          childRef(node)
-        } else if (childRef) {
-          childRef.current = node
-        }
-        // 本地 ref
-        inputRef.current = node
-      },
-      onFocus: (e: any) => {
-        setIsFocused(true)
-        const props = (children as React.ReactElement<any>).props
-        if (props.onFocus) props.onFocus(e)
-      },
-      onBlur: (e: any) => {
-        setIsFocused(false)
-        const props = (children as React.ReactElement<any>).props
-        if (props.onBlur) props.onBlur(e)
-      }
-    })
+        ref: (node: any) => {
+          // 保持原有 ref (如果有)
+          const childRef = (children as any).ref
+          if (typeof childRef === 'function') {
+            childRef(node)
+          } else if (childRef) {
+            childRef.current = node
+          }
+          // 本地 ref
+          inputRef.current = node
+        },
+        onFocus: (e: any) => {
+          setIsFocused(true)
+          const props = (children as React.ReactElement<any>).props
+          if (props.onFocus) props.onFocus(e)
+        },
+        onBlur: (e: any) => {
+          setIsFocused(false)
+          const props = (children as React.ReactElement<any>).props
+          if (props.onBlur) props.onBlur(e)
+        },
+      })
     : children
 
   const isFloating = shouldFloat && !(hideLabel && isFocused && !hasValue)
@@ -197,23 +192,26 @@ const InputContainer = <T,>({
       className={cn(
         'flex flex-col',
         {
-          'w-full flex-1': block
+          'w-full flex-1': block,
         },
-        className
+        className,
       )}
       {...props}
     >
-
       <Pressable
-        className={cn(inputContainerVariantsClassName, 'gap-medium group relative flex flex-row cursor-text items-center transition-colors', {
-          'border-brand-primary': isFocused,
-          'border-status-danger': errorMessage
-        })}
+        className={cn(
+          inputContainerVariantsClassName,
+          'gap-medium group relative flex cursor-text flex-row items-center transition-colors',
+          {
+            'border-brand-primary': isFocused,
+            'border-status-danger': errorMessage,
+          },
+        )}
         style={
           labelBgColor
             ? ({
-              '--input-label-bg': labelBgColor
-            } as any) // React Native uses standard style objects, variable support depends on system
+                '--input-label-bg': labelBgColor,
+              } as any) // React Native uses standard style objects, variable support depends on system
             : undefined
         }
         onPress={handleContainerPress}
@@ -232,30 +230,32 @@ const InputContainer = <T,>({
         {displayLabelText && (
           <View
             className={cn(
-              'absolute pointer-events-none',
+              'pointer-events-none absolute',
               // 基础样式
-              isFloating && 'top-0 -translate-y-1/2 left-xl px-xs bg-secondary', // 浮动状态: 上移，左对齐，背景色遮挡边框
+              isFloating && 'left-xl px-xs bg-secondary top-0 -translate-y-1/2', // 浮动状态: 上移，左对齐，背景色遮挡边框
               // 颜色
               isFocused ? 'text-brand-primary' : 'text-content-5',
-              displayLabelClassName
+              displayLabelClassName,
             )}
             style={{
               left: isFloating ? 12 : labelInitialLeft, // 浮动时固定左侧 padding，占位时跟随 LeftContent
               transform: [
-                { translateY: isFloating ? -9 : 0 } // RN translate logic needs explicit values or style adjustment.
+                { translateY: isFloating ? -9 : 0 }, // RN translate logic needs explicit values or style adjustment.
                 // actually standard flex centering handles 'top-1/2 -translate-y-1/2' via className if nativewind supports it.
                 // Manual adjustment for better precision:
-              ]
+              ],
             }}
           >
-            <Text className={cn(
-              'text-paragraph-p2 transition-all duration-200 text-content-4',
-              isFloating && 'text-xs', // scale-80 approx
-              isFocused && 'text-brand-primary',
-              errorMessage && 'text-content-4',
-              !isFloating && 'text-content-5',
-              labelClassName
-            )}>
+            <Text
+              className={cn(
+                'text-paragraph-p2 text-content-4 transition-all duration-200',
+                isFloating && 'text-xs', // scale-80 approx
+                isFocused && 'text-brand-primary',
+                errorMessage && 'text-content-4',
+                !isFloating && 'text-content-5',
+                labelClassName,
+              )}
+            >
               {typeof displayLabelText === 'function' ? displayLabelText({ isFocused }) : displayLabelText}
             </Text>
           </View>
@@ -265,7 +265,7 @@ const InputContainer = <T,>({
         {!!clean && !!value && (
           <View className="z-10 order-3 ml-auto">
             <IconButton className="rounded-full p-0" onPress={onClean}>
-              <IconifyXmarkCircleSolid width={16} height={16} className='text-content-5' />
+              <IconifyXmarkCircleSolid width={16} height={16} className="text-content-5" />
             </IconButton>
           </View>
         )}
@@ -277,7 +277,7 @@ const InputContainer = <T,>({
       {errorMessage && <Text className={cn('text-paragraph-p3 text-status-danger mt-[6px]')}>{errorMessage}</Text>}
 
       {(hintLabel || hintValue) && (
-        <View className={cn('text-paragraph-p3 flex flex-row justify-between gap-2 mt-medium')}>
+        <View className={cn('text-paragraph-p3 mt-medium flex flex-row justify-between gap-2')}>
           {hintLabel && <Text className="text-content-4 self-start"> {hintLabel}</Text>}
           {hintValue && <Text className="text-content-1 self-end">{hintValue}</Text>}
         </View>
