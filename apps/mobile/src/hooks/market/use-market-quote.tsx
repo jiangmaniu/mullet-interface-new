@@ -6,7 +6,7 @@ import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 import { parseDataSourceKey } from '@/helpers/parse/symbol'
 import { useRootStore } from '@/stores/index'
-import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
 import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
@@ -15,8 +15,17 @@ import { toFixed } from '@/v1/utils'
 
 /** 订阅指定 symbol 的原始行情数据 */
 export const useMarketQuote = (symbol?: string) => {
+  const symbolInfo = useRootStore(useShallow(useCallback((s) => createSymbolInfoSelector(symbol)(s), [symbol])))
+
+  const dataSourceKey = useMemo(() => {
+    if (!symbolInfo) return undefined
+    return parseDataSourceKey(symbolInfo)
+  }, [symbolInfo])
+
   return useRootStore(
-    useShallow(useCallback((state: RootStoreState) => createMarketQuoteSelector(symbol)(state), [symbol])),
+    useShallow(
+      useCallback((state: RootStoreState) => createMarketQuoteSelector(dataSourceKey)(state), [dataSourceKey]),
+    ),
   )
 }
 

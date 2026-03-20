@@ -608,7 +608,7 @@ class WSStore {
         const quotesCacheItems = this.quotesCache.map((str) => this.parseQuoteBodyData(str))
         // 按symbol分组
         const symbolMap = groupBy(quotesCacheItems, 'symbol')
-        quotesCacheItems.forEach((item: IQuoteItem) => {
+        const changedQuoteItems = quotesCacheItems.map((item: IQuoteItem) => {
           const dataSourceKey = item.dataSourceKey
 
           if (!dataSourceKey) return
@@ -649,11 +649,7 @@ class WSStore {
                 klineList,
               }
 
-              // if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
-              //   console.log(JSON.stringify(changedQuoteItem))
-              // }
-              this.quotes.set(dataSourceKey, changedQuoteItem)
-              marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
+              return changedQuoteItem
             }
           } else {
             // 新增行情
@@ -661,14 +657,17 @@ class WSStore {
               ...item,
               klineList,
             }
-            // if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
-            //   console.log(JSON.stringify(changedQuoteItem))
-            // }
-
-            this.quotes.set(dataSourceKey, changedQuoteItem)
-            marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
+            return changedQuoteItem
           }
         })
+
+        const filteredChangeQUoteItems = changedQuoteItems.filter((item) => !!item)
+
+        filteredChangeQUoteItems.forEach((item) => {
+          this.quotes.set(item.dataSourceKey, item)
+        })
+
+        marketQuoteSliceSelector(useRootStore.getState()).addQuotes(filteredChangeQUoteItems)
 
         this.quotesCache = []
         this.lastQuoteUpdateTime = Date.now()

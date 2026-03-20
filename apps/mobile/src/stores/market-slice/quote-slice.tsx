@@ -1,10 +1,8 @@
+import { isArray } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
-import { parseDataSourceKey } from '@/helpers/parse/symbol'
 import { IQuoteItem } from '@/v1/stores/ws'
-
-import { createSymbolInfoSelector } from './symbol-slice'
 
 interface MarketQuoteSliceState {
   /** 行情信息 Map */
@@ -12,22 +10,33 @@ interface MarketQuoteSliceState {
 }
 
 export interface MarketQuoteSliceActions {
-  addQuote: (quote: IQuoteItem) => void
+  addQuotes: (quotes: IQuoteItem[]) => void
 }
 
 /** Market 命名空间完整类型（状态直接展平） */
 export type MarketQuoteSlice = MarketQuoteSliceState & MarketQuoteSliceActions
 
-export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSlice> = (set, _get) => {
+export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSlice> = (set, get) => {
   const marketQuoteState: MarketQuoteSliceState = {
     quoteMap: {},
   }
 
   const marketQuoteAction: MarketQuoteSliceActions = {
-    addQuote: (quote: IQuoteItem) => {
-      if (!quote.dataSourceKey) return
+    addQuotes: (quotes: IQuoteItem[] | IQuoteItem) => {
+      const quotesArr = isArray(quotes) ? quotes : [quotes]
+      const filteredQuoteArr = quotesArr.filter((quote) => quote.dataSourceKey)
+
+      if (filteredQuoteArr.length === 0) return
+
+      const oldQuoteMap = { ...get().market.quote.quoteMap }
+
+      const newQuoteMap = filteredQuoteArr.reduce((acc, quote) => {
+        acc[quote.dataSourceKey] = quote
+        return acc
+      }, oldQuoteMap)
+
       set((state) => {
-        state.market.quote.quoteMap[quote.dataSourceKey] = quote
+        state.market.quote.quoteMap = newQuoteMap
       })
     },
   }
@@ -44,13 +53,10 @@ export const marketQuoteSliceSelector = (state: RootStoreState) => {
   return state.market.quote
 }
 
-/** 工厂：根据 symbol 获取对应的 quote */
+/** 工厂：根据 dataSourceKey 获取对应的 quote */
 export const createMarketQuoteSelector =
-  (symbol?: string) =>
+  (dataSourceKey?: string) =>
   (state: RootStoreState): IQuoteItem | undefined => {
-    if (!symbol) return undefined
-    const symbolInfo = createSymbolInfoSelector(symbol)(state)
-    const dataSourceKey = parseDataSourceKey(symbolInfo)
     if (!dataSourceKey) return undefined
     return state.market.quote.quoteMap[dataSourceKey]
   }
