@@ -166,7 +166,7 @@ export type SymbolWSItemSemi = {
   // dataSourceCode?: string
 }
 
-const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 280 : 500 // ms
+const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 16 : 32 // ms
 const THROTTLE_DEPTH_INTERVAL = 300 // ms
 const MAX_CACHE_SIZE = 150 // 设置最大缓存限制
 
@@ -648,6 +648,10 @@ class WSStore {
                 // 储存原始数据 ，用于K线图播放走一遍全部报价，避免数据过滤丢失绘制的k线跟后台历史数据不一样
                 klineList,
               }
+
+              if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
+                console.log(JSON.stringify(changedQuoteItem))
+              }
               this.quotes.set(dataSourceKey, changedQuoteItem)
               marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
             }
@@ -657,6 +661,10 @@ class WSStore {
               ...item,
               klineList,
             }
+            if (changedQuoteItem.symbol.toUpperCase() === 'SOL') {
+              console.log(JSON.stringify(changedQuoteItem))
+            }
+
             this.quotes.set(dataSourceKey, changedQuoteItem)
             marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
           }
@@ -834,6 +842,11 @@ class WSStore {
       case MessageType.symbol:
         // const quoteBody = this.parseQuoteBodyData(data)
         // 先收集起来再解析
+        if (data.includes(',SOL,')) {
+          const parsedData = this.parseQuoteBodyData(data)
+          console.log(`${parsedData.dataSourceKey}: `, parsedData.priceData)
+        }
+
         this.batchUpdateQuoteData(data)
         // 推入缓冲区
 
