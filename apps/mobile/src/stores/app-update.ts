@@ -10,11 +10,6 @@ interface AppUpdateState {
   downloadUrl: string | null
   isForceUpdate: boolean
   hasUpdate: boolean
-  fileSize: number | null
-
-  // 下载状态 (Android APK)
-  downloadProgress: number
-  isDownloading: boolean
 
   // 用户跳过的版本
   skippedVersion: string | null
@@ -25,11 +20,8 @@ interface AppUpdateState {
     updateContent?: string | null
     downloadUrl?: string | null
     isForceUpdate: boolean
-    fileSize?: number | null
   }) => void
   clearUpdate: () => void
-  setDownloadProgress: (progress: number) => void
-  setIsDownloading: (downloading: boolean) => void
   skipVersion: (version: string) => void
 }
 
@@ -39,9 +31,6 @@ const initialState = {
   downloadUrl: null,
   isForceUpdate: false,
   hasUpdate: false,
-  fileSize: null,
-  downloadProgress: 0,
-  isDownloading: false,
   skippedVersion: null,
 }
 
@@ -57,7 +46,6 @@ export const useAppUpdateStore = create<AppUpdateState>()(
           updateContent: info.updateContent ?? null,
           downloadUrl: info.downloadUrl ?? null,
           isForceUpdate: info.isForceUpdate,
-          fileSize: info.fileSize ?? null,
         }),
 
       clearUpdate: () =>
@@ -67,13 +55,8 @@ export const useAppUpdateStore = create<AppUpdateState>()(
           updateContent: null,
           downloadUrl: null,
           isForceUpdate: false,
-          fileSize: null,
-          downloadProgress: 0,
-          isDownloading: false,
         }),
 
-      setDownloadProgress: (progress) => set({ downloadProgress: progress }),
-      setIsDownloading: (downloading) => set({ isDownloading: downloading }),
       skipVersion: (version) => set({ skippedVersion: version }),
     }),
     {

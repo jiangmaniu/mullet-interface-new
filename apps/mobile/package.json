@@ -1,7 +1,7 @@
 {
   "name": "@mullet/mobile",
   "main": "entrypoint.ts",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "scripts": {
     "expo-prebuild": "node ./scripts/prebuild.js",
     "reset-project": "node ./scripts/reset-project.js",
@@ -100,6 +100,7 @@
     "react-native-collapsible-tab-view": "^9.0.0-rc.0",
     "react-native-confirmation-code-field": "^8.0.1",
     "react-native-dev-inspector": "^1.1.0",
+    "react-native-device-info": "^15.0.2",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-get-random-values": "^1.11.0",
