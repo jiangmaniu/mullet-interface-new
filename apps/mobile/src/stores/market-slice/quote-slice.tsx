@@ -5,6 +5,7 @@ import { parseDataSourceKey } from '@/helpers/parse/symbol'
 import { IQuoteItem } from '@/v1/stores/ws'
 
 import { createSymbolInfoSelector } from './symbol-slice'
+
 interface MarketQuoteSliceState {
   /** 行情信息 Map */
   quoteMap: Record<string, IQuoteItem>
@@ -38,6 +39,10 @@ export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSli
 }
 
 // ============ Selectors ============
+
+export const marketQuoteSliceSelector = (state: RootStoreState) => {
+  return state.market.quote
+}
 
 /** 工厂：根据 symbol 获取对应的 quote */
 export const createMarketQuoteSelector =

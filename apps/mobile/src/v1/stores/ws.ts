@@ -22,6 +22,7 @@ import {
 } from '@/stores/user-slice/infoSlice'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { marketSymbolInfoMapSelector } from '@/stores/market-slice'
+import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -648,6 +649,7 @@ class WSStore {
                 klineList,
               }
               this.quotes.set(dataSourceKey, changedQuoteItem)
+              marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
             }
           } else {
             // 新增行情
@@ -656,6 +658,7 @@ class WSStore {
               klineList,
             }
             this.quotes.set(dataSourceKey, changedQuoteItem)
+            marketQuoteSliceSelector(useRootStore.getState()).addQuote(changedQuoteItem)
           }
         })
 
