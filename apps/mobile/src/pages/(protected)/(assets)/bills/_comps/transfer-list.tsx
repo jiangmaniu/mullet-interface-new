@@ -8,14 +8,17 @@ import { EmptyState } from '@/components/states/empty-state'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
+import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
 import { useAccountInfo } from '@/hooks/account/use-account-info'
+import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
+import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
+import { formatAddress } from '@mullet/utils/web3'
 
 import { useBillsScreenContext } from '../index'
 import { BillsCardRow } from './card-row'
@@ -140,6 +143,9 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)
 
+  const { data: fromDepositInfo } = useDepositAddress(DEPOSIT_SOLANA_CHAIN_ID, remark?.fromAccountId ?? '')
+  const { data: toDepositInfo } = useDepositAddress(DEPOSIT_SOLANA_CHAIN_ID, remark?.toAccountId ?? '')
+
   return (
     <Card>
       <CardContent className="gap-medium">
@@ -159,6 +165,7 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
             </View>
           }
         />
+        <BillsCardRow label={<Trans>转出地址</Trans>} value={formatAddress(fromDepositInfo?.address)} />
         <BillsCardRow
           label={<Trans>转入账户</Trans>}
           valueComponent={
@@ -170,6 +177,8 @@ const TransferCard = observer(({ record }: { record: Account.MoneyRecordsPageLis
             </View>
           }
         />
+        <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(toDepositInfo?.address)} />
+        <BillsCardRow label={<Trans>哈希地址</Trans>} value={renderFallback(record.signature)} />
         <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record.createTime)} />
       </CardContent>
     </Card>
