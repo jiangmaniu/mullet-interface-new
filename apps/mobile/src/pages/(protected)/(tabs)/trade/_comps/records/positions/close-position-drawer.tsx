@@ -37,7 +37,7 @@ interface ClosePositionDrawerProps {
 
 const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerProps) => {
   const [closedLots, setClosedLots] = useState(position.orderVolume?.toString() ?? '')
-  const [sliderValue, setSliderValue] = useState(0)
+  const [sliderValue, setSliderValue] = useState(BNumber.from(position.orderVolume)?.gt(0) ? 100 : 0)
   const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
   const setCloseConfirmation = useRootStore((s) => s.trade.setting.setCloseConfirmation)
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
@@ -108,7 +108,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
     <>
       <DrawerHeader className="pt-3xl px-5">
         <DrawerTitle>
-          <Trans>平仓</Trans>
+          <Trans>确认平仓</Trans>
         </DrawerTitle>
       </DrawerHeader>
 
@@ -194,11 +194,11 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
         </View>
 
         {/* Don't ask again checkbox */}
-        <View className="flex-row items-center justify-end">
+        <View className="flex-row items-center">
           <Pressable onPress={() => setDontAskAgain(!dontAskAgain)} className="flex-row items-center gap-[8px]">
             <Checkbox checked={dontAskAgain} onCheckedChange={setDontAskAgain} />
-            <Text className="text-paragraph-p3 text-content-4">
-              <Trans>不再询问，您可以在设置-&gt;交易设置中重新设置</Trans>
+            <Text className="text-paragraph-p3 text-content-4 w-0 flex-1 break-words">
+              <Trans>关闭平仓浮窗后平仓操作默认全部平仓，您可以在设置-交易设置中开启</Trans>
             </Text>
           </Pressable>
         </View>
