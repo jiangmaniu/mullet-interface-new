@@ -17,6 +17,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { cn } from '@/lib/utils'
 import { IconButton } from './button'
 import { IconifyXmark } from './icons'
@@ -183,34 +184,37 @@ function DrawerPortal({ children }: DrawerPortalProps) {
       animationType="none"
       onRequestClose={handleClose}
     >
-      {/* Overlay */}
-      <Animated.View
-        style={[
-          {
-            flex: 1,
-            justifyContent: 'flex-end',
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          },
-          overlayAnimatedStyle,
-        ]}
-      >
-        {/* Backdrop pressable for closing */}
-        <Pressable
-          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-          onPress={handleClose}
-        />
-
-        {/* Drawer content wrapper */}
+      {/* 安卓 Modal 会创建新的原生 window，脱离外层 GestureHandlerRootView 作用域，需在内部重新包裹 */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        {/* Overlay */}
         <Animated.View
           style={[
-            { maxHeight: screenHeight * 0.85 },
-            // { maxHeight: screenHeight * 1 },
-            drawerAnimatedStyle,
+            {
+              flex: 1,
+              justifyContent: 'flex-end',
+              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            },
+            overlayAnimatedStyle,
           ]}
         >
-          {children}
+          {/* Backdrop pressable for closing */}
+          <Pressable
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            onPress={handleClose}
+          />
+
+          {/* Drawer content wrapper */}
+          <Animated.View
+            style={[
+              { maxHeight: screenHeight * 0.85 },
+              // { maxHeight: screenHeight * 1 },
+              drawerAnimatedStyle,
+            ]}
+          >
+            {children}
+          </Animated.View>
         </Animated.View>
-      </Animated.View>
+      </GestureHandlerRootView>
     </Modal>
   )
 }
