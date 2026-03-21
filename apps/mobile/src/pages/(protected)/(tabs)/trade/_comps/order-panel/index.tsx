@@ -13,16 +13,11 @@ import { OrderSubmit } from './order-submit'
 import { OrderTpSl } from './order-tp-sl'
 import { OrderType } from './order-type'
 
-// ============ OrderPanel ============
-interface OrderPanelProps {
-  chartPosition?: ChartPosition
-}
-
-export const OrderPanel = observer(({ chartPosition }: OrderPanelProps) => {
+export const OrderPanel = observer(() => {
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   return (
-    <View className="px-xl gap-xl" style={{ paddingBottom: chartPosition === 'bottom' ? 243 : 0 }}>
+    <View className="px-xl gap-xl">
       {/* Order Type Tabs */}
       <OrderType />
 

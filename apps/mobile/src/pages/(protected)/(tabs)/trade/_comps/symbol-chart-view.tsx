@@ -38,7 +38,7 @@ export function SymbolChartView({ isVisible: externalIsVisible, onToggle }: Symb
   const handleToggle = () => setIsVisible(!isVisible)
 
   return (
-    <View>
+    <View className="bg-secondary">
       {/* 头部：收起时仅显示标题+展开，展开时显示周期 Tabs+隐藏 */}
       <View className="border-brand-default h-10 flex-row items-center justify-between border-b">
         {isVisible ? (
