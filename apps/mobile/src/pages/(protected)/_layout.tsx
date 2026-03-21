@@ -19,6 +19,7 @@ export default function ProtectedLayout() {
           <Stack.Screen name="(assets)" />
           <Stack.Screen name="(trade)" />
           <Stack.Screen name="(home)" />
+          <Stack.Screen name="webview" />
           <Stack.Screen name="symbol-selector" options={{ presentation: 'modal' }} />
         </Stack>
       </Initializer>

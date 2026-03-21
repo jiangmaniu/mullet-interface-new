@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { useCallback, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
+import { useRouter } from 'expo-router'
 
 import { performNativeUpdate } from '@/components/app-update/_utils/native-update'
 import { UpgradeModal } from '@/components/app-update/upgrade-modal'
@@ -17,6 +18,7 @@ import { useAppUpdateStore } from '@/stores/app-update'
 import { ClearCacheModal } from './_comps/clear-cache-modal'
 
 export default function AboutScreen() {
+  const router = useRouter()
   const { textColorContent4 } = useThemeColors()
   const [cacheSize, setCacheSize] = useState('137.97MB')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
@@ -74,11 +76,7 @@ export default function AboutScreen() {
       {/* 菜单项 */}
       <View className="gap-xl">
         {/* 服务条款 */}
-        <Pressable
-          onPress={() => {
-            toast.warning('敬请期待')
-          }}
-        >
+        <Pressable onPress={() => router.push({ pathname: '/webview', params: { url: 'https://client.mullet.top/privacy/terms.html', title: '服务条款' } })}>
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>服务条款</Trans>
@@ -88,11 +86,7 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 隐私政策 */}
-        <Pressable
-          onPress={() => {
-            toast.warning('敬请期待')
-          }}
-        >
+        <Pressable onPress={() => router.push({ pathname: '/webview', params: { url: 'https://client.mullet.top/privacy/privacy.html', title: '隐私政策' } })}>
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>隐私政策</Trans>
