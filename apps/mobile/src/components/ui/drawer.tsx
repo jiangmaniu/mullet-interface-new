@@ -211,7 +211,6 @@ function DrawerPortal({ children }: DrawerPortalProps) {
               backgroundColor: 'rgba(0, 0, 0, 0.6)',
             },
             overlayAnimatedStyle,
-            { maxHeight: screenHeight * 0.85 },
             drawerAnimatedStyle,
           ]}
         >
