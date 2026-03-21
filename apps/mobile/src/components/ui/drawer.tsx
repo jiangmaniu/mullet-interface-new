@@ -105,6 +105,15 @@ function DrawerPortal({ children }: DrawerPortalProps) {
 
   const measureAndAdjust = React.useCallback(
     (keyboardTop: number) => {
+      if (Platform.OS === 'android') {
+        // 安卓：Modal 内 measureInWindow 坐标不可靠
+        // 直接用键盘高度的一半上移，确保输入框可见
+        const keyboardHeight = screenHeight - keyboardTop
+        const target = -(keyboardHeight * 0.5)
+        keyboardOffsetY.value = withTiming(target, animConfig)
+        return
+      }
+
       const focused = TextInput.State.currentlyFocusedInput()
       if (!focused) return
 
@@ -156,7 +165,12 @@ function DrawerPortal({ children }: DrawerPortalProps) {
     const hideSub = Keyboard.addListener(hideEvent, () => {
       keyboardTopRef.current = 0
       stopFocusPoll()
-      keyboardOffsetY.value = withTiming(0, animConfig)
+      // 安卓 keyboardDidHide 时布局已瞬间恢复，用动画会导致抖动，直接归零
+      if (Platform.OS === 'android') {
+        keyboardOffsetY.value = 0
+      } else {
+        keyboardOffsetY.value = withTiming(0, animConfig)
+      }
     })
 
     return () => {
@@ -190,8 +204,14 @@ function DrawerPortal({ children }: DrawerPortalProps) {
     opacity: overlayOpacity.value,
   }))
 
-  const drawerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: drawerSlideY.value + keyboardOffsetY.value }],
+  // 开关滑入/滑出动画（应用于外层整体）
+  const slideAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: drawerSlideY.value }],
+  }))
+
+  // 键盘偏移动画（仅应用于内层 drawer 内容）
+  const keyboardAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: keyboardOffsetY.value }],
   }))
 
   const handleClose = React.useCallback(() => {
@@ -211,7 +231,7 @@ function DrawerPortal({ children }: DrawerPortalProps) {
               backgroundColor: 'rgba(0, 0, 0, 0.6)',
             },
             overlayAnimatedStyle,
-            drawerAnimatedStyle,
+            slideAnimatedStyle,
           ]}
         >
           {/* Backdrop pressable for closing */}
@@ -222,7 +242,7 @@ function DrawerPortal({ children }: DrawerPortalProps) {
             style={[
               { maxHeight: screenHeight * 0.85 },
               // { maxHeight: screenHeight * 1 },
-              drawerAnimatedStyle,
+              keyboardAnimatedStyle,
             ]}
           >
             {children}
