@@ -225,7 +225,15 @@ export default function TransferScreen() {
                     volScale: fromAccount?.currencyDecimal,
                   })}
                 </Text>
-                <IconButton color="primary">
+                <IconButton
+                  color="primary"
+                  onPress={() =>
+                    router.push({
+                      pathname: '/(protected)/(assets)/deposit',
+                      params: { accountId: fromAccount?.id },
+                    })
+                  }
+                >
                   <IconifyPlusCircle width={14} height={14} />
                 </IconButton>
               </View>
