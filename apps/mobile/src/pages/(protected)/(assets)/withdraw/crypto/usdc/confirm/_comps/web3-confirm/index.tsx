@@ -50,7 +50,7 @@ export function Web3Confirm() {
         toAddress: toWalletAddress,
         isSwap: false,
       })
-      console.log('[USDCWithdraw] 出金成功')
+      // console.log('[USDCWithdraw] 出金成功')
 
       setTxStatus('success')
     } catch (error: any) {

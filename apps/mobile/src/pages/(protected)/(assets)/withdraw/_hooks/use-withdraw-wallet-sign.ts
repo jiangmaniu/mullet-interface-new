@@ -36,21 +36,21 @@ export function useWithdrawWalletSign() {
     setStatus('signing')
     try {
       // 1. 获取最新的签名消息（确保时间戳有效）
-      console.log('[WithdrawSign] 获取签名消息')
+      // console.log('[WithdrawSign] 获取签名消息')
       const { data: latestMessageData } = await refetchMessage()
       if (!latestMessageData) throw new Error('无法获取签名消息')
 
       const message = latestMessageData.message
       const address = latestMessageData.address
-      console.log('[WithdrawSign] 签名消息获取成功, address:', address, 'expiresIn:', latestMessageData.expiresIn)
+      // console.log('[WithdrawSign] 签名消息获取成功, address:', address, 'expiresIn:', latestMessageData.expiresIn)
 
       // 2. 钱包签名
       const messageBytes = bs58.encode(new TextEncoder().encode(message))
-      console.log('[WithdrawSign] 请求钱包签名...')
+      // console.log('[WithdrawSign] 请求钱包签名...')
       const signature = await signMessage(messageBytes, address)
       if (!signature) throw new Error('签名失败：钱包未返回签名')
 
-      console.log('[WithdrawSign] 签名成功, signature:', signature.slice(0, 20) + '...')
+      // console.log('[WithdrawSign] 签名成功, signature:', signature.slice(0, 20) + '...')
       setStatus('success')
       return { message, signature, address }
     } catch (error) {

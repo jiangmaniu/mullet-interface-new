@@ -19,7 +19,7 @@ export function useWalletRouteCallback() {
    */
   const saveContext = useCallback(
     (action?: WalletActionType) => {
-      console.log('[WalletRouteCallback] 保存上下文:', { pathname, action })
+      // console.log('[WalletRouteCallback] 保存上下文:', { pathname, action })
       saveWalletCallback({
         pendingRoute: pathname,
         walletAction: action,
@@ -32,7 +32,7 @@ export function useWalletRouteCallback() {
    * 清除保存的上下文
    */
   const clearContext = useCallback(() => {
-    console.log('[WalletRouteCallback] 清除上下文')
+    // console.log('[WalletRouteCallback] 清除上下文')
     clearWalletCallback()
   }, [clearWalletCallback])
 

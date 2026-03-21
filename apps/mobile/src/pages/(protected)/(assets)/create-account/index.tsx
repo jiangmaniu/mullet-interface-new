@@ -141,7 +141,7 @@ export default function CrateAccountScreen() {
       })
       if (result?.success) {
         const userInfo = await user.fetchUserInfo(true)
-        console.log(userInfo)
+        // console.log(userInfo)
 
         toast.success(t`创建账户成功`, {
           onAutoClose: () => {

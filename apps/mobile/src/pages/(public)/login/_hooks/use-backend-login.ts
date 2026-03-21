@@ -30,7 +30,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
         throw new Error('Failed to get Privy token')
       }
 
-      console.log('Privy token obtained for backend login')
+      // console.log('Privy token obtained for backend login')
 
       const userinfo = await login({
         grant_type: 'privy_token',
@@ -44,7 +44,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
 
       // 重新获取用户信息
       await user.fetchUserInfo(true)
-      console.log('Backend login successful')
+      // console.log('Backend login successful')
 
       return userinfo
     },

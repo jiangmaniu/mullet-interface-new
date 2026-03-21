@@ -4,7 +4,7 @@ export const wrapSet = (set: any) => {
 
   if (__DEV__) {
     setInterval(() => {
-      console.log('[perf] set/s:', setCount)
+      // console.log('[perf] set/s:', setCount)
       setCount = 0
     }, 1000)
   }
@@ -27,7 +27,7 @@ export const countSelector = <T>(fn: (state: any) => T) => {
 // 每秒打印
 if (__DEV__) {
   setInterval(() => {
-    console.log('[perf] selector/s:', selectorCount)
+    // console.log('[perf] selector/s:', selectorCount)
     selectorCount = 0
   }, 1000)
 }

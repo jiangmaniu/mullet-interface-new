@@ -12,7 +12,7 @@ export const useRenderCount = (name: string) => {
 
   useEffect(() => {
     if (__DEV__) {
-      console.log(`[render] ${name}:`, count.current)
+      // console.log(`[render] ${name}:`, count.current)
     }
   })
 }

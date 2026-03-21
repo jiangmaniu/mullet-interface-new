@@ -1,4 +1,5 @@
 import { getLocales } from 'expo-localization'
+
 import { i18n, MessageDescriptor } from '@lingui/core'
 
 export const LOCALE_ZH_CN = 'zh-cn'
@@ -37,7 +38,7 @@ function getLanguage(): Locale {
   }
 
   // 匹配基础语言代码
-  if (languageCode && (languageCode in locales)) {
+  if (languageCode && languageCode in locales) {
     // @ts-ignore
     return languageCode as Locale
   }
@@ -48,7 +49,7 @@ function getLanguage(): Locale {
 
 export async function dynamicActivate(locale: Locale) {
   try {
-    console.log(`[i18n] Attempting to switch to locale: ${locale}`)
+    // console.log(`[i18n] Attempting to switch to locale: ${locale}`)
     let messages
     switch (locale) {
       case LOCALE_EN:
@@ -59,12 +60,12 @@ export async function dynamicActivate(locale: Locale) {
         messages = (await import(`./zh-cn/messages.po`)).messages
         break
     }
-    
-    console.log(`[i18n] Loaded messages for ${locale}:`, messages ? Object.keys(messages).length : 'undefined')
-    
+
+    // console.log(`[i18n] Loaded messages for ${locale}:`, messages ? Object.keys(messages).length : 'undefined')
+
     i18n.load(locale, messages)
     i18n.activate(locale)
-    console.log(`[i18n] Activated locale: ${locale}`)
+    // console.log(`[i18n] Activated locale: ${locale}`)
   } catch (e) {
     console.error(`Failed to load locale ${locale}`, e)
   }

@@ -109,9 +109,9 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
     setTxStatus('signing')
     try {
       // 1. 钱包签名
-      console.log('[SwapWithdraw] 开始签名流程')
+      // console.log('[SwapWithdraw] 开始签名流程')
       const signatureData = await signWithdrawMessage()
-      console.log('[SwapWithdraw] 签名完成')
+      // console.log('[SwapWithdraw] 签名完成')
 
       // 2. 调用 swap withdraw API
       setTxStatus('submitting')
@@ -124,7 +124,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
         slippageBps: quoteData?.slippageBps,
       }
       const result = await swapWithdraw(requestParams)
-      console.log('[SwapWithdraw] 出金成功, txHash:', result.txHash)
+      // console.log('[SwapWithdraw] 出金成功, txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {

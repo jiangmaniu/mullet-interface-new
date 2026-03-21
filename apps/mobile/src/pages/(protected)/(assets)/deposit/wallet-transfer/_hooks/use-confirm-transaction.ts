@@ -58,7 +58,7 @@ export const useConfirmTransaction = () => {
         return false
       }
 
-      console.log('交易确认成功!')
+      // console.log('交易确认成功!')
       setErrorMessage(undefined)
       setConfirmStatus(ConfirmTransactionStatus.CONFIRMED)
       onConfirm?.()

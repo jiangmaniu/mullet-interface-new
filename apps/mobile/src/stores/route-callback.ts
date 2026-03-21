@@ -45,13 +45,13 @@ export const useRouteCallbackStore = create<RouteCallbackState>()(
 
       // 保存钱包回调上下文
       saveWalletCallback: (context) => {
-        console.log('[RouteCallbackStore] 保存钱包回调上下文:', context)
+        // console.log('[RouteCallbackStore] 保存钱包回调上下文:', context)
         set({ walletCallback: context })
       },
 
       // 清除钱包回调上下文
       clearWalletCallback: () => {
-        console.log('[RouteCallbackStore] 清除钱包回调上下文')
+        // console.log('[RouteCallbackStore] 清除钱包回调上下文')
         set({ walletCallback: {} })
       },
 

@@ -1,9 +1,10 @@
-import { useAppState } from "@/hooks/use-app-state"
-import { useRootStore } from "@/stores"
-import useNetInfo from "@/v1/hooks/useNetInfo"
-import { stores } from "@/v1/provider/mobxProvider"
-import { SymbolWSItem } from "@/v1/stores/ws"
-import { createContext, useContext, useEffect, useState } from "react"
+import { createContext, useContext, useEffect, useState } from 'react'
+
+import { useAppState } from '@/hooks/use-app-state'
+import { useRootStore } from '@/stores'
+import useNetInfo from '@/v1/hooks/useNetInfo'
+import { stores } from '@/v1/provider/mobxProvider'
+import { SymbolWSItem } from '@/v1/stores/ws'
 
 export interface AppVisibleStateContextProvider {
   isAppVisible: boolean
@@ -15,7 +16,7 @@ const AppVisibleStateContext = createContext<{
   setAppVisible: (isVisible: boolean) => void
 }>({
   isAppVisible: false,
-  setAppVisible: () => { },
+  setAppVisible: () => {},
 })
 
 export const useAppVisibleState = () => {
@@ -39,7 +40,6 @@ export const AppVisibleStateProvider = ({ children }: { children: React.ReactNod
     // ws.sendingSymbols.forEach((_, key) => {
     //   symbols.push(ws.stringToSymbol(key))
     // })
-
     // ws.checkSocketReady(() => {
     //   // 打开行情订阅
     //   ws.subscribeSymbol(
@@ -53,7 +53,6 @@ export const AppVisibleStateProvider = ({ children }: { children: React.ReactNod
   const onAppActive = async () => {
     // const token = useRootStore.getState().user.auth.accessToken
     // setIsVisible(true)
-
     // if (token) {
     //   reconnect()
     //   // 及时刷新品种列表
@@ -65,34 +64,37 @@ export const AppVisibleStateProvider = ({ children }: { children: React.ReactNod
 
   useEffect(() => {
     // if (!isConnected) {
-    //   console.log('=============== 网络断开，关闭 ws ================')
+    // // console.log('=============== 网络断开，关闭 ws ================')
     //   if (ws.socket?.readyState === 1 && trade.symbolListAll.length > 0) {
     //     ws.close()
     //     return
     //   }
     // }
-
     // reconnect()
   }, [isConnected, trade.symbolListAll.length])
 
   useAppState(
     () => {
-      console.log('=============== 应用回到前台 ================')
+      // console.log('=============== 应用回到前台 ================')
       onAppActive()
     },
     () => {
-      console.log('=============== 应用进入后台 ================')
+      // console.log('=============== 应用进入后台 ================')
       setIsVisible(false)
-    }
+    },
   )
 
   // 当visible变为true时，取消延迟关闭
   useEffect(() => {
     if (!isVisible) {
-      console.log('=============== 应用进入后台，关闭 ws ================')
+      // console.log('=============== 应用进入后台，关闭 ws ================')
       // ws.close()
     }
   }, [isVisible])
 
-  return <AppVisibleStateContext.Provider value={{ isAppVisible: isVisible, setAppVisible: setIsVisible }}>{children}</AppVisibleStateContext.Provider>
+  return (
+    <AppVisibleStateContext.Provider value={{ isAppVisible: isVisible, setAppVisible: setIsVisible }}>
+      {children}
+    </AppVisibleStateContext.Provider>
+  )
 }

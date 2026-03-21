@@ -1,6 +1,6 @@
+import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Platform } from 'react-native'
-import { useAppKitEventSubscription } from '@reown/appkit-react-native'
 
 import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
 import { useRootStore } from '@/stores'
@@ -33,7 +33,7 @@ export function useWeb3LoginFlow({ autoAuth = false }: UseWeb3LoginFlowOptions =
   // 处理 autoAuth - 当 401 重定向且钱包已连接时自动打开抽屉
   useEffect(() => {
     if (autoAuth && isWalletConnected && !isBackendAuthenticated) {
-      console.log('Auto auth mode: wallet connected, opening drawer for re-authorization...')
+      // console.log('Auto auth mode: wallet connected, opening drawer for re-authorization...')
       setIsDrawerVisible(true)
     }
   }, [autoAuth, isWalletConnected, isBackendAuthenticated])

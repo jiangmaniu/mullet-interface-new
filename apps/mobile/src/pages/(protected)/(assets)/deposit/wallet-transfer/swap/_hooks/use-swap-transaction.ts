@@ -112,10 +112,10 @@ export function useSwapTransaction() {
 
       setSignatureStatus('signing')
       try {
-        console.log('-> 正在请求钱包签名交易...')
+        // console.log('-> 正在请求钱包签名交易...')
         // 使用 walletProvider 签名交易
         const signatureResult = await signTransaction(transactionData.swapTransaction)
-        console.log('✅ 钱包返回签名:', signatureResult)
+        // console.log('✅ 钱包返回签名:', signatureResult)
 
         if (!signatureResult) {
           throw new Error('签名失败：钱包未返回签名')
@@ -130,13 +130,13 @@ export function useSwapTransaction() {
         transaction.signatures[0] = Buffer.from(signatureBytes)
 
         // 序列化已签名的交易并发送到链上
-        console.log('-> 正在发送交易到链上...')
+        // console.log('-> 正在发送交易到链上...')
         const signedTransaction = transaction.serialize()
         const txSignature = await connection.sendRawTransaction(signedTransaction, {
           skipPreflight: false,
           preflightCommitment: 'confirmed',
         })
-        console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
+        // console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
 
         setSignatureStatus('success')
         return txSignature
@@ -153,7 +153,7 @@ export function useSwapTransaction() {
   const buildAndSendTransaction = useCallback(
     async (params: BuildSwapTxParams, onRefreshCountdown?: () => void) => {
       try {
-        console.log('BuildSwapTxParams', params)
+        // console.log('BuildSwapTxParams', params)
         // 1. 构建交易订单
         const transactionData = await buildTransaction(params, onRefreshCountdown)
 

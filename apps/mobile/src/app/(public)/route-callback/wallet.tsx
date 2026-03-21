@@ -14,28 +14,28 @@ export default function WalletCallbackScreen() {
 
   useEffect(() => {
     const { pendingRoute, walletAction } = walletCallback
-    console.log('[WalletCallback] 收到回调:', { pendingRoute, walletAction })
+    // console.log('[WalletCallback] 收到回调:', { pendingRoute, walletAction })
 
     // 根据不同的场景跳转
     if (walletAction === WalletActionType.Connect) {
       // 连接钱包场景：返回到之前的页面（通常是登录页）
-      console.log('[WalletCallback] 连接钱包完成')
+      // console.log('[WalletCallback] 连接钱包完成')
     } else if (walletAction === WalletActionType.SignTransaction && pendingRoute) {
       // 转账签名场景：返回到之前的页面
-      console.log('[WalletCallback] 交易签名完成')
+      // console.log('[WalletCallback] 交易签名完成')
     } else if (walletAction === WalletActionType.SignMessage && pendingRoute) {
       // 消息签名场景：返回到之前的页面
-      console.log('[WalletCallback] 消息签名完成')
+      // console.log('[WalletCallback] 消息签名完成')
     }
 
     if (pendingRoute) {
       // 有保存的路由，返回到该路由
-      console.log(`[WalletCallback] 返回到保存的路由【${pendingRoute}】返回上一页`)
+      // console.log(`[WalletCallback] 返回到保存的路由【${pendingRoute}】返回上一页`)
       router.back()
       return
     }
 
-    console.log('[WalletCallback] 没有保存的路由，返回首页')
+    // console.log('[WalletCallback] 没有保存的路由，返回首页')
     // 默认返回到首页
     router.replace('/')
 

@@ -69,11 +69,11 @@ function QueryDevtools({ queryClient }: { queryClient: QueryClient }) {
       // @ts-ignore
       global.queryClient = queryClient
 
-      console.log('🔧 React Query DevTools enabled')
-      console.log('   Access queryClient via: global.queryClient')
-      console.log('   - global.queryClient.getQueryCache().getAll() - 查看所有查询')
-      console.log('   - global.queryClient.getMutationCache().getAll() - 查看所有 mutations')
-      console.log('   - global.queryClient.invalidateQueries() - 使所有查询失效')
+      // console.log('🔧 React Query DevTools enabled')
+      // console.log('   Access queryClient via: global.queryClient')
+      // console.log('   - global.queryClient.getQueryCache().getAll() - 查看所有查询')
+      // console.log('   - global.queryClient.getMutationCache().getAll() - 查看所有 mutations')
+      // console.log('   - global.queryClient.invalidateQueries() - 使所有查询失效')
     }
   }, [queryClient])
 

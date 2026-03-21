@@ -33,7 +33,7 @@ export function Web2LoginSection() {
   useEffect(() => {
     const handlePrivyLoginSuccess = async () => {
       if (privyReady && privyUser && loginTriggeredRef.current && !isBackendLoading) {
-        console.log('Web2 login: Privy authenticated, logging into backend...')
+        // console.log('Web2 login: Privy authenticated, logging into backend...')
         try {
           await loginToBackend(LoginType.Web2)
         } catch (error) {

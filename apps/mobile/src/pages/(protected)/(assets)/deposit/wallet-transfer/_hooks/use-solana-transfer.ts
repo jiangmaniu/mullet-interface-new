@@ -74,12 +74,12 @@ export function useSolanaTransfer() {
     // 提取目标代币的 mintAddress（未传入时根据当前环境网络匹配合理的默认 USDC Mint 地址）
     const finalMintAddress = mintAddress
 
-    console.log('====== SOLANA 钱包转账调试 ======')
-    console.log('[发起地址]:', activeFromAddress)
-    console.log('[收款地址]:', toAddress)
-    console.log('[转账原始数量]:', amount)
-    console.log('[Token Mint]:', finalMintAddress)
-    console.log('-> 正在唤起 AppKit 原生 solanaAdapter 进行组装和签名...')
+    // console.log('====== SOLANA 钱包转账调试 ======')
+    // console.log('[发起地址]:', activeFromAddress)
+    // console.log('[收款地址]:', toAddress)
+    // console.log('[转账原始数量]:', amount)
+    // console.log('[Token Mint]:', finalMintAddress)
+    // console.log('-> 正在唤起 AppKit 原生 solanaAdapter 进行组装和签名...')
 
     try {
       // 构建交易
@@ -96,10 +96,10 @@ export function useSolanaTransfer() {
       // 检查目标代币账户是否存在，如果不存在则创建
       try {
         await getAccount(connection, toTokenAccountAtaAddress)
-        console.log('目标代币账户已存在')
+        // console.log('目标代币账户已存在')
       } catch (error) {
-        console.log(error)
-        console.log('目标代币账户不存在，需要创建')
+        // console.log(error)
+        // console.log('目标代币账户不存在，需要创建')
         // 创建关联代币账户指令
         const createAccountInstruction = createAssociatedTokenAccountInstruction(
           fromTokenAccountPublicKey, // payer
@@ -126,7 +126,7 @@ export function useSolanaTransfer() {
 
       if (memoContent) {
         transaction.add(createMemoInstruction(JSON.stringify(memoContent), [fromTokenAccountPublicKey]))
-        console.log('[SwapDialog] Added memo:', memoContent)
+        // console.log('[SwapDialog] Added memo:', memoContent)
       }
 
       // 设置区块哈希
@@ -142,12 +142,12 @@ export function useSolanaTransfer() {
       })
 
       // 使用 provider 的 signTransaction 方法签名交易
-      console.log('-> 正在请求钱包签名交易...')
+      // console.log('-> 正在请求钱包签名交易...')
 
       // 保存上下文
       saveContext(WalletActionType.SignTransaction)
       const signatureData = await walletProvider.signTransaction(serializedTransaction.toString('base64'))
-      console.log('✅ 钱包返回签名数据:', signatureData)
+      // console.log('✅ 钱包返回签名数据:', signatureData)
 
       if (!signatureData) {
         throw new Error('签名失败：钱包未返回签名')
@@ -158,7 +158,7 @@ export function useSolanaTransfer() {
 
       if (signatureData.length < 150) {
         // 短字符串：单独的签名（64 字节，base58 编码约 88 字符）
-        console.log('-> 钱包返回单独签名，添加到交易中')
+        // console.log('-> 钱包返回单独签名，添加到交易中')
         const signatureBytes = bs58.decode(signatureData)
 
         // 将签名添加到交易的 signatures 数组中
@@ -171,19 +171,19 @@ export function useSolanaTransfer() {
         signedTransaction = transaction.serialize()
       } else {
         // 长字符串：完整的已签名交易
-        console.log('-> 钱包返回完整的已签名交易')
+        // console.log('-> 钱包返回完整的已签名交易')
         signedTransaction = Buffer.from(bs58.decode(signatureData))
       }
 
-      console.log('✅ 交易签名完成，准备发送')
+      // console.log('✅ 交易签名完成，准备发送')
 
       // 将签名后的交易发送到链上
-      console.log('-> 正在发送交易到链上...')
+      // console.log('-> 正在发送交易到链上...')
       const txSignature = await connection.sendRawTransaction(signedTransaction, {
         skipPreflight: false,
         preflightCommitment: 'confirmed',
       })
-      console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
+      // console.log('🎉 交易上链广播成功！签名 TxID:', txSignature)
 
       // 等待交易确认（使用推荐的 TransactionConfirmationStrategy）
       // console.log('-> 等待交易确认...')

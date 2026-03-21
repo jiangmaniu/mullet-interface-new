@@ -45,7 +45,7 @@ async function getDeviceArch(): Promise<AndroidArch> {
 
   try {
     const abis = await DeviceInfo.supportedAbis()
-    console.log('🚀 ~ file: use-app-version.ts:48 ~ abis:', abis)
+    // console.log('🚀 ~ file: use-app-version.ts:48 ~ abis:', abis)
     // supportedAbis 返回按优先级排序的数组，第一个就是首选架构
     const primaryAbi = abis[0]
 

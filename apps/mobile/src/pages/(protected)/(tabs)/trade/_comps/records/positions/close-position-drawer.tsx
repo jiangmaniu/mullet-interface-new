@@ -62,12 +62,12 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   const { mutate: closePosition, isPending: closePositionLoading } = useClosePosition()
 
   const handleSliderChange = (value: number) => {
-    console.log('🎯 Slider changed:', value)
+    // console.log('🎯 Slider changed:', value)
     setSliderValue(value)
     // 根据百分比计算平仓数量
     const calculatedQuantity = BNumber.fromPercent(value).toPercentRatio().multipliedBy(positionInfo?.orderVolume)
     const lots = calculatedQuantity?.cutDecimalPlaces(lotsVolScale, BNumber.ROUND_UP)?.toFixed()
-    console.log('📊 Calculated lots:', lots, 'from', value, '%')
+    // console.log('📊 Calculated lots:', lots, 'from', value, '%')
     if (lots) {
       setClosedLots(lots)
     }

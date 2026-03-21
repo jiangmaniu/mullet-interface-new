@@ -56,7 +56,7 @@ const VerifyScreen = observer(function VerifyScreen() {
         setCountdown(RESEND_COOLDOWN)
         // 开发环境自动填充验证码
         if (__DEV__) {
-          console.log('Dev mode - OTP code:', result.code || CODE_MOCK)
+          // console.log('Dev mode - OTP code:', result.code || CODE_MOCK)
           setCode(result.code || CODE_MOCK)
         }
       } catch (error: any) {
@@ -128,7 +128,7 @@ const VerifyScreen = observer(function VerifyScreen() {
       },
       {
         onSuccess: (data) => {
-          console.log('Transfer success:', data)
+          // console.log('Transfer success:', data)
           setShowSuccessModal(true)
         },
         onError: (error: any) => {
@@ -194,7 +194,7 @@ const VerifyScreen = observer(function VerifyScreen() {
             <View
               key={index}
               onLayout={getCellOnLayoutHandler(index)}
-              className={cn('text-title-h2 text-content-1 rounded-small h-10 w-10 border items-center justify-center', {
+              className={cn('text-title-h2 text-content-1 rounded-small h-10 w-10 items-center justify-center border', {
                 'border-brand-important': isFocused && !isTransferring,
                 'border-brand-default': !isFocused || isTransferring,
                 'opacity-50': isTransferring,

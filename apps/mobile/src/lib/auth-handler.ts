@@ -45,19 +45,19 @@ async function tryRefreshToken(): Promise<boolean> {
   try {
     const userInfo = useRootStore.getState().user.auth.loginInfo
     if (!userInfo?.refresh_token) {
-      console.log('No refresh token available')
+      // console.log('No refresh token available')
       return false
     }
 
-    console.log('Attempting to refresh token...')
+    // console.log('Attempting to refresh token...')
     const newUserInfo = await refreshTokenAPI()
 
     if (newUserInfo?.access_token) {
-      console.log('Token refresh successful')
+      // console.log('Token refresh successful')
       return true
     }
 
-    console.log('Token refresh failed: no access token in response')
+    // console.log('Token refresh failed: no access token in response')
     return false
   } catch (error) {
     console.error('Token refresh failed:', error)
@@ -74,7 +74,7 @@ async function isPrivyTokenValid(): Promise<boolean> {
     const token = await getPrivyAccessToken()
     return !!token
   } catch (error) {
-    console.log('Privy token check failed:', error)
+    // console.log('Privy token check failed:', error)
     return false
   }
 }
@@ -86,7 +86,7 @@ async function clearAllAuthData(): Promise<void> {
   try {
     // 取消所有正在进行的请求
     if (cancelAllRequestsCallback) {
-      console.log('Cancelling all pending requests...')
+      // console.log('Cancelling all pending requests...')
       cancelAllRequestsCallback()
     }
 
@@ -103,11 +103,11 @@ async function tryAutoLogin(): Promise<boolean> {
   try {
     const privyToken = await getPrivyAccessToken()
     if (!privyToken) {
-      console.log('No Privy token available for auto login')
+      // console.log('No Privy token available for auto login')
       return false
     }
 
-    console.log('Attempting auto login with Privy token...')
+    // console.log('Attempting auto login with Privy token...')
     const userInfo = await login(
       {
         grant_type: 'privy_token',
@@ -124,7 +124,7 @@ async function tryAutoLogin(): Promise<boolean> {
     })
     await stores.user.handleLoginSuccess(userInfo)
 
-    console.log('Auto login successful')
+    // console.log('Auto login successful')
     return true
   } catch (error) {
     console.error('Auto login failed:', error)
@@ -152,7 +152,7 @@ export async function handle401Error(): Promise<boolean> {
     // 1. 先尝试使用 refresh_token 刷新
     const refreshSuccess = await tryRefreshToken()
     if (refreshSuccess) {
-      console.log('Token refreshed successfully')
+      // console.log('Token refreshed successfully')
       // 通知所有等待的请求
       pendingRequests.forEach(({ resolve }) => resolve(true))
       pendingRequests = []
@@ -160,7 +160,7 @@ export async function handle401Error(): Promise<boolean> {
     }
 
     // 2. refresh_token 失败，检查 Privy token 是否有效
-    console.log('Refresh token failed, checking Privy token...')
+    // console.log('Refresh token failed, checking Privy token...')
     const privyValid = await isPrivyTokenValid()
 
     if (privyValid) {
@@ -177,7 +177,7 @@ export async function handle401Error(): Promise<boolean> {
     }
 
     // 3. 所有认证方式都失败，清理所有数据并取消请求
-    console.log('All authentication methods failed, clearing auth data...')
+    // console.log('All authentication methods failed, clearing auth data...')
     await clearAllAuthData()
 
     // 通知所有等待的请求，需要重新登录

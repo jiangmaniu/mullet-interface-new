@@ -66,7 +66,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
 
       // 如果已登录 Privy，直接返回成功
       if (privyUser) {
-        console.log('Privy already logged in, skip signing')
+        // console.log('Privy already logged in, skip signing')
         return { skipped: true }
       }
 
@@ -111,7 +111,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
         throw new WalletAuthError('签名失败', 'SignatureFailed')
       }
 
-      console.log('Signature result:', signature)
+      // console.log('Signature result:', signature)
 
       // 3. 使用签名登录 Privy
       await loginWithSiws({
@@ -123,7 +123,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
         },
       })
 
-      console.log('Privy login successful')
+      // console.log('Privy login successful')
       return { skipped: false }
     },
     onSuccess: () => {
@@ -134,7 +134,7 @@ export function useWalletAuth(options: UseWalletAuthOptions = {}) {
 
       // OKX 钱包端断开连接错误（错误码 117）
       if (err?.code === 117 || (err?.code === 5000 && err?.message?.includes('请先断开 DApp，再重新连接'))) {
-        console.log('检测到 OKX 钱包端断开连接，主动断开并提示重新连接')
+        // console.log('检测到 OKX 钱包端断开连接，主动断开并提示重新连接')
 
         // 主动断开前端连接状态
         try {

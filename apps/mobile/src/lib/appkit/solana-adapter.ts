@@ -41,7 +41,7 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
   // 情况 1: 直接返回字符串
   if (isString(result)) {
-    console.log(`${logPrefix} 返回格式: 直接字符串`)
+    // console.log(`${logPrefix} 返回格式: 直接字符串`)
     // 根据长度判断是签名还是完整交易
     // Solana 签名是 64 字节，base58 编码后约 88 字符
     // 完整交易通常 > 200 字符
@@ -54,11 +54,11 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
   // 情况 2: 对象格式
   if (isObject(result)) {
-    console.log(`${logPrefix} 返回格式: 对象`, Object.keys(result))
+    // console.log(`${logPrefix} 返回格式: 对象`, Object.keys(result))
 
     // 优先级 1: transaction 字段（完整的已签名交易）
     if ('transaction' in result && isString(result.transaction)) {
-      console.log(`${logPrefix} 使用 transaction 字段`)
+      // console.log(`${logPrefix} 使用 transaction 字段`)
       return {
         signedTransaction: result.transaction,
         raw: result,
@@ -67,7 +67,7 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
     // 优先级 2: signedTransaction 字段
     if ('signedTransaction' in result && isString(result.signedTransaction)) {
-      console.log(`${logPrefix} 使用 signedTransaction 字段`)
+      // console.log(`${logPrefix} 使用 signedTransaction 字段`)
       return {
         signedTransaction: result.signedTransaction,
         raw: result,
@@ -76,7 +76,7 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
     // 优先级 3: signature 字段（单独的签名）
     if ('signature' in result && isString(result.signature)) {
-      console.log(`${logPrefix} 使用 signature 字段`)
+      // console.log(`${logPrefix} 使用 signature 字段`)
       return {
         signature: result.signature,
         raw: result,
@@ -85,7 +85,7 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
     // 优先级 4: data 字段（某些钱包的包装）
     if ('data' in result && isString(result.data)) {
-      console.log(`${logPrefix} 使用 data 字段`)
+      // console.log(`${logPrefix} 使用 data 字段`)
       if (result.data.length < 150) {
         return { signature: result.data, raw: result }
       } else {
@@ -95,7 +95,7 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
     // 优先级 5: result 字段（某些钱包的包装）
     if ('result' in result && isString(result.result)) {
-      console.log(`${logPrefix} 使用 result 字段`)
+      // console.log(`${logPrefix} 使用 result 字段`)
       if (result.result.length < 150) {
         return { signature: result.result, raw: result }
       } else {
@@ -105,12 +105,12 @@ export function normalizeSignTransactionResult(result: unknown, walletName?: str
 
     // 优先级 6: 递归处理嵌套的 data/result
     if ('data' in result && isObject(result.data)) {
-      console.log(`${logPrefix} 递归处理 data 对象`)
+      // console.log(`${logPrefix} 递归处理 data 对象`)
       return normalizeSignTransactionResult(result.data, walletName)
     }
 
     if ('result' in result && isObject(result.result)) {
-      console.log(`${logPrefix} 递归处理 result 对象`)
+      // console.log(`${logPrefix} 递归处理 result 对象`)
       return normalizeSignTransactionResult(result.result, walletName)
     }
   }

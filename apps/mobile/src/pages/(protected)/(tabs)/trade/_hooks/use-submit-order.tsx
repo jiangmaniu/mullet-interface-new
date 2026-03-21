@@ -101,7 +101,7 @@ export default function useSubmitOrder({ symbol }: { symbol?: string }) {
       }
     } catch (error: any) {
       toast.error(error?.message || <Trans>下单失败</Trans>)
-      console.log('onSubmitOrder error', error)
+      // console.log('onSubmitOrder error', error)
     } finally {
       setIsLoading(false)
     }

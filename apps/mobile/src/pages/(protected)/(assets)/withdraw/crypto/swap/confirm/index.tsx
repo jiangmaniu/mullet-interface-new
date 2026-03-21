@@ -115,7 +115,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
         swapChain: selectedChainInfo?.chainInfo?.chainId,
         swapChainToken: selectedTokenConfig.symbol,
       })
-      console.log('[SwapWithdraw] 出金成功')
+      // console.log('[SwapWithdraw] 出金成功')
 
       setTxStatus('success')
     } catch (error: any) {

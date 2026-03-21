@@ -47,9 +47,9 @@ export function Web3Confirm() {
     setTxStatus('signing')
     try {
       // 1. 钱包签名
-      console.log('[USDCWithdraw] 开始签名流程')
+      // console.log('[USDCWithdraw] 开始签名流程')
       const signatureData = await signWithdrawMessage()
-      console.log('[USDCWithdraw] 签名完成')
+      // console.log('[USDCWithdraw] 签名完成')
 
       // 2. 调用出金接口
       setTxStatus('submitting')
@@ -61,7 +61,7 @@ export function Web3Confirm() {
         walletSignature: signatureData.signature,
         withdrawMessage: signatureData.message,
       })
-      console.log('[USDCWithdraw] 出金成功, txHash:', result.txHash)
+      // console.log('[USDCWithdraw] 出金成功, txHash:', result.txHash)
 
       setTxStatus('success')
     } catch (error: any) {
