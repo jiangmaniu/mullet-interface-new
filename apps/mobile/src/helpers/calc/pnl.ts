@@ -207,3 +207,41 @@ export const calcPnlYieldRateInfo = (
     isPnLNoChange: ratio.eq(0),
   }
 }
+
+// ============ 总盈亏求和 ============
+
+/** 总盈亏求和入参 */
+export type CalcTotalPnlInfoParams = {
+  /** 每笔仓位盈亏值数组 */
+  pnlList?: (BNumberValue | undefined)[]
+}
+
+/**
+ * 计算总盈亏（求和）
+ *
+ * 公式：totalPnl = Σ pnl
+ */
+export const calcTotalPnlInfo = (
+  params: CalcTotalPnlInfoParams,
+): CalcPnlInfoResult | undefined => {
+  const { pnlList } = params
+
+  if (!pnlList?.length) return undefined
+
+  let total = BNumber.from(0)
+
+  for (const pnl of pnlList) {
+    if (pnl !== undefined) {
+      total = total?.plus(pnl)
+    }
+  }
+
+  if (!total) return undefined
+
+  return {
+    pnl: total.toFixed(),
+    isProfit: total.gt(0),
+    isLoss: total.lt(0),
+    isPnLNoChange: total.eq(0),
+  }
+}

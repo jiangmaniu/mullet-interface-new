@@ -212,3 +212,17 @@ export const useMarketQuotePrice = (symbol?: string, direction?: TradePositionDi
   const symbolMarketInfo = useMarketQuoteInfo(symbol)
   return getMarketQuotePrice(direction, symbolMarketInfo?.bid, symbolMarketInfo?.ask)
 }
+
+/**
+ * 从 store 快照获取市价报价价格（非响应式）
+ * 适用于回调、异步函数等非 Hook 场景
+ */
+export const getMarketQuotePriceBySnapshot = (symbol?: string, direction?: TradePositionDirectionEnum) => {
+  const state = useRootStore.getState()
+  const symbolInfo = createSymbolInfoSelector(symbol)(state)
+  if (!symbolInfo) return undefined
+  const dataSourceKey = parseDataSourceKey(symbolInfo)
+  const quote = createMarketQuoteSelector(dataSourceKey)(state)
+  const parsed = parseMarketQuote({ quote, symbolInfo })
+  return getMarketQuotePrice(direction, parsed?.bid, parsed?.ask)
+}

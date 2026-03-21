@@ -25,7 +25,9 @@ import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
+import { usePositionTotalPnl } from '@/hooks/trade/use-position-pnl'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
@@ -47,7 +49,11 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
   }
 
   const getAccountBalance = useGetAccountBalanceCallback()
-  const { balance, availableMargin, totalProfit, occupyMargin } = getAccountBalance(currentAccountInfo, undefined)
+  const { balance, availableMargin, occupyMargin } = getAccountBalance(currentAccountInfo, undefined)
+
+  // 总盈亏独立获取（Zustand 行情驱动）
+  const { trade } = useStores()
+  const totalPnlInfo = usePositionTotalPnl(trade.positionList)
 
   // 获取钱包地址
   const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
@@ -137,16 +143,16 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
             <Text
               className={cn(
                 'text-paragraph-p2',
-                BNumber.from(totalProfit).gt(0)
+                totalPnlInfo?.isProfit
                   ? 'text-market-rise'
-                  : BNumber.from(totalProfit).lt(0)
+                  : totalPnlInfo?.isLoss
                     ? 'text-market-fall'
                     : 'text-content-1',
               )}
             >
               {isBalanceHidden
                 ? '******'
-                : `${BNumber.toFormatNumber(totalProfit, {
+                : `${BNumber.toFormatNumber(totalPnlInfo?.pnl, {
                     unit: currentAccountInfo?.currencyUnit,
                     volScale: currentAccountInfo?.currencyDecimal,
                     positive: false,
