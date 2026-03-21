@@ -18,16 +18,17 @@ import { Separator } from '@/components/ui/separator'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { useAccountOccupiedMargin, useAccountAvailableMargin } from '@/hooks/account/use-account-balance'
+import { useAccountNetAssets } from '@/hooks/account/use-account-net-assets'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { usePositionTotalPnl } from '@/hooks/trade/use-position-pnl'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
-import { usePositionTotalPnl } from '@/hooks/trade/use-position-pnl'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
@@ -48,8 +49,12 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
     setIsSwitcherVisible(true)
   }
 
-  const getAccountBalance = useGetAccountBalanceCallback()
-  const { balance, availableMargin, occupyMargin } = getAccountBalance(currentAccountInfo, undefined)
+  // 占用保证金 & 可用保证金（Zustand 行情驱动）
+  const occupiedMargin = useAccountOccupiedMargin(currentAccountInfo?.id)
+  const availableMargin = useAccountAvailableMargin(currentAccountInfo?.id)
+
+  // 净值（Zustand 行情驱动）
+  const netAssets = useAccountNetAssets(currentAccountInfo?.id)
 
   // 总盈亏独立获取（Zustand 行情驱动）
   const { trade } = useStores()
@@ -136,7 +141,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
               <Text className="text-title-h3 text-content-1">
                 {isBalanceHidden
                   ? '******'
-                  : `${BNumber.toFormatNumber(balance, { volScale: currentAccountInfo?.currencyDecimal })}`}
+                  : `${BNumber.toFormatNumber(netAssets, { volScale: currentAccountInfo?.currencyDecimal })}`}
               </Text>
               <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo?.currencyUnit}</Text>
             </View>
@@ -195,7 +200,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
               ? '******'
-              : `${BNumber.toFormatNumber(occupyMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
+              : `${BNumber.toFormatNumber(occupiedMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
       </View>
