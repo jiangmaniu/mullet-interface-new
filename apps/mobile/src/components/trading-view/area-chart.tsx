@@ -118,7 +118,11 @@ function AreaChartComponent({
         priceLineVisible: false,
       });
 
-      const data = ${serializedData};
+      // LightweightCharts 没有内置时区配置，需要手动将UTC时间戳偏移到用户本地时区
+      var tzOffsetSec = -(new Date().getTimezoneOffset()) * 60;
+      var data = ${serializedData}.map(function(item) {
+        return { time: item.time + tzOffsetSec, value: item.value };
+      });
       areaSeries.setData(data);
 
       chart.timeScale().fitContent();

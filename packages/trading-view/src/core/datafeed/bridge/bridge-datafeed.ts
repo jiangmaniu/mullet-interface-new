@@ -66,7 +66,8 @@ export function createBridgeDatafeed(
             session: '0000-0000|0000-0000:1234567;1',
             exchange: isZh ? (info.exchange ?? '') : '',
             listed_exchange: isZh ? (info.exchange ?? '') : '',
-            timezone: 'Etc/UTC',
+            // 使用用户本地时区，TradingView 会自动将UTC时间戳转换为本地时间显示
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone as import('public/static/charting_library').Timezone,
             has_intraday: true,
             has_daily: true,
             has_weekly_and_monthly: true,

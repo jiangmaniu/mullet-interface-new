@@ -125,8 +125,8 @@ export default function getWidgetOpts(
     // 您的后端的一个版本。支持的值为： '1.0' | “1.1”。
     // charts_storage_api_version: '1.1',
     // timeframe: '1M', // 设置图表展示的时间范围数据
-    // timezone: 'Asia/Shanghai', // 设置时区
-    timezone: 'Etc/UTC',
+    // 自动获取用户本地时区，数据库存储的是UTC时间，TradingView会自动转换显示
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone as import('public/static/charting_library').Timezone,
     library_path: `${BASE_PATH || '.'}/static/charting_library/`, // 核心库位置
     datafeed,
     // BEWARE: no trailing slash is expected in feed URL

@@ -115,11 +115,20 @@ export const CandlestickChart = React.forwardRef<WebView, CandlestickChartProps>
         priceLineVisible: true,
       });
 
-      var initialData = ${JSON.stringify(initialDataRef.current)};
+      // LightweightCharts 没有内置时区配置，需要手动将UTC时间戳偏移到用户本地时区
+      var tzOffsetSec = -(new Date().getTimezoneOffset()) * 60;
+      function applyTzOffset(items) {
+        return items.map(function(item) {
+          return Object.assign({}, item, { time: item.time + tzOffsetSec });
+        });
+      }
+
+      var initialData = applyTzOffset(${JSON.stringify(initialDataRef.current)});
       series.setData(initialData);
 
       // MA5 line (purple #9754CB)
-      var ma5Data = ${JSON.stringify(ma5DataRef.current || [])};
+      // MA 数据也需要应用时区偏移
+      var ma5Data = applyTzOffset(${JSON.stringify(ma5DataRef.current || [])});
       if (ma5Data.length > 0) {
         var ma5Series = chart.addSeries(LightweightCharts.LineSeries, {
           color: '#9754CB',
@@ -131,7 +140,7 @@ export const CandlestickChart = React.forwardRef<WebView, CandlestickChartProps>
       }
 
       // MA10 line (gold #D5B95C)
-      var ma10Data = ${JSON.stringify(ma10DataRef.current || [])};
+      var ma10Data = applyTzOffset(${JSON.stringify(ma10DataRef.current || [])});
       if (ma10Data.length > 0) {
         var ma10Series = chart.addSeries(LightweightCharts.LineSeries, {
           color: '#D5B95C',
@@ -143,7 +152,7 @@ export const CandlestickChart = React.forwardRef<WebView, CandlestickChartProps>
       }
 
       // MA30 line (blue #3AA5DC)
-      var ma30Data = ${JSON.stringify(ma30DataRef.current || [])};
+      var ma30Data = applyTzOffset(${JSON.stringify(ma30DataRef.current || [])});
       if (ma30Data.length > 0) {
         var ma30Series = chart.addSeries(LightweightCharts.LineSeries, {
           color: '#3AA5DC',
@@ -162,11 +171,12 @@ export const CandlestickChart = React.forwardRef<WebView, CandlestickChartProps>
       }
 
       window.updateCandle = function(candle) {
-        series.update(candle);
+        var offsetCandle = Object.assign({}, candle, { time: candle.time + tzOffsetSec });
+        series.update(offsetCandle);
       };
 
       window.updateChartData = function(newData) {
-        series.setData(newData);
+        series.setData(applyTzOffset(newData));
         if (newData.length > 30) {
           chart.timeScale().fitContent();
         } else {
