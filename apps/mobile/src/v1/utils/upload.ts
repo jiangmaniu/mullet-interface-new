@@ -1,15 +1,17 @@
-import { fileUpload } from '@/v1/services/common'
 import { PermissionsAndroid, Platform } from 'react-native'
 import { launchImageLibrary } from 'react-native-image-picker'
-import { message } from './message'
+
+import { fileUpload } from '@/v1/services/common'
 import { t } from '@lingui/core/macro'
+
 import { storagePermission } from './download'
+import { message } from './message'
 
 // 选择照片
 const onSelectLibrary = async (onBefore?: () => void) => {
   const result = await launchImageLibrary({
     mediaType: 'photo',
-    includeExtra: true
+    includeExtra: true,
   })
 
   if (result.errorCode) {
@@ -61,7 +63,7 @@ const onUploadImage = async (result: any, onBefore?: () => void) => {
       formData.append('file', {
         uri: source,
         type: asset.type || 'image/jpeg', // 提供默认值
-        name: asset.fileName || `image_${Date.now()}.jpg` // 提供默认文件名
+        name: asset.fileName || `image_${Date.now()}.jpg`, // 提供默认文件名
       } as any)
 
       try {
@@ -71,7 +73,7 @@ const onUploadImage = async (result: any, onBefore?: () => void) => {
         await onBefore?.()
         fileUpload(formData)
           .then((res) => {
-            console.log('====then====', res)
+            // console.log('====then====', res)
             if (res.success && res?.data) {
               resolve(res.data)
             }

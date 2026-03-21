@@ -74,7 +74,7 @@ async function isPrivyTokenValid(): Promise<boolean> {
     const token = await getPrivyAccessToken()
     return !!token
   } catch (error) {
-    // console.log('Privy token check failed:', error)
+    console.log('Privy token check failed:', error)
     return false
   }
 }

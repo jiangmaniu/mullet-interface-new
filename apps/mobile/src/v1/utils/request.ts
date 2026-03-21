@@ -21,7 +21,7 @@ function cancelAllPendingRequests() {
   console.log(`Cancelling ${pendingRequests.size} pending requests...`)
   pendingRequests.forEach((controller, requestId) => {
     controller.abort()
-    console.log(`Cancelled request: ${requestId}`)
+    // console.log(`Cancelled request: ${requestId}`)
   })
   pendingRequests.clear()
 }
@@ -190,7 +190,7 @@ async function handleErrorResponse(status: number, data: any, skipErrorHandler?:
       // 注意：这个 case 实际上不会被执行到
       // 因为 401 错误在主请求函数中已经被统一处理了
       // 保留这个 case 只是为了代码完整性
-      console.log('====error.response===', { status, data })
+      // console.log('====error.response===', { status, data })
       statusText = data?.msg ?? 'Unauthorized'
       break
     case 413:
@@ -246,7 +246,7 @@ async function fetchWithTimeout(
 
     const response = await fetch(url, fetchOptions)
     clearTimeout(timeoutId)
-    console.log('✅ Fetch success:', url, response.status, `[${requestId}]`)
+    // console.log('✅ Fetch success:', url, response.status, `[${requestId}]`)
     return response
   } catch (error: any) {
     clearTimeout(timeoutId)
@@ -276,7 +276,7 @@ async function handle401<T>(
 
   if (shouldRetry) {
     // 重新认证成功，重试请求
-    console.log('Re-auth successful, retrying request...')
+    // console.log('Re-auth successful, retrying request...')
     try {
       const retryResult = await request<T>(url, config)
       resolve(retryResult)
@@ -300,7 +300,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
   return new Promise(async (resolve, reject) => {
     try {
       const ENVS = await getEnv()
-      console.log('ENVS:', ENVS)
+      // console.log('ENVS:', ENVS)
       const serviceProvider = (await STORAGE_GET_TRADER_SERVER()) as User.ServiceProviderListItem
       const baseURL = config?.baseURL || serviceProvider?.serviceUrl || ENVS.baseURL
       const withoutProxy = ENVS.WITHOUT_PROXY || false
@@ -314,7 +314,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
       const cleanBaseURL = baseURL?.replace(/\/$/, '') || ''
       const cleanRequestUrl = requestUrl?.startsWith('/') ? requestUrl : `/${requestUrl}`
       const fullUrl = buildUrlWithParams(`${cleanBaseURL}${cleanRequestUrl}`, config?.params)
-      console.log('Request URL:', fullUrl)
+      // console.log('Request URL:', fullUrl)
 
       // 构建请求头
       const headers = await buildHeaders(config)
@@ -331,7 +331,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
         fetchConfig.body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data)
       }
 
-      console.log('Fetch Config:', fullUrl, method)
+      // console.log('Fetch Config:', fullUrl, method)
 
       // 生成唯一的请求 ID
       const requestId = `${method}-${url}-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`
@@ -344,7 +344,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
 
       // 如果没有响应数据
       if (!data && !ok) {
-        console.log(`服务器无响应，接口地址:${baseURL}${requestUrl}`, config?.params || config?.data)
+        // console.log(`服务器无响应，接口地址:${baseURL}${requestUrl}`, config?.params || config?.data)
         resolve({ success: true } as T)
         return
       }
@@ -384,7 +384,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
         })
       ) {
         if (code !== 200 && code !== 401) {
-          console.log(`请求失败，接口地址:${baseURL}${requestUrl}`, data)
+          // console.log(`请求失败，接口地址:${baseURL}${requestUrl}`, data)
 
           // 客户端请求失败了统一提示，是否跳过错误提示
           const errorMessage = msg ?? message ?? '未知的错误'

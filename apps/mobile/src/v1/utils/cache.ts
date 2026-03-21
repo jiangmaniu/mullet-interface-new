@@ -18,7 +18,7 @@ const getCacheSizeRecursive = async (dirPath: any) => {
     }
     return totalSize
   } catch (err) {
-    // console.log('Error while getting cache size:', err)
+    console.log('Error while getting cache size:', err)
     return 0
   }
 }
@@ -35,6 +35,6 @@ export const clearAppCache = async () => {
     await RNFS.unlink(cachePath)
     // console.log('Cache cleared successfully.')
   } catch (err) {
-    // console.log('Error while clearing cache:', err)
+    console.log('Error while clearing cache:', err)
   }
 }

@@ -98,8 +98,7 @@ export function useSolanaTransfer() {
         await getAccount(connection, toTokenAccountAtaAddress)
         // console.log('目标代币账户已存在')
       } catch (error) {
-        // console.log(error)
-        // console.log('目标代币账户不存在，需要创建')
+        console.log('目标代币账户不存在，需要创建', error)
         // 创建关联代币账户指令
         const createAccountInstruction = createAssociatedTokenAccountInstruction(
           fromTokenAccountPublicKey, // payer

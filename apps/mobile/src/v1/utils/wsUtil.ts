@@ -1116,7 +1116,7 @@ export const subscribePendingSymbol = ({ cover = false }: { cover?: boolean }) =
 
   setTimeout(() => {
     stores.ws.checkSocketReady(() => {
-      console.log('订阅当前挂单列表品种的行情', cover ? '【并取消其他历史订阅】' : '', symbols)
+      // console.log('订阅当前挂单列表品种的行情', cover ? '【并取消其他历史订阅】' : '', symbols)
       // 打开行情订阅
       stores.ws.openPosition({
         symbols: stores.ws.makeWsSymbolBySemi(symbols as SymbolWSItem[]),

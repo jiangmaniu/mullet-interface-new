@@ -637,7 +637,7 @@ class TradeStore {
     ) as Account.TradeSymbolListItem[]
 
     if (currentAccountConf?.activeSymbolName) {
-      console.log('切换accountId后请求的品种列表可能不一致，设置第一个默认的品种名称')
+      // console.log('切换accountId后请求的品种列表可能不一致，设置第一个默认的品种名称')
       this.activeSymbolName = currentAccountConf?.activeSymbolName as string
       useRootStore.getState().trade.setActiveTradeSymbol(currentAccountConf?.activeSymbolName)
     }
@@ -702,7 +702,7 @@ class TradeStore {
   // 切换当前打开的symbol
   @action
   setActiveSymbolName = async (key: string) => {
-    console.log('切换当前打开的symbol', key)
+    // console.log('切换当前打开的symbol', key)
     this.activeSymbolName = key
     // STORAGE_SET_ACTIVE_SYMBOL_NAME(key)
     await STORAGE_SET_CONF_INFO(key, `${this.currentAccountInfo?.id}.activeSymbolName`)

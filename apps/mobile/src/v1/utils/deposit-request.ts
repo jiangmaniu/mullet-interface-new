@@ -138,7 +138,7 @@ export async function depositRequest<T = any, R = object>(
       fetchOptions.body = typeof config.data === 'string' ? config.data : JSON.stringify(config.data)
     }
 
-    console.log('🔄 Deposit API Request:', fullUrl, method)
+    // console.log('🔄 Deposit API Request:', fullUrl, method)
 
     // 执行请求
     const response = await fetchWithTimeout(fullUrl, fetchOptions, timeout)
@@ -157,7 +157,7 @@ export async function depositRequest<T = any, R = object>(
       throw data
     }
 
-    console.log('✅ Deposit API Response:', response.status, data)
+    // console.log('✅ Deposit API Response:', response.status, data)
 
     // 返回数据
     return data

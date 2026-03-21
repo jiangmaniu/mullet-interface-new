@@ -3,15 +3,16 @@ import { Platform } from 'react-native'
 import RNFS from 'react-native-fs'
 import { PERMISSIONS, request } from 'react-native-permissions' // ios 需要额外配置
 
-import { t } from '@lingui/core/macro'
-import { message } from './message'
 import { IS_ANDROID_13_OR_ABOVE } from '@/v1/constants/device'
+import { t } from '@lingui/core/macro'
+
+import { message } from './message'
 
 // 下载图片, 返回图片路径
 function downloadImage(
   url: string, // 网络连接
   filename: string = ((Math.random() * 10000000) | 0) + '.png', // 保持的图片
-  dir: string = RNFS.CachesDirectoryPath // 目录
+  dir: string = RNFS.CachesDirectoryPath, // 目录
 ) {
   const destPath = `${dir}/${filename}`
   const ret = RNFS.downloadFile({
@@ -20,7 +21,7 @@ function downloadImage(
     background: false,
     cacheable: false,
     connectionTimeout: 60 * 1000,
-    readTimeout: 120 * 1000
+    readTimeout: 120 * 1000,
   })
   return ret.promise
     .then(() => {
@@ -34,12 +35,12 @@ function downloadImage(
 function downloadBase64Image(
   data: string, // base64数据
   filename = `${(Math.random() * 10000000) | 0}`, // 文件名
-  dir: string = RNFS.CachesDirectoryPath // 目录
+  dir: string = RNFS.CachesDirectoryPath, // 目录
 ) {
   const imgtypes = [
     { type: '.png', head: 'data:image/png;base64,' },
     { type: '.jpg', head: 'data:image/jpeg;base64,' },
-    { type: '.jpg', head: 'data:image/jpg;base64,' }
+    { type: '.jpg', head: 'data:image/jpg;base64,' },
   ]
   const index = imgtypes.findIndex((item) => data.indexOf(item.head) === 0)
   const currentImgType = index === -1 ? imgtypes[0] : imgtypes[index] // 当前图片类型
@@ -55,15 +56,17 @@ function downloadBase64Image(
     })
 }
 
-export const storagePermission = IS_ANDROID_13_OR_ABOVE ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
+export const storagePermission = IS_ANDROID_13_OR_ABOVE
+  ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES
+  : PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE
 
 // 获取文件权限
 function checkPhotoPermission() {
   return request(
     Platform.select({
       android: storagePermission,
-      default: PERMISSIONS.IOS.PHOTO_LIBRARY
-    })
+      default: PERMISSIONS.IOS.PHOTO_LIBRARY,
+    }),
   )
 }
 
@@ -133,7 +136,7 @@ export async function saveWebImage(img: string) {
   let url = img
   return new Promise(async (resolve, reject) => {
     const authorized = await checkPhotoPermission()
-    console.log('authorized', authorized)
+    // console.log('authorized', authorized)
     if (authorized !== 'granted') {
       const msg = t`ninyiguanbiquanxian`
       message.info(msg)

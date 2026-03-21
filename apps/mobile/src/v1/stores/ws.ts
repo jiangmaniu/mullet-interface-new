@@ -282,11 +282,11 @@ class WSStore {
 
     const symbolList = toJS(list)
 
-    console.log(' ')
-    console.log(
-      `--- start: 批量${cancel ? '取消' : '订阅'}行情${cover ? '[并取消其他历史订阅]' : ''}:`,
-      symbolList.length,
-    )
+    // console.log(' ')
+    // console.log(
+    //   `--- start: 批量${cancel ? '取消' : '订阅'}行情${cover ? '[并取消其他历史订阅]' : ''}:`,
+    //   symbolList.length,
+    // )
     // 先打标记
     this.setSendingSymbols({ symbolList, cancel, cover })
   }
@@ -339,7 +339,7 @@ class WSStore {
     this.socket.addEventListener('open', () => {
       this.startHeartbeat()
       this.subscribeMessage()
-      console.log('=============== open ================', this.socket.readyState)
+      // console.log('=============== open ================', this.socket.readyState)
       resolve?.()
     })
 
@@ -385,7 +385,7 @@ class WSStore {
     const userInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
     if (!userInfo?.user_id) return
 
-    console.log('=========订阅响应消息', `/${DEFAULT_TENANT_ID}/msg/${userInfo?.user_id}`, cancel)
+    // console.log('=========订阅响应消息', `/${DEFAULT_TENANT_ID}/msg/${userInfo?.user_id}`, cancel)
     this.send({
       topic: `/${DEFAULT_TENANT_ID}/msg/${userInfo?.user_id}`,
       cancel,
@@ -444,7 +444,7 @@ class WSStore {
       })
     }
 
-    console.log('正在订阅的符号：', this.sendingSymbols.size)
+    // console.log('正在订阅的符号：', this.sendingSymbols.size)
     // console.log('即将关闭的符号：', this.toCloseSymbols)
 
     // 订阅操作立即执行，取消操作延迟执行
@@ -453,7 +453,7 @@ class WSStore {
     // 延迟取消订阅
     this.debounceBatchCloseSymbol()
 
-    console.log('--- end -----------------')
+    // console.log('--- end -----------------')
   }
 
   // 订阅或取消订阅行情
@@ -470,7 +470,7 @@ class WSStore {
       })
       .join(',')
 
-    console.log('topics', cancel ? '[取消]' : '', symbolList.length)
+    // console.log('topics', cancel ? '[取消]' : '', symbolList.length)
 
     this.send({
       topic: topics,
@@ -578,7 +578,7 @@ class WSStore {
     // 关闭socket指令
     this.socket?.close?.()
     this.stopHeartbeat()
-    console.log(' ===================== 关闭socket ===================== ')
+    // console.log(' ===================== 关闭socket ===================== ')
   }
 
   resetData = () => {
@@ -843,7 +843,7 @@ class WSStore {
         // 先收集起来再解析
         // if (data.includes(',SOL,')) {
         //   const parsedData = this.parseQuoteBodyData(data)
-        //   console.log(`${parsedData.dataSourceKey}: `, parsedData.priceData)
+        // // console.log(`${parsedData.dataSourceKey}: `, parsedData.priceData)
         // }
 
         this.batchUpdateQuoteData(data)
@@ -927,7 +927,7 @@ class WSStore {
         if (tron) {
           tron.display({ name: 'WS 响应', value: data, preview: 'msg', important: true })
         }
-        console.log('消息响应', data)
+        // console.log('消息响应', data)
         // 派发消息响应事件
         mitt.emit('RESOLVE_MSG', data)
         break
@@ -952,15 +952,15 @@ class WSStore {
     const list = Array.from(toOpen.keys()).map((key) => this.stringToSymbol(key)) as SymbolWSItem[]
 
     if (cover) {
-      console.log('==== 覆盖订阅，并订阅列表 ====》', list.length)
+      // console.log('==== 覆盖订阅，并订阅列表 ====》', list.length)
       // 订阅列表，并取消其他历史订阅
       const listToSend = Array.from(toSend.keys()).map((key) => this.stringToSymbol(key)) as SymbolWSItem[]
       this.batchSubscribeSymbol({ list: listToSend, cover })
     } else if (toOpen?.size) {
-      console.log('==== 打开订阅，无需关闭订阅 ====》', toOpen.size)
+      // console.log('==== 打开订阅，无需关闭订阅 ====》', toOpen.size)
       this.batchSubscribeSymbol({ list })
     } else {
-      console.log('==== 重复订阅，无需关闭订阅 ====》', toSend.size)
+      // console.log('==== 重复订阅，无需关闭订阅 ====》', toSend.size)
       toSend.forEach((value, key) => {
         // 已经订阅，如果【待停止订阅】列表中存在，则移除
         this.toCloseSymbols.delete(key)

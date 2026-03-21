@@ -110,7 +110,7 @@ export const fetchRemoteConfig = async () => {
 
     const remoteConfigUrl = '/platform/app.json'
     const url = `${ENVS.baseURL}${remoteConfigUrl}`
-    console.log('fetchRemoteConfig:', url)
+    // console.log('fetchRemoteConfig:', url)
 
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 10000)
@@ -126,7 +126,7 @@ export const fetchRemoteConfig = async () => {
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      console.log('fetchRemoteConfig error: HTTP', response.status)
+      // console.log('fetchRemoteConfig error: HTTP', response.status)
       return
     }
 
