@@ -5,6 +5,8 @@ import type { RootStoreState } from '@/stores/index'
 import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 import { parseDataSourceKey } from '@/helpers/parse/symbol'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
+import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores/index'
 import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
@@ -12,7 +14,7 @@ import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { IQuoteItem } from '@/v1/stores/ws'
 import { toFixed } from '@/v1/utils'
-import { BNumber } from '@mullet/utils/number'
+import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 /** 订阅指定 symbol 的原始行情数据 */
 export const useMarketQuote = (symbol?: string) => {
@@ -169,4 +171,44 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
 
     ...info,
   }
+}
+
+// ============ 方向价格 ============
+
+/**
+ * 获取市价成交价格
+ * 买入成交用 ask（卖方报价），卖出成交用 bid（买方报价）
+ * 适用场景：开仓、平仓成交价
+ */
+export const getMarketTradePrice = (direction?: TradePositionDirectionEnum, bid?: BNumberValue, ask?: BNumberValue) => {
+  const { isBuy } = parseTradeDirectionInfo(direction)
+  return isBuy ? ask : bid
+}
+
+/**
+ * 获取市价报价价格
+ * 买入用 bid（买方报价），卖出用 ask（卖方报价）
+ * 适用场景：持仓盈亏计算
+ */
+export const getMarketQuotePrice = (direction?: TradePositionDirectionEnum, bid?: BNumberValue, ask?: BNumberValue) => {
+  const { isBuy } = parseTradeDirectionInfo(direction)
+  return isBuy ? bid : ask
+}
+
+/**
+ * Hook：订阅行情，返回市价成交价格
+ * 买入成交用 ask，卖出成交用 bid
+ */
+export const useMarketTradePrice = (symbol?: string, direction?: TradePositionDirectionEnum) => {
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  return getMarketTradePrice(direction, symbolMarketInfo?.bid, symbolMarketInfo?.ask)
+}
+
+/**
+ * Hook：订阅行情，返回市价报价价格
+ * 买入用 bid，卖出用 ask
+ */
+export const useMarketQuotePrice = (symbol?: string, direction?: TradePositionDirectionEnum) => {
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  return getMarketQuotePrice(direction, symbolMarketInfo?.bid, symbolMarketInfo?.ask)
 }

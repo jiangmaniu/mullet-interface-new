@@ -1,4 +1,3 @@
-import { OrderCreateTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
@@ -81,67 +80,6 @@ export const calcOrderTpSlScopePriceInfo = (params: CalcOrderTpSlScopePriceInfoP
     scopePriceFlag: flag,
     isGte,
     isLte,
-  }
-
-  return info
-}
-
-export type CalcPnlInfoParams = {
-  /** 订单方向 */
-  direction?: TradePositionDirectionEnum
-  /** 开仓价格 */
-  openPrice?: BNumberValue
-  /** TP/SL（平仓）价格 */
-  closePrice?: BNumberValue
-  /** TP/SL（平仓）数量 */
-  amount?: BNumberValue
-  /** 合约大小 默认 1 */
-  contractSize?: BNumberValue
-}
-
-export type CalcPnlInfoResult = {
-  /** 盈亏金额 */
-  pnl?: string
-  /** 是否盈利 */
-  isProfit?: boolean
-  /** 是否亏损 */
-  isLoss?: boolean
-  /** 是否盈亏平衡 */
-  isPnLNoChange?: boolean
-}
-
-/**
- * 计算盈亏
- * 多：(closePrice - openPrice) * amount * contractSize
- * 空：(openPrice - closePrice) * amount * contractSize
- * @param params
- * @returns
- */
-export const calcPnlInfo = (params: CalcPnlInfoParams) => {
-  const { direction, openPrice, contractSize = 1, amount, closePrice } = params
-
-  if (BNumber.from(amount)?.lte(0) || BNumber.from(openPrice)?.lte(0) || BNumber.from(closePrice)?.lte(0))
-    return undefined
-
-  const directionInfo = parseTradeDirectionInfo(direction)
-
-  const priceDifference = directionInfo.isBuy
-    ? BNumber.from(closePrice)?.minus(openPrice)?.multipliedBy(contractSize)
-    : directionInfo.isSell
-      ? BNumber.from(openPrice)?.minus(closePrice)?.multipliedBy(contractSize)
-      : undefined
-
-  const pnl = priceDifference?.multipliedBy(amount)
-
-  const isProfit = !!pnl?.gt(0)
-  const isLoss = !!pnl?.lt(0)
-  const isPnLNoChange = !!pnl?.eq(0)
-
-  const info: CalcPnlInfoResult = {
-    pnl: pnl?.toFixed(),
-    isProfit,
-    isLoss,
-    isPnLNoChange,
   }
 
   return info

@@ -14,6 +14,8 @@ import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { renderFormatSymbolName } from '@/helpers/symbol'
+import { useMarketQuotePrice } from '@/hooks/market/use-market-quote'
+import { getPositionGrossPnlInfo, getPositionPnlYieldRateInfo } from '@/hooks/trade/use-position-pnl'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
@@ -33,7 +35,7 @@ import {
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { newCalcYieldRate, useCovertProfitCallback } from '@/v1/utils/wsUtil'
+import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
@@ -109,206 +111,220 @@ const PositionItemById = ({ id }: { id: string }) => {
 }
 
 // ============ PositionItemContent：保留 observer 因为依赖 MobX trade.getMarginRateInfo ============
+type PositionItemProps = {
+  position: Order.BgaOrderPageListItem
+}
 
-const PositionItemContent = observer(
-  ({ position }: { position: NonNullable<ReturnType<ReturnType<typeof createPositionItemSelector>>> }) => {
-    const positionInfo = parseTradePositionInfo(position)
-    const { isExpanded } = AccordionPrimitive.useItemContext()
-    const { trade } = useStores()
-    const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
-    const covertProfit = useCovertProfitCallback(false)
-    const { renderLinguiMsg } = useI18n()
+const PositionItemContent = observer(({ position }: PositionItemProps) => {
+  const positionInfo = parseTradePositionInfo(position)
+  const { isExpanded } = AccordionPrimitive.useItemContext()
+  const { trade } = useStores()
+  const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
+  const { renderLinguiMsg } = useI18n()
 
-    const positionProfit = covertProfit(position)
+  // 获取持仓方向对应的报价价格（盈亏计算用）
+  const currentPrice = useMarketQuotePrice(positionInfo.symbol, positionInfo.direction)
 
-    const yieldRate = newCalcYieldRate(positionProfit, positionInfo.marginByType)
+  // 浮动盈亏（换汇为账户本币）
+  const grossPnlInfo = getPositionGrossPnlInfo({
+    positionInfo,
+    currentPrice,
+    convertCurrency: true,
+  })
 
-    const profitColor = BNumber.from(positionProfit)?.gt(0)
-      ? 'text-market-rise'
-      : BNumber.from(positionProfit)?.lt(0)
-        ? 'text-market-fall'
-        : 'text-content-1'
+  // 收益率
+  const yieldRateInfo = getPositionPnlYieldRateInfo({
+    positionInfo,
+    pnl: grossPnlInfo?.pnl,
+  })
 
-    const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
-    const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+  const profitColor = grossPnlInfo?.isProfit
+    ? 'text-market-rise'
+    : grossPnlInfo?.isLoss
+      ? 'text-market-fall'
+      : 'text-content-1'
 
-    const closePositionDrawerRef = useRef<DrawerRef>(null)
-    const positionTpSlDrawerRef = useRef<DrawerRef>(null)
+  const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
 
-    // 获取平仓确认设置
-    const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
+  const closePositionDrawerRef = useRef<DrawerRef>(null)
+  const positionTpSlDrawerRef = useRef<DrawerRef>(null)
 
-    // 使用平仓 hook
-    const { mutate: closePosition, isPending: isClosingPosition } = useClosePosition()
+  // 获取平仓确认设置
+  const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
 
-    // 处理平仓按钮点击
-    const handleClosePosition = () => {
-      if (closeConfirmation) {
-        closePositionDrawerRef.current?.open()
-      } else {
-        closePosition({ position })
-      }
+  // 使用平仓 hook
+  const { mutate: closePosition, isPending: isClosingPosition } = useClosePosition()
+
+  // 处理平仓按钮点击
+  const handleClosePosition = () => {
+    if (closeConfirmation) {
+      // 如果需要确认，打开抽屉
+      closePositionDrawerRef.current?.open()
+    } else {
+      // 如果不需要确认，直接全部平仓
+      closePosition({ position })
     }
+  }
 
-    return (
-      <View className="gap-xl">
-        {/* Header with trigger */}
-        <AccordionTrigger className="px-xl py-0">
-          <Pressable
-            onPress={() => {
-              if (!position.symbol || activeSymbol === position.symbol) return
-              switchTradeActiveSymbol(position.symbol)
-            }}
-          >
-            <View className="flex-1 flex-row items-center gap-[10px]">
-              <AvatarImage source={getImgSource(position.imgUrl)} className="size-6 rounded-full"></AvatarImage>
+  return (
+    <View className="gap-xl">
+      {/* Header with trigger */}
+      <AccordionTrigger className="px-xl py-0">
+        <Pressable
+          onPress={() => {
+            if (!position.symbol || activeSymbol === position.symbol) return
+            switchTradeActiveSymbol(position.symbol)
+          }}
+        >
+          <View className="flex-1 flex-row items-center gap-[10px]">
+            <AvatarImage source={getImgSource(position.imgUrl)} className="size-6 rounded-full"></AvatarImage>
 
-              <Text className="text-important-1 text-content-1">{renderFormatSymbolName(position)}</Text>
-              <Badge color={positionInfo.isBuy ? 'rise' : 'fall'}>
-                <Text>{positionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
-              </Badge>
-              <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
-            </View>
-          </Pressable>
-        </AccordionTrigger>
-
-        {/* Fixed: Row 1 - 浮动盈亏, 收益率, 数量 (数量仅展开时显示) */}
-        <View className="px-xl">
-          <View className="flex-row justify-between">
-            <View className="w-[100px]">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>浮动盈亏({currentAccountCurrencyInfo?.currencyUnit})</Trans>
-              </Text>
-              <Text className={`text-paragraph-p2 ${profitColor}`}>
-                {BNumber.toFormatNumber(positionProfit, {
-                  forceSign: true,
-                  positive: false,
-                  volScale: currentAccountCurrencyInfo?.currencyDecimal,
-                })}
-              </Text>
-            </View>
-            <View className={cn('w-[100px]', !isExpanded && 'items-end')}>
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>收益率</Trans>
-              </Text>
-              <Text className={`text-paragraph-p2 ${profitColor}`}>
-                {BNumber.toFormatPercent(yieldRate, { forceSign: true })}
-              </Text>
-            </View>
-            {isExpanded && (
-              <View className="w-[100px] items-end">
-                <Text className="text-paragraph-p3 text-content-4">
-                  <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
-                </Text>
-                <Text className="text-paragraph-p2 text-content-2">
-                  {BNumber.toFormatNumber(position.orderVolume, { volScale: positionInfo.lotsVolScale })}
-                </Text>
-              </View>
-            )}
+            <Text className="text-important-1 text-content-1">{renderFormatSymbolName(position)}</Text>
+            <Badge color={positionInfo.isBuy ? 'rise' : 'fall'}>
+              <Text>{positionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+            </Badge>
+            <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
           </View>
-        </View>
+        </Pressable>
+      </AccordionTrigger>
 
-        {/* Expandable: Row 2 & Row 3 */}
-        <AccordionContent className="px-xl gap-xl pb-0">
-          {/* Row 2: 保证金率, 保证金, 开仓价 */}
-          <View className="flex-row justify-between">
-            <View className="w-[100px]">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>保证金率</Trans>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatPercent(trade.getMarginRateInfo(position)?.marginRate, { isRaw: false })}
-              </Text>
-            </View>
-            <View className="w-[100px]">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>保证金({currentAccountCurrencyInfo?.currencyUnit})</Trans>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatNumber(positionInfo.marginByType, {
-                  volScale: currentAccountCurrencyInfo?.currencyDecimal,
-                })}
-              </Text>
-            </View>
+      {/* Fixed: Row 1 - 浮动盈亏, 收益率, 数量 (数量仅展开时显示) */}
+      <View className="px-xl">
+        <View className="flex-row justify-between">
+          <View className="w-[100px]">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>浮动盈亏({currentAccountCurrencyInfo?.currencyUnit})</Trans>
+            </Text>
+            <Text className={`text-paragraph-p2 ${profitColor}`}>
+              {BNumber.toFormatNumber(grossPnlInfo?.pnl, {
+                forceSign: true,
+                positive: false,
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              })}
+            </Text>
+          </View>
+          <View className={cn('w-[100px]', !isExpanded && 'items-end')}>
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>收益率</Trans>
+            </Text>
+            <Text className={`text-paragraph-p2 ${profitColor}`}>
+              {BNumber.toFormatPercent(yieldRateInfo?.ratio, { forceSign: true })}
+            </Text>
+          </View>
+          {isExpanded && (
             <View className="w-[100px] items-end">
               <Text className="text-paragraph-p3 text-content-4">
-                <Trans>开仓价</Trans>
+                <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
               </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatNumber(position.startPrice, { volScale: position.symbolDecimal })}
-              </Text>
-            </View>
-          </View>
-
-          {/* Row 3: 标记价, 手续费, 库存费 */}
-          <View className="flex-row justify-between">
-            <View className="w-[100px]">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>标记价</Trans>
-              </Text>
-              <PositionCurrentPrice info={position} className={'text-paragraph-p3'} />
-            </View>
-            <View className="w-[100px]">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>手续费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatNumber(position.handlingFees, {
-                  volScale: currentAccountCurrencyInfo?.currencyDecimal,
-                  positive: false,
-                })}
+              <Text className="text-paragraph-p2 text-content-2">
+                {BNumber.toFormatNumber(position.orderVolume, { volScale: positionInfo.lotsVolScale })}
               </Text>
             </View>
-            <View className="w-[100px] items-end">
-              <Text className="text-paragraph-p3 text-content-4">
-                <Trans>库存费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
-              </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatNumber(position.interestFees, {
-                  volScale: currentAccountCurrencyInfo?.currencyDecimal,
-                  positive: false,
-                })}
-              </Text>
-            </View>
-          </View>
-        </AccordionContent>
-
-        {/* Fixed: Action Buttons (always visible) */}
-        <View className="px-xl">
-          <View className="gap-xl flex-row">
-            <>
-              <Button
-                variant="solid"
-                size="md"
-                className="flex-1"
-                onPress={() => positionTpSlDrawerRef.current?.open()}
-                disabled={isClosingPosition}
-              >
-                <Text>
-                  <Trans>止盈止损</Trans>
-                </Text>
-              </Button>
-
-              <PositionTpSlDrawer position={position} ref={positionTpSlDrawerRef} />
-            </>
-
-            <>
-              <Button
-                variant="solid"
-                size="md"
-                className="flex-1"
-                onPress={handleClosePosition}
-                loading={isClosingPosition}
-              >
-                <Text>
-                  <Trans>平仓</Trans>
-                </Text>
-              </Button>
-              <ClosePositionDrawer position={position} ref={closePositionDrawerRef} />
-            </>
-          </View>
+          )}
         </View>
       </View>
-    )
-  },
-)
+
+      {/* Expandable: Row 2 & Row 3 */}
+      <AccordionContent className="px-xl gap-xl pb-0">
+        {/* Row 2: 保证金率, 保证金, 开仓价 */}
+        <View className="flex-row justify-between">
+          <View className="w-[100px]">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>保证金率</Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-1">
+              {BNumber.toFormatPercent(trade.getMarginRateInfo(position)?.marginRate, { isRaw: false })}
+            </Text>
+          </View>
+          <View className="w-[100px]">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>保证金({currentAccountCurrencyInfo?.currencyUnit})</Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-1">
+              {BNumber.toFormatNumber(positionInfo.marginByType, {
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
+              })}
+            </Text>
+          </View>
+          <View className="w-[100px] items-end">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>开仓价</Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-1">
+              {BNumber.toFormatNumber(position.startPrice, { volScale: position.symbolDecimal })}
+            </Text>
+          </View>
+        </View>
+
+        {/* Row 3: 标记价, 手续费, 库存费 */}
+        <View className="flex-row justify-between">
+          <View className="w-[100px]">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>标记价</Trans>
+            </Text>
+            <PositionCurrentPrice info={position} className={'text-paragraph-p3'} />
+          </View>
+          <View className="w-[100px]">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>手续费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-1">
+              {BNumber.toFormatNumber(position.handlingFees, {
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
+                positive: false,
+              })}
+            </Text>
+          </View>
+          <View className="w-[100px] items-end">
+            <Text className="text-paragraph-p3 text-content-4">
+              <Trans>库存费({currentAccountCurrencyInfo?.currencyUnit})</Trans>
+            </Text>
+            <Text className="text-paragraph-p3 text-content-1">
+              {BNumber.toFormatNumber(position.interestFees, {
+                volScale: currentAccountCurrencyInfo?.currencyDecimal,
+                positive: false,
+              })}
+            </Text>
+          </View>
+        </View>
+      </AccordionContent>
+
+      {/* Fixed: Action Buttons (always visible) */}
+      <View className="px-xl">
+        <View className="gap-xl flex-row">
+          <>
+            <Button
+              variant="solid"
+              size="md"
+              className="flex-1"
+              onPress={() => positionTpSlDrawerRef.current?.open()}
+              disabled={isClosingPosition}
+            >
+              <Text>
+                <Trans>止盈止损</Trans>
+              </Text>
+            </Button>
+
+            <PositionTpSlDrawer position={position} ref={positionTpSlDrawerRef} />
+          </>
+
+          <>
+            <Button
+              variant="solid"
+              size="md"
+              className="flex-1"
+              onPress={handleClosePosition}
+              loading={isClosingPosition}
+            >
+              <Text>
+                <Trans>平仓</Trans>
+              </Text>
+            </Button>
+            <ClosePositionDrawer position={position} ref={closePositionDrawerRef} />
+          </>
+        </View>
+      </View>
+    </View>
+  )
+})
