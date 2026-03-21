@@ -1,28 +1,15 @@
 import * as React from 'react'
-import {
-  View,
-  Text,
-  Pressable,
-  Modal,
-  Dimensions,
-  Keyboard,
-  Platform,
-  type ViewProps,
-  type TextProps,
-  type PressableProps,
-} from 'react-native'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated'
+import { Dimensions, Keyboard, Modal, Platform, Pressable, Text, TextInput, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import type { PressableProps, TextProps, ViewProps } from 'react-native'
+
+import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
+
 import { IconButton } from './button'
 import { IconifyXmark } from './icons'
-import { useThemeColors } from '@/hooks/use-theme-colors'
-import { SafeAreaView } from 'react-native-safe-area-context'
 
 const { height: screenHeight } = Dimensions.get('window')
 
@@ -67,11 +54,7 @@ interface DrawerProps {
 }
 
 function Drawer({ open, onOpenChange, children }: DrawerProps) {
-  return (
-    <DrawerContext.Provider value={{ open, onOpenChange }}>
-      {children}
-    </DrawerContext.Provider>
-  )
+  return <DrawerContext.Provider value={{ open, onOpenChange }}>{children}</DrawerContext.Provider>
 }
 Drawer.displayName = 'Drawer'
 
@@ -111,43 +94,90 @@ interface DrawerPortalProps {
 function DrawerPortal({ children }: DrawerPortalProps) {
   const { open, onOpenChange } = useDrawerContext()
   const [modalVisible, setModalVisible] = React.useState(false)
-  const [keyboardHeight, setKeyboardHeight] = React.useState(0)
 
-  // Reanimated shared values
+  // 分离：开关动画 vs 键盘偏移
   const overlayOpacity = useSharedValue(0)
-  const drawerTranslateY = useSharedValue(screenHeight)
+  const drawerSlideY = useSharedValue(screenHeight) // 开关动画
+  const keyboardOffsetY = useSharedValue(0) // 键盘偏移
+  const keyboardTopRef = React.useRef(0)
+  const lastFocusedRef = React.useRef<ReturnType<typeof TextInput.State.currentlyFocusedInput>>(null)
+  const pollTimerRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // // 监听键盘事件
-  // React.useEffect(() => {
-  //   const keyboardWillShow = Keyboard.addListener(
-  //     Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-  //     (e) => {
-  //       setKeyboardHeight(e.endCoordinates.height)
-  //     }
-  //   )
+  const measureAndAdjust = React.useCallback(
+    (keyboardTop: number) => {
+      const focused = TextInput.State.currentlyFocusedInput()
+      if (!focused) return
 
-  //   const keyboardWillHide = Keyboard.addListener(
-  //     Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-  //     () => {
-  //       setKeyboardHeight(0)
-  //     }
-  //   )
+      focused.measureInWindow((_x: number, y: number, _w: number, h: number) => {
+        if (h === 0) return
+        const currentOffset = keyboardOffsetY.value
+        const originalBottom = y - currentOffset + h
+        const overlap = originalBottom - keyboardTop + 20
+        const target = overlap > 0 ? -overlap : 0
+        keyboardOffsetY.value = withTiming(target, animConfig)
+      })
+    },
+    [keyboardOffsetY],
+  )
 
-  //   return () => {
-  //     keyboardWillShow.remove()
-  //     keyboardWillHide.remove()
-  //   }
-  // }, [])
+  const stopFocusPoll = React.useCallback(() => {
+    if (pollTimerRef.current) {
+      clearInterval(pollTimerRef.current)
+      pollTimerRef.current = null
+    }
+  }, [])
 
-  // Animation effects
+  const startFocusPoll = React.useCallback(() => {
+    stopFocusPoll()
+    lastFocusedRef.current = TextInput.State.currentlyFocusedInput()
+    pollTimerRef.current = setInterval(() => {
+      const current = TextInput.State.currentlyFocusedInput()
+      if (current !== lastFocusedRef.current) {
+        lastFocusedRef.current = current
+        if (current && keyboardTopRef.current > 0) {
+          measureAndAdjust(keyboardTopRef.current)
+        }
+      }
+    }, 150)
+  }, [stopFocusPoll, measureAndAdjust])
+
+  // 键盘事件
+  React.useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      if (!open || !modalVisible) return
+      keyboardTopRef.current = e.endCoordinates.screenY
+      measureAndAdjust(e.endCoordinates.screenY)
+      startFocusPoll()
+    })
+
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      keyboardTopRef.current = 0
+      stopFocusPoll()
+      keyboardOffsetY.value = withTiming(0, animConfig)
+    })
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+      stopFocusPoll()
+    }
+  }, [open, modalVisible, measureAndAdjust, startFocusPoll, stopFocusPoll, keyboardOffsetY])
+
+  // 开关动画
   React.useEffect(() => {
     if (open) {
       setModalVisible(true)
       overlayOpacity.value = withTiming(1, animConfig)
-      drawerTranslateY.value = withTiming(-keyboardHeight, animConfig)
+      drawerSlideY.value = withTiming(0, animConfig)
     } else if (modalVisible) {
+      keyboardTopRef.current = 0
+      stopFocusPoll()
+      keyboardOffsetY.value = 0
       overlayOpacity.value = withTiming(0, { ...animConfig, duration: closeDuration })
-      drawerTranslateY.value = withTiming(screenHeight, { ...animConfig, duration: closeDuration })
+      drawerSlideY.value = withTiming(screenHeight, { ...animConfig, duration: closeDuration })
       const timer = setTimeout(() => {
         setModalVisible(false)
       }, closeDuration)
@@ -156,21 +186,12 @@ function DrawerPortal({ children }: DrawerPortalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, modalVisible])
 
-  // 键盘高度变化时，更新 Drawer 位置
-  React.useEffect(() => {
-    if (open && modalVisible) {
-      drawerTranslateY.value = withTiming(-keyboardHeight, animConfig)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [keyboardHeight, open, modalVisible])
-
-  // Animated styles
   const overlayAnimatedStyle = useAnimatedStyle(() => ({
     opacity: overlayOpacity.value,
   }))
 
   const drawerAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: drawerTranslateY.value }],
+    transform: [{ translateY: drawerSlideY.value + keyboardOffsetY.value }],
   }))
 
   const handleClose = React.useCallback(() => {
@@ -178,12 +199,7 @@ function DrawerPortal({ children }: DrawerPortalProps) {
   }, [onOpenChange])
 
   return (
-    <Modal
-      visible={modalVisible}
-      transparent
-      animationType="none"
-      onRequestClose={handleClose}
-    >
+    <Modal visible={modalVisible} transparent animationType="none" onRequestClose={handleClose}>
       {/* 安卓 Modal 会创建新的原生 window，脱离外层 GestureHandlerRootView 作用域，需在内部重新包裹 */}
       <GestureHandlerRootView style={{ flex: 1 }}>
         {/* Overlay */}
@@ -195,13 +211,12 @@ function DrawerPortal({ children }: DrawerPortalProps) {
               backgroundColor: 'rgba(0, 0, 0, 0.6)',
             },
             overlayAnimatedStyle,
+            { maxHeight: screenHeight * 0.85 },
+            drawerAnimatedStyle,
           ]}
         >
           {/* Backdrop pressable for closing */}
-          <Pressable
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
-            onPress={handleClose}
-          />
+          <Pressable style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onPress={handleClose} />
 
           {/* Drawer content wrapper */}
           <Animated.View
@@ -229,13 +244,7 @@ interface DrawerOverlayProps extends ViewProps {
 }
 
 function DrawerOverlay({ className, ref, ...props }: DrawerOverlayProps) {
-  return (
-    <View
-      ref={ref}
-      className={cn('absolute inset-0 bg-black/60', className)}
-      {...props}
-    />
-  )
+  return <View ref={ref} className={cn('absolute inset-0 bg-black/60', className)} {...props} />
 }
 DrawerOverlay.displayName = 'DrawerOverlay'
 
@@ -251,14 +260,7 @@ function DrawerContent({ className, children, ref, ...props }: DrawerContentProp
   return (
     <DrawerPortal>
       <SafeAreaView edges={['bottom']}>
-        <View
-          ref={ref}
-          className={cn(
-            'bg-special rounded-t-large gap-3xl',
-            className
-          )}
-          {...props}
-        >
+        <View ref={ref} className={cn('bg-special rounded-t-large gap-3xl', className)} {...props}>
           {children}
         </View>
       </SafeAreaView>
@@ -278,14 +280,8 @@ interface DrawerHeaderProps extends ViewProps {
 
 function DrawerHeader({ className, ref, showClose = true, children, ...props }: DrawerHeaderProps) {
   return (
-    <View
-      ref={ref}
-      className={cn('flex-row items-center justify-between', className)}
-      {...props}
-    >
-      <View className='flex-1'>
-        {children}
-      </View>
+    <View ref={ref} className={cn('flex-row items-center justify-between', className)} {...props}>
+      <View className="flex-1">{children}</View>
       {showClose && <DrawerClose />}
     </View>
   )
@@ -302,12 +298,8 @@ interface DrawerTitleProps extends TextProps {
 
 function DrawerTitle({ className, ref, ...props }: DrawerTitleProps) {
   return (
-    <View className='justify-center min-h-6'>
-      <Text
-        ref={ref}
-        className={cn('text-important-1 text-content-1', className)}
-        {...props}
-      />
+    <View className="min-h-6 justify-center">
+      <Text ref={ref} className={cn('text-important-1 text-content-1', className)} {...props} />
     </View>
   )
 }
@@ -322,13 +314,7 @@ interface DrawerDescriptionProps extends TextProps {
 }
 
 function DrawerDescription({ className, ref, ...props }: DrawerDescriptionProps) {
-  return (
-    <Text
-      ref={ref}
-      className={cn('text-content-4 text-paragraph-p3', className)}
-      {...props}
-    />
-  )
+  return <Text ref={ref} className={cn('text-content-4 text-paragraph-p3', className)} {...props} />
 }
 DrawerDescription.displayName = 'DrawerDescription'
 
@@ -341,13 +327,7 @@ interface DrawerFooterProps extends ViewProps {
 }
 
 function DrawerFooter({ className, ref, ...props }: DrawerFooterProps) {
-  return (
-    <View
-      ref={ref}
-      className={cn('flex-row', className)}
-      {...props}
-    />
-  )
+  return <View ref={ref} className={cn('flex-row', className)} {...props} />
 }
 DrawerFooter.displayName = 'DrawerFooter'
 
@@ -364,11 +344,7 @@ function DrawerClose({ onPress, className, children, ref, ...props }: DrawerClos
   const { colorBrandSecondary3 } = useThemeColors()
 
   return (
-    <IconButton
-      variant='none'
-      onPress={() => onOpenChange(false)}
-      {...props}
-    >
+    <IconButton variant="none" onPress={() => onOpenChange(false)} {...props}>
       <IconifyXmark width={24} height={24} color={colorBrandSecondary3} />
     </IconButton>
   )
