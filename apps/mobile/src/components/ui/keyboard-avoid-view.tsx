@@ -47,21 +47,27 @@ export function KeyboardAvoidView({
   const keyboardTopRef = useRef(0)
   const lastFocusedRef = useRef<ReturnType<typeof TextInput.State.currentlyFocusedInput>>(null)
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const containerRef = useRef<any>(null)
 
   const measureAndAdjust = useCallback(
     (keyboardTop: number) => {
       const focused = TextInput.State.currentlyFocusedInput()
-      if (!focused || maxOffset <= 0) return
+      if (!focused || maxOffset <= 0 || !containerRef.current) return
 
-      focused.measureInWindow((_x, y, _w, h) => {
-        if (h === 0) return
-        // 在 callback 中读取，与测量时间最接近
-        const currentOffset = translateY.value
-        const originalBottom = y - currentOffset + h
-        const overlap = originalBottom - keyboardTop + padding
-        // 始终计算正确的目标偏移：被挡住就偏移，没被挡住就回 0
-        const target = overlap > 0 ? -Math.min(overlap, maxOffset) : 0
-        translateY.value = withTiming(target, { duration })
+      // 先测量容器，再测量输入框，确认输入框在容器内才处理
+      containerRef.current.measureInWindow((_cx: number, cy: number, _cw: number, ch: number) => {
+        if (ch === 0) return
+        focused.measureInWindow((_fx: number, fy: number, _fw: number, fh: number) => {
+          if (fh === 0) return
+          // 输入框不在容器纵向范围内 → 是 Drawer/Modal 里的输入框，跳过
+          if (fy + fh < cy || fy > cy + ch) return
+
+          const currentOffset = translateY.value
+          const originalBottom = fy - currentOffset + fh
+          const overlap = originalBottom - keyboardTop + padding
+          const target = overlap > 0 ? -Math.min(overlap, maxOffset) : 0
+          translateY.value = withTiming(target, { duration })
+        })
       })
     },
     [maxOffset, padding, duration, translateY],
@@ -128,7 +134,7 @@ export function KeyboardAvoidView({
   }))
 
   return (
-    <Animated.View style={[animatedStyle, style]} {...props}>
+    <Animated.View ref={containerRef} style={[animatedStyle, style]} {...props}>
       {children}
     </Animated.View>
   )
