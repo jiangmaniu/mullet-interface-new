@@ -14,13 +14,9 @@ const version = packageJson.version
 // 构建时间戳：优先使用 build.mjs 传入的 VERSION_CODE，否则生成当前时间
 // 格式：YYYYMMDDHHMM（完整年份）或 YYMMDDHHMM（build.mjs 格式）
 const buildTime = (() => {
-  // 如果是通过 build.mjs 构建，使用传入的 VERSION_CODE（YYMMDDHHMM 格式）
+  // 如果是通过 build.mjs 构建，VERSION_CODE 已经是 YYYYMMDDHHMM 格式，直接使用
   if (process.env.VERSION_CODE) {
-    // 将 YYMMDDHHMM 转换为 YYYYMMDDHHMM
-    const yy = process.env.VERSION_CODE.slice(0, 2)
-    const rest = process.env.VERSION_CODE.slice(2)
-    const yyyy = `20${yy}` // 假设是 21 世纪
-    return `${yyyy}${rest}`
+    return process.env.VERSION_CODE
   }
 
   // 开发模式下生成当前时间
