@@ -18,7 +18,7 @@ const pendingRequests = new Map<string, AbortController>()
  * 取消所有正在进行的请求
  */
 function cancelAllPendingRequests() {
-  console.log(`Cancelling ${pendingRequests.size} pending requests...`)
+  // console.log(`Cancelling ${pendingRequests.size} pending requests...`)
   pendingRequests.forEach((controller, requestId) => {
     controller.abort()
     // console.log(`Cancelled request: ${requestId}`)
@@ -121,7 +121,7 @@ async function buildHeaders(config?: IRequestConfig): Promise<Record<string, str
     headers['Blade-Auth'] = `${tokenType} ${token}`
   }
 
-  console.log('Request Headers keys:', Object.keys(headers).join(', '))
+  // console.log('Request Headers keys:', Object.keys(headers).join(', '))
   return headers
 }
 
@@ -172,7 +172,7 @@ async function handleResponse<T>(
     }
   }
 
-  console.log('response', { data, status: response.status, ok: response.ok })
+  // console.log('response', { data, status: response.status, ok: response.ok })
 
   return { data, status: response.status, ok: response.ok }
 }
@@ -233,7 +233,7 @@ async function fetchWithTimeout(
     controller.abort()
   }, timeout)
 
-  console.log('🔄 Fetching:', url, `[${requestId}]`)
+  // console.log('🔄 Fetching:', url, `[${requestId}]`)
 
   try {
     // 显式构建 fetch 配置，避免展开运算符问题
