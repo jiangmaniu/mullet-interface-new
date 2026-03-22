@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -14,18 +13,18 @@ import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useRootStore } from '@/stores'
+import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 
 // ============ AccountCard ============
 interface AccountCardProps {}
 
-export const AccountCard = observer(({}: AccountCardProps) => {
+export const AccountCard = ({}: AccountCardProps) => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
-  const { trade } = useStores()
+  const positionList = useRootStore(useShallow(tradePositionListSelector))
   const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
   const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {
@@ -33,7 +32,7 @@ export const AccountCard = observer(({}: AccountCardProps) => {
   }
 
   const getAccountBalance = useGetAccountBalanceCallback()
-  const { availableMargin } = getAccountBalance(currentAccountInfo, trade.positionList)
+  const { availableMargin } = getAccountBalance(currentAccountInfo, positionList)
 
   return (
     <>
@@ -104,4 +103,4 @@ export const AccountCard = observer(({}: AccountCardProps) => {
       {currentAccountInfo && <AddBalanceDrawer ref={addBalanceDrawerRef} accountInfo={currentAccountInfo} />}
     </>
   )
-})
+}

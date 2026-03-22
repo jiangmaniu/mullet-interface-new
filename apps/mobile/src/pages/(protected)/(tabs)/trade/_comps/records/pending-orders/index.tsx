@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -20,21 +20,82 @@ import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import {
+  createOrderItemSelector,
+  tradeOrderIdListSelector,
+  tradeOrderLoadingSelector,
+} from '@/stores/trade-slice/order-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { cancelOrder } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import trade from '@/v1/stores/trade'
 import { BNumber } from '@mullet/utils/number'
 
 import { PendingCurrentPrice } from '../../common/position-current-price'
 
-// ============ PendingOrderItem ============
-interface PendingOrderItemProps {
-  order: Order.OrderPageListItem
+// ============ 列表容器：只订阅 idList ============
+
+export const TradePendingOrders = () => {
+  const { user } = useStores()
+  const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
+  const pendingListLoading = useRootStore(tradeOrderLoadingSelector)
+  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+
+  useEffect(() => {
+    if (!activeTradeAccountId) return
+    useRootStore.getState().trade.order.fetch()
+  }, [activeTradeAccountId])
+
+  const onRefresh = async () => {
+    await useRootStore.getState().trade.order.fetch()
+    await user.fetchUserInfo(true)
+  }
+
+  const renderEmpty = () => {
+    if (pendingListLoading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      )
+    }
+    return (
+      <View className="items-center py-[60px]">
+        <EmptyState message={<Trans>暂无委托记录</Trans>} />
+      </View>
+    )
+  }
+
+  return (
+    <CollapsibleFlatList
+      className="flex-1"
+      contentContainerStyle={{ paddingBottom: 24 }}
+      data={orderIdList}
+      keyExtractor={(id) => id}
+      renderItem={({ item: id }) => <PendingOrderItemById id={id} />}
+      ItemSeparatorComponent={() => <View className="h-xl" />}
+      ListEmptyComponent={renderEmpty}
+      onEndReachedThreshold={0.3}
+      refreshing={pendingListLoading}
+      onRefresh={() => onRefresh()}
+      style={{ paddingTop: 16 }}
+    />
+  )
 }
 
-const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
+// ============ 按 ID 精准订阅的 Item 包装 ============
+
+const PendingOrderItemById = ({ id }: { id: string }) => {
+  const order = useRootStore(createOrderItemSelector(id))
+  if (!order) return null
+  return <PendingOrderItem order={order} />
+}
+
+// ============ PendingOrderItem ============
+
+const PendingOrderItem = ({ order }: { order: Order.OrderPageListItem }) => {
   const { renderLinguiMsg } = useI18n()
   const pendingOrderInfo = parseTradePendingOrderInfo(order)
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
@@ -47,7 +108,6 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
         <Pressable
           onPress={() => {
             if (!order.symbol || activeSymbol === order.symbol) return
-
             switchTradeActiveSymbol(order.symbol)
           }}
         >
@@ -92,78 +152,20 @@ const PendingOrderItem = observer(({ order }: PendingOrderItemProps) => {
       </View>
     </View>
   )
-})
+}
 
-// ============ Main Trade Component ============
+// ============ 取消挂单 ============
 
-export const TradePendingOrders = observer(() => {
-  const { trade, user } = useStores()
-  const pendingList = trade.pendingList
-  const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
-  const pendingListLoading = trade.pendingListLoading
-
-  const [refreshing, setRefreshing] = useState(false)
-  useEffect(() => {
-    if (!activeTradeAccountId) return
-    trade.getPositionList(true)
-  }, [activeTradeAccountId])
-
-  const onRefresh = async () => {
-    if (refreshing) return
-
-    setRefreshing(true)
-    await trade.getPendingList()
-    // 刷新账户信息
-    await user.fetchUserInfo(true)
-    setRefreshing(false)
-  }
-
-  const renderEmpty = () => {
-    if (pendingListLoading) {
-      return (
-        <View className="py-3xl items-center">
-          <ActivityIndicator />
-        </View>
-      )
-    }
-    return (
-      <View className="items-center py-[60px]">
-        <EmptyState message={<Trans>暂无委托记录</Trans>} />
-      </View>
-    )
-  }
-
-  return (
-    <>
-      <CollapsibleFlatList
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 24 }}
-        data={pendingList}
-        keyExtractor={(item) => String(item.id)}
-        renderItem={({ item: order }) => <PendingOrderItem order={order} />}
-        ItemSeparatorComponent={() => <View className="h-xl" />}
-        ListEmptyComponent={renderEmpty}
-        onEndReachedThreshold={0.3}
-        refreshing={pendingListLoading}
-        onRefresh={() => onRefresh()}
-        style={{ paddingTop: 16 }}
-      />
-    </>
-  )
-})
-
-const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem }) => {
+const CancelOrderAction = ({ order }: { order: Order.OrderPageListItem }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const { trade } = useStores()
 
   const onCancel = async () => {
     setIsLoading(true)
     try {
       const { success } = await cancelOrder({ id: order.id })
       if (success) {
-        await trade.getPendingList()
-
+        await Promise.all([trade.getPendingList(), useRootStore.getState().trade.order.fetch()])
         setShowConfirm(false)
         toast.success(<Trans>取消成功</Trans>)
       }
@@ -215,4 +217,4 @@ const CancelOrderAction = observer(({ order }: { order: Order.OrderPageListItem 
       </Modal>
     </>
   )
-})
+}

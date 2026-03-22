@@ -7,6 +7,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 
@@ -68,7 +69,7 @@ export function useClosePosition() {
     },
     onSuccess: async () => {
       // 更新账户余额信息和仓位列表
-      await Promise.allSettled([user.fetchUserInfo(), trade.getPositionList()])
+      await Promise.allSettled([user.fetchUserInfo(), useRootStore.getState().trade.position.fetch()])
 
       toast.success(<Trans>平仓成功</Trans>)
     },

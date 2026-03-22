@@ -163,7 +163,7 @@ const PositionTpSlDrawerContent = observer(() => {
       const res = await modifyStopProfitLoss(params as Order.ModifyStopProfitLossParams)
 
       if (res.success) {
-        await trade.getPositionList(true)
+        await useRootStore.getState().trade.position.fetch(true)
         toast.success(<Trans>修改止盈止损成功</Trans>)
         setFalse()
       }

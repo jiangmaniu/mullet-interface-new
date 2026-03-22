@@ -897,16 +897,22 @@ class WSStore {
         // 持仓列表
         else if (type === 'MARKET_ORDER') {
           const positionList = data.bagOrderList || []
+          const formatted = formaOrderList(positionList)
           runInAction(() => {
-            trade.positionList = formaOrderList(positionList)
+            trade.positionList = formatted
           })
+          // 同步写入 Zustand
+          useRootStore.getState().trade.position.update(formatted)
         }
         // 挂单列表
         else if (type === 'LIMIT_ORDER') {
           const pendingList = data.limiteOrderList || []
+          const formatted = formaOrderList(pendingList)
           runInAction(() => {
-            trade.pendingList = formaOrderList(pendingList)
+            trade.pendingList = formatted
           })
+          // 同步写入 Zustand
+          useRootStore.getState().trade.order.update(formatted)
         }
         // 历史成交记录,用不到
         else if (type === 'TRADING') {

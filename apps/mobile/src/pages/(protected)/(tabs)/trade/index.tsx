@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -17,6 +16,8 @@ import { useAppState } from '@/hooks/use-app-state'
 import { useI18n } from '@/hooks/use-i18n'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { tradeOrderCountSelector } from '@/stores/trade-slice/order-slice'
+import { tradePositionCountSelector } from '@/stores/trade-slice/position-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
@@ -28,15 +29,16 @@ import { TradePendingOrders } from './_comps/records/pending-orders'
 import { TradePositions } from './_comps/records/positions'
 import { SymbolChartView } from './_comps/symbol-chart-view'
 
-const Trade = observer(() => {
+const Trade = () => {
   const router = useRouter()
-  const { trade, user } = useStores()
+  const { user } = useStores()
   const { renderLinguiMsg } = useI18n()
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
-  const pendingList = trade.pendingList
-  const positionList = trade.positionList
+  // 只订阅数量（原始值），不订阅完整列表
+  const positionCount = useRootStore(tradePositionCountSelector)
+  const orderCount = useRootStore(tradeOrderCountSelector)
 
   const chartPosition = useRootStore((state) => state.trade.setting.chartPosition)
 
@@ -46,8 +48,8 @@ const Trade = observer(() => {
   const [topBannerHeight, setTopBannerHeight] = useState(0)
 
   const initData = () => {
-    trade.getPositionList(true)
-    trade.getPendingList()
+    useRootStore.getState().trade.position.fetch(true)
+    useRootStore.getState().trade.order.fetch()
     user.fetchUserInfo(true)
   }
 
@@ -99,11 +101,11 @@ const Trade = observer(() => {
           </CollapsibleStickyHeader>
         )}
       >
-        <CollapsibleTabScene name="positions" label={`${renderLinguiMsg(msg`持仓`)}(${positionList?.length ?? 0})`}>
+        <CollapsibleTabScene name="positions" label={`${renderLinguiMsg(msg`持仓`)}(${positionCount})`}>
           <TradePositions />
         </CollapsibleTabScene>
 
-        <CollapsibleTabScene name="orders" label={`${renderLinguiMsg(msg`挂单`)}(${pendingList?.length ?? 0})`}>
+        <CollapsibleTabScene name="orders" label={`${renderLinguiMsg(msg`挂单`)}(${orderCount})`}>
           <TradePendingOrders />
         </CollapsibleTabScene>
       </CollapsibleTab>
@@ -116,6 +118,6 @@ const Trade = observer(() => {
       )}
     </View>
   )
-})
+}
 
 export default Trade

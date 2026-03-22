@@ -32,7 +32,7 @@ const useRootStoreBase = create<RootStoreState>()(
       {
         name: 'mullet-root-store',
         storage: createJSONStorage(() => mmkvStorage),
-        partialize: createPartialize<RootStoreState>('trade.formData', 'market.symbol.loading'),
+        partialize: createPartialize<RootStoreState>('trade.formData', 'market.symbol.loading', 'trade.position', 'trade.order'),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
       },
