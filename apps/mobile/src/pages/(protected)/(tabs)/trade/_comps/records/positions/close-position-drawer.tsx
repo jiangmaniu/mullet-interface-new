@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
-import { createContext, useContext, useImperativeHandle, useState } from 'react'
+import { createContext, startTransition, useContext, useImperativeHandle, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { NumberFormatValues } from 'react-number-format'
 import { useShallow } from 'zustand/react/shallow'
@@ -19,7 +19,6 @@ import { Text } from '@/components/ui/text'
 import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
-import { useThemeColors } from '@/hooks/use-theme-colors'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useRootStore } from '@/stores'
@@ -46,7 +45,6 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   const positionInfo = parseTradePositionInfo(position)
   const { renderLinguiMsg } = useI18n()
   const lotsVolScale = parseSymbolLotsVolScale(positionInfo?.conf)
-  const { backgroundColorSpecial } = useThemeColors()
 
   const covertProfit = useCovertProfitCallback(false)
   const positionProfit = covertProfit(position)
@@ -62,13 +60,29 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   const { mutate: closePosition, isPending: closePositionLoading } = useClosePosition()
 
   const handleSliderChange = (value: number) => {
-    // console.log('🎯 Slider changed:', value)
-    setSliderValue(value)
-    // 根据百分比计算平仓数量
-    const calculatedQuantity = BNumber.fromPercent(value).toPercentRatio().multipliedBy(positionInfo?.orderVolume)
-    const lots = calculatedQuantity?.cutDecimalPlaces(lotsVolScale, BNumber.ROUND_UP)?.toFixed()
-    // console.log('📊 Calculated lots:', lots, 'from', value, '%')
-    if (lots) {
+    // value=0 时直接设 ''，否则向上取整保证至少有最小精度单位
+    const lots =
+      value === 0
+        ? ''
+        : BNumber.from(value)
+            .div(100)
+            .multipliedBy(positionInfo?.orderVolume)
+            ?.cutDecimalPlaces(lotsVolScale, BNumber.ROUND_UP)
+            ?.toFixed()
+
+    // 反推真实百分比做吸附，保证 slider 与数量同步
+    // 数量向上取整后反推百分比用 ROUND_DOWN，避免百分比超过实际值
+    const lotsNum = BNumber.from(lots)
+    const realPercent =
+      lots !== undefined && lots !== '' && lotsNum?.gt(0)
+        ? (lotsNum?.div(positionInfo?.orderVolume)?.toPercent().cutDecimalPlaces(0, BNumber.ROUND_DOWN)?.toNumber() ?? value)
+        : value
+
+    // 同步更新 slider 位置
+    setSliderValue(realPercent)
+
+    // 更新输入框数量
+    if (lots !== undefined) {
       setClosedLots(lots)
     }
   }
@@ -77,9 +91,13 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
     if (source === NumberInputSourceType.EVENT) {
       setClosedLots(value)
 
-      const lotsPercent = BNumber.from(value).div(positionInfo?.orderVolume)?.toPercent().cutDecimalPlaces(0)?.toFixed()
+      const lotsPercent = BNumber.from(value)
+        .div(positionInfo?.orderVolume)
+        ?.toPercent()
+        .cutDecimalPlaces(0, BNumber.ROUND_DOWN)
+        ?.toFixed()
       if (lotsPercent) {
-        setSliderValue(Number(lotsPercent))
+        startTransition(() => setSliderValue(Number(lotsPercent)))
       }
     }
   }
