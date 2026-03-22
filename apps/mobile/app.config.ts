@@ -177,6 +177,8 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withDebugAutoSigning.js',
       // Android APK 体积优化
       './plugins/withApkOptimization.js',
+      // 修复 Android 权限冲突（WRITE/READ_EXTERNAL_STORAGE maxSdkVersion）
+      './plugins/withAndroidPermissions.js',
       './plugins/withSplitApks.js',
       './plugins/withProguardRules.js',
     ],
