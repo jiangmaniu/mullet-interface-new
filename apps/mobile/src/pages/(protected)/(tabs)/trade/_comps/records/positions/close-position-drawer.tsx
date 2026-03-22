@@ -16,6 +16,7 @@ import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input
 import { NumberInputSourceInfo } from '@/components/ui/number-input-primitive'
 import { Slider } from '@/components/ui/slider'
 import { Text } from '@/components/ui/text'
+import { toast } from '@/components/ui/toast'
 import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
@@ -75,7 +76,8 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
     const lotsNum = BNumber.from(lots)
     const realPercent =
       lots !== undefined && lots !== '' && lotsNum?.gt(0)
-        ? (lotsNum?.div(positionInfo?.orderVolume)?.toPercent().cutDecimalPlaces(0, BNumber.ROUND_DOWN)?.toNumber() ?? value)
+        ? (lotsNum?.div(positionInfo?.orderVolume)?.toPercent().cutDecimalPlaces(0, BNumber.ROUND_DOWN)?.toNumber() ??
+          value)
         : value
 
     // 同步更新 slider 位置
@@ -103,11 +105,17 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   }
 
   const handleConfirm = () => {
+    // 验证平仓数量
+    if (!BNumber.from(closedLots)?.gt(0)) {
+      toast.error(<Trans>请输入平仓数量</Trans>)
+      return
+    }
+
     // 调用平仓 hook
     closePosition(
       {
         position,
-        orderVolume: closedLots || undefined, // 如果没有输入，则全部平仓
+        orderVolume: closedLots,
       },
       {
         onSuccess: () => {
