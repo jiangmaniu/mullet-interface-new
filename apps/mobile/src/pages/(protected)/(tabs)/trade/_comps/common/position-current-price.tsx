@@ -1,11 +1,11 @@
 import { observer } from 'mobx-react-lite'
 
 import { Text } from '@/components/ui/text'
+import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
 import { BNumber } from '@mullet/utils/number'
 
 export const PositionCurrentPrice = observer(
@@ -17,9 +17,19 @@ export const PositionCurrentPrice = observer(
     className?: string
   }) => {
     const symbolMarketInfo = useMarketQuoteInfo(info.symbol ?? '')
-    const currentPrice = info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.ask : symbolMarketInfo?.bid
+    const currentPrice =
+      info.buySell === TradePositionDirectionEnum.BUY
+        ? symbolMarketInfo?.userSellPrice
+        : info.buySell === TradePositionDirectionEnum.SELL
+          ? symbolMarketInfo?.userBuyPrice
+          : undefined
     const priceDiff =
-      info.buySell === TradePositionDirectionEnum.BUY ? symbolMarketInfo?.askDiff : symbolMarketInfo?.bidDiff
+      info.buySell === TradePositionDirectionEnum.BUY
+        ? symbolMarketInfo?.userSellPriceDiff
+        : info.buySell === TradePositionDirectionEnum.SELL
+          ? symbolMarketInfo?.userBuyPriceDiff
+          : undefined
+
     const priceDiffColor = BNumber.from(priceDiff)?.gt(0)
       ? 'text-market-rise'
       : BNumber.from(priceDiff)?.lt(0)
@@ -49,19 +59,20 @@ export const PendingCurrentPrice = observer(
     const currentPrice =
       info.buySell === TradePositionDirectionEnum.BUY
         ? isLimitOrder
-          ? symbolMarketInfo?.bid
-          : symbolMarketInfo?.ask
+          ? symbolMarketInfo?.userBuyPrice
+          : symbolMarketInfo?.userSellPrice
         : isLimitOrder
-          ? symbolMarketInfo?.ask
-          : symbolMarketInfo?.bid
+          ? symbolMarketInfo?.userSellPrice
+          : symbolMarketInfo?.userBuyPrice
     const priceDiff =
       info.buySell === TradePositionDirectionEnum.BUY
         ? isLimitOrder
-          ? symbolMarketInfo?.bidDiff
-          : symbolMarketInfo?.askDiff
+          ? symbolMarketInfo?.userBuyPriceDiff
+          : symbolMarketInfo?.userSellPriceDiff
         : isLimitOrder
-          ? symbolMarketInfo?.askDiff
-          : symbolMarketInfo?.bidDiff
+          ? symbolMarketInfo?.userSellPriceDiff
+          : symbolMarketInfo?.userBuyPriceDiff
+
     const priceDiffColor = BNumber.from(priceDiff)?.gt(0)
       ? 'text-market-rise'
       : BNumber.from(priceDiff)?.lt(0)

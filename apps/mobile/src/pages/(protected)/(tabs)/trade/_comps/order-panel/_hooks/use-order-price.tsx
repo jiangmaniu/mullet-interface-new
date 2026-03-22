@@ -13,11 +13,7 @@ export const useOrderMarketPrice = (props: { symbol?: string; direction?: TradeP
   const { isBuy, isSell } = parseTradeDirectionInfo(direction)
   const symbolMarketInfo = useMarketQuoteInfo(symbol)
 
-  const orderMarketPrice = isBuy
-    ? (symbolMarketInfo?.ask as string)
-    : isSell
-      ? (symbolMarketInfo?.bid as string)
-      : undefined
+  const orderMarketPrice = isBuy ? symbolMarketInfo?.userBuyPrice : isSell ? symbolMarketInfo?.userSellPrice : undefined
 
   return orderMarketPrice
 }

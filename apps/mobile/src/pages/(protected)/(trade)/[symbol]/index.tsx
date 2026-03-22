@@ -100,12 +100,12 @@ interface PriceInfoProps {
 const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
   const symbolInfo = useMarketSymbolInfo(symbol)
   const symbolMarketInfo = useMarketQuoteInfo(symbol)
-  const latestPrice = symbolMarketInfo?.ask
+  const latestPrice = symbolMarketInfo?.userSellPrice
+  const userSellPricePriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const high = symbolMarketInfo?.high
   const low = symbolMarketInfo?.low
   const open = symbolMarketInfo?.open
   const close = symbolMarketInfo?.close
-  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   return (
@@ -116,7 +116,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
         </Text>
         <View>
           <Text
-            className={`text-title-h3 ${askPriceChangeInfo.isRise ? 'text-market-rise' : askPriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}
+            className={`text-title-h3 ${userSellPricePriceChangeInfo.isRise ? 'text-market-rise' : userSellPricePriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}
           >
             {BNumber.toFormatNumber(latestPrice, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
@@ -309,8 +309,8 @@ interface BottomActionBarProps {
 const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
   const symbolMarketInfo = useMarketQuoteInfo(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const buyPrice = symbolMarketInfo?.bid
-  const sellPrice = symbolMarketInfo?.ask
+  const userSellPricePrice = symbolMarketInfo?.userSellPrice
+  const userBuyPricePrice = symbolMarketInfo?.userSellPrice
   const spread = symbolMarketInfo?.spread
 
   return (
@@ -322,7 +322,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-rise h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-rise-foreground font-medium">
-              {BNumber.toFormatNumber(sellPrice, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(userBuyPricePrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-rise-foreground">
               <Trans>买入/做多</Trans>
@@ -339,7 +339,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
             className="px-xl rounded-small bg-market-fall h-[40px] flex-1 flex-row items-center justify-center"
           >
             <Text className="text-button-2 text-market-fall-foreground font-medium">
-              {BNumber.toFormatNumber(buyPrice, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(userSellPricePrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
             <Text className="text-button-2 ml-xs text-market-fall-foreground">
               <Trans>卖出/做空</Trans>

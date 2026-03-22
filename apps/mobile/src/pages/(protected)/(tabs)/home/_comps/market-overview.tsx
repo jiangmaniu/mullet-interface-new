@@ -76,7 +76,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   const symbolMarketInfo = useMarketQuoteInfo(symbol)
 
   // 计算涨跌幅和价格（从订阅数据获取）
-  const price = symbolMarketInfo?.ask
+  const price = symbolMarketInfo?.userSellPrice
   const priceChangeInfo = parseRiseAndFallInfo(price)
   const change = symbolMarketInfo?.percent
 

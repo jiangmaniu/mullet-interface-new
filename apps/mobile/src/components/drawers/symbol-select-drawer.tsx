@@ -147,7 +147,7 @@ interface SymbolMarketRowProps {
 
 const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
   const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
-  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
+  const sellPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   return (
@@ -159,14 +159,14 @@ const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
           <Text
             className={cn(
               'text-paragraph-p1',
-              askPriceChangeInfo.isRise
+              sellPriceChangeInfo.isRise
                 ? 'text-market-rise'
-                : askPriceChangeInfo.isFall
+                : sellPriceChangeInfo.isFall
                   ? 'text-market-fall'
                   : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="items-end">

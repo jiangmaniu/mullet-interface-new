@@ -115,7 +115,7 @@ interface AssetMarketRowProps {
 const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
   const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
-  const askPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.askDiff)
+  const userSellPricePriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   // 获取 K线历史数据
@@ -150,14 +150,14 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
           <Text
             className={cn(
               'text-paragraph-p1',
-              askPriceChangeInfo.isRise
+              userSellPricePriceChangeInfo.isRise
                 ? 'text-market-rise'
-                : askPriceChangeInfo.isFall
+                : userSellPricePriceChangeInfo.isFall
                   ? 'text-market-fall'
                   : 'text-content-1',
             )}
           >
-            {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+            {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
           <Text
             className={cn(
@@ -216,7 +216,7 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
@@ -226,7 +226,7 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-fall">
-              {BNumber.toFormatNumber(symbolMarketInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">

@@ -12,6 +12,7 @@ import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { IQuoteItem } from '@/v1/stores/ws'
 import { toFixed } from '@/v1/utils'
+import { BNumber } from '@mullet/utils/number'
 
 /** 订阅指定 symbol 的原始行情数据 */
 export const useMarketQuote = (symbol?: string) => {
@@ -41,6 +42,45 @@ type ParseMarketQuoteParams = {
   symbolInfo?: Account.TradeSymbolListItem
 }
 
+/**
+ * bid 和 ask 就是平台报的买价和卖价
+ * buy 和 sell 是用户的买价和卖价
+
+ * 这两者的关系是：
+ * 用户 buy = 平台 ask
+ * 用户 sell = 平台 bid
+ */
+export type MarketQuoteInfo = {
+  /**
+   * @deprecated 请使用 platformAskPrice 代替
+   */
+  ask?: string
+  /**
+   * @deprecated 请使用 platformBidPrice 代替
+   */
+  bid?: string
+
+  /** 平台报的买价 */
+  platformBidPrice?: string
+  /** 平台报的卖价 */
+  platformAskPrice?: string
+
+  /** 平台报的买价涨跌价差 */
+  platformBidPriceDiff?: string
+  /** 平台报的卖价涨跌价差 */
+  platformAskPriceDiff?: string
+
+  /** 用户买价（取平台卖价 ask） */
+  userBuyPrice?: string
+  /** 用户卖价（取平台买价 bid）*/
+  userSellPrice?: string
+
+  /** 用户买价涨跌价差 */
+  userBuyPriceDiff?: string
+  /** 用户卖价涨跌价差 */
+  userSellPriceDiff?: string
+}
+
 export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) {
   if (!symbolInfo || !symbolInfo) return undefined
 
@@ -63,8 +103,20 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
   const quoteTimeStamp = currentQuote?.priceData?.id || symbolNewPrice?.id
 
   const digits = Number(currentSymbol?.symbolDecimal || 2)
-  let ask = toFixed(Number(currentQuote?.priceData?.sell || symbolNewPrice?.sell || 0), digits, false)
+  const platformAskPrice = BNumber.from(currentQuote?.priceData?.sell || symbolNewPrice?.sell)?.toFixed()
+  const platformBidPrice = BNumber.from(currentQuote?.priceData?.buy || symbolNewPrice?.buy)?.toFixed()
+  const userBuyPrice = platformAskPrice
+  const userSellPrice = platformBidPrice
+
+  const platformBidPriceDiff = BNumber.from(currentQuote?.bidDiff)?.toFixed()
+  const platformAskPriceDiff = BNumber.from(currentQuote?.askDiff)?.toFixed()
+
+  const userBuyPriceDiff = platformAskPriceDiff
+  const userSellPriceDiff = platformBidPriceDiff
+
   let bid = toFixed(Number(currentQuote?.priceData?.buy || symbolNewPrice?.buy || 0), digits, false)
+  let ask = toFixed(Number(currentQuote?.priceData?.sell || symbolNewPrice?.sell || 0), digits, false)
+
   const open = Number(symbolNewTicker?.open || 0)
   const high = Math.max.apply(Math, [Number(symbolNewTicker?.high || 0), bid])
   const low = Math.min.apply(Math, [Number(symbolNewTicker?.low || 0), bid])
@@ -72,6 +124,19 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
   const percent = bid && open ? (((bid - open) / open) * 100).toFixed(2) : 0
   const spread = Math.abs(multiply(Math.abs(Number(subtract(bid, ask))), Math.pow(10, digits)) as number)
 
+  const info: MarketQuoteInfo = {
+    platformBidPrice: platformBidPrice,
+    platformAskPrice: platformAskPrice,
+
+    platformBidPriceDiff: platformBidPriceDiff,
+    platformAskPriceDiff: platformAskPriceDiff,
+
+    userSellPrice: userBuyPrice,
+    userBuyPrice: userSellPrice,
+
+    userSellPriceDiff: userSellPriceDiff,
+    userBuyPriceDiff: userBuyPriceDiff,
+  }
   return {
     symbol,
     dataSourceSymbol,
@@ -91,8 +156,8 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
     symbolNewPrice,
     percent,
     consize: Number(symbolConf?.contractSize || 0),
-    ask,
-    bid,
+    ask: platformAskPrice,
+    bid: platformBidPrice,
     high: toFixed(high, digits, false),
     low: toFixed(low, digits, false),
     open: toFixed(open, digits, false),
@@ -101,5 +166,7 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
     bidDiff: currentQuote?.bidDiff || 0,
     askDiff: currentQuote?.askDiff || 0,
     hasQuote: !!currentQuote?.priceData?.buy,
+
+    ...info,
   }
 }

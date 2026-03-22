@@ -124,8 +124,8 @@ const SearchAssetRow = observer(function SearchAssetRow({
   onSelect: () => void
 }) {
   const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
-  const price = symbolMarketInfo?.ask
-  const priceChangeInfo = parseRiseAndFallInfo(price)
+  const price = symbolMarketInfo?.userSellPrice
+  const priceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
   // 图表颜色
   const changeColor = percentChangeInfo.isRise
@@ -183,7 +183,7 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo?.ask, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.userBuyPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">
@@ -194,7 +194,7 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
         <View className="gap-xs flex-1">
           <View className="bg-market-fall/15 border-market-fall rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-fall">
-              {BNumber.toFormatNumber(symbolMarketInfo?.bid, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-content-4 text-paragraph-p3 text-right">
