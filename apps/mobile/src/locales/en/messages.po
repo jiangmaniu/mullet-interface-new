@@ -146,6 +146,10 @@ msgstr "Low"
 msgid "交易签名失败"
 msgstr "Transaction signature failed"
 
+#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
+msgid "关闭平仓浮窗后平仓操作默认全部平仓，您可以在设置-交易设置中开启"
+msgstr "After closing this panel, positions will be closed in full by default. You can re-enable confirmation in Settings → Trade Settings."
+
 #: src/pages/(protected)/(trade)/[symbol]/index.tsx
 msgid "隔夜利息（多单）"
 msgstr "Overnight Fee (Long)"
@@ -234,8 +238,8 @@ msgid "暂无出金记录"
 msgstr "No withdrawal records"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
-msgid "总资产"
-msgstr "Total Assets"
+#~ msgid "总资产"
+#~ msgstr "Total Assets"
 
 #: src/pages/(protected)/(tabs)/home/index.tsx
 #~ msgid "提示"
@@ -325,7 +329,6 @@ msgid "转账金额"
 msgstr "Transfer Amount"
 
 #: src/pages/(protected)/(trade)/records/_comps/fund-flow-list.tsx
-#: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
@@ -433,7 +436,6 @@ msgstr "Price"
 msgid "Modify Spsl Success"
 msgstr "Modify Spsl Success"
 
-#: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "保证金类型"
 msgstr "Margin Type"
@@ -802,6 +804,10 @@ msgstr "Limit and Stop Distance"
 msgid "自动"
 msgstr "Auto"
 
+#: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
+msgid "可用保证金"
+msgstr ""
+
 #: src/pages/(protected)/(assets)/deposit/_comps/bank-deposit-card/index.tsx
 msgid "暂未开放"
 msgstr "Coming Soon"
@@ -861,6 +867,10 @@ msgstr "Quick Select"
 #: src/pages/(protected)/(assets)/withdraw/crypto/usdc/index.tsx
 msgid "最低取现{0}"
 msgstr "Min. withdrawal {0}"
+
+#: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
+msgid "资产净值"
+msgstr ""
 
 #: src/v1/constants/enum.ts
 msgid "周三"
@@ -986,13 +996,16 @@ msgid "BUY"
 msgstr "BUY"
 
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
-#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
 msgid "不再询问，您可以在设置->交易设置中重新设置"
 msgstr "Don't ask again. You can change this in Settings > Trading Settings"
 
 #: src/pages/(protected)/(trade)/records/_comps/history-position-list.tsx
 msgid "持仓单号"
 msgstr "Position ID"
+
+#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
+msgid "确认平仓"
+msgstr "Confirm Close Position"
 
 #: src/v1/utils/business.ts
 msgid "Fixed Margin Abbr"
@@ -1144,8 +1157,8 @@ msgid "确定存款"
 msgstr "Confirm Deposit"
 
 #: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
-msgid "占用"
-msgstr "Used"
+#~ msgid "占用"
+#~ msgstr "Used"
 
 #: src/pages/(protected)/(assets)/deposit/_comps/wallet-deposit-card/connect-wallet-drawer.tsx
 msgid "签名失败"
@@ -1357,6 +1370,7 @@ msgstr "Before Change"
 msgid "充值状态"
 msgstr "Deposit Status"
 
+#: src/pages/(protected)/(assets)/bills/_comps/transfer-list.tsx
 #: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "哈希地址"
 msgstr "Transaction Hash"
@@ -1374,7 +1388,6 @@ msgstr "Check your inbox at {userEmail} for an email from Mullet and enter the v
 msgid "扫码转入"
 msgstr "Scan to Deposit"
 
-#: src/pages/(protected)/(trade)/records/_comps/history-filled-order-list.tsx
 #: src/pages/(protected)/(trade)/records/_comps/history-order-list.tsx
 msgid "交易时间"
 msgstr "Trading Time"
@@ -1545,6 +1558,10 @@ msgstr "Confirm Sell"
 msgid "存款失败"
 msgstr "Deposit Failed"
 
+#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
+msgid "请输入平仓数量"
+msgstr "Please enter close quantity"
+
 #: src/pages/(protected)/(assets)/withdraw/crypto/swap/index.tsx
 #~ msgid "最低取现 200 USDC"
 #~ msgstr "Min. withdrawal 200 USDC"
@@ -1657,7 +1674,6 @@ msgstr "Crypto"
 msgid "入存款成功"
 msgstr "Deposit successful"
 
-#: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/account-card/index.tsx
 msgid "可用"
@@ -1729,7 +1745,6 @@ msgid "你将收到"
 msgstr "You will receive"
 
 #: src/options/trade/order.tsx
-#: src/pages/(protected)/(tabs)/trade/_comps/records/positions/close-position-drawer.tsx
 #: src/pages/(protected)/(tabs)/trade/_comps/records/positions/index.tsx
 msgid "平仓"
 msgstr "Close"
@@ -1782,6 +1797,7 @@ msgstr "Demo"
 msgid "断开"
 msgstr "Disconnect"
 
+#: src/pages/(protected)/(assets)/bills/_comps/transfer-list.tsx
 #: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
 #: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "转入地址"
@@ -1968,6 +1984,7 @@ msgstr "Unknown"
 msgid "立即更新"
 msgstr "Update Now"
 
+#: src/pages/(protected)/(assets)/bills/_comps/transfer-list.tsx
 #: src/pages/(protected)/(assets)/transfer/_comps/transfer-confirm-drawer.tsx
 #: src/pages/(protected)/(assets)/transfer/detail/index.tsx
 msgid "转出地址"
@@ -2080,6 +2097,10 @@ msgstr "Limit Buy Order"
 #: src/v1/utils/download.ts
 msgid "baocuntupianshibai"
 msgstr "baocuntupianshibai"
+
+#: src/pages/(protected)/(tabs)/assets/_comps/trade-account-overview-card.tsx/index.tsx
+msgid "占用保证金"
+msgstr ""
 
 #: src/pages/(protected)/(trade)/settings.tsx
 msgid "底部"
