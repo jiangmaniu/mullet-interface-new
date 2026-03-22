@@ -1,10 +1,11 @@
 {
-  "enabledPlugins": {
-    "upgrading-expo@expo-plugins": true
-  },
   "permissions": {
     "allow": [
-      "Bash(bundle exec fastlane match adhoc --env test)"
+      "Bash(bundle exec fastlane match adhoc --env test)",
+      "Read(//^#: src\\\\/pages\\\\/\\\\\\(protected\\\\\\)\\\\/\\\\\\(tabs\\\\\\)\\\\/trade\\\\/_comps\\\\/records\\\\/positions\\\\/close-position-drawer\\\\.tsx/{found=1} found && /^msgid/{print NR\"\"\"\": \"\"\"\"$0} found && /^msgstr/**)"
     ]
+  },
+  "enabledPlugins": {
+    "upgrading-expo@expo-plugins": true
   }
 }
