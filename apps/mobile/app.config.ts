@@ -88,6 +88,8 @@ export default ({ config }: { config: ConfigContext }) => {
     scheme: `mullet${schemeSuffix[env] ?? ''}`,
     userInterfaceStyle: 'dark',
     extra: extra,
+    // 禁用 Web 平台，只支持 iOS 和 Android
+    platforms: ['ios', 'android'],
 
     ios: {
       supportsTablet: true,
