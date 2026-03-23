@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { AppState, InteractionManager } from 'react-native'
+import { AppState } from 'react-native'
 import type { AppStateStatus } from 'react-native'
 
 import { useVersionCheck } from '@/hooks/use-version-check'
@@ -25,11 +25,11 @@ export function VersionCheckProvider({ children }: { children: React.ReactNode }
 
   // 启动时延迟检查
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
+    const timer = setTimeout(() => {
       checkUpdate()
       lastCheckRef.current = Date.now()
-    })
-    return () => task.cancel()
+    }, 100)
+    return () => clearTimeout(timer)
   }, [checkUpdate])
 
   // 前后台切换时检查（限制频率）
