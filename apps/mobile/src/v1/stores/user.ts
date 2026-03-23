@@ -3,7 +3,8 @@ import { action, configure, makeObservable, observable, runInAction } from 'mobx
 import { stores } from '@/v1/provider/mobxProvider'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import { replace } from '@/v1/utils/navigation'
-import { STORAGE_GET_CONF_INFO } from '@/v1/utils/storage'
+import { storageGet } from '@/lib/storage/storage'
+import { STORAGE_KEY_USER_CONF_INFO } from '@/lib/storage/keys'
 import { useRootStore } from '@/stores'
 import { onBackendLogout } from '@/hooks/use-logout'
 
@@ -99,7 +100,7 @@ class UserStore {
 
     // 初始化设置默认当前账号信息
     const localAccountId =
-      stores.trade.currentAccountInfo?.id || (await STORAGE_GET_CONF_INFO(`currentAccountInfo`))?.id
+      stores.trade.currentAccountInfo?.id || storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO)?.currentAccountInfo?.id
     // const hasAccount = (currentUser?.accountList || []).filter((v) => !v.isSimulate).some((item) => item.id === localAccountId)
     const hasAccount = (currentUser?.accountList || []).some((item) => item.id === localAccountId)
     // 本地不存在账号或本地存在账号但不在登录返回的accountList中，需重新设置默认值，避免切换不同账号登录使用上一次缓存

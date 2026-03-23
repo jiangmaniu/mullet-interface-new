@@ -1,4 +1,4 @@
-import { mmkv } from './mmkv'
+import { storageGet, storageSet, storageRemove } from './storage'
 import { STORAGE_KEY_SNAPSHOT_QUOTE, STORAGE_KEY_SNAPSHOT_SYMBOL, STORAGE_KEY_ROOT_STORE } from './keys'
 
 const SNAPSHOT_KEYS = {
@@ -8,28 +8,20 @@ const SNAPSHOT_KEYS = {
 
 type SnapshotKey = keyof typeof SNAPSHOT_KEYS
 
-/** 写入快照（序列化为 JSON 字符串存入 MMKV） */
+/** 写入快照 */
 export function saveSnapshot<T>(key: SnapshotKey, data: T): void {
-  try {
-    mmkv.set(SNAPSHOT_KEYS[key], JSON.stringify(data))
-  } catch {}
+  storageSet(SNAPSHOT_KEYS[key], data)
 }
 
 /** 读取快照，失败或不存在时返回 null */
 export function loadSnapshot<T>(key: SnapshotKey): T | null {
-  try {
-    const raw = mmkv.getString(SNAPSHOT_KEYS[key])
-    if (!raw) return null
-    return JSON.parse(raw) as T
-  } catch {
-    return null
-  }
+  return storageGet<T>(SNAPSHOT_KEYS[key])
 }
 
 /** 清除所有快照 */
 export function clearAllSnapshots(): void {
-  mmkv.remove(STORAGE_KEY_SNAPSHOT_QUOTE)
-  mmkv.remove(STORAGE_KEY_SNAPSHOT_SYMBOL)
+  storageRemove(STORAGE_KEY_SNAPSHOT_QUOTE)
+  storageRemove(STORAGE_KEY_SNAPSHOT_SYMBOL)
 }
 
 /**
@@ -37,11 +29,7 @@ export function clearAllSnapshots(): void {
  * 用于"清除缓存"场景，不强制退出登录
  */
 export function clearStoreKeepAuth(): void {
-  try {
-    const raw = mmkv.getString(STORAGE_KEY_ROOT_STORE)
-    if (!raw) return
-    const parsed = JSON.parse(raw)
-    const preserved = { state: { user: { auth: parsed?.state?.user?.auth } } }
-    mmkv.set(STORAGE_KEY_ROOT_STORE, JSON.stringify(preserved))
-  } catch {}
+  const parsed = storageGet<any>(STORAGE_KEY_ROOT_STORE)
+  if (!parsed) return
+  storageSet(STORAGE_KEY_ROOT_STORE, { state: { user: { auth: parsed?.state?.user?.auth } } })
 }

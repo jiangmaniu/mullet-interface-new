@@ -8,12 +8,12 @@ import { useRootStore } from '@/stores'
 import { WEBVIEW_AUTHRORIZATION_URI } from '@/v1/constants'
 import { getEnv } from '@/v1/env'
 
+import { storageGet } from '@/lib/storage/storage'
 import {
-  STORAGE_GET_AUTHORIZED,
-  STORAGE_REMOVE_AUTHORIZED,
-  STORAGE_REMOVE_CONF_INFO,
-  STORAGE_REMOVE_ENV,
-} from './storage'
+  STORAGE_KEY_AUTHORIZED,
+  STORAGE_KEY_USER_CONF_INFO,
+  STORAGE_KEY_ENV,
+} from '@/lib/storage/keys'
 
 // v1 路由名称到 expo-router 路径的映射
 const routeMap: Record<string, string> = {
@@ -83,7 +83,7 @@ async function formatUrl(url: string, params?: any) {
   const locale = 'zh-TW'
   const _uri = `${ORIGIN_WAPURL}/${locale}${WEBVIEW_AUTHRORIZATION_URI}`
 
-  const authorized = await STORAGE_GET_AUTHORIZED()
+  const authorized = storageGet(STORAGE_KEY_AUTHORIZED)
   switch (res.url) {
     case 'H5_PaymentRecord':
       res.url = 'Webview'

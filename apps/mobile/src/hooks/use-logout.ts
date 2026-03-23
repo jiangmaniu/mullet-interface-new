@@ -3,7 +3,8 @@ import { router } from 'expo-router'
 
 import { useAppKit } from '@/lib/appkit'
 import { useRootStore } from '@/stores'
-import { STORAGE_REMOVE_AUTHORIZED, STORAGE_REMOVE_CONF_INFO, STORAGE_REMOVE_ENV } from '@/v1/utils/storage'
+import { storageRemove } from '@/lib/storage/storage'
+import { STORAGE_KEY_AUTHORIZED, STORAGE_KEY_USER_CONF_INFO, STORAGE_KEY_ENV } from '@/lib/storage/keys'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseClearAuthDataReturn {
@@ -35,9 +36,9 @@ export function useClearAuthData(): UseClearAuthDataReturn {
       // 清除 redirectTo，防止重新登录后跳转回退出前的页面
       useRootStore.getState().user.auth.setAuth({ redirectTo: undefined })
 
-      await STORAGE_REMOVE_CONF_INFO()
-      await STORAGE_REMOVE_ENV()
-      await STORAGE_REMOVE_AUTHORIZED()
+      storageRemove(STORAGE_KEY_USER_CONF_INFO)
+      storageRemove(STORAGE_KEY_ENV)
+      storageRemove(STORAGE_KEY_AUTHORIZED)
 
       // 并行执行所有退出操作
       const results = await Promise.allSettled([
@@ -106,12 +107,11 @@ export const onBackendLogout = async () => {
   // 清除 redirectTo，防止重新登录后跳转回退出前的页面
   useRootStore.getState().user.auth.setAuth({ redirectTo: undefined })
 
-  await Promise.all([
-    STORAGE_REMOVE_CONF_INFO(),
-    STORAGE_REMOVE_ENV(),
-    STORAGE_REMOVE_AUTHORIZED(),
-    useRootStore.getState().user.auth.logout(),
-  ])
+  storageRemove(STORAGE_KEY_USER_CONF_INFO)
+  storageRemove(STORAGE_KEY_ENV)
+  storageRemove(STORAGE_KEY_AUTHORIZED)
+
+  await useRootStore.getState().user.auth.logout()
 
   router.replace('/login')
 }

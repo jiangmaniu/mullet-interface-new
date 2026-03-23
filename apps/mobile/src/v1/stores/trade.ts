@@ -19,19 +19,16 @@ import { getAllSymbols } from '@/v1/services/tradeCore/symbol'
 import { toFixed, uniqueObjectArray } from '@/v1/utils'
 import { message } from '@/v1/utils/message'
 import { push } from '@/v1/utils/navigation'
+import { storageGet, storageSet, storageRemove } from '@/lib/storage/storage'
+import lodashGet from 'lodash-es/get'
+import lodashSet from 'lodash-es/set'
 import {
-  STORAGE_GET_CONF_INFO,
-  STORAGE_GET_HISTORY_SEARCH,
-  STORAGE_GET_ORDER_CONFIRM_CHECKED,
-  STORAGE_GET_POSITION_CONFIRM_CHECKED,
-  STORAGE_GET_QUICK_PLACE_ORDER_CHECKED,
-  STORAGE_REMOVE_HISTORY_SEARCH,
-  STORAGE_SET_CONF_INFO,
-  STORAGE_SET_HISTORY_SEARCH,
-  STORAGE_SET_ORDER_CONFIRM_CHECKED,
-  STORAGE_SET_POSITION_CONFIRM_CHECKED,
-  STORAGE_SET_QUICK_PLACE_ORDER_CHECKED,
-} from '@/v1/utils/storage'
+  STORAGE_KEY_USER_CONF_INFO,
+  STORAGE_KEY_HISTORY_SEARCH,
+  STORAGE_KEY_ORDER_CONFIRM_CHECKED,
+  STORAGE_KEY_POSITION_CONFIRM_CHECKED,
+  STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED,
+} from '@/lib/storage/keys'
 import {
   subscribePendingSymbol,
   subscribePositionSymbol,
@@ -171,14 +168,14 @@ class TradeStore {
 
     // this.watchPositionsProfit()
 
-    const localOrderQuickPlaceOrderChecked = await STORAGE_GET_QUICK_PLACE_ORDER_CHECKED()
-    const localOrderConfirmChecked = await STORAGE_GET_ORDER_CONFIRM_CHECKED()
-    const localPositionConfirmChecked = await STORAGE_GET_POSITION_CONFIRM_CHECKED()
+    const localOrderQuickPlaceOrderChecked = storageGet<boolean>(STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED)
+    const localOrderConfirmChecked = storageGet<boolean>(STORAGE_KEY_ORDER_CONFIRM_CHECKED)
+    const localPositionConfirmChecked = storageGet<boolean>(STORAGE_KEY_POSITION_CONFIRM_CHECKED)
     this.orderQuickPlaceOrderChecked =
       localOrderQuickPlaceOrderChecked !== null ? localOrderQuickPlaceOrderChecked : false
     this.orderConfirmChecked = localOrderConfirmChecked !== null ? localOrderConfirmChecked : true
     this.positionConfirmChecked = localPositionConfirmChecked !== null ? localPositionConfirmChecked : true
-    this.historySearchList = (await STORAGE_GET_HISTORY_SEARCH()) || []
+    this.historySearchList = storageGet<any[]>(STORAGE_KEY_HISTORY_SEARCH) || []
   }
 
   // 监听 positionList 中任何 profit 的变化
@@ -220,12 +217,12 @@ class TradeStore {
       list = list.slice(0, 15)
     }
     this.historySearchList = list
-    STORAGE_SET_HISTORY_SEARCH(list)
+    storageSet(STORAGE_KEY_HISTORY_SEARCH, list)
   }
   // 清空搜索记录
   removeHistorySearch = () => {
     this.historySearchList = []
-    STORAGE_REMOVE_HISTORY_SEARCH()
+    storageRemove(STORAGE_KEY_HISTORY_SEARCH)
   }
 
   // =========== 设置交易区操作 ==========
@@ -300,21 +297,21 @@ class TradeStore {
   setOrderQuickPlaceOrderChecked = (flag: boolean) => {
     this.orderQuickPlaceOrderChecked = flag
 
-    STORAGE_SET_QUICK_PLACE_ORDER_CHECKED(flag)
+    storageSet(STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED, flag)
   }
 
   // 下单二次确认弹窗-不在提醒
   setOrderConfirmChecked = (flag: boolean) => {
     this.orderConfirmChecked = flag
 
-    STORAGE_SET_ORDER_CONFIRM_CHECKED(flag)
+    storageSet(STORAGE_KEY_ORDER_CONFIRM_CHECKED, flag)
   }
 
   // 平仓二次确认弹窗-不在提醒
   setPositionConfirmChecked = (flag: boolean) => {
     this.positionConfirmChecked = flag
 
-    STORAGE_SET_POSITION_CONFIRM_CHECKED(flag)
+    storageSet(STORAGE_KEY_POSITION_CONFIRM_CHECKED, flag)
   }
 
   // 止盈 --- 按价格止盈、金额止盈
@@ -412,7 +409,9 @@ class TradeStore {
     this.currentAccountInfo = info || {}
 
     // 缓存当前账号
-    await STORAGE_SET_CONF_INFO(info, `currentAccountInfo`)
+    const _confForAccount = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
+    lodashSet(_confForAccount, 'currentAccountInfo', info)
+    storageSet(STORAGE_KEY_USER_CONF_INFO, _confForAccount)
 
     this.reloadAfterAccountChange()
 
@@ -626,7 +625,7 @@ class TradeStore {
     // this.openSymbolNameList = STORAGE_GET_SYMBOL_NAME_LIST() || []
     // this.activeSymbolName = STORAGE_GET_ACTIVE_SYMBOL_NAME()
 
-    const userConfInfo = ((await STORAGE_GET_CONF_INFO()) || {}) as UserConfInfo
+    const userConfInfo = (storageGet<UserConfInfo>(STORAGE_KEY_USER_CONF_INFO) || {}) as UserConfInfo
     this.currentAccountInfo = (userConfInfo?.currentAccountInfo || {}) as User.AccountItem
     const accountId = this.currentAccountInfo?.id
     const currentAccountConf = accountId ? userConfInfo?.[accountId] : {}
@@ -705,7 +704,9 @@ class TradeStore {
     // console.log('切换当前打开的symbol', key)
     this.activeSymbolName = key
     // STORAGE_SET_ACTIVE_SYMBOL_NAME(key)
-    await STORAGE_SET_CONF_INFO(key, `${this.currentAccountInfo?.id}.activeSymbolName`)
+    const _confForActive = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
+    lodashSet(_confForActive, `${this.currentAccountInfo?.id}.activeSymbolName`, key)
+    storageSet(STORAGE_KEY_USER_CONF_INFO, _confForActive)
 
     // 重新订阅深度
     stores.ws.subscribeDepth(this.symbolMapAll?.[key])
@@ -714,10 +715,9 @@ class TradeStore {
   // 更新本地缓存的symbol列表
   @action updateLocalOpenSymbolNameList = () => {
     // STORAGE_SET_SYMBOL_NAME_LIST(this.openSymbolNameList)
-    STORAGE_SET_CONF_INFO(
-      this.openSymbolNameList.filter((v) => v),
-      `${this.currentAccountInfo?.id}.openSymbolNameList`,
-    )
+    const _confForSymbol = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
+    lodashSet(_confForSymbol, `${this.currentAccountInfo?.id}.openSymbolNameList`, this.openSymbolNameList.filter((v) => v))
+    storageSet(STORAGE_KEY_USER_CONF_INFO, _confForSymbol)
   }
 
   // =========== 收藏、取消收藏 ==============
@@ -832,7 +832,8 @@ class TradeStore {
     if (params.classify === '0') {
       delete params.classify
     }
-    const cacheSymbolList = (await STORAGE_GET_CONF_INFO(`${this.currentAccountInfo?.id}.symbolList`)) || []
+    const _confForSymbolList = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
+    const cacheSymbolList = lodashGet(_confForSymbolList, `${this.currentAccountInfo?.id}.symbolList`) || []
     // 如果缓存有优先取一次缓存的展示
 
     if (
@@ -866,7 +867,9 @@ class TradeStore {
             this.symbolMapAll = keyBy(resSymbolList, 'symbol') // 缓存全部品种列表的map
 
             // 缓存当前账号的品种列表
-            STORAGE_SET_CONF_INFO(resSymbolList, `${this.currentAccountInfo?.id}.symbolList`)
+            const _confForRes = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
+            lodashSet(_confForRes, `${this.currentAccountInfo?.id}.symbolList`, resSymbolList)
+            storageSet(STORAGE_KEY_USER_CONF_INFO, _confForRes)
           }
 
           // 切换accountId后请求的品种列表可能不一致，设置第一个默认的品种名称

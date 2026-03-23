@@ -1,7 +1,8 @@
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { Config } from '@/v1/platform/config'
 import { isDomainAvailable } from '@/v1/utils/dns'
-import { STORAGE_GET_ENV, STORAGE_SET_ENV } from '@/v1/utils/storage'
+import { storageGet, storageSet } from '@/lib/storage/storage'
+import { STORAGE_KEY_ENV } from '@/lib/storage/keys'
 
 export type IEnv = typeof Config & {
   baseURL: string
@@ -39,7 +40,7 @@ export const getEnv = async (): Promise<IEnv> => {
 
   try {
     // 尝试从本地存储获取覆盖配置
-    const data = (await STORAGE_GET_ENV()) || {}
+    const data = storageGet<Record<string, any>>(STORAGE_KEY_ENV) || {}
     env = {
       ...env,
       ...data,
@@ -72,7 +73,7 @@ export const setEnv = async (data: any) => {
       ...data,
       updateTime: Date.now(),
     }
-    await STORAGE_SET_ENV(env)
+    storageSet(STORAGE_KEY_ENV, env)
   } catch (e) {
     console.log('setEnv error:', e)
   }

@@ -1,7 +1,8 @@
 import { action, makeAutoObservable, observable, reaction } from 'mobx'
 import { hydrateStore } from 'mobx-persist-store'
 
-import { STORAGE_GET_ENV, STORAGE_GET_TRADER_SERVER } from '@/v1/utils/storage'
+import { storageGet } from '@/lib/storage/storage'
+import { STORAGE_KEY_ENV, STORAGE_KEY_TRADER_SERVER } from '@/lib/storage/keys'
 
 import { hydrateStores, stores } from '../provider/mobxProvider'
 import type { IStore, PVoid } from './types'
@@ -67,12 +68,12 @@ export class GlobalStore implements IStore {
 
   @action
   initServiceInfo = async () => {
-    this.currentServiceProvider = (await STORAGE_GET_TRADER_SERVER()) || {}
+    this.currentServiceProvider = (storageGet<User.ServiceProviderListItem>(STORAGE_KEY_TRADER_SERVER) || {}) as User.ServiceProviderListItem
   }
 
   // 初始化远程配置
   initRemoteConfig = async () => {
-    const urlInfo: any = await STORAGE_GET_ENV() // 初始化local中缓存的配置
+    const urlInfo: any = storageGet(STORAGE_KEY_ENV) // 初始化local中缓存的配置
     const updateTime = urlInfo?.updateTime
 
     // 拉取配置：缓存时间大于10分钟、初次载入

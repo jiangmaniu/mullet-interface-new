@@ -9,7 +9,8 @@ import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
 
-import { STORAGE_GET_TRADER_SERVER } from './storage'
+import { storageGet } from '@/lib/storage/storage'
+import { STORAGE_KEY_TRADER_SERVER } from '@/lib/storage/keys'
 
 // 全局请求管理器
 const pendingRequests = new Map<string, AbortController>()
@@ -301,7 +302,7 @@ export const request = <T = any>(url: string, config?: IRequestConfig): Promise<
     try {
       const ENVS = await getEnv()
       // console.log('ENVS:', ENVS)
-      const serviceProvider = (await STORAGE_GET_TRADER_SERVER()) as User.ServiceProviderListItem
+      const serviceProvider = storageGet<User.ServiceProviderListItem>(STORAGE_KEY_TRADER_SERVER)
       const baseURL = config?.baseURL || serviceProvider?.serviceUrl || ENVS.baseURL
       const withoutProxy = ENVS.WITHOUT_PROXY || false
 

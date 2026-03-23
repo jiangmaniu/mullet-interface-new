@@ -4,7 +4,8 @@ import type { WebView } from 'react-native-webview'
 
 import { useAppState } from '@/hooks/use-app-state'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { STORAGE_GET_TRADINGVIEW_RELOAD_TIME, STORAGE_SET_TRADINGVIEW_RELOAD_TIME } from '@/v1/utils/storage'
+import { storageGet, storageSet } from '@/lib/storage/storage'
+import { STORAGE_KEY_TRADINGVIEW_RELOAD_TIME } from '@/lib/storage/keys'
 import { BridgeIncoming } from '@mullet/trading-view'
 
 import { buildSymbolInfo, RELOAD_THRESHOLD } from '../utils'
@@ -38,7 +39,7 @@ export function useWebviewLifecycle(
   }, [symbolName, symbolItem, accountGroupId, env, webviewRef])
 
   const handleForeground = useCallback(async () => {
-    const shouldReload = await checkShouldReload()
+    const shouldReload = checkShouldReload()
     if (shouldReload) {
       webviewRef.current?.reload()
     } else if (env && symbolItem) {
@@ -52,17 +53,17 @@ export function useWebviewLifecycle(
   }, [env, symbolItem, accountGroupId, webviewRef])
 
   const handleBackground = useCallback(() => {
-    STORAGE_SET_TRADINGVIEW_RELOAD_TIME(Date.now())
+    storageSet(STORAGE_KEY_TRADINGVIEW_RELOAD_TIME, Date.now())
   }, [])
 
   useAppState(handleForeground, handleBackground)
 }
 
-async function checkShouldReload(): Promise<boolean> {
-  const lastTime = await STORAGE_GET_TRADINGVIEW_RELOAD_TIME()
-  const elapsed = lastTime ? Date.now() - Number(lastTime) : Infinity
+function checkShouldReload(): boolean {
+  const lastTime = storageGet<number>(STORAGE_KEY_TRADINGVIEW_RELOAD_TIME)
+  const elapsed = lastTime ? Date.now() - lastTime : Infinity
   if (elapsed > RELOAD_THRESHOLD) {
-    STORAGE_SET_TRADINGVIEW_RELOAD_TIME(Date.now())
+    storageSet(STORAGE_KEY_TRADINGVIEW_RELOAD_TIME, Date.now())
     return true
   }
   return false
