@@ -4,7 +4,7 @@ import type {
   IBasicDataFeed,
   LibrarySymbolInfo,
   ResolutionString,
-  SearchSymbolResultItem,
+  SearchSymbolResultItem
 } from 'public/static/charting_library'
 
 import { BridgeOutgoing, type WebToAppMessage } from '@/bridge/types'
@@ -42,7 +42,7 @@ export function createBridgeDatafeed(
     supports_timescale_marks: true,
     supports_marks: true,
     supported_resolutions: SUPPORTED_RESOLUTIONS,
-    intraday_multipliers: INTRADAY_MULTIPLIERS,
+    intraday_multipliers: INTRADAY_MULTIPLIERS
   } as unknown as DatafeedConfiguration
 
   return {
@@ -50,11 +50,7 @@ export function createBridgeDatafeed(
       setTimeout(() => callback(configuration), 0)
     },
 
-    resolveSymbol(
-      symbolName: string,
-      onResolve: (symbol: LibrarySymbolInfo) => void,
-      onError: (reason: string) => void
-    ) {
+    resolveSymbol(symbolName: string, onResolve: (symbol: LibrarySymbolInfo) => void, onError: (reason: string) => void) {
       symbolProvider
         .resolveAsync(symbolName)
         .then((info) => {
@@ -77,7 +73,7 @@ export function createBridgeDatafeed(
             format: 'price',
             minmov: 1,
             pricescale: Math.pow(10, info.precision ?? 2),
-            ticker: info.exchange ?? info.name,
+            ticker: info.name
           } as LibrarySymbolInfo
 
           setTimeout(() => onResolve(symbolInfo), 0)
@@ -87,12 +83,7 @@ export function createBridgeDatafeed(
         })
     },
 
-    searchSymbols(
-      _userInput: string,
-      _exchange: string,
-      _symbolType: string,
-      onResult: (result: SearchSymbolResultItem[]) => void
-    ) {
+    searchSymbols(_userInput: string, _exchange: string, _symbolType: string, onResult: (result: SearchSymbolResultItem[]) => void) {
       // Bridge 模式下搜索由 App 端处理，WebView 不支持
       setTimeout(() => onResult([]), 0)
     },
@@ -106,15 +97,12 @@ export function createBridgeDatafeed(
     ) {
       const { from, to, firstDataRequest, countBack } = periodParams
       quoteStore.setActiveSymbolInfo({ symbolInfo, resolution })
-      historyProvider.getBars(
-        { symbolInfo, resolution, from, to, countBack, firstDataRequest },
-        (bars, meta) => {
-          if (firstDataRequest && bars.length > 0) {
-            quoteStore.setLastbar(bars[bars.length - 1])
-          }
-          onResult(bars, meta)
+      historyProvider.getBars({ symbolInfo, resolution, from, to, countBack, firstDataRequest }, (bars, meta) => {
+        if (firstDataRequest && bars.length > 0) {
+          quoteStore.setLastbar(bars[bars.length - 1])
         }
-      )
+        onResult(bars, meta)
+      })
     },
 
     subscribeBars(
@@ -129,11 +117,11 @@ export function createBridgeDatafeed(
         resolution,
         onRealtimeCallback,
         subscriberUID,
-        onResetCacheNeededCallback,
+        onResetCacheNeededCallback
       })
       postToApp({
         type: BridgeOutgoing.Subscribe,
-        payload: { symbol: symbolInfo.name },
+        payload: { symbol: symbolInfo.name }
       })
     },
 
@@ -141,8 +129,8 @@ export function createBridgeDatafeed(
       quoteStore.removeActiveSymbol(subscriberUID)
       postToApp({
         type: BridgeOutgoing.Unsubscribe,
-        payload: { symbol: subscriberUID },
+        payload: { symbol: subscriberUID }
       })
-    },
+    }
   }
 }

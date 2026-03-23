@@ -36,6 +36,24 @@ class QuoteStore {
     }
   }
 
+  /** 将时间戳（毫秒）对齐到指定 resolution 的周期起点（毫秒） */
+  private alignTime(timeMs: number, resolution: string): number {
+    if (String(resolution).includes('D')) {
+      return dayjs.utc(timeMs).startOf('day').valueOf()
+    }
+    if (String(resolution).includes('W')) {
+      return dayjs.utc(timeMs).day(0).startOf('day').valueOf()
+    }
+    if (String(resolution).includes('M')) {
+      return dayjs.utc(timeMs).date(1).startOf('day').valueOf()
+    }
+    if (!isNaN(Number(resolution))) {
+      const coeff = Number(resolution) * 60 * 1000
+      return Math.floor(timeMs / coeff) * coeff
+    }
+    return timeMs
+  }
+
   /** 更新最后一条 K 线 Bar */
   @action
   updateBar = (socketData: QuoteTick, currentSymbol: { resolution: string; precision: number }) => {
@@ -43,53 +61,29 @@ class QuoteStore {
     const lastBar = this.lastbar
     if (!lastBar?.time) return null
 
-    let resolution: string | number = currentSymbol.resolution
-    let rounded = socketData.t
-
+    const resolution = currentSymbol.resolution
     if (!resolution) return null
 
-    if (!isNaN(Number(resolution)) || String(resolution).includes('D')) {
-      if (String(resolution).includes('D')) {
-        resolution = 1440
-      }
-      const coeff = Number(resolution) * 60
-      rounded = Math.floor(socketData.t / coeff) * coeff
-    } else if (String(resolution).includes('W')) {
-      rounded =
-        dayjs(socketData.t * 1000)
-          .day(0)
-          .hour(0)
-          .minute(0)
-          .second(0)
-          .millisecond(0)
-          .valueOf() / 1000
-    } else if (String(resolution).includes('M')) {
-      rounded =
-        dayjs(socketData.t * 1000)
-          .date(1)
-          .hour(0)
-          .minute(0)
-          .second(0)
-          .millisecond(0)
-          .valueOf() / 1000
-    }
+    // 将 tick 时间和 lastbar 时间都按当前 resolution 对齐
+    // 解决切换周期后 lastbar 来自不同 resolution 导致时间不匹配的问题
+    const rounded = this.alignTime(socketData.t * 1000, resolution)
+    const alignedLastBar = this.alignTime(lastBar.time, resolution)
 
-    const lastBarSec = lastBar.time / 1000
-    if (rounded > lastBarSec) {
+    if (rounded > alignedLastBar) {
       return {
-        time: rounded * 1000,
+        time: rounded,
         open: NP.round(socketData.b, precision),
         high: NP.round(socketData.b, precision),
         low: NP.round(socketData.b, precision),
-        close: NP.round(socketData.b, precision),
+        close: NP.round(socketData.b, precision)
       }
     } else {
       return {
-        time: lastBar.time,
+        time: rounded,
         open: lastBar.open,
         high: NP.round(Math.max(lastBar.high, socketData.b), precision),
         low: NP.round(Math.min(lastBar.low, socketData.b), precision),
-        close: NP.round(socketData.b, precision),
+        close: NP.round(socketData.b, precision)
       }
     }
   }
@@ -99,7 +93,7 @@ class QuoteStore {
   setActiveSymbolInfo = (data: Record<string, unknown>) => {
     this.activeSymbolInfo = {
       ...this.activeSymbolInfo,
-      ...data,
+      ...data
     }
   }
 
