@@ -1,5 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
@@ -14,15 +14,21 @@ import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { useVersionCheck } from '@/hooks/use-version-check'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useAppUpdateStore } from '@/stores/app-update'
+import { clearAppCache, getCacheSize } from '@/lib/storage/cache'
 
 import { ClearCacheModal } from './_comps/clear-cache-modal'
 
 export default function AboutScreen() {
   const router = useRouter()
   const { textColorContent4 } = useThemeColors()
-  const [cacheSize, setCacheSize] = useState('137.97MB')
+  const [cacheSize, setCacheSize] = useState('-')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
+
+  // 页面加载时读取真实缓存大小
+  useEffect(() => {
+    getCacheSize().then(setCacheSize)
+  }, [])
 
   const { checkUpdate } = useVersionCheck()
   const hasUpdate = useAppUpdateStore((s) => s.hasUpdate)
@@ -47,10 +53,15 @@ export default function AboutScreen() {
     }
   }, [checkUpdate])
 
-  const handleClearCache = useCallback(() => {
+  const handleClearCache = useCallback(async () => {
     setClearCacheVisible(false)
-    setCacheSize('0.00MB')
-    toast.success('成功清除缓存')
+    try {
+      await clearAppCache()
+      setCacheSize('0.00 B')
+      toast.success('成功清除缓存')
+    } catch {
+      toast.error('清除缓存失败')
+    }
   }, [])
 
   const handleConfirmUpdate = useCallback(() => {

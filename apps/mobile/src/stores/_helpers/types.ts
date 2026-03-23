@@ -34,56 +34,53 @@ export type SliceCreator<TState, TSlice> = (
 ) => TSlice
 
 /**
- * 生成对象所有链式 key 路径
- * 只展开纯对象类型，数组/函数等不展开
+ * 按链式 key 路径从 state 中取出指定字段，生成白名单 partialize 函数
+ * 只有传入的路径对应的字段才会被持久化，其余字段默认不持久化
  *
  * @example
- * type State = { trade: { setting: { colorScheme: string }, formData: { limitPrice: string } } }
- * type Keys = DotPaths<State>
- * // 'trade' | 'trade.setting' | 'trade.setting.colorScheme' | 'trade.formData' | 'trade.formData.limitPrice'
- */
-type DotPaths<T, Prefix extends string = ''> = {
-  [K in keyof T & string]: T[K] extends (...args: any[]) => any
-    ? never
-    : T[K] extends Record<string, any>
-      ? T[K] extends any[]
-        ? `${Prefix}${K}`
-        : `${Prefix}${K}` | DotPaths<T[K], `${Prefix}${K}.`>
-      : `${Prefix}${K}`
-}[keyof T & string]
-
-/**
- * 根据链式 key 路径从类型中排除指定字段
- * 支持排除整个命名空间或具体字段
- */
-type OmitByPath<T, Path extends string> =
-  Path extends `${infer K}.${infer Rest}`
-    ? K extends keyof T
-      ? { [P in keyof T]: P extends K ? OmitByPath<T[P], Rest> : T[P] }
-      : T
-    : Omit<T, Path>
-
-/**
- * 从 state 中按链式 key 路径排除字段，生成 partialize 函数
- * 排除的字段不会被持久化
- *
- * @example
- * createPartialize<RootStoreState>('trade.formData', 'market.fetchMarketListLoading')
+ * createPartialize<RootStoreState>('market.favorite', 'trade.setting', 'user.info')
  */
 export function createPartialize<T extends Record<string, any>>(
   ...paths: string[]
 ) {
   return (state: T): any => {
-    // 深拷贝状态（只拷贝纯数据，跳过函数）
-    const cloned = deepCloneData(state)
+    const result: Record<string, any> = {}
 
-    // 按路径删除指定字段
     for (const path of paths) {
-      deletePath(cloned, path)
+      // 从 state 中按路径读取值
+      const value = getPath(state, path)
+      if (value === undefined) continue
+
+      // 按路径写入 result（深拷贝数据，跳过函数）
+      setPath(result, path, deepCloneData(value))
     }
 
-    return cloned
+    return result
   }
+}
+
+/** 按链式路径读取对象属性 */
+function getPath(obj: any, path: string): any {
+  return path.split('.').reduce((cur, key) => {
+    if (cur == null || typeof cur !== 'object') return undefined
+    return cur[key]
+  }, obj)
+}
+
+/** 按链式路径写入对象属性（自动创建中间节点） */
+function setPath(obj: any, path: string, value: any) {
+  const keys = path.split('.')
+  let current = obj
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i]
+    if (current[key] == null || typeof current[key] !== 'object') {
+      current[key] = {}
+    }
+    current = current[key]
+  }
+
+  current[keys[keys.length - 1]] = value
 }
 
 /** 深拷贝数据字段，跳过函数 */
@@ -100,19 +97,4 @@ function deepCloneData(obj: any): any {
     }
   }
   return result
-}
-
-/** 按链式路径删除对象属性 */
-function deletePath(obj: any, path: string) {
-  const keys = path.split('.')
-  let current = obj
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    if (current == null || typeof current !== 'object') return
-    current = current[keys[i]]
-  }
-
-  if (current != null && typeof current === 'object') {
-    delete current[keys[keys.length - 1]]
-  }
 }

@@ -6,6 +6,7 @@ import type { RootStoreState } from '../index'
 
 import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
+import { loadSnapshot, saveSnapshot } from '@/lib/storage/snapshot'
 
 import { useRootStore } from '../index'
 
@@ -29,10 +30,15 @@ export type MarketSymbolSlice = MarketSymbolSliceState & MarketSymbolSliceAction
 
 // ============ 工厂函数 ============
 
-export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolSlice> = (set, get) => ({
-  loading: false,
-  infoMap: {},
-  infoList: [],
+export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolSlice> = (set, get) => {
+  // 启动时从快照恢复品种列表，避免首次进入时无数据
+  const snapshotList = loadSnapshot<Account.TradeSymbolListItem[]>('symbol') ?? []
+  const snapshotInfoMap = snapshotList.length ? keyBy<Account.TradeSymbolListItem>(snapshotList, 'symbol') : {}
+
+  return {
+    loading: false,
+    infoMap: snapshotInfoMap,
+    infoList: snapshotList,
 
   fetchInfoList: async (accountId?: string) => {
     if (!get().market.symbol.infoList.length) {
@@ -53,6 +59,9 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
           state.market.symbol.infoMap = infoMap
         })
 
+        // 拉取成功后存快照，下次启动可立即显示
+        saveSnapshot('symbol', list)
+
         const activeTradeSymbol = get().trade.activeTradeSymbol
         if (!activeTradeSymbol || !infoMap[activeTradeSymbol]) {
           get().trade.setActiveTradeSymbol(list[0]?.symbol)
@@ -66,7 +75,8 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
       })
     }
   },
-})
+  }
+}
 
 // ============ Selectors ============
 

@@ -7,6 +7,7 @@ import type { TradeSlice } from './trade-slice'
 import type { UserSlice } from './user-slice'
 
 import { mmkvStorage } from '@/lib/storage/mmkv'
+import { STORAGE_KEY_ROOT_STORE } from '@/lib/storage/keys'
 
 import { createSelectors } from './_helpers/createSelectors'
 import { createPartialize } from './_helpers/types'
@@ -30,9 +31,25 @@ const useRootStoreBase = create<RootStoreState>()(
         user: createUserSlice(set, get, store),
       })),
       {
-        name: 'mullet-root-store',
+        name: STORAGE_KEY_ROOT_STORE,
         storage: createJSONStorage(() => mmkvStorage),
-        partialize: createPartialize<RootStoreState>('trade.formData', 'market.symbol.loading', 'trade.position', 'trade.order'),
+        // 白名单：只有列出的字段才会被 persist 持久化
+        // 行情/持仓/挂单等高频或启动后会重新拉取的数据，通过 snapshot 单独管理
+        partialize: createPartialize<RootStoreState>(
+          // ── user ──
+          'user.auth.accessToken',  // token（不含 redirectTo）
+          'user.auth.loginInfo',
+          'user.auth.loginType',
+          'user.info.activeTradeAccountId',
+          'user.info.clientInfo',
+          'user.info.accountList',
+          'user.info.accountMap',
+          // ── market ──
+          'market.favorite',        // 全命名空间
+          // ── trade ──
+          'trade.setting',          // 全命名空间
+          'trade.activeTradeSymbol',
+        ),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
       },

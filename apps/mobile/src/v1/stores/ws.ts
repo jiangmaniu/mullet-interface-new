@@ -23,6 +23,7 @@ import {
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { marketSymbolInfoMapSelector } from '@/stores/market-slice'
 import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
+import { saveSnapshot } from '@/lib/storage/snapshot'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -575,6 +576,12 @@ class WSStore {
 
   @action
   close = () => {
+    // 关闭前存一次行情快照，下次启动时可立即显示
+    const quoteMap = marketQuoteSliceSelector(useRootStore.getState()).quoteMap
+    if (Object.keys(quoteMap).length > 0) {
+      saveSnapshot('quote', quoteMap)
+    }
+
     // 关闭socket指令
     this.socket?.close?.()
     this.stopHeartbeat()

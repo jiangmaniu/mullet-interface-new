@@ -3,6 +3,7 @@ import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
 import { IQuoteItem } from '@/v1/stores/ws'
+import { loadSnapshot } from '@/lib/storage/snapshot'
 
 interface MarketQuoteSliceState {
   /** 行情信息 Map */
@@ -18,7 +19,8 @@ export type MarketQuoteSlice = MarketQuoteSliceState & MarketQuoteSliceActions
 
 export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSlice> = (set, get) => {
   const marketQuoteState: MarketQuoteSliceState = {
-    quoteMap: {},
+    // 启动时从快照恢复，让用户进来时立即有数据可显示
+    quoteMap: loadSnapshot<Record<string, IQuoteItem>>('quote') ?? {},
   }
 
   const marketQuoteAction: MarketQuoteSliceActions = {
