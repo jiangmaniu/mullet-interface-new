@@ -1,5 +1,6 @@
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
 import { OrderCreateTypeEnum, OrderTypeEnum } from '@/options/trade/order'
+import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { t } from '@lingui/core/macro'
 import { BNumber } from '@mullet/utils/number'
@@ -7,7 +8,7 @@ import { BNumber } from '@mullet/utils/number'
 export type BuildOrderParamsInput = {
   accountId?: string
   symbol?: string
-  direction: ReturnType<typeof parseTradeDirectionInfo>['direction']
+  direction: TradePositionDirectionEnum
   amount: string
   orderType: OrderCreateTypeEnum
   limitPrice?: string
