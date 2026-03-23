@@ -1,13 +1,12 @@
 /**
- * MMKV 持久化缓存 key 统一定义（新架构）
+ * MMKV 持久化缓存 key 统一定义
  *
  * 命名规范：MULLET:{命名空间}:{具体含义}
- * v1 业务 key 继续沿用 v1/constants/storage.ts，不在此处定义
  */
 
 const PREFIX = 'MULLET'
 
-// ─── Zustand / Snapshot（新架构） ───────────────────────────────────────────
+// ─── Zustand / Snapshot ─────────────────────────────────────────────────────
 
 /** Zustand persist 根 store */
 export const STORAGE_KEY_ROOT_STORE = `${PREFIX}:STORE:ROOT`
@@ -29,3 +28,68 @@ export const STORAGE_CLEARABLE_KEYS = [
   STORAGE_KEY_ROOT_STORE,
   ...STORAGE_SNAPSHOT_KEYS,
 ] as const
+
+// ─── 业务 key ────────────────────────────────────────────────────────────────
+
+/** 账号密码 */
+export const STORAGE_KEY_ACCOUNT_PASSWORD = `${PREFIX}:ACCOUNT:PASSWORD`
+
+/** 打开的品种名称列表 */
+export const STORAGE_KEY_SYMBOL_NAME_LIST = `${PREFIX}:SYMBOL:NAME_LIST`
+
+/** 激活的品种名称 */
+export const STORAGE_KEY_ACTIVE_SYMBOL_NAME = `${PREFIX}:SYMBOL:ACTIVE_NAME`
+
+/** 收藏列表 */
+export const STORAGE_KEY_FAVORITE = `${PREFIX}:MARKET:FAVORITE`
+
+/** 按账户 id 存储的用户配置（自选、打开的品种列表、激活品种名称） */
+export const STORAGE_KEY_USER_CONF_INFO = `${PREFIX}:USER:CONF_INFO`
+
+/** 主题色 */
+export const STORAGE_KEY_THEME = `${PREFIX}:APP:THEME`
+
+/** 涨跌颜色方向（红涨绿跌 / 绿涨红跌） */
+export const STORAGE_KEY_DIRECTION = `${PREFIX}:APP:DIRECTION`
+
+/** 语言设置 */
+export const STORAGE_KEY_LNG = `${PREFIX}:APP:LNG`
+
+/** 是否点击过引导页 */
+export const STORAGE_KEY_GUIDE = `${PREFIX}:APP:GUIDE`
+
+/** 当前登录选择的交易商服务信息 */
+export const STORAGE_KEY_TRADER_SERVER = `${PREFIX}:AUTH:TRADER_SERVER`
+
+/** 快速下单选择状态 */
+export const STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED = `${PREFIX}:TRADE:QUICK_ORDER_CHECKED`
+
+/** 订单二次确认弹窗 */
+export const STORAGE_KEY_ORDER_CONFIRM_CHECKED = `${PREFIX}:TRADE:ORDER_CONFIRM_CHECKED`
+
+/** 平仓二次确认弹窗 */
+export const STORAGE_KEY_POSITION_CONFIRM_CHECKED = `${PREFIX}:TRADE:POSITION_CONFIRM_CHECKED`
+
+/** 当前选中的 tab */
+export const STORAGE_KEY_SELECTED_TAB = `${PREFIX}:APP:SELECTED_TAB`
+
+/** App 版本号 */
+export const STORAGE_KEY_APP_VERSION = `${PREFIX}:APP:VERSION`
+
+/** 历史搜索记录 */
+export const STORAGE_KEY_HISTORY_SEARCH = `${PREFIX}:APP:HISTORY_SEARCH`
+
+/** 环境配置 */
+export const STORAGE_KEY_ENV = `${PREFIX}:APP:ENV`
+
+/** TradingView 进入时间（用于强制 reload） */
+export const STORAGE_KEY_TRADINGVIEW_RELOAD_TIME = `${PREFIX}:APP:TRADINGVIEW_RELOAD_TIME`
+
+/** Webview 授权状态 */
+export const STORAGE_KEY_AUTHORIZED = `${PREFIX}:APP:WEBVIEW_AUTHORIZED`
+
+/** 定位信息 */
+export const STORAGE_KEY_LOCATION_INFO = `${PREFIX}:APP:LOCATION_INFO`
+
+/** 安卓隐私政策弹窗是否展示 */
+export const STORAGE_KEY_ANDROID_PRIVACY_MODAL = `${PREFIX}:APP:ANDROID_PRIVACY_MODAL`

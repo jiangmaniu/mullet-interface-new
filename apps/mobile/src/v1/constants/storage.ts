@@ -1,62 +1,24 @@
-import { NAMESPACE } from './config'
-
-// 本地存储-用户信息-键
-export const KEY_ACCOUNT_PASSWORD = NAMESPACE + '_' + 'account_password'
-
-// 打开的品种名称
-export const KEY_SYMBOL_NAME_LIST = NAMESPACE + '_' + 'open_symbol_name_list'
-export const KEY_ACTIVE_SYMBOL_NAME = NAMESPACE + '_' + 'active_symbol_name'
-
-// 收藏
-export const KEY_FAVORITE = NAMESPACE + '_' + 'favorite_list'
-
-// 按账户id储存用户的设置信息：自选、打开的品种列表、激活的品种名称
-export const KEY_USER_CONF_INFO = NAMESPACE + '_' + 'user_conf_info'
-
-// 当前切换的主题色
-export const KEY_THEME = NAMESPACE + '_' + 'theme'
-
-// 红涨绿跌、绿涨红跌方向
-export const KEY_DIRECTION = NAMESPACE + '_' + 'direction'
-
-// 是否点击过引导页
-export const KEY_GUIDE = NAMESPACE + '_' + 'guide'
-
-// 当前设置的语言
-export const KEY_LNG = NAMESPACE + '_' + 'lng'
-
-// 当前登录选择的交易商服务信息
-export const KEY_TRADER_SERVER = NAMESPACE + '_' + 'trader_server'
-
-// 快速下单选择状态
-export const KEY_QUICK_PLACE_ORDER_CHECKED = NAMESPACE + '_' + 'quick_place_order_checked'
-
-// 订单二次确认弹窗
-export const KEY_ORDER_CONFIRM_CHECKED = NAMESPACE + '_' + 'order_confirm_checked'
-
-// 平仓二次确认弹窗
-export const KEY_POSITION_CONFIRM_CHECKED = NAMESPACE + '_' + 'position_confirm_checked'
-
-// 当前选中的tab
-export const KEY_SELECTED_TAB = NAMESPACE + '_' + 'selected_tab'
-
-// app 版本号
-export const KEY_APP_VERSION = NAMESPACE + '_' + 'app_version'
-
-// 历史搜索记录
-export const KEY_HISTORY_SEARCH = NAMESPACE + '_' + 'history_search'
-
-// 环境配置
-export const KEY_ENV = NAMESPACE + '_' + 'envs'
-
-// 进入k线页面时间，用来强制reload k线，避免长时间不进入k线页面空白
-export const KEY_TRADINGVIEW_RELOAD_TIME = NAMESPACE + '_' + 'tradingview_reload_time'
-
-// 授权状态
-export const KEY_AUTHORIZED = NAMESPACE + '_' + 'webview_authorized'
-
-// 定位信息
-export const KEY_LOCATION_INFO = NAMESPACE + '_' + 'location_info'
-
-// 安卓隐私政策弹窗是否展示
-export const KEY_ANDROID_PRIVACY_MODAL = NAMESPACE + '_' + 'android_privacy_modal'
+// 已迁移至 lib/storage/keys.ts，此处保持兼容导出
+export {
+  STORAGE_KEY_ACCOUNT_PASSWORD as KEY_ACCOUNT_PASSWORD,
+  STORAGE_KEY_SYMBOL_NAME_LIST as KEY_SYMBOL_NAME_LIST,
+  STORAGE_KEY_ACTIVE_SYMBOL_NAME as KEY_ACTIVE_SYMBOL_NAME,
+  STORAGE_KEY_FAVORITE as KEY_FAVORITE,
+  STORAGE_KEY_USER_CONF_INFO as KEY_USER_CONF_INFO,
+  STORAGE_KEY_THEME as KEY_THEME,
+  STORAGE_KEY_DIRECTION as KEY_DIRECTION,
+  STORAGE_KEY_LNG as KEY_LNG,
+  STORAGE_KEY_GUIDE as KEY_GUIDE,
+  STORAGE_KEY_TRADER_SERVER as KEY_TRADER_SERVER,
+  STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED as KEY_QUICK_PLACE_ORDER_CHECKED,
+  STORAGE_KEY_ORDER_CONFIRM_CHECKED as KEY_ORDER_CONFIRM_CHECKED,
+  STORAGE_KEY_POSITION_CONFIRM_CHECKED as KEY_POSITION_CONFIRM_CHECKED,
+  STORAGE_KEY_SELECTED_TAB as KEY_SELECTED_TAB,
+  STORAGE_KEY_APP_VERSION as KEY_APP_VERSION,
+  STORAGE_KEY_HISTORY_SEARCH as KEY_HISTORY_SEARCH,
+  STORAGE_KEY_ENV as KEY_ENV,
+  STORAGE_KEY_TRADINGVIEW_RELOAD_TIME as KEY_TRADINGVIEW_RELOAD_TIME,
+  STORAGE_KEY_AUTHORIZED as KEY_AUTHORIZED,
+  STORAGE_KEY_LOCATION_INFO as KEY_LOCATION_INFO,
+  STORAGE_KEY_ANDROID_PRIVACY_MODAL as KEY_ANDROID_PRIVACY_MODAL,
+} from '@/lib/storage/keys'
