@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 import { Text } from './text'
 
 interface AnnouncementToastProps {
-  id: number
   title: string
   content: string
   toastId: string | number
@@ -22,7 +21,7 @@ interface AnnouncementToastProps {
  * - 支持点击跳转到通知详情
  * - 支持上、左、右滑动关闭
  */
-export function AnnouncementToast({ id, title, content, toastId }: AnnouncementToastProps) {
+export function AnnouncementToast({ title, content, toastId }: AnnouncementToastProps) {
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
 
@@ -86,7 +85,7 @@ export function AnnouncementToast({ id, title, content, toastId }: AnnouncementT
 
   const handlePress = () => {
     dismissToast()
-    router.push(`/notifications/detail?id=${id}`)
+    router.push('/notifications')
   }
 
   const handleClose = () => {

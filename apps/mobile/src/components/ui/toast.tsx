@@ -66,11 +66,11 @@ export const toast = Object.assign((config: ToastConfig) => renderToast(config),
   warning: (message: React.ReactNode, options?: ExternalToast) => renderToast({ type: 'warning', message, options }),
   error: (message: React.ReactNode, options?: ExternalToast) => renderToast({ type: 'error', message, options }),
   info: (message: React.ReactNode, options?: ExternalToast) => renderToast({ type: 'info', message, options }),
-  // 公告通知，支持滑动关闭和点击跳转详情
+  // 公告通知，支持滑动关闭和点击跳转通知列表
   announcement: (params: { id: number; title: string; content: string }, options?: ExternalToast) => {
     let resolvedId: string | number = ''
     const toastId = sonnerToast.custom(
-      <AnnouncementToast id={params.id} title={params.title} content={params.content} toastId={resolvedId} />,
+      <AnnouncementToast title={params.title} content={params.content} toastId={resolvedId} />,
       { ...options, duration: options?.duration ?? 5000, position: 'top-center' },
     )
     resolvedId = toastId
