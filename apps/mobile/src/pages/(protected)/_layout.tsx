@@ -1,7 +1,8 @@
-import { Initializer } from "@/components/initializer";
-import { LoginGuard } from "@/components/router-guard/login-guard";
-import { useAnnouncementListener } from "@/hooks/use-announcement-listener";
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
+
+import { Initializer } from '@/components/initializer'
+import { LoginGuard } from '@/components/router-guard/login-guard'
+import { useAnnouncementListener } from '@/hooks/use-announcement-listener'
 
 /** 登录后才监听公告推送 */
 function AnnouncementListener() {
@@ -19,11 +20,10 @@ export default function ProtectedLayout() {
           <Stack.Screen name="(assets)" />
           <Stack.Screen name="(trade)" />
           <Stack.Screen name="(home)" />
-          <Stack.Screen name="webview" />
+          <Stack.Screen name="webview/index" />
           <Stack.Screen name="symbol-selector" options={{ presentation: 'modal' }} />
         </Stack>
       </Initializer>
     </LoginGuard>
-
   )
 }
