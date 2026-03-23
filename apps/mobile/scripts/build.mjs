@@ -312,13 +312,19 @@ async function main() {
     {
       name: 'bumpVersion',
       type: 'select',
-      message: chalk.magentaBright(`是否修改版本号？`),
+      message: chalk.magentaBright(`是否修改版本号？(当前版本: ${currentVersion})`),
       choices: [
-        { name: `Skip (Current: ${currentVersion})`, value: 'skip' },
-        { name: `Patch ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'patch')})`)}`, value: 'patch' },
-        { name: `Minor ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'minor')})`)}`, value: 'minor' },
-        { name: `Major ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'major')})`)}`, value: 'major' },
-        { name: `Custom ${chalk.gray(`(x.x.x)`)}`, value: 'custom' },
+        { name: `跳过 ${chalk.gray(`(${currentVersion})`)}`, value: 'skip' },
+        { name: `补丁 ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'patch')})`)}`, value: 'patch' },
+        {
+          name: `小版本 ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'minor')})`)}`,
+          value: 'minor',
+        },
+        {
+          name: `大版本 ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'major')})`)}`,
+          value: 'major',
+        },
+        { name: `自定义版本号 ${chalk.gray(`(x.x.x)`)}`, value: 'custom' },
       ],
     },
   ])
