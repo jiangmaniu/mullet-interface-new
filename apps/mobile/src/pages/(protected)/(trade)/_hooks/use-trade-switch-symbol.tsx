@@ -1,6 +1,7 @@
 import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
+
+// import { subscribeCurrentAndPositionSymbol } from '@/v1/utils/wsUtil'
 
 export const useTradeSwitchActiveSymbol = () => {
   const { trade } = useStores()
@@ -8,7 +9,7 @@ export const useTradeSwitchActiveSymbol = () => {
   const switchTradeActiveSymbol = (symbol: string) => {
     useRootStore.getState().trade.setActiveTradeSymbol(symbol)
     switchSymbol(symbol)
-    subscribeCurrentAndPositionSymbol({ cover: true })
+    // subscribeCurrentAndPositionSymbol({ cover: true })
   }
 
   return { switchTradeActiveSymbol }

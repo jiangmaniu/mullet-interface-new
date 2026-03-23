@@ -1,10 +1,17 @@
+import { keyBy } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
-import { keyBy } from 'lodash-es'
-import { getOrderPage, formaOrderList } from '@/v1/services/tradeCore/order'
+import { parseTradePendingOrderInfo, TradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
+import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { formaOrderList, getOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import ws, { SymbolWSItem } from '@/v1/stores/ws'
 import { subscribePendingSymbol } from '@/v1/utils/wsUtil'
+
+import { useRootStore } from '../index'
+import { userInfoActiveTradeAccountInfoSelector } from '../user-slice/infoSlice'
+import { createPositionItemSelector } from './position-slice'
 
 // ============ 状态 & Actions 类型 ============
 
@@ -24,6 +31,12 @@ export interface OrderSliceActions {
   update: (list: Order.OrderPageListItem[]) => void
   /** 设置加载状态 */
   setLoading: (loading: boolean) => void
+  /** 订阅订单的行情 */
+  subscribeOrderMarketQuote: (
+    orderIdList?: string[],
+    accountInfo?: User.AccountItem,
+    option?: { cancel?: boolean },
+  ) => void
 }
 
 export type OrderSlice = OrderSliceState & OrderSliceActions
@@ -38,7 +51,7 @@ function toIdListAndMap(list: Order.OrderPageListItem[]) {
 
 // ============ 工厂函数 ============
 
-export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, get) => ({
+export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, get, store) => ({
   idList: [],
   map: {},
   loading: true,
@@ -69,10 +82,63 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
         state.trade.order.idList = idList
         state.trade.order.map = map
       })
-
-      // 动态订阅汇率品种行情
-      subscribePendingSymbol({ cover: false })
     }
+  },
+
+  initSubscribe: () => {
+    store.subscribe(
+      (state) => state.trade.order.idList,
+      (idList, prevIdList) => {
+        const newIdList = idList.filter((id) => !prevIdList.includes(id))
+        const activeTradeAccountInfo = userInfoActiveTradeAccountInfoSelector(get())
+        get().trade.order.subscribeOrderMarketQuote(newIdList, activeTradeAccountInfo)
+      },
+    )
+  },
+
+  subscribeOrderMarketQuote: (
+    newIdList: string[] = [],
+    accountInfo?: User.AccountItem,
+    { cancel = false }: { cancel?: boolean } = {},
+  ) => {
+    if (newIdList.length <= 0) {
+      return
+    }
+
+    const accountGroupId = accountInfo?.accountGroupId
+    if (!accountGroupId) {
+      return
+    }
+
+    const orderInfoList = Array.from(new Set(newIdList))
+      .map<TradePendingOrderInfo | undefined>((id) => {
+        const order = createOrderItemSelector(id)(get())
+        const orderInfo = parseTradePendingOrderInfo(order)
+        if (!orderInfo?.symbol) return
+
+        return orderInfo
+      })
+      .filter((item) => !!item)
+
+    ws.checkSocketReady(() => {
+      ws.openSymbol({
+        symbols: orderInfoList.map<SymbolWSItem>((info) => {
+          return {
+            symbol: info.symbol!,
+            accountGroupId,
+          }
+        }),
+        cover: false,
+        cancel,
+      })
+
+      // 动态订阅汇率品种行情，用于计算下单时保证金等
+      orderInfoList.forEach((info) => {
+        if (info?.conf) {
+          ws.subscribeExchangeRateQuote(info.conf, info.symbol, { accountInfo, cancel })
+        }
+      })
+    })
   },
 
   update: (list) => {
@@ -99,8 +165,7 @@ export const tradeOrderIdListSelector = (s: RootStoreState) => s.trade.order.idL
 export const tradeOrderMapSelector = (s: RootStoreState) => s.trade.order.map
 
 /** 工厂：根据 id 查找单个挂单（用于 item 精准订阅） */
-export const createOrderItemSelector = (id: string) => (s: RootStoreState) =>
-  s.trade.order.map[id]
+export const createOrderItemSelector = (id: string) => (s: RootStoreState) => s.trade.order.map[id]
 
 /** 加载状态 */
 export const tradeOrderLoadingSelector = (s: RootStoreState) => s.trade.order.loading

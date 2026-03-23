@@ -13,20 +13,20 @@ export const PositionCurrentPrice = observer(
     info,
     className,
   }: {
-    info: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
+    info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
     className?: string
   }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info.symbol ?? '')
+    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
     const currentPrice =
-      info.buySell === TradePositionDirectionEnum.BUY
+      info?.buySell === TradePositionDirectionEnum.BUY
         ? symbolMarketInfo?.userSellPrice
-        : info.buySell === TradePositionDirectionEnum.SELL
+        : info?.buySell === TradePositionDirectionEnum.SELL
           ? symbolMarketInfo?.userBuyPrice
           : undefined
     const priceDiff =
-      info.buySell === TradePositionDirectionEnum.BUY
+      info?.buySell === TradePositionDirectionEnum.BUY
         ? symbolMarketInfo?.userSellPriceDiff
-        : info.buySell === TradePositionDirectionEnum.SELL
+        : info?.buySell === TradePositionDirectionEnum.SELL
           ? symbolMarketInfo?.userBuyPriceDiff
           : undefined
 
@@ -38,7 +38,7 @@ export const PositionCurrentPrice = observer(
 
     return (
       <Text className={cn(priceDiffColor, className)}>
-        {BNumber.toFormatNumber(currentPrice, { volScale: info.symbolDecimal })}
+        {BNumber.toFormatNumber(currentPrice, { volScale: info?.symbolDecimal })}
       </Text>
     )
   },
@@ -49,15 +49,15 @@ export const PendingCurrentPrice = observer(
     info,
     className,
   }: {
-    info: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
+    info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
     className?: string
   }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info.symbol ?? '')
+    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
 
-    const isLimitOrder = info.type !== OrderTypeEnum.MARKET_ORDER
+    const isLimitOrder = info?.type !== OrderTypeEnum.MARKET_ORDER
 
     const currentPrice =
-      info.buySell === TradePositionDirectionEnum.BUY
+      info?.buySell === TradePositionDirectionEnum.BUY
         ? isLimitOrder
           ? symbolMarketInfo?.userBuyPrice
           : symbolMarketInfo?.userSellPrice
@@ -65,7 +65,7 @@ export const PendingCurrentPrice = observer(
           ? symbolMarketInfo?.userSellPrice
           : symbolMarketInfo?.userBuyPrice
     const priceDiff =
-      info.buySell === TradePositionDirectionEnum.BUY
+      info?.buySell === TradePositionDirectionEnum.BUY
         ? isLimitOrder
           ? symbolMarketInfo?.userBuyPriceDiff
           : symbolMarketInfo?.userSellPriceDiff
@@ -81,7 +81,7 @@ export const PendingCurrentPrice = observer(
 
     return (
       <Text className={cn(priceDiffColor, className)}>
-        {BNumber.toFormatNumber(currentPrice, { volScale: info.symbolDecimal })}
+        {BNumber.toFormatNumber(currentPrice, { volScale: info?.symbolDecimal })}
       </Text>
     )
   },

@@ -17,7 +17,7 @@ export interface MarketQuoteSliceActions {
 /** Market 命名空间完整类型（状态直接展平） */
 export type MarketQuoteSlice = MarketQuoteSliceState & MarketQuoteSliceActions
 
-export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSlice> = (set, get) => {
+export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSlice> = (set) => {
   const marketQuoteState: MarketQuoteSliceState = {
     // 启动时从快照恢复，让用户进来时立即有数据可显示
     quoteMap: loadSnapshot<Record<string, IQuoteItem>>('quote') ?? {},
@@ -30,15 +30,11 @@ export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSli
 
       if (filteredQuoteArr.length === 0) return
 
-      const oldQuoteMap = { ...get().market.quote.quoteMap }
-
-      const newQuoteMap = filteredQuoteArr.reduce((acc, quote) => {
-        acc[quote.dataSourceKey] = quote
-        return acc
-      }, oldQuoteMap)
-
+      // 使用 immer 原地修改，只更新变化的 key，避免全量浅拷贝 quoteMap 导致所有订阅者重渲染
       set((state) => {
-        state.market.quote.quoteMap = newQuoteMap
+        filteredQuoteArr.forEach((quote) => {
+          state.market.quote.quoteMap[quote.dataSourceKey] = quote
+        })
       })
     },
   }

@@ -1,11 +1,14 @@
+import { keyBy } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
-import { keyBy } from 'lodash-es'
 import { TradePositionStatusEnum } from '@/options/trade/position'
-import { getBgaOrderPage, formaOrderList } from '@/v1/services/tradeCore/order'
+import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { getBgaOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { subscribePositionSymbol } from '@/v1/utils/wsUtil'
+import ws, { SymbolWSItem } from '@/v1/stores/ws'
+
+import { userInfoActiveTradeAccountInfoSelector } from '../user-slice/infoSlice'
 
 // ============ 状态 & Actions 类型 ============
 
@@ -22,13 +25,18 @@ export interface PositionSliceState {
 
 export interface PositionSliceActions {
   /** HTTP 拉取持仓列表 */
-  fetch: (cover?: boolean) => Promise<any>
+  fetch: () => Promise<any>
   /** WebSocket 推送更新 */
   update: (list: Order.BgaOrderPageListItem[]) => void
   /** 更新计算缓存 */
   setCalcCache: (list: Order.BgaOrderPageListItem[]) => void
   /** 设置加载状态 */
   setLoading: (loading: boolean) => void
+  subscribePositionMarketQuote: (
+    positionIdList?: string[],
+    accountInfo?: User.AccountItem,
+    option?: { cancel?: boolean },
+  ) => void
 }
 
 export type PositionSlice = PositionSliceState & PositionSliceActions
@@ -43,13 +51,13 @@ function toIdListAndMap(list: Order.BgaOrderPageListItem[]) {
 
 // ============ 工厂函数 ============
 
-export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = (set, get) => ({
+export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = (set, get, store) => ({
   idList: [],
   map: {},
   calcCacheMap: {},
   loading: true,
 
-  fetch: async (cover = false) => {
+  fetch: async () => {
     const token = get().user.auth.accessToken
     if (!token) return
 
@@ -77,12 +85,68 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
         state.trade.position.idList = idList
         state.trade.position.map = map
       })
-
-      // 动态订阅汇率品种行情
-      subscribePositionSymbol({ cover })
     }
 
     return res
+  },
+
+  initSubscribe: () => {
+    store.subscribe(
+      (state) => state.trade.position.idList,
+      (idList, prevIdList) => {
+        const newIdList = idList.filter((id) => !prevIdList.includes(id))
+        const activeTradeAccountInfo = userInfoActiveTradeAccountInfoSelector(get())
+
+        get().trade.position.subscribePositionMarketQuote(newIdList, activeTradeAccountInfo)
+      },
+    )
+  },
+
+  subscribePositionMarketQuote: (
+    newIdList: string[] = [],
+    accountInfo?: User.AccountItem,
+    { cancel = false }: { cancel?: boolean } = {},
+  ) => {
+    if (newIdList.length <= 0) {
+      return
+    }
+
+    const accountGroupId = accountInfo?.accountGroupId
+    if (!accountGroupId) {
+      return
+    }
+
+    const positionInfos = Array.from(new Set(newIdList))
+      .map<TradePositionInfo | undefined>((id) => {
+        const position = createPositionItemSelector(id)(get())
+        const positionInfo = parseTradePositionInfo(position)
+
+        if (!positionInfo?.symbol) return
+
+        return positionInfo
+      })
+      .filter((item) => !!item)
+
+    ws.checkSocketReady(() => {
+      ws.openSymbol({
+        symbols: positionInfos.map<SymbolWSItem>((info) => {
+          return {
+            symbol: info.symbol!,
+            accountGroupId,
+          }
+        }),
+        // 取消其他的账户订阅
+        cover: false,
+        cancel,
+      })
+
+      // 动态订阅汇率品种行情，用于计算下单时保证金等
+      positionInfos.forEach((info) => {
+        if (info?.conf) {
+          ws.subscribeExchangeRateQuote(info.conf, info.symbol, { accountInfo, cancel, cover: false })
+        }
+      })
+    })
   },
 
   update: (list) => {
@@ -117,8 +181,10 @@ export const tradePositionIdListSelector = (s: RootStoreState) => s.trade.positi
 export const tradePositionMapSelector = (s: RootStoreState) => s.trade.position.map
 
 /** 工厂：根据 id 查找单个持仓（用于 item 精准订阅） */
-export const createPositionItemSelector = (id: string) => (s: RootStoreState) =>
-  s.trade.position.map[id]
+export const createPositionItemSelector =
+  (id?: string) =>
+  (s: RootStoreState): Order.BgaOrderPageListItem | undefined =>
+    id ? s.trade.position.map[id] : undefined
 
 /** 加载状态 */
 export const tradePositionLoadingSelector = (s: RootStoreState) => s.trade.position.loading

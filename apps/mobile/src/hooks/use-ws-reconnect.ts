@@ -43,10 +43,10 @@ export const useWsReconnect = () => {
     ws.checkSocketReady(() => {
       // 重新订阅行情
       if (symbols.length > 0) {
-        ws.subscribeSymbol(symbols, false)
+        // ws.subscribeSymbol(symbols, false)
       }
       // 重新订阅持仓/挂单/账户
-      ws.subscribePosition()
+      // ws.subscribePosition()
     })
   }, [])
 

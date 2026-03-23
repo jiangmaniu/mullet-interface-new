@@ -7,6 +7,7 @@ import type { RootStoreState } from '../index'
 import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { loadSnapshot, saveSnapshot } from '@/lib/storage/snapshot'
+import ws, { SymbolWSItem } from '@/v1/stores/ws'
 
 import { useRootStore } from '../index'
 
@@ -65,6 +66,17 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
         const activeTradeSymbol = get().trade.activeTradeSymbol
         if (!activeTradeSymbol || !infoMap[activeTradeSymbol]) {
           get().trade.setActiveTradeSymbol(list[0]?.symbol)
+        }
+
+        // 全量订阅品种行情
+        const accountGroupId = get().user.info.accountMap[accountId ?? '']?.accountGroupId
+        if (accountGroupId) {
+          ws.checkSocketReady(() => {
+            ws.openSymbol({
+              symbols: list.map<SymbolWSItem>((item) => ({ symbol: item.symbol, accountGroupId })),
+              cover: true,
+            })
+          })
         }
       }
     } catch (error) {

@@ -30,7 +30,16 @@ export type SliceGet<TState> = () => TState
 export type SliceCreator<TState, TSlice> = (
   set: SliceSet<TState>,
   get: SliceGet<TState>,
-  store: StoreApi<TState>,
+  store: StoreApi<TState> & {
+    subscribe: {
+      (listener: (state: TState, prevState: TState) => void): () => void
+      <U>(
+        selector: (state: TState) => U,
+        listener: (selectedState: U, previousSelectedState: U) => void,
+        options?: { equalityFn?: (a: U, b: U) => boolean; fireImmediately?: boolean },
+      ): () => void
+    }
+  },
 ) => TSlice
 
 /**

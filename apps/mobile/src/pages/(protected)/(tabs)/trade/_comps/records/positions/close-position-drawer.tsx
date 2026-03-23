@@ -141,10 +141,10 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
       <View className="gap-3xl px-5">
         {/* Symbol and Direction */}
         <View className="gap-medium flex-row items-center">
-          <AvatarImage source={getImgSource(positionInfo.imgUrl)} className="size-6 rounded-full"></AvatarImage>
+          <AvatarImage source={getImgSource(positionInfo?.imgUrl)} className="size-6 rounded-full"></AvatarImage>
           <Text className="text-important-1 text-content-1">{renderFormatSymbolName(positionInfo)}</Text>
-          <Badge color={positionInfo.isBuy ? 'rise' : 'fall'}>
-            <Text>{positionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+          <Badge color={positionInfo?.isBuy ? 'rise' : 'fall'}>
+            <Text>{positionInfo?.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
           </Badge>
         </View>
 

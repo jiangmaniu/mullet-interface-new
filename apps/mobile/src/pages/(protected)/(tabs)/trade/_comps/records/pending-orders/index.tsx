@@ -115,8 +115,8 @@ const PendingOrderItem = ({ order }: { order: Order.OrderPageListItem }) => {
             <AvatarImage source={getImgSource(order.imgUrl)} className="size-6 rounded-full"></AvatarImage>
 
             <Text className="text-important-1 text-content-1">{renderFormatSymbolName(order)}</Text>
-            <Badge color={pendingOrderInfo.isBuy ? 'rise' : 'fall'}>
-              <Text>{pendingOrderInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+            <Badge color={pendingOrderInfo?.isBuy ? 'rise' : 'fall'}>
+              <Text>{pendingOrderInfo?.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
             </Badge>
             <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
           </View>
@@ -132,7 +132,7 @@ const PendingOrderItem = ({ order }: { order: Order.OrderPageListItem }) => {
             <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {BNumber.toFormatNumber(pendingOrderInfo.orderVolume, { volScale: pendingOrderInfo.lotsVolScale })}
+            {BNumber.toFormatNumber(pendingOrderInfo?.orderVolume, { volScale: pendingOrderInfo?.lotsVolScale })}
           </Text>
         </View>
         <View className="w-[100px]">
@@ -140,13 +140,14 @@ const PendingOrderItem = ({ order }: { order: Order.OrderPageListItem }) => {
             <Trans>挂单价</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {BNumber.toFormatNumber(pendingOrderInfo.limitPrice, { volScale: pendingOrderInfo.symbolDecimal })}
+            {BNumber.toFormatNumber(pendingOrderInfo?.limitPrice, { volScale: pendingOrderInfo?.symbolDecimal })}
           </Text>
         </View>
         <View className="w-[100px] items-end">
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>标记价</Trans>
           </Text>
+
           <PendingCurrentPrice info={pendingOrderInfo} className={'text-paragraph-p3'} />
         </View>
       </View>

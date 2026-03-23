@@ -1,6 +1,5 @@
-import { useMutation } from '@tanstack/react-query'
-import { msg } from '@lingui/core/macro'
 import { Trans } from '@lingui/react/macro'
+import { useMutation } from '@tanstack/react-query'
 
 import { toast } from '@/components/ui/toast'
 import { useI18n } from '@/hooks/use-i18n'
@@ -10,6 +9,7 @@ import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/pos
 import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import { msg } from '@lingui/core/macro'
 
 type ClosePositionParams = {
   /** 仓位信息 */
@@ -45,18 +45,18 @@ export function useClosePosition() {
     mutationFn: async ({ position, orderVolume }: ClosePositionParams) => {
       const positionInfo = parseTradePositionInfo(position)
 
-      if (!positionInfo.symbol) {
+      if (!positionInfo?.symbol) {
         throw new Error(renderLinguiMsg(msg`未知的仓位，无法平仓`))
       }
 
       const params: ClosePositionDataQueryParams = {
-        symbol: positionInfo.symbol,
+        symbol: positionInfo?.symbol,
         // 如果没有传入 orderVolume，则全部平仓
         orderVolume: orderVolume || position.orderVolume,
         tradeAccountId: position.tradeAccountId,
         type: OrderTypeEnum.MARKET_ORDER,
-        buySell: positionInfo.isBuy ? TradePositionDirectionEnum.SELL : TradePositionDirectionEnum.BUY,
-        executeOrderId: positionInfo.id,
+        buySell: positionInfo?.isBuy ? TradePositionDirectionEnum.SELL : TradePositionDirectionEnum.BUY,
+        executeOrderId: positionInfo?.id,
       }
 
       const res = await trade.createOrder(params)

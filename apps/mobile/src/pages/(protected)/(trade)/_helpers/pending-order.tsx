@@ -1,6 +1,6 @@
-import { parseSymbolLotsVolScale } from "@/helpers/symbol"
-import { TradePositionDirectionEnum } from "@/options/trade/position"
-import { Order } from "@/v1/services/tradeCore/order/typings"
+import { parseSymbolLotsVolScale } from '@/helpers/symbol'
+import { TradePositionDirectionEnum } from '@/options/trade/position'
+import { Order } from '@/v1/services/tradeCore/order/typings'
 
 export type TradePendingOrderInfo = Order.OrderPageListItem & {
   isBuy: boolean
@@ -10,7 +10,9 @@ export type TradePendingOrderInfo = Order.OrderPageListItem & {
   lotsVolScale?: number
 }
 
-export const parseTradePendingOrderInfo = (order: Order.OrderPageListItem) => {
+export const parseTradePendingOrderInfo = (order?: Order.OrderPageListItem) => {
+  if (!order) return
+
   const isBuy = order.buySell === TradePositionDirectionEnum.BUY
   const isSell = order.buySell === TradePositionDirectionEnum.SELL
   const lotsVolScale = parseSymbolLotsVolScale(order.conf)
@@ -20,7 +22,7 @@ export const parseTradePendingOrderInfo = (order: Order.OrderPageListItem) => {
     isBuy,
     isSell,
 
-    lotsVolScale
+    lotsVolScale,
   }
 
   return info

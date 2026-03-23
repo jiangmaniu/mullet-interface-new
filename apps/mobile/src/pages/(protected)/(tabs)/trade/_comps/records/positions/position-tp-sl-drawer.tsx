@@ -28,6 +28,7 @@ import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { modifyStopProfitLoss } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 import { useVerifyOrderTpSlData } from '../../../_hooks/use-verify-order'
@@ -122,7 +123,7 @@ const PositionTpSlDrawerContent = observer(() => {
   const positionInfo = parseTradePositionInfo(position)
   const { disabledBtn } = useDisabledTrade({
     accountId: currentAccountId,
-    symbol: positionInfo.symbol,
+    symbol: positionInfo?.symbol,
   })
 
   const [loading, toggleLoading] = useToggle(false)
@@ -141,10 +142,10 @@ const PositionTpSlDrawerContent = observer(() => {
       const isTpSlValid = verifyOrderTpSlData({
         tpPrice,
         slPrice,
-        openPrice: positionInfo.startPrice,
-        level: positionInfo.conf?.limitStopLevel,
-        decimals: positionInfo.symbolDecimal,
-        direction: positionInfo.direction,
+        openPrice: positionInfo?.startPrice,
+        level: positionInfo?.conf?.limitStopLevel,
+        decimals: positionInfo?.symbolDecimal,
+        direction: positionInfo?.direction,
       })
       if (!isTpSlValid) {
         return
@@ -163,7 +164,7 @@ const PositionTpSlDrawerContent = observer(() => {
       const res = await modifyStopProfitLoss(params as Order.ModifyStopProfitLossParams)
 
       if (res.success) {
-        await useRootStore.getState().trade.position.fetch(true)
+        await useRootStore.getState().trade.position.fetch()
         toast.success(<Trans>修改止盈止损成功</Trans>)
         setFalse()
       }
@@ -185,10 +186,10 @@ const PositionTpSlDrawerContent = observer(() => {
       <View className="gap-xl pb-medium px-5">
         {/* Symbol and Direction */}
         <View className="gap-medium flex-row items-center">
-          <AvatarImage source={getImgSource(positionInfo.imgUrl)} className="size-6 rounded-full"></AvatarImage>
+          <AvatarImage source={getImgSource(positionInfo?.imgUrl)} className="size-6 rounded-full"></AvatarImage>
           <Text className="text-paragraph-p1 text-content-1">{renderFormatSymbolName(positionInfo)}</Text>
           <Badge color={positionInfo?.isBuy ? 'rise' : 'fall'}>
-            <Text>{positionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+            <Text>{positionInfo?.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
           </Badge>
         </View>
 
@@ -199,7 +200,7 @@ const PositionTpSlDrawerContent = observer(() => {
               <Trans>开仓价</Trans>
             </Text>
             <Text className="text-paragraph-p2 text-content-1">
-              {BNumber.toFormatNumber(positionInfo.startPrice, { volScale: positionInfo.symbolDecimal })}
+              {BNumber.toFormatNumber(positionInfo?.startPrice, { volScale: positionInfo?.symbolDecimal })}
             </Text>
           </View>
           <View className="flex-row items-center justify-between">
@@ -251,13 +252,13 @@ const PositionTpForm = observer(() => {
 
   const { disabledInput } = useDisabledTrade({
     accountId: currentAccountCurrencyInfo?.id,
-    symbol: positionInfo.symbol,
+    symbol: positionInfo?.symbol,
   })
 
   const pnlInfo = calcPnlInfo({
     contractSize: positionInfo?.conf?.contractSize,
-    direction: positionInfo.direction,
-    openPrice: positionInfo.startPrice,
+    direction: positionInfo?.direction,
+    openPrice: positionInfo?.startPrice,
     amount: amount,
     closePrice: tpPrice,
   })
@@ -265,12 +266,12 @@ const PositionTpForm = observer(() => {
   const pnlInAccountCurrency = calcCurrencyExchangeRate({
     value: pnlInfo?.pnl,
     unit: positionInfo?.conf?.profitCurrency,
-    buySell: positionInfo.direction,
+    buySell: positionInfo?.direction,
   })
 
   const { scopePrice, scopePriceFlag, isGte, isLte } = calcOrderTpSlScopePriceInfo({
-    direction: positionInfo.direction,
-    price: positionInfo.startPrice,
+    direction: positionInfo?.direction,
+    price: positionInfo?.startPrice,
     TpSlDirection: TpSlDirectionEnum.TP,
     level: positionInfo?.conf?.limitStopLevel,
     decimals: positionInfo?.symbolDecimal,
@@ -327,7 +328,7 @@ const PositionTpForm = observer(() => {
           {` ${scopePriceFlag} `}
           <Text className={cn('text-paragraph-p3', isOutScope ? 'text-market-fall' : 'text-content-1')}>
             {BNumber.toFormatNumber(scopePrice, {
-              volScale: positionInfo.symbolDecimal,
+              volScale: positionInfo?.symbolDecimal,
             })}
           </Text>
         </Text>
@@ -360,13 +361,13 @@ const PositionSlForm = observer(() => {
 
   const { disabledInput } = useDisabledTrade({
     accountId: currentAccountCurrencyInfo?.id,
-    symbol: positionInfo.symbol,
+    symbol: positionInfo?.symbol,
   })
 
   const pnlInfo = calcPnlInfo({
-    direction: positionInfo.direction,
-    openPrice: positionInfo.startPrice,
-    amount: positionInfo.orderVolume,
+    direction: positionInfo?.direction,
+    openPrice: positionInfo?.startPrice,
+    amount: positionInfo?.orderVolume,
     contractSize: positionInfo?.conf?.contractSize,
     closePrice: slPrice,
   })
@@ -374,12 +375,12 @@ const PositionSlForm = observer(() => {
   const pnlInAccountCurrency = calcCurrencyExchangeRate({
     value: pnlInfo?.pnl,
     unit: positionInfo?.conf?.profitCurrency,
-    buySell: positionInfo.direction,
+    buySell: positionInfo?.direction,
   })
 
   const { scopePrice, scopePriceFlag, isGte, isLte } = calcOrderTpSlScopePriceInfo({
-    direction: positionInfo.direction,
-    price: positionInfo.startPrice,
+    direction: positionInfo?.direction,
+    price: positionInfo?.startPrice,
     TpSlDirection: TpSlDirectionEnum.SL,
     level: positionInfo?.conf?.limitStopLevel,
     decimals: positionInfo?.symbolDecimal,
@@ -435,7 +436,7 @@ const PositionSlForm = observer(() => {
           <Trans>范围</Trans> {` ${scopePriceFlag} `}{' '}
           <Text className={cn('text-paragraph-p3', isOutScope ? 'text-market-fall' : 'text-content-1')}>
             {BNumber.toFormatNumber(scopePrice, {
-              volScale: positionInfo.symbolDecimal,
+              volScale: positionInfo?.symbolDecimal,
             })}
           </Text>
         </Text>

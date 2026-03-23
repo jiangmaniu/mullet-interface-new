@@ -2,7 +2,9 @@ import { get, keyBy } from 'lodash-es'
 import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
 
+import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { getClientDetail } from '@/v1/services/crm/customer'
+import ws from '@/v1/stores/ws'
 
 import { createSetter } from '../_helpers/createSetter'
 import { ImmerStateCreator } from '../_helpers/types'
@@ -19,7 +21,7 @@ export interface InfoSliceState {
 
 export interface InfoSliceActions {
   setInfo: (partial: Partial<InfoSliceState>) => void
-  setActiveTradeAccountId: Setter<string | undefined>
+  setActiveTradeAccountId: (accountId?: string) => Promise<void>
   setClientInfo: Setter<ClientInfo | undefined>
   fetchClientInfo: (accountId?: string) => Promise<void>
   setAccountList: (accountList: User.AccountItem[]) => void
@@ -33,7 +35,7 @@ export type InfoSlice = InfoSliceState & InfoSliceActions
  * 创建 info 命名空间切片（状态 + actions）
  * 访问路径: state.user.info.xxx
  */
-export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> = (setRoot, get) => {
+export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> = (setRoot, get, store) => {
   const infoSetter = createSetter<InfoSlice>(setRoot, (s) => s.user.info)
 
   return {
@@ -114,7 +116,41 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
         })
       }
     },
-    setActiveTradeAccountId: infoSetter('activeTradeAccountId'),
+    setActiveTradeAccountId: async (accountId?: string) => {
+      const prevAccountId = get().user.info.activeTradeAccountId
+
+      setRoot((state) => {
+        state.user.info.activeTradeAccountId = accountId
+      })
+
+      // 取消上一个账户的订阅
+      if (accountId !== prevAccountId) {
+        // 取消上一个账户的订阅
+        ws.send({
+          topic: `/${DEFAULT_TENANT_ID}/trade/${prevAccountId}`,
+          cancel: true,
+        })
+
+        const prevAccountInfo = createAccountInfoSelector(prevAccountId)(get())
+        get().trade.position.subscribePositionMarketQuote(get().trade.position.idList, prevAccountInfo, {
+          cancel: true,
+        })
+
+        get().trade.order.subscribeOrderMarketQuote(get().trade.order.idList, prevAccountInfo, { cancel: true })
+      }
+
+      // 订阅新的账户
+      if (accountId) {
+        // 添加当前订阅
+        ws.send({
+          topic: `/${DEFAULT_TENANT_ID}/trade/${accountId}`,
+          cancel: false,
+        })
+
+        await get().market.symbol.fetchInfoList(accountId)
+        await Promise.all([get().trade.position.fetch(), get().trade.order.fetch()])
+      }
+    },
   }
 }
 

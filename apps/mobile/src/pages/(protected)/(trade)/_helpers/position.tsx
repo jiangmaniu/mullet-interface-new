@@ -11,7 +11,8 @@ export type TradePositionInfo = Order.BgaOrderPageListItem & {
   marginByType?: number
 }
 
-export const parseTradePositionInfo = (position: Order.BgaOrderPageListItem) => {
+export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) => {
+  if (!position) return
   const isBuy = position.buySell === TradePositionDirectionEnum.BUY
   const isSell = position.buySell === TradePositionDirectionEnum.SELL
   const direction = position.buySell

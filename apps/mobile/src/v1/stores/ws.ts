@@ -167,7 +167,7 @@ export type SymbolWSItemSemi = {
   // dataSourceCode?: string
 }
 
-const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 16 : 32 // ms
+const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 100 : 200 // ms
 const THROTTLE_DEPTH_INTERVAL = 300 // ms
 const MAX_CACHE_SIZE = 150 // 设置最大缓存限制
 
@@ -250,7 +250,7 @@ class WSStore {
    * @param symbols 需要订阅的符号列表
    * @param cover 是否取消其他历史订阅
    **/
-  openSymbol = ({ symbols, cover }: { symbols: SymbolWSItem[]; cover?: boolean }) => {
+  openSymbol = ({ symbols, cover, cancel }: { symbols: SymbolWSItem[]; cover?: boolean; cancel?: boolean }) => {
     const toSend = new Map<string, boolean>()
 
     // 找到 symbols 中不在 [正在订阅列表] 中的符号
@@ -259,7 +259,7 @@ class WSStore {
     })
 
     if (toSend.size || cover) {
-      this.debounceBatchSubscribeSymbol({ toSend, cover })
+      this.debounceBatchSubscribeSymbol({ toSend, cover, cancel })
     }
   }
 
@@ -480,7 +480,20 @@ class WSStore {
   }
 
   // 动态订阅汇率品种行情
-  subscribeExchangeRateQuote = (symbolConf?: Symbol.SymbolConf, symbolName?: string) => {
+  subscribeExchangeRateQuote = (
+    symbolConf?: Symbol.SymbolConf,
+    symbolName?: string,
+
+    {
+      accountInfo,
+      cover = false,
+      cancel = false,
+    }: {
+      accountInfo?: User.AccountItem
+      cover?: boolean
+      cancel?: boolean
+    } = {},
+  ) => {
     const activeSymbolName = symbolName || tradeActiveTradeSymbolSelector(useRootStore.getState())
     if (!activeSymbolName) {
       return
@@ -504,16 +517,17 @@ class WSStore {
 
     if (!symbolInfo) return
 
-    const activeAccountInfo = userInfoActiveTradeAccountInfoSelector(useRootStore.getState())
+    if (!accountInfo?.accountGroupId) return
+
     const toSend = new Map<string, boolean>()
     toSend.set(
       ws.symbolToString({
-        accountGroupId: activeAccountInfo?.accountGroupId,
+        accountGroupId: accountInfo?.accountGroupId,
         symbol: symbolInfo?.symbol,
       }),
       true,
     )
-    ws.debounceBatchSubscribeSymbol({ toSend })
+    ws.debounceBatchSubscribeSymbol({ toSend, cover, cancel })
   }
 
   // 订阅当前打开的品种深度报价
@@ -952,7 +966,22 @@ class WSStore {
    * @param toSend 需要订阅的符号列表
    * @param cover 是否取消其他历史订阅
    */
-  debounceBatchSubscribeSymbol = ({ toSend, cover }: { toSend: Map<string, boolean>; cover?: boolean }) => {
+  debounceBatchSubscribeSymbol = ({
+    toSend,
+    cover,
+    cancel,
+  }: {
+    toSend: Map<string, boolean>
+    cover?: boolean
+    cancel?: boolean
+  }) => {
+    // cancel 优先：直接走取消逻辑，跳过订阅判断
+    if (cancel) {
+      const list = Array.from(toSend.keys()).map((key) => this.stringToSymbol(key)) as SymbolWSItem[]
+      this.batchSubscribeSymbol({ list, cancel: true })
+      return
+    }
+
     // 1. 找到 this.toSendSymbols 中不在 this.sendingSymbols 中的符号，这些符号是即将要打开的符号
     const toOpen = new Map<string, boolean>()
     toSend?.forEach((value, key) => {
@@ -968,10 +997,10 @@ class WSStore {
       // console.log('==== 覆盖订阅，并订阅列表 ====》', list.length)
       // 订阅列表，并取消其他历史订阅
       const listToSend = Array.from(toSend.keys()).map((key) => this.stringToSymbol(key)) as SymbolWSItem[]
-      this.batchSubscribeSymbol({ list: listToSend, cover })
+      this.batchSubscribeSymbol({ list: listToSend, cover, cancel })
     } else if (toOpen?.size) {
       // console.log('==== 打开订阅，无需关闭订阅 ====》', toOpen.size)
-      this.batchSubscribeSymbol({ list })
+      this.batchSubscribeSymbol({ list, cancel })
     } else {
       // console.log('==== 重复订阅，无需关闭订阅 ====》', toSend.size)
       toSend.forEach((value, key) => {

@@ -29,12 +29,7 @@ import {
   STORAGE_KEY_POSITION_CONFIRM_CHECKED,
   STORAGE_KEY_QUICK_PLACE_ORDER_CHECKED,
 } from '@/lib/storage/keys'
-import {
-  subscribePendingSymbol,
-  subscribePositionSymbol,
-  useCovertProfitCallback,
-  useGetAccountBalanceCallback,
-} from '@/v1/utils/wsUtil'
+import { useCovertProfitCallback, useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 
 import klineStore from './kline'
 import { getSymbolIsHoliday } from '@/v1/services/tradeCore/holiday'
@@ -716,7 +711,11 @@ class TradeStore {
   @action updateLocalOpenSymbolNameList = () => {
     // STORAGE_SET_SYMBOL_NAME_LIST(this.openSymbolNameList)
     const _confForSymbol = storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO) || {}
-    lodashSet(_confForSymbol, `${this.currentAccountInfo?.id}.openSymbolNameList`, this.openSymbolNameList.filter((v) => v))
+    lodashSet(
+      _confForSymbol,
+      `${this.currentAccountInfo?.id}.openSymbolNameList`,
+      this.openSymbolNameList.filter((v) => v),
+    )
     storageSet(STORAGE_KEY_USER_CONF_INFO, _confForSymbol)
   }
 
@@ -885,13 +884,13 @@ class TradeStore {
         })
 
         // 获取品种后，动态订阅品种
-        stores.ws.checkSocketReady(() => {
-          // 打开行情订阅
-          stores.ws.openSymbol({
-            // 构建参数
-            symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll),
-          })
-        })
+        // stores.ws.checkSocketReady(() => {
+        //   // 打开行情订阅
+        //   stores.ws.openSymbol({
+        //     // 构建参数
+        //     symbols: stores.ws.makeWsSymbolBySemi(this.symbolListAll),
+        //   })
+        // })
 
         // 判断品种是否在假期内
         this.getSymbolIsHoliday()
@@ -979,9 +978,6 @@ class TradeStore {
       runInAction(() => {
         this.positionList = data
       })
-
-      // 动态订阅汇率品种行情, 初始化持仓列表时，不主动取消其他历史订阅
-      subscribePositionSymbol({ cover })
     }
 
     return res
@@ -1015,9 +1011,6 @@ class TradeStore {
       runInAction(() => {
         this.pendingList = (res.data?.records || []) as Order.OrderPageListItem[]
       })
-
-      // 动态订阅汇率品种行情, 初始化持仓列表时，不主动取消其他历史订阅
-      subscribePendingSymbol({ cover: false })
     }
   }
   // 查询止盈止损列表

@@ -52,12 +52,12 @@ export const TradePositions = () => {
     if (!currentAccountId) return
     useRootStore
       .getState()
-      .trade.position.fetch(true)
+      .trade.position.fetch()
       .catch(() => {})
   }, [currentAccountId])
 
   const refetch = async () => {
-    const res = await useRootStore.getState().trade.position.fetch(true)
+    const res = await useRootStore.getState().trade.position.fetch()
     return res?.success
   }
 
@@ -121,7 +121,7 @@ const PositionItemContent = observer(
 
     const positionProfit = covertProfit(position)
 
-    const yieldRate = newCalcYieldRate(positionProfit, positionInfo.marginByType)
+    const yieldRate = newCalcYieldRate(positionProfit, positionInfo?.marginByType)
 
     const profitColor = BNumber.from(positionProfit)?.gt(0)
       ? 'text-market-rise'
@@ -164,8 +164,8 @@ const PositionItemContent = observer(
               <AvatarImage source={getImgSource(position.imgUrl)} className="size-6 rounded-full"></AvatarImage>
 
               <Text className="text-important-1 text-content-1">{renderFormatSymbolName(position)}</Text>
-              <Badge color={positionInfo.isBuy ? 'rise' : 'fall'}>
-                <Text>{positionInfo.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
+              <Badge color={positionInfo?.isBuy ? 'rise' : 'fall'}>
+                <Text>{positionInfo?.isBuy ? <Trans>做多</Trans> : <Trans>做空</Trans>}</Text>
               </Badge>
               <IconifyNavArrowRight width={16} height={16} className="text-content-1" />
             </View>
@@ -201,7 +201,7 @@ const PositionItemContent = observer(
                   <Trans>数量({renderLinguiMsg(LOTS_UNIT_LABEL)})</Trans>
                 </Text>
                 <Text className="text-paragraph-p2 text-content-2">
-                  {BNumber.toFormatNumber(position.orderVolume, { volScale: positionInfo.lotsVolScale })}
+                  {BNumber.toFormatNumber(position.orderVolume, { volScale: positionInfo?.lotsVolScale })}
                 </Text>
               </View>
             )}
@@ -225,7 +225,7 @@ const PositionItemContent = observer(
                 <Trans>保证金({currentAccountCurrencyInfo?.currencyUnit})</Trans>
               </Text>
               <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatNumber(positionInfo.marginByType, {
+                {BNumber.toFormatNumber(positionInfo?.marginByType, {
                   volScale: currentAccountCurrencyInfo?.currencyDecimal,
                 })}
               </Text>
