@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -8,21 +9,21 @@ import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useRootStore } from '@/stores'
-import { useShallow } from 'zustand/react/shallow'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
-import useMargin from '@/v1/hooks/trade/useMargin'
 import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
 import { BNumber } from '@mullet/utils/number'
 
+import { useOrderMargin } from '../../_apis/use-order-margin'
+
 export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
-  // 接口计算预估保证金
-  const expectedMargin = useMargin()
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const symbolInfo = useMarketSymbolInfo(symbol)
   const lotVolScale = parseSymbolLotsVolScale(symbolInfo?.symbolConf)
   const { maxOpenVolume } = useOpenVolumn() // 最大可开仓量
   const { renderLinguiMsg } = useI18n()
+
+  const { data: expectedMargin } = useOrderMargin(symbol)
 
   return (
     <>
@@ -37,6 +38,7 @@ export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
         </Tooltip>
         <Text className="text-paragraph-p3 text-content-1">
           {BNumber.toFormatNumber(expectedMargin, {
+            positive: false,
             unit: currentAccountCurrencyInfo?.currencyUnit,
             volScale: currentAccountCurrencyInfo?.currencyDecimal,
           })}
