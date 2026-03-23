@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { cloneDeep } from 'lodash-es'
-import { toJS } from 'mobx'
 import type { OrderTypeEnum } from '@/options/trade/order'
 import type { TradePositionDirectionEnum } from '@/options/trade/position'
 import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
@@ -63,10 +62,8 @@ type IExchangeRateParams = {
 export const useCalcExchangeRateCallback = () => {
   const {
     trade: { allSimpleSymbolsMap },
-    ws,
   } = stores
   const currentAccountInfo = userInfoActiveTradeAccountInfoSelector(useRootStore.getState())
-  const quotes = ws.quotes
   return useCallback(
     ({ value, unit, buySell }: IExchangeRateParams) => {
       // 检查货币是否是外汇/指数，并且不是以 USD 为单位，比如AUDNZD => 这里单位是NZD，找到NZDUSD或者USDNZD的指数取值即可
@@ -93,8 +90,10 @@ export const useCalcExchangeRateCallback = () => {
         const divNameKey = symbol ? `${accountGroupId}/${divName}` : ''
         const mulNameKey = symbol ? `${accountGroupId}/${mulName}` : ''
 
-        const divNameQuote = toJS(quotes[divNameKey as keyof typeof quotes])
-        const mulNameQuote = toJS(quotes[mulNameKey as keyof typeof quotes])
+        // 从 Zustand store 读取行情数据
+        const quoteMap = useRootStore.getState().market.quote.quoteMap
+        const divNameQuote = quoteMap[divNameKey]
+        const mulNameQuote = quoteMap[mulNameKey]
 
         // 检查是否存在 divName 对应的报价信息
         if (divNameQuote) {
@@ -125,14 +124,13 @@ export const useCalcExchangeRateCallback = () => {
 
       return Number(profit)
     },
-    [quotes, allSimpleSymbolsMap, currentAccountInfo?.currencyUnit],
+    [allSimpleSymbolsMap, currentAccountInfo?.currencyUnit, currentAccountInfo?.accountGroupId],
   )
 }
 
 // 计算汇率
 export const calcExchangeRate = ({ value, unit, buySell }: IExchangeRateParams) => {
-  const { trade, ws } = stores
-  const quotes = ws.quotes
+  const { trade } = stores
   // 检查货币是否是外汇/指数，并且不是以 USD 为单位，比如AUDNZD => 这里单位是NZD，找到NZDUSD或者USDNZD的指数取值即可
   // 数字货币、商品黄金石油这些以美元结算的，单位都是USD不需要参与转化直接返回
   // 非USD单位的产品都要转化为美元
@@ -159,8 +157,10 @@ export const calcExchangeRate = ({ value, unit, buySell }: IExchangeRateParams) 
     const divNameKey = symbol ? `${accountGroupId}/${divName}` : ''
     const mulNameKey = symbol ? `${accountGroupId}/${mulName}` : ''
 
-    const divNameQuote = toJS(quotes.get(divNameKey))
-    const mulNameQuote = toJS(quotes.get(mulNameKey))
+    // 从 Zustand store 读取行情数据
+    const quoteMap = useRootStore.getState().market.quote.quoteMap
+    const divNameQuote = quoteMap[divNameKey]
+    const mulNameQuote = quoteMap[mulNameKey]
 
     // 检查是否存在 divName 对应的报价信息
     if (divNameQuote) {
@@ -915,7 +915,7 @@ export function useGetCurrentDepthCallback() {
 // }
 
 export function getCurrentQuoteV2(
-  quotes: Map<string, IQuoteItem>,
+  quotes: Map<string, IQuoteItem> | Record<string, IQuoteItem>,
   currentSymbolName: string,
   symbolMap: { [key: string]: Account.TradeSymbolListItem },
 ) {
@@ -926,7 +926,7 @@ export function getCurrentQuoteV2(
   const accountGroupId = currentSymbol?.accountGroupId
   const dataSourceKey = Number(accountGroupId) ? `${accountGroupId}/${symbol}` : `${dataSourceCode}/${symbol}` // 获取行情的KEY，数据源+品种名称去获取
 
-  const currentQuote = quotes.get(dataSourceKey) // 行情信息
+  const currentQuote = quotes instanceof Map ? quotes.get(dataSourceKey) : quotes[dataSourceKey] // 行情信息
 
   const dataSourceSymbol = currentSymbol?.dataSourceSymbol
   const symbolConf = currentSymbol?.symbolConf as Symbol.SymbolConf // 当前品种配置
@@ -991,17 +991,19 @@ export function getCurrentQuoteV2(
 export const useGetCurrentQuoteCallback = () => {
   const activeSymbolName = useRootStore(tradeActiveTradeSymbolSelector)
 
-  const { trade, ws } = useStores()
+  const { trade } = useStores()
   const symbolMap = trade.symbolMapAll
 
   return useCallback(
     (currentSymbolName?: string) => {
       const symbol = currentSymbolName ?? activeSymbolName
       if (symbol) {
-        return getCurrentQuoteV2(ws.quotes, symbol, symbolMap)
+        // 从 Zustand store 读取行情数据
+        const quoteMap = useRootStore.getState().market.quote.quoteMap
+        return getCurrentQuoteV2(quoteMap, symbol, symbolMap)
       }
     },
-    [ws.quotes, activeSymbolName, symbolMap],
+    [activeSymbolName, symbolMap],
   )
 }
 
