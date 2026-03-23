@@ -1,10 +1,8 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 
 import { useAppState } from '@/hooks/use-app-state'
-import { useRootStore } from '@/stores'
+import { useWsReconnect } from '@/hooks/use-ws-reconnect'
 import useNetInfo from '@/v1/hooks/useNetInfo'
-import { stores } from '@/v1/provider/mobxProvider'
-import { SymbolWSItem } from '@/v1/stores/ws'
 
 export interface AppVisibleStateContextProvider {
   isAppVisible: boolean
@@ -28,72 +26,34 @@ export const useAppVisibleState = () => {
 }
 
 export const AppVisibleStateProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isVisible, setIsVisible] = useState(false)
-
-  const { ws, trade } = stores
   const { isConnected } = useNetInfo()
-
-  // 執行重連函數
-  const reconnect = () => {
-    // console.log('=============== 尝试重连 ================')
-    // let symbols = [] as SymbolWSItem[]
-    // ws.sendingSymbols.forEach((_, key) => {
-    //   symbols.push(ws.stringToSymbol(key))
-    // })
-    // ws.checkSocketReady(() => {
-    //   // 打开行情订阅
-    //   ws.subscribeSymbol(
-    //     // 构建参数
-    //     symbols,
-    //     false
-    //   )
-    // })
-  }
-
-  const onAppActive = async () => {
-    // const token = useRootStore.getState().user.auth.accessToken
-    // setIsVisible(true)
-    // if (token) {
-    //   reconnect()
-    //   // 及时刷新品种列表
-    //   if (token) {
-    //     stores.trade.getSymbolList()
-    //   }
-    // }
-  }
+  const { reconnect } = useWsReconnect()
+  // 跳过首次执行：组件 mount 时 isConnected 通常已为 true，
+  // 但此时 global.ts 已调用过 checkSocketReady 完成初始连接，无需重复
+  const isMounted = useRef(false)
 
   useEffect(() => {
-    // if (!isConnected) {
-    // // console.log('=============== 网络断开，关闭 ws ================')
-    //   if (ws.socket?.readyState === 1 && trade.symbolListAll.length > 0) {
-    //     ws.close()
-    //     return
-    //   }
-    // }
-    // reconnect()
-  }, [isConnected, trade.symbolListAll.length])
+    if (!isMounted.current) {
+      isMounted.current = true
+      return
+    }
+    if (isConnected) {
+      // 网络从断开恢复（false → true）时触发重连
+      reconnect()
+    }
+  }, [isConnected, reconnect])
 
   useAppState(
     () => {
-      // console.log('=============== 应用回到前台 ================')
-      onAppActive()
+      // 应用从后台恢复到前台时触发重连
+      // 若 WS 仍连接则跳过，若已断开则重连并恢复行情订阅
+      reconnect()
     },
-    () => {
-      // console.log('=============== 应用进入后台 ================')
-      setIsVisible(false)
-    },
+    undefined,
   )
 
-  // 当visible变为true时，取消延迟关闭
-  useEffect(() => {
-    if (!isVisible) {
-      // console.log('=============== 应用进入后台，关闭 ws ================')
-      // ws.close()
-    }
-  }, [isVisible])
-
   return (
-    <AppVisibleStateContext.Provider value={{ isAppVisible: isVisible, setAppVisible: setIsVisible }}>
+    <AppVisibleStateContext.Provider value={{ isAppVisible: false, setAppVisible: () => {} }}>
       {children}
     </AppVisibleStateContext.Provider>
   )
