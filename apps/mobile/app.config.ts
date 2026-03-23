@@ -11,6 +11,19 @@ const env = process.env.ENV || 'dev'
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf-8'))
 const version = packageJson.version
 
+// 加载环境变量文件（支持 .local 覆盖）
+// 加载顺序：.env.${env} -> .env.${env}.local
+// .local 文件不会提交到 git，用于本地开发者的个性化配置
+const envFile = `.env.${env}`
+const envLocalFile = `.env.${env}.local`
+
+if (fs.existsSync(envFile)) {
+  dotenv.config({ path: envFile })
+}
+if (fs.existsSync(envLocalFile)) {
+  dotenv.config({ path: envLocalFile, override: true })
+}
+
 // 构建时间戳：优先使用 build.mjs 传入的 VERSION_CODE，否则生成当前时间
 // 格式：YYYYMMDDHHMM（完整年份）或 YYMMDDHHMM（build.mjs 格式）
 const buildTime = (() => {
@@ -29,11 +42,6 @@ const buildTime = (() => {
     String(now.getMinutes()).padStart(2, '0'),
   ].join('')
 })()
-
-const envFile = `.env.${env}`
-if (fs.existsSync(envFile)) {
-  dotenv.config({ path: envFile })
-}
 
 const displayName: Record<string, string> = {
   dev: 'Mullet (dev)',
@@ -177,6 +185,10 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withAndroidSigning.js',
       // iOS Debug 自动签名 - prebuild --clean 后无需手动到 Xcode 重新开启
       './plugins/withDebugAutoSigning.js',
+      // Gradle JVM 内存配置 - 解决 Metaspace 不足警告
+      './plugins/withGradleJvmArgs.js',
+      // Xcode 构建性能优化 - 并行编译等
+      './plugins/withXcodeBuildSettings.js',
       // Android APK 体积优化
       './plugins/withApkOptimization.js',
       // 修复 Android 权限冲突（WRITE/READ_EXTERNAL_STORAGE maxSdkVersion）
