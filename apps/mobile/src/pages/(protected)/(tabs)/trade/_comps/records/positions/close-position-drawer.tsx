@@ -26,8 +26,10 @@ import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { useCovertProfitCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
+
+import { useMarketQuotePrice } from '@/hooks/market/use-market-quote'
+import { getPositionGrossPnlInfo } from '@/hooks/trade/use-position-pnl'
 
 import { PositionCurrentPrice } from '../../common/position-current-price'
 
@@ -47,11 +49,19 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
   const { renderLinguiMsg } = useI18n()
   const lotsVolScale = parseSymbolLotsVolScale(positionInfo?.conf)
 
-  const covertProfit = useCovertProfitCallback(false)
-  const positionProfit = covertProfit(position)
-  const profitColor = BNumber.from(positionProfit)?.gt(0)
+  // 获取持仓方向对应的报价价格（盈亏计算用）
+  const currentPrice = useMarketQuotePrice(positionInfo.symbol, positionInfo.direction)
+
+  // 浮动盈亏（换汇为账户本币）
+  const grossPnlInfo = getPositionGrossPnlInfo({
+    positionInfo,
+    currentPrice,
+    convertCurrency: true,
+  })
+
+  const profitColor = grossPnlInfo?.isProfit
     ? 'text-market-rise'
-    : BNumber.from(positionProfit)?.lt(0)
+    : grossPnlInfo?.isLoss
       ? 'text-market-fall'
       : 'text-content-1'
 
@@ -210,7 +220,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
             <Trans>浮动盈亏</Trans>
           </Text>
           <Text className={`text-paragraph-p2 ${profitColor}`}>
-            {BNumber.toFormatNumber(positionProfit, {
+            {BNumber.toFormatNumber(grossPnlInfo?.pnl, {
               volScale: currentAccountCurrencyInfo?.currencyDecimal,
               unit: currentAccountCurrencyInfo?.currencyUnit,
               forceSign: true,
