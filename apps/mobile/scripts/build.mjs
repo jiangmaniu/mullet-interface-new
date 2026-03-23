@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import inquirer from 'inquirer'
+import semver from 'semver'
 import shelljs from 'shelljs'
 
 /**
@@ -302,9 +303,51 @@ async function main() {
   const { platform, env, iosDist, clean, androidArchs, forceRegenerateCertificates, appleId, applePassword } =
     await parseArgs()
 
-  // 从 package.json 读取版本号，注入环境变量供 fastlane 使用
+  // 从 package.json 读取版本号
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
-  const version = pkg.version
+  const currentVersion = pkg.version
+
+  // 版本号选择（构建前，确保新版本号打进包里）
+  const { bumpVersion } = await inquirer.prompt([
+    {
+      name: 'bumpVersion',
+      type: 'select',
+      message: chalk.magentaBright(`是否修改版本号？`),
+      choices: [
+        { name: `Skip (Current: ${currentVersion})`, value: 'skip' },
+        { name: `Patch ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'patch')})`)}`, value: 'patch' },
+        { name: `Minor ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'minor')})`)}`, value: 'minor' },
+        { name: `Major ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'major')})`)}`, value: 'major' },
+        { name: `Custom ${chalk.gray(`(x.x.x)`)}`, value: 'custom' },
+      ],
+    },
+  ])
+
+  let version = currentVersion
+  if (bumpVersion === 'custom') {
+    const { customVersion } = await inquirer.prompt([
+      {
+        name: 'customVersion',
+        type: 'input',
+        message: chalk.magentaBright('请输入版本号:'),
+        validate: (input) => {
+          if (!semver.valid(input)) {
+            return '请输入有效的 semver 版本号，如 1.2.3'
+          }
+          return true
+        },
+      },
+    ])
+    version = customVersion
+  } else if (bumpVersion !== 'skip') {
+    version = semver.inc(currentVersion, bumpVersion)
+  }
+
+  if (version !== currentVersion) {
+    pkg.version = version
+    fs.writeFileSync(path.join(PROJECT_DIR, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
+    console.log(chalk.green(`  ✅ 版本号已修改: ${currentVersion} → ${version}`))
+  }
 
   // versionCode 使用 YYYYMMDDHHMM 格式的时间戳，保证每次构建唯一且递增
   const now = new Date()
@@ -445,6 +488,70 @@ async function main() {
     console.log('')
     console.log(chalk.cyan.bold(' 📦 AdHoc IPA 已生成'))
     console.log(chalk.white('    可通过蒲公英、fir.im 等平台分发给测试人员'))
+  }
+
+  console.log('')
+
+  // --- 构建后操作 ---
+
+  // 版本号变更提交
+  if (version !== currentVersion) {
+    run(`git add package.json`)
+    run(`git commit -m "chore: bump version to ${version}"`)
+    console.log(chalk.green(`  ✅ 版本号变更已提交`))
+
+    const { pushCommit } = await inquirer.prompt([
+      {
+        name: 'pushCommit',
+        type: 'select',
+        message: chalk.magentaBright('是否推送版本号变更到远程？'),
+        choices: [
+          { name: '是', value: true },
+          { name: '否', value: false },
+        ],
+      },
+    ])
+
+    if (pushCommit) {
+      run(`git push`)
+      console.log(chalk.green(`  ✅ 版本号变更已推送到远程`))
+    }
+  }
+
+  // Git Tag
+  const tag = `${version}-${env}-${versionCode}`
+  const { createTag } = await inquirer.prompt([
+    {
+      name: 'createTag',
+      type: 'select',
+      message: chalk.magentaBright(`是否创建 Git Tag？(${tag})`),
+      choices: [
+        { name: '是', value: true },
+        { name: '否', value: false },
+      ],
+    },
+  ])
+
+  if (createTag) {
+    run(`git tag ${tag}`)
+    console.log(chalk.green(`  ✅ Git Tag 已创建: ${tag}`))
+
+    const { pushTag } = await inquirer.prompt([
+      {
+        name: 'pushTag',
+        type: 'select',
+        message: chalk.magentaBright(`是否推送 Tag 到远程？(${tag})`),
+        choices: [
+          { name: '是', value: true },
+          { name: '否', value: false },
+        ],
+      },
+    ])
+
+    if (pushTag) {
+      run(`git push origin ${tag}`)
+      console.log(chalk.green(`  ✅ Tag ${tag} 已推送到远程`))
+    }
   }
 
   console.log('')
