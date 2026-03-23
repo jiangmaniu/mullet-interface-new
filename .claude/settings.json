@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(bundle exec fastlane match adhoc --env test)",
-      "Read(//^#: src\\\\/pages\\\\/\\\\\\(protected\\\\\\)\\\\/\\\\\\(tabs\\\\\\)\\\\/trade\\\\/_comps\\\\/records\\\\/positions\\\\/close-position-drawer\\\\.tsx/{found=1} found && /^msgid/{print NR\"\"\"\": \"\"\"\"$0} found && /^msgstr/**)"
+      "Read(//^#: src\\\\/pages\\\\/\\\\\\(protected\\\\\\)\\\\/\\\\\\(tabs\\\\\\)\\\\/trade\\\\/_comps\\\\/records\\\\/positions\\\\/close-position-drawer\\\\.tsx/{found=1} found && /^msgid/{print NR\"\"\"\": \"\"\"\"$0} found && /^msgstr/**)",
+      "Bash(ls -la /Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/apps/mobile/.env*)",
+      "Bash(cp .env.dev.local .env.test.local)",
+      "Bash(cp .env.dev.local .env.prod.local)",
+      "Bash(ls -la .env*.local)",
+      "Bash(node -e \"const plugin = require\\(''./plugins/withXcodeBuildSettings.js''\\); console.log\\(''插件加载成功:'', typeof plugin\\);\")",
+      "Bash(node -e \"const plugin = require\\(''./plugins/withGradleJvmArgs.js''\\); console.log\\(''插件加载成功:'', typeof plugin\\);\")"
     ]
   },
   "enabledPlugins": {
