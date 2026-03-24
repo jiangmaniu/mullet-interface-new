@@ -1,30 +1,36 @@
-import { useEffect } from 'react'
-import { autorun } from 'mobx'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 import type { WebView } from 'react-native-webview'
 
-import { useStores } from '@/v1/provider/mobxProvider'
+import { parseDataSourceKey } from '@/helpers/parse/symbol'
+import { RootStoreState, useRootStore } from '@/stores'
+import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
 import { BridgeIncoming } from '@mullet/trading-view'
 
 /**
  * 实时推送行情到 WebView
- * 使用 MobX autorun 追踪 quotes 深层属性变化，每次变化立即推送，保证与 Native UI 同步
+ * 从 Zustand quoteMap 读取行情，依赖变化时立即推送，保证与 Native UI 同步
  */
-export function useQuoteSync(webviewRef: React.RefObject<WebView | null>, accountGroupId: number, symbolName: string) {
-  const { ws } = useStores()
+export function useQuoteSync(webviewRef: React.RefObject<WebView | null>, accountGroupId: string, symbolName?: string) {
+  const dataSourceKey = useMemo(() => {
+    if (!symbolName) return undefined
+    return parseDataSourceKey({ accountGroupId, symbol: symbolName })
+  }, [accountGroupId, symbolName])
+
+  const currentQuote = useRootStore(
+    useShallow(
+      useCallback((state: RootStoreState) => createMarketQuoteSelector(dataSourceKey)(state), [dataSourceKey]),
+    ),
+  )
 
   useEffect(() => {
-    const quoteKey = `${accountGroupId}/${symbolName}`
-    const dispose = autorun(() => {
-      const currentQuote = ws.quotes.get(quoteKey)
-      if (!currentQuote?.priceData) return
-      const tick = {
-        n: currentQuote.symbol,
-        b: currentQuote.priceData.sell,
-        a: currentQuote.priceData.buy,
-        t: Math.floor(currentQuote.priceData.id / 1000),
-      }
-      webviewRef.current?.postMessage(JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }))
-    })
-    return dispose
-  }, [ws, accountGroupId, symbolName, webviewRef])
+    if (!currentQuote?.priceData) return
+    const tick = {
+      n: currentQuote.symbol,
+      b: currentQuote.priceData.sell,
+      a: currentQuote.priceData.buy,
+      t: Math.floor(currentQuote.priceData.id / 1000),
+    }
+    webviewRef.current?.postMessage(JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }))
+  }, [currentQuote, webviewRef])
 }

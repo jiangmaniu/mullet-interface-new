@@ -8,6 +8,7 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useRootStore } from '@/stores'
 import { RESOLUTION_TO_PERIOD } from '@/stores/trade-slice/settingSlice'
 import { BridgeIncoming, BridgeOutgoing } from '@mullet/trading-view'
+import { BNumber } from '@mullet/utils/number'
 
 import { useBridgeDataProvider } from './hooks/use-bridge-data-provider'
 import { useQuoteSync } from './hooks/use-quote-sync'
@@ -54,7 +55,7 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
     skeletonOpacity.setValue(1)
   }, [sourceUri, skeletonOpacity])
 
-  useQuoteSync(webviewRef, accountGroupId, symbolName)
+  useQuoteSync(webviewRef, BNumber.from(accountGroupId).toFixed(), symbolName)
   useWebviewLifecycle(webviewRef, env, symbolName ?? '', symbolItem, accountGroupId)
   const { handleBridgeMessage } = useBridgeDataProvider(webviewRef)
 
