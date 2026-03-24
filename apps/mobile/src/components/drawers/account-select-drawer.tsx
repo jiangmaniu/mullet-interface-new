@@ -14,7 +14,7 @@ import { Text } from '@/components/ui/text'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useRootStore } from '@/stores'
-import { userInfoRealAccountListSelector, userInfoSimulateAccountListSelector } from '@/stores/user-slice/infoSlice'
+import { userInfoAccountMapSelector, userInfoRealAccountListSelector, userInfoSimulateAccountListSelector } from '@/stores/user-slice/infoSlice'
 import { BNumber } from '@mullet/utils/number'
 
 import { toast } from '../ui/toast'
@@ -41,58 +41,80 @@ interface AccountSelectDrawerProps {
 
 export const AccountSelectDrawer = observer(
   ({ visible, onClose, selectedAccountId, onSelect }: AccountSelectDrawerProps) => {
-    const { t } = useLingui()
-    const realAccountList = useRootStore(useShallow(userInfoRealAccountListSelector))
-    const simulateAccountList = useRootStore(useShallow(userInfoSimulateAccountListSelector))
-
-    const handleSelect = (account: User.AccountItem) => {
-      if (!account?.enableConnect || account.status === 'DISABLED') {
-        toast.error(t`该账户已被禁用`)
-        return
-      }
-
-      onSelect(account)
-      onClose()
-    }
-
-    const routes: Route[] = [
-      { key: 'real', title: t`真实账户` },
-      { key: 'mock', title: t`模拟账户` },
-    ]
-
-    const renderScene = ({ route }: { route: Route }) => {
-      const isReal = route.key === 'real'
-      const accounts = isReal ? realAccountList : simulateAccountList
-      return (
-        <ScrollView className="flex-1">
-          {accounts.map((account) => (
-            <AccountRow
-              key={account.id}
-              account={account}
-              isSelected={selectedAccountId === account.id}
-              onPress={() => handleSelect(account)}
-            />
-          ))}
-        </ScrollView>
-      )
-    }
-
     return (
       <Drawer open={visible} onOpenChange={onClose}>
         <DrawerContent className="h-[292px] px-0">
-          <SwipeableTabs
-            routes={routes}
-            renderScene={renderScene}
-            variant="underline"
-            size="md"
-            tabBarClassName="py-xl"
-            tabFlex
+          <AccountSelectContent
+            selectedAccountId={selectedAccountId}
+            onSelect={onSelect}
+            onClose={onClose}
           />
         </DrawerContent>
       </Drawer>
     )
   },
 )
+
+interface AccountSelectContentProps {
+  selectedAccountId?: string
+  onSelect: (account: User.AccountItem) => void
+  onClose: () => void
+}
+
+// 抽成子组件，确保每次 Drawer 打开时 tab 状态能正确初始化
+const AccountSelectContent = observer(({ selectedAccountId, onSelect, onClose }: AccountSelectContentProps) => {
+  const { t } = useLingui()
+  const accountMap = useRootStore(useShallow(userInfoAccountMapSelector))
+  const realAccountList = useRootStore(useShallow(userInfoRealAccountListSelector))
+  const simulateAccountList = useRootStore(useShallow(userInfoSimulateAccountListSelector))
+
+  // 根据 selectedAccountId 对应账户的类型，决定默认选中的 tab
+  const initialTabIndex = selectedAccountId && accountMap[selectedAccountId]?.isSimulate ? 1 : 0
+
+  const handleSelect = (account: User.AccountItem) => {
+    if (!account?.enableConnect || account.status === 'DISABLED') {
+      toast.error(t`该账户已被禁用`)
+      return
+    }
+
+    onSelect(account)
+    onClose()
+  }
+
+  const routes: Route[] = [
+    { key: 'real', title: t`真实账户` },
+    { key: 'mock', title: t`模拟账户` },
+  ]
+
+  const renderScene = ({ route }: { route: Route }) => {
+    const isReal = route.key === 'real'
+    const accounts = isReal ? realAccountList : simulateAccountList
+    return (
+      <ScrollView className="flex-1">
+        {accounts.map((account) => (
+          <AccountRow
+            key={account.id}
+            account={account}
+            isSelected={selectedAccountId === account.id}
+            onPress={() => handleSelect(account)}
+          />
+        ))}
+      </ScrollView>
+    )
+  }
+
+  return (
+    <SwipeableTabs
+      routes={routes}
+      renderScene={renderScene}
+      variant="underline"
+      size="md"
+      tabBarClassName="py-xl"
+      tabFlex
+      initialIndex={initialTabIndex}
+    />
+  )
+})
 
 interface AccountRowProps {
   account: User.AccountItem
