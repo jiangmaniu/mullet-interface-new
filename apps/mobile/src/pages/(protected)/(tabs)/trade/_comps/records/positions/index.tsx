@@ -14,6 +14,7 @@ import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { renderFormatSymbolName } from '@/helpers/symbol'
+import { useMarketPlatformPrice } from '@/hooks/market/use-market-quote'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
@@ -33,10 +34,10 @@ import {
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
-import { newCalcYieldRate, useCovertProfitCallback } from '@/v1/utils/wsUtil'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
+import { getPositionGrossPnlInfo, getPositionPnlYieldRateInfo } from '../../../_hooks/trade/use-position-pnl'
 import { PositionCurrentPrice } from '../../common/position-current-price'
 import { ClosePositionDrawer } from './close-position-drawer'
 import { PositionTpSlDrawer } from './position-tp-sl-drawer'
@@ -116,16 +117,26 @@ const PositionItemContent = observer(
     const { isExpanded } = AccordionPrimitive.useItemContext()
     const { trade } = useStores()
     const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
-    const covertProfit = useCovertProfitCallback(false)
     const { renderLinguiMsg } = useI18n()
 
-    const positionProfit = covertProfit(position)
+    const currentPrice = useMarketPlatformPrice(positionInfo?.symbol, positionInfo?.direction)
 
-    const yieldRate = newCalcYieldRate(positionProfit, positionInfo?.marginByType)
+    // 浮动盈亏（换汇为账户本币）
+    const grossPnlInfo = getPositionGrossPnlInfo({
+      positionInfo,
+      closePrice: currentPrice,
+      convertCurrency: true,
+    })
 
-    const profitColor = BNumber.from(positionProfit)?.gt(0)
+    // 收益率
+    const yieldRateInfo = getPositionPnlYieldRateInfo({
+      positionInfo,
+      pnl: grossPnlInfo?.pnl,
+    })
+
+    const profitColor = grossPnlInfo?.isProfit
       ? 'text-market-rise'
-      : BNumber.from(positionProfit)?.lt(0)
+      : grossPnlInfo?.isLoss
         ? 'text-market-fall'
         : 'text-content-1'
 
@@ -180,7 +191,7 @@ const PositionItemContent = observer(
                 <Trans>浮动盈亏({currentAccountCurrencyInfo?.currencyUnit})</Trans>
               </Text>
               <Text className={`text-paragraph-p2 ${profitColor}`}>
-                {BNumber.toFormatNumber(positionProfit, {
+                {BNumber.toFormatNumber(grossPnlInfo?.pnl, {
                   forceSign: true,
                   positive: false,
                   volScale: currentAccountCurrencyInfo?.currencyDecimal,
@@ -192,7 +203,7 @@ const PositionItemContent = observer(
                 <Trans>收益率</Trans>
               </Text>
               <Text className={`text-paragraph-p2 ${profitColor}`}>
-                {BNumber.toFormatPercent(yieldRate, { forceSign: true })}
+                {BNumber.toFormatPercent(yieldRateInfo?.ratio, { forceSign: true })}
               </Text>
             </View>
             {isExpanded && (

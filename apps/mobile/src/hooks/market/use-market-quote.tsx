@@ -5,6 +5,8 @@ import type { RootStoreState } from '@/stores/index'
 import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 import { parseDataSourceKey } from '@/helpers/parse/symbol'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
+import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores/index'
 import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
@@ -12,7 +14,7 @@ import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { IQuoteItem } from '@/v1/stores/ws'
 import { toFixed } from '@/v1/utils'
-import { BNumber } from '@mullet/utils/number'
+import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 /** 订阅指定 symbol 的原始行情数据 */
 export const useMarketQuote = (symbol?: string) => {
@@ -169,4 +171,53 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
 
     ...info,
   }
+}
+
+// ============ 方向价格 ============
+
+/**
+ * 获取用户交易价格
+ * 买入交易用 ask（卖方报价），卖出交易用 bid（买方报价）
+ * 适用场景：开仓、平仓成交价
+ */
+export const getMarketUserPrice = (
+  direction?: TradePositionDirectionEnum,
+  { buy, sell }: { buy?: BNumberValue; sell?: BNumberValue } = {},
+) => {
+  const { isBuy, isSell } = parseTradeDirectionInfo(direction)
+  return isBuy ? buy : isSell ? sell : undefined
+}
+
+/**
+ * Hook：订阅行情，返回用户交易价格
+ * 买入交易用 userBuyPrice，卖出交易用 userSellPrice
+ */
+export const useMarketUserPrice = (symbol?: string, direction?: TradePositionDirectionEnum) => {
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  return getMarketUserPrice(direction, { buy: symbolMarketInfo?.userBuyPrice, sell: symbolMarketInfo?.userSellPrice })
+}
+
+/**
+ * 获取平台报价价格
+ * 买入用 platformBidPrice，卖出用 platformAskPrice
+ * 适用场景：持仓盈亏计算
+ */
+export const getMarketPlatformPrice = (
+  direction?: TradePositionDirectionEnum,
+  { bid, ask }: { bid?: BNumberValue; ask?: BNumberValue } = {},
+) => {
+  const { isBuy, isSell } = parseTradeDirectionInfo(direction)
+  return isBuy ? bid : isSell ? ask : undefined
+}
+
+/**
+ * Hook：订阅行情，返回平台报价价格
+ * 买入用 platformBidPrice，卖出用 platformAskPrice
+ */
+export const useMarketPlatformPrice = (symbol?: string, direction?: TradePositionDirectionEnum) => {
+  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  return getMarketPlatformPrice(direction, {
+    bid: symbolMarketInfo?.platformBidPrice,
+    ask: symbolMarketInfo?.platformAskPrice,
+  })
 }
