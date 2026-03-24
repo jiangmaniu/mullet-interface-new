@@ -104,14 +104,20 @@ export const TVChart = () => {
   const showBottomMACD = Number(query.showBottomMACD || 1)
   const chartType = (query.chartType !== '' ? Number(query.chartType || 1) : 1) as ChartStyle
   const mode = (query.mode === 'simple' ? 'simple' : 'detail') as 'simple' | 'detail'
+  const resolution = (query.resolution || '15') as string
 
   const params = useMemo(
-    () => ({ symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode }),
-    [symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode]
+    () => ({ symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode, resolution }),
+    [symbol, locale, theme, colorType, isMobile, bgGradientStartColor, bgGradientEndColor, mode, resolution]
   )
 
   useEffect(() => {
     clearChartCache(theme, bgGradientStartColor)
+    // simple 模式下清除 TradingView localStorage 中缓存的 chart state（含 interval），
+    // 确保使用 URL query 传入的 resolution 初始化，而非 localStorage 中上次缓存的值
+    if (mode === 'simple') {
+      clearTradingViewStorage()
+    }
 
     const symbolProvider = new BridgeSymbolProvider(postToApp)
     const historyProvider = new BridgeHistoryProvider(postToApp)
@@ -151,6 +157,11 @@ export const TVChart = () => {
       // widget ready 后注册，支持 ActiveChart/Widget 方法调用
       initBridge(tvWidget, { historyProvider, symbolProvider })
       onWatermark((base64) => injectWatermark(chartContainerRef.current, base64))
+
+      // 监听周期变化，通知宿主 App 同步全局状态
+      tvWidget.activeChart().onIntervalChanged().subscribe(null, (interval) => {
+        postToApp({ type: BridgeOutgoing.ResolutionChanged, payload: { resolution: interval } })
+      })
 
       setChartReady(true)
       postToApp({ type: BridgeOutgoing.ChartReady })

@@ -21,6 +21,7 @@ export interface SettingSliceState {
   orderConfirmation: boolean
   closeConfirmation: boolean
   chartPosition: ChartPosition
+  chartResolution: string
 }
 
 export interface SettingSliceActions {
@@ -30,6 +31,7 @@ export interface SettingSliceActions {
   setOrderConfirmation: (value: boolean) => void
   setCloseConfirmation: (value: boolean) => void
   setChartPosition: (position: ChartPosition) => void
+  setChartResolution: (resolution: string) => void
 }
 
 /** setting 命名空间（状态 + actions 扁平化） */
@@ -60,6 +62,7 @@ export function createTradeSettingSlice(
     orderConfirmation: true,
     closeConfirmation: true,
     chartPosition: 'top',
+    chartResolution: '15分',
 
     setSetting: (partial) =>
       setRoot((state) => {
@@ -91,13 +94,41 @@ export function createTradeSettingSlice(
       setRoot((state) => {
         state.trade.setting.chartPosition = position
       }),
+
+    setChartResolution: (resolution) =>
+      setRoot((state) => {
+        state.trade.setting.chartResolution = resolution
+      }),
   }
 }
 
 // ============ Selectors ============
+
+/** 周期中文标签 → TradingView resolution 格式映射 */
+export const PERIOD_TO_RESOLUTION: Record<string, string> = {
+  '1分': '1',
+  '5分': '5',
+  '15分': '15',
+  '30分': '30',
+  '1小时': '60',
+  '4小时': '240',
+  '1天': '1D',
+  '1周': '1W',
+  '1月': '1M',
+}
+
+/** TradingView resolution → 中文标签反向映射 */
+export const RESOLUTION_TO_PERIOD: Record<string, string> = Object.fromEntries(
+  Object.entries(PERIOD_TO_RESOLUTION).map(([k, v]) => [v, k]),
+)
 
 export const tradeSettingSelector = (state: RootStoreState) => state.trade.setting
 export const tradeSettingColorSchemeSelector = (state: RootStoreState) => state.trade.setting.colorScheme
 export const tradeSettingOrderConfirmationSelector = (state: RootStoreState) => state.trade.setting.orderConfirmation
 export const tradeSettingCloseConfirmationSelector = (state: RootStoreState) => state.trade.setting.closeConfirmation
 export const tradeSettingChartPositionSelector = (state: RootStoreState) => state.trade.setting.chartPosition
+/** 返回中文标签格式的周期，如 '15分'、'4小时' */
+export const tradeSettingChartResolutionSelector = (state: RootStoreState) => state.trade.setting.chartResolution
+/** 返回 TradingView 格式的 resolution，如 '15'、'240'、'1D' */
+export const tradeSettingChartTvResolutionSelector = (state: RootStoreState) =>
+  PERIOD_TO_RESOLUTION[state.trade.setting.chartResolution] ?? '15'

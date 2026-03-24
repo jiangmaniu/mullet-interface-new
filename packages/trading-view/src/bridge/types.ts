@@ -45,6 +45,8 @@ export enum BridgeOutgoing {
   Subscribe = 'subscribe',
   /** 请求取消订阅品种行情 */
   Unsubscribe = 'unsubscribe',
+  /** 图表周期变化通知 */
+  ResolutionChanged = 'resolutionChanged',
 }
 
 // ── App → Web 消息 ──
@@ -150,3 +152,4 @@ export type WebToAppMessage =
   | { type: BridgeOutgoing.ResolveSymbol; callId: string; payload: { symbol: string } }
   | { type: BridgeOutgoing.Subscribe; payload: { symbol: string } }
   | { type: BridgeOutgoing.Unsubscribe; payload: { symbol: string } }
+  | { type: BridgeOutgoing.ResolutionChanged; payload: { resolution: string } }

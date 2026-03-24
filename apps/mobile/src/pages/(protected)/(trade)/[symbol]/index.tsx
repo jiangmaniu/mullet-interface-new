@@ -25,6 +25,7 @@ import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { marketCurrentFavoriteSetSelector } from '@/stores/market-slice/favorite-slice'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { tradeSettingChartTvResolutionSelector } from '@/stores/trade-slice/settingSlice'
 import { transferWeekDay } from '@/v1/constants'
 import { formatTimeStr } from '@/v1/utils/business'
 import { msg } from '@lingui/core/macro'
@@ -178,12 +179,14 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
 
 // ============ ChartView Component ============
 function ChartView({ symbol }: { symbol?: string }) {
+  const tvResolution = useRootStore(tradeSettingChartTvResolutionSelector)
+
   return (
     // <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
     <View className="flex-1">
       <PriceInfo symbol={symbol} />
       <View className="flex-1">
-        <TradingviewChart mode="detail" />
+        <TradingviewChart mode="detail" resolution={tvResolution} />
       </View>
     </View>
   )

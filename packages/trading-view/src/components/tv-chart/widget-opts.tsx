@@ -26,6 +26,7 @@ export default function getWidgetOpts(
       colorType?: number
       isMobile?: boolean
       mode?: ChartMode
+      resolution?: string
     }
   >,
   containerRef: HTMLElement,
@@ -143,7 +144,7 @@ export default function getWidgetOpts(
     client_id: 'tradingview.com"', // 设置高级保存/加载图表 API 的客户端 ID
     user_id: 'public_user_id', // 设置高级保存/加载图表 API 的用户 ID。
     locale: props.locale as LanguageCode, // 设置语言
-    interval: '15' as ResolutionString, // 分辨率，默认 15 分；1/5/15/30/60/240->分钟 D->天 W->周 M->月
+    interval: (props.resolution || '15') as ResolutionString, // 分辨率，默认 15 分；1/5/15/30/60/240->分钟 D->天 W->周 M->月
     theme, // 设置主题颜色
     toolbar_bg, // 侧边工具栏和底部工具栏背景颜色
     container: containerRef, // dom的引用

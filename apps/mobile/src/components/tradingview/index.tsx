@@ -5,6 +5,8 @@ import { WebView } from 'react-native-webview'
 import type { WebViewMessageEvent } from 'react-native-webview'
 
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useRootStore } from '@/stores'
+import { RESOLUTION_TO_PERIOD } from '@/stores/trade-slice/settingSlice'
 import { BridgeIncoming, BridgeOutgoing } from '@mullet/trading-view'
 
 import { useBridgeDataProvider } from './hooks/use-bridge-data-provider'
@@ -39,12 +41,21 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
 
   const configOpts = {
     mode,
+    resolution,
   }
 
   const { env, locale, urlQuery, symbolName, symbolItem, accountGroupId, isReady } = useTradingviewConfig(configOpts)
 
+  // urlQuery 变化（品种切换）→ WebView 重载 → 重新显示 skeleton loading
+  const sourceUri = getSourceUri(urlQuery)
+  useEffect(() => {
+    setChartReady(false)
+    setSkeletonVisible(true)
+    skeletonOpacity.setValue(1)
+  }, [sourceUri, skeletonOpacity])
+
   useQuoteSync(webviewRef, accountGroupId, symbolName)
-  useWebviewLifecycle(webviewRef, env, symbolName, symbolItem, accountGroupId)
+  useWebviewLifecycle(webviewRef, env, symbolName ?? '', symbolItem, accountGroupId)
   const { handleBridgeMessage } = useBridgeDataProvider(webviewRef)
 
   useEffect(() => {
@@ -62,7 +73,7 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
   const handleMessage = useCallback(
     (event: WebViewMessageEvent) => {
       if (handleBridgeMessage(event.nativeEvent.data)) return
-      const msg: { type?: string } = JSON.parse(event.nativeEvent.data)
+      const msg: { type?: string; payload?: any } = JSON.parse(event.nativeEvent.data)
       if (msg.type === BridgeOutgoing.ChartReady) {
         setChartReady(true)
         webviewRef.current?.postMessage(
@@ -74,6 +85,12 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
             },
           }),
         )
+      } else if (msg.type === BridgeOutgoing.ResolutionChanged && msg.payload?.resolution) {
+        // TradingView 内部切换周期 → 同步到全局 store
+        const period = RESOLUTION_TO_PERIOD[msg.payload.resolution]
+        if (period) {
+          useRootStore.getState().trade.setting.setChartResolution(period)
+        }
       }
     },
     [webviewRef, handleBridgeMessage],

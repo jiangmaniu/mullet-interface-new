@@ -7,20 +7,13 @@ import { IconNavArrowDown, IconNavArrowSuperior } from '@/components/ui/icons'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { cn } from '@/lib/utils'
+import { useRootStore } from '@/stores'
+import {
+  PERIOD_TO_RESOLUTION,
+  tradeSettingChartResolutionSelector,
+} from '@/stores/trade-slice/settingSlice'
 
 const TIME_PERIODS = ['1分', '5分', '15分', '30分', '1小时', '4小时', '1天', '1周', '1月']
-
-const PERIOD_TO_RESOLUTION: Record<string, string> = {
-  '1分': '1',
-  '5分': '5',
-  '15分': '15',
-  '30分': '30',
-  '1小时': '60',
-  '4小时': '240',
-  '1天': '1D',
-  '1周': '1W',
-  '1月': '1M',
-}
 
 interface SymbolChartViewProps {
   isVisible?: boolean
@@ -29,7 +22,8 @@ interface SymbolChartViewProps {
 
 export function SymbolChartView({ isVisible: externalIsVisible, onToggle }: SymbolChartViewProps = {}) {
   const [internalIsVisible, setInternalIsVisible] = useState(true)
-  const [selectedPeriod, setSelectedPeriod] = useState('15分') // 默认周期
+  const selectedPeriod = useRootStore(tradeSettingChartResolutionSelector)
+  const setSelectedPeriod = useRootStore((s) => s.trade.setting.setChartResolution)
 
   // 使用外部状态或内部状态
   const isVisible = externalIsVisible !== undefined ? externalIsVisible : internalIsVisible

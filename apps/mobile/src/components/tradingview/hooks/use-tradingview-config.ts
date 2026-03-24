@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { IEnv } from '@/v1/env'
 
 import { i18n } from '@/locales/i18n'
@@ -12,6 +12,8 @@ import { getTradingviewLocale } from '../utils'
 
 export interface UseTradingviewConfigOpts {
   mode?: 'simple' | 'detail'
+  /** simple 模式下由外部传入的 resolution（TradingView 格式，如 '15', '60', '1D'） */
+  resolution?: string
 }
 
 export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
@@ -28,6 +30,12 @@ export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
   const colorScheme = useRootStore((s) => s.trade.setting.colorScheme)
   const colorType = colorScheme === 'green-up' ? '1' : '2'
 
+  // resolution 用 ref 存储，不作为 urlQuery 的依赖
+  // → 切换周期时不会触发 URL 变化（走 postMessage）
+  // → 切换品种时 urlQuery 因 symbolName 变化而重算，自动带上最新 resolution
+  const resolutionRef = useRef(opts?.resolution)
+  resolutionRef.current = opts?.resolution
+
   useEffect(() => {
     getEnv().then(setEnv)
   }, [])
@@ -35,18 +43,23 @@ export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
   /**
    * URL query 参数 - 实际被 packages/trading-view 消费
    * 通过 getSourceUri(urlQuery) 拼入加载地址，trading-view 的 TVChart 用 useRouter().query 读取
+   *
+   * 注意：resolution 通过 ref 读取，不在 deps 中
+   * - 切换品种 → symbolName 变 → urlQuery 重算 → WebView 重载，带上当前 resolution
+   * - 切换周期 → resolution 变 → urlQuery 不变 → 不重载，走 postMessage
    */
   const urlQuery = useMemo(() => {
     if (!symbolItem) return {} as Record<string, string>
     return {
-      name: symbolName,
+      name: symbolName ?? '',
       lang: tvLocale,
       theme: 'dark',
       colorType,
-      // debug: __DEV__ ? '1' : undefined,
       ...(opts?.mode === 'simple' && { mode: 'simple' }),
+      ...(resolutionRef.current && { resolution: resolutionRef.current }),
     }
-  }, [symbolItem, symbolName, tvLocale, colorType])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbolItem, symbolName, tvLocale, colorType, opts?.mode])
 
   return {
     env,
