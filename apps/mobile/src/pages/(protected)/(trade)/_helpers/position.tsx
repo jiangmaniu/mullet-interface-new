@@ -2,6 +2,7 @@ import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { Order } from '@/v1/services/tradeCore/order/typings'
+import { BNumberValue } from '@mullet/utils/number'
 
 export type TradePositionInfo = Order.BgaOrderPageListItem & {
   isBuy: boolean
@@ -9,6 +10,7 @@ export type TradePositionInfo = Order.BgaOrderPageListItem & {
   lotsVolScale?: number
   direction?: TradePositionDirectionEnum
   marginByType?: number
+  amount?: BNumberValue
 }
 
 export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) => {
@@ -19,6 +21,7 @@ export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) =>
   const lotsVolScale = parseSymbolLotsVolScale(position.conf)
   const marginByType =
     position?.marginType === OrderMarginTypeEnum.CROSS_MARGIN ? position?.orderBaseMargin : position?.orderMargin
+  const amount = position.orderVolume
 
   const info: TradePositionInfo = {
     ...position,
@@ -27,6 +30,7 @@ export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) =>
     direction,
     lotsVolScale,
     marginByType,
+    amount,
   }
 
   return info
