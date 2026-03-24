@@ -9,6 +9,7 @@
       "Bash(ls -la .env*.local)",
       "Bash(node -e \"const plugin = require\\(''./plugins/withXcodeBuildSettings.js''\\); console.log\\(''插件加载成功:'', typeof plugin\\);\")",
       "Bash(node -e \"const plugin = require\\(''./plugins/withGradleJvmArgs.js''\\); console.log\\(''插件加载成功:'', typeof plugin\\);\")",
+      "Bash(ls apps/mobile/src/pages/\\\\\\(protected\\\\\\)/\\\\\\(tabs\\\\\\)/trade/_hooks/trade/)",
       "Bash(git add:*)"
     ]
   },
