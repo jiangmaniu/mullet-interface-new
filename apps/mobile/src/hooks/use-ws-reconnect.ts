@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 
+import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { useRootStore } from '@/stores'
 import { stores } from '@/v1/provider/mobxProvider'
 import { SymbolWSItem } from '@/v1/stores/ws'
@@ -29,6 +30,9 @@ export const useWsReconnect = () => {
     const token = useRootStore.getState().user.auth.accessToken
     if (!token) return
 
+    const activeTradeAccountId = useRootStore.getState().user.info.activeTradeAccountId
+    if (!activeTradeAccountId) return
+
     const { ws } = stores
 
     // 若连接正常，无需重订阅（服务端订阅状态仍在）
@@ -43,10 +47,16 @@ export const useWsReconnect = () => {
     ws.checkSocketReady(() => {
       // 重新订阅行情
       if (symbols.length > 0) {
-        // ws.subscribeSymbol(symbols, false)
+        ws.subscribeSymbol(symbols, false)
       }
       // 重新订阅持仓/挂单/账户
-      // ws.subscribePosition()
+      ws.subscribePosition()
+
+      // 订阅账户
+      ws.send({
+        topic: `/${DEFAULT_TENANT_ID}/trade/${activeTradeAccountId}`,
+        cancel: false,
+      })
     })
   }, [])
 

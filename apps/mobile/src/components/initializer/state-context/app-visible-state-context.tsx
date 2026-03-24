@@ -43,14 +43,11 @@ export const AppVisibleStateProvider = ({ children }: { children: React.ReactNod
     }
   }, [isConnected, reconnect])
 
-  useAppState(
-    () => {
-      // 应用从后台恢复到前台时触发重连
-      // 若 WS 仍连接则跳过，若已断开则重连并恢复行情订阅
-      reconnect()
-    },
-    undefined,
-  )
+  useAppState(() => {
+    // 应用从后台恢复到前台时触发重连
+    // 若 WS 仍连接则跳过，若已断开则重连并恢复行情订阅
+    reconnect()
+  }, undefined)
 
   return (
     <AppVisibleStateContext.Provider value={{ isAppVisible: false, setAppVisible: () => {} }}>
