@@ -10,6 +10,7 @@ import { useResolveClassNames } from 'uniwind'
 import { SparkLine } from '@/components/charts/spark-line'
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   CollapsibleFlatList,
   CollapsibleStickyContent,
@@ -139,8 +140,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
         {/* K线图表 */}
         <View className="h-8 w-[70px] items-center justify-center overflow-hidden">
           {isLoading ? (
-            // 加载骨架屏
-            <View className="h-full w-full rounded-xs bg-zinc-300/10" />
+            <Skeleton className="h-full w-full rounded-xs" />
           ) : (
             <SparkLine data={memoizedChartData} color={chartColor} width={70} height={32} strokeWidth={1} />
           )}
