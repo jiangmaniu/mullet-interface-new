@@ -24,5 +24,5 @@ export function toFormatPercent(percent?: BNumberValue | null, opt: FormatPercen
     volScale: rest.volScale ?? COMMON_PERCENT_DISPLAY_DECIMALS,
     ...rest,
   })
-  return formatedPercent
+  return formatedPercent ?? ''
 }

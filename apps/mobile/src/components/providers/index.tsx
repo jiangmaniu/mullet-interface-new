@@ -59,7 +59,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
   // 同步 Uniwind 主题到 AppKit
   useEffect(() => {
     const appKitTheme = theme === 'dark' ? 'dark' : 'light'
-    ThemeController.setThemeMode(appKitTheme)
+    ThemeController.setDefaultThemeMode(appKitTheme)
   }, [theme])
 
   if (!isI18nLoaded) {

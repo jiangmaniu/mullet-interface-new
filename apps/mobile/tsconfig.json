@@ -4,6 +4,8 @@
     "strict": true,
     // Allows us to use conditional/deep imports on published packages
     "moduleResolution": "Bundler",
+    // TS 6.0: types 默认改为 []，需显式声明
+    "types": ["react-native", "node", "react"],
     "paths": {
       "@/*": [
         "./src/*"
@@ -23,5 +25,9 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts",
     "lingui.config.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../../node_modules"
   ]
 }

@@ -108,7 +108,7 @@
     "react-native-get-random-values": "^1.11.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-localize": "^3.7.0",
-    "react-native-mmkv": "^4.3.0",
+    "react-native-mmkv": "4.1.2",
     "react-native-pager-view": "^8.0.0",
     "react-native-passkeys": "^0.4.0",
     "react-native-permissions": "^5.5.1",
@@ -150,7 +150,7 @@
     "inquirer": "^13.3.2",
     "reactotron-react-native": "^5.1.18",
     "shelljs": "^0.10.0",
-    "typescript": "~5.9.2"
+    "typescript": "~6.0.2"
   },
   "private": true
 }
