@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { isUndefined } from 'lodash-es'
+import { TextInput } from 'react-native'
 import type { NumberInputPrimitiveProps } from './number-input-primitive'
 
 import { cn } from '@/lib/utils'
@@ -15,7 +16,7 @@ export type NumberFieldProps = Omit<NumberInputPrimitiveProps, 'size' | 'placeho
     inputClassName?: string
   }
 
-const NumberInput = ({
+const NumberInputBase = ({
   // InputContainer props
   labelText,
   placeholder,
@@ -43,7 +44,7 @@ const NumberInput = ({
   min,
   max,
   ...props
-}: NumberFieldProps) => {
+}: NumberFieldProps, ref: React.Ref<TextInput>) => {
   const isError = status === 'error'
 
   return (
@@ -67,6 +68,7 @@ const NumberInput = ({
       displayLabelClassName={displayLabelClassName}
     >
       <NumberInputPrimitive
+        ref={ref}
         placeholder=" "
         className={cn(
           'peer order-2 flex-1',
@@ -106,6 +108,9 @@ const NumberInput = ({
     </InputContainer>
   )
 }
-NumberInput.displayName = 'NumberInput'
+NumberInputBase.displayName = 'NumberInput'
+
+// React 19 支持直接在函数组件上使用 ref，但为了兼容性使用 forwardRef
+const NumberInput = React.forwardRef(NumberInputBase)
 
 export { NumberInput, NumberInputPrimitive, NumberInputSourceType }

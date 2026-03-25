@@ -1,5 +1,5 @@
 import React, { ComponentProps, createContext, useContext, useState } from 'react'
-import { LayoutChangeEvent, Pressable, View, ViewStyle } from 'react-native'
+import { Keyboard, LayoutChangeEvent, Pressable, View, ViewStyle } from 'react-native'
 import { MaterialTabBar, MaterialTabBarProps, Tabs, useCurrentTabScrollY } from 'react-native-collapsible-tab-view'
 import { useScroller, useTabsContext } from 'react-native-collapsible-tab-view/src/hooks'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -422,9 +422,17 @@ export function CollapsibleStickyHeader({
       isGestureActive.value = false
     })
 
+  const headerTapGesture = Gesture.Tap()
+    .runOnJS(true)
+    .onEnd(() => {
+      Keyboard.dismiss()
+    })
+
+  const composedGesture = Gesture.Simultaneous(headerTapGesture, headerPanGesture)
+
   return (
     <CollapsibleStickyContext.Provider value={{ bannerHeight, setBannerHeight }}>
-      <GestureDetector gesture={headerPanGesture}>
+      <GestureDetector gesture={composedGesture}>
         <View className={cn('relative', className)} style={style}>
           {children}
         </View>

@@ -122,9 +122,11 @@ const InputContainer = <T,>({
     setLeftContentWidth(event.nativeEvent.layout.width)
   }
 
-  // 点击容器时聚焦 input
+  // 点击容器时聚焦 input（已聚焦则不重复触发，避免阻止失焦）
   const handleContainerPress = () => {
-    inputRef.current?.focus()
+    if (!isFocused) {
+      inputRef.current?.focus()
+    }
   }
 
   // 计算 label 的初始 left 位置（占位符状态）
