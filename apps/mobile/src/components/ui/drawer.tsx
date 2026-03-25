@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Dimensions, Keyboard, Modal, Platform, Pressable, Text, TextInput, View } from 'react-native'
+import { Dimensions, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -105,23 +105,17 @@ function DrawerPortal({ children }: DrawerPortalProps) {
 
   const measureAndAdjust = React.useCallback(
     (keyboardTop: number) => {
-      if (Platform.OS === 'android') {
-        // 安卓：Modal 内 measureInWindow 坐标不可靠
-        // 直接用键盘高度的一半上移，确保输入框可见
-        const keyboardHeight = screenHeight - keyboardTop
-        const target = -(keyboardHeight * 0.5)
-        keyboardOffsetY.value = withTiming(target, animConfig)
-        return
-      }
-
       const focused = TextInput.State.currentlyFocusedInput()
       if (!focused) return
 
       focused.measureInWindow((_x: number, y: number, _w: number, h: number) => {
         if (h === 0) return
         const currentOffset = keyboardOffsetY.value
-        const originalBottom = y - currentOffset + h
-        const overlap = originalBottom - keyboardTop + 20
+        // Android: measureInWindow 返回 window 相对坐标，keyboardTop(screenY) 是 screen 相对坐标
+        // 需要加上状态栏高度对齐坐标系
+        const statusBarOffset = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0
+        const originalBottom = y + statusBarOffset - currentOffset + h
+        const overlap = originalBottom - keyboardTop + (Platform.OS === 'ios' ? 20 : 0)
         const target = overlap > 0 ? -overlap : 0
         keyboardOffsetY.value = withTiming(target, animConfig)
       })
