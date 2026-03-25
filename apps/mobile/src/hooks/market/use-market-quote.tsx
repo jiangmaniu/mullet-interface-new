@@ -6,17 +6,19 @@ import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 import { parseDataSourceKey } from '@/helpers/parse/symbol'
 import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
+import { IQuoteItem } from '@/lib/ws/types'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores/index'
 import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
 import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { IQuoteItem } from '@/v1/stores/ws'
 import { toFixed } from '@/v1/utils'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
-/** 订阅指定 symbol 的原始行情数据 */
+import { useSubscribeQuote } from './use-subscribe-quote'
+
+/** 订阅指定 symbol 的原始行情数据（纯读取，不触发 WS 订阅，列表 item 使用） */
 export const useMarketQuote = (symbol?: string) => {
   const symbolInfo = useRootStore(useShallow(useCallback((s) => createSymbolInfoSelector(symbol)(s), [symbol])))
 
@@ -220,4 +222,18 @@ export const useMarketPlatformPrice = (symbol?: string, direction?: TradePositio
     bid: symbolMarketInfo?.platformBidPrice,
     ask: symbolMarketInfo?.platformAskPrice,
   })
+}
+
+// ============ 带自动订阅的 hook（详情页使用）============
+
+/** 订阅指定 symbol 的原始行情数据，组件挂载时自动订阅 WS，卸载时自动取消（详情页使用） */
+export const useMarketQuoteWithSub = (symbol?: string) => {
+  useSubscribeQuote(symbol ? [symbol] : [])
+  return useMarketQuote(symbol)
+}
+
+/** 订阅指定 symbol 的解析后行情信息，组件挂载时自动订阅 WS，卸载时自动取消（详情页使用） */
+export const useMarketQuoteInfoWithSub = (symbol?: string) => {
+  useSubscribeQuote(symbol ? [symbol] : [])
+  return useMarketQuoteInfo(symbol)
 }

@@ -17,17 +17,14 @@ export const STORAGE_KEY_SNAPSHOT_QUOTE = `${PREFIX}:SNAPSHOT:QUOTE`
 /** 品种列表快照（拉取成功后存入，启动时读取） */
 export const STORAGE_KEY_SNAPSHOT_SYMBOL = `${PREFIX}:SNAPSHOT:SYMBOL`
 
+/** 品种列表快照（拉取成功后存入，启动时读取） */
+export const STORAGE_KEY_SNAPSHOT_SYMBOL_SIMPLE = `${PREFIX}:SNAPSHOT:SYMBOL:SIMPLE`
+
 /** 所有快照 key 列表，用于批量清除 */
-export const STORAGE_SNAPSHOT_KEYS = [
-  STORAGE_KEY_SNAPSHOT_QUOTE,
-  STORAGE_KEY_SNAPSHOT_SYMBOL,
-] as const
+export const STORAGE_SNAPSHOT_KEYS = [STORAGE_KEY_SNAPSHOT_QUOTE, STORAGE_KEY_SNAPSHOT_SYMBOL] as const
 
 /** 所有 MMKV 持久化 key 列表，用于完整清除（不含用户登录态） */
-export const STORAGE_CLEARABLE_KEYS = [
-  STORAGE_KEY_ROOT_STORE,
-  ...STORAGE_SNAPSHOT_KEYS,
-] as const
+export const STORAGE_CLEARABLE_KEYS = [STORAGE_KEY_ROOT_STORE, ...STORAGE_SNAPSHOT_KEYS] as const
 
 // ─── 业务 key ────────────────────────────────────────────────────────────────
 

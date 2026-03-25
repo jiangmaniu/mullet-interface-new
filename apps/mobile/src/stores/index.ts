@@ -69,4 +69,8 @@ const callInitSubscribe = (slice: any) => {
     }
   })
 }
-Object.values(useRootStoreBase.getState()).forEach(callInitSubscribe)
+
+/** 在 i18n 激活后调用，确保 initSubscribe 中使用 Lingui 的逻辑不会报错 */
+export const initStoreSubscribes = () => {
+  Object.values(useRootStoreBase.getState()).forEach(callInitSubscribe)
+}

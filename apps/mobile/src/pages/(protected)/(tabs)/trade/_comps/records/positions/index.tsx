@@ -98,15 +98,14 @@ export const TradePositions = () => {
 
 const PositionItemById = ({ id }: { id: string }) => {
   const position = useRootStore(createPositionItemSelector(id))
-  if (!position) return null
 
-  return (
+  return position ? (
     <Accordion type="multiple" className="border-b-0">
       <AccordionItem value={id} className="py-xl border-b-0">
         <PositionItemContent position={position} />
       </AccordionItem>
     </Accordion>
-  )
+  ) : null
 }
 
 // ============ PositionItemContent：保留 observer 因为依赖 MobX trade.getMarginRateInfo ============

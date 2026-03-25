@@ -4,6 +4,7 @@ import type { RootStoreState } from '../index'
 
 import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { calcAccountOccupiedMargin } from '@/helpers/calc/account'
+import MulletWS from '@/lib/ws/mullet-ws'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import ws from '@/v1/stores/ws'
 
@@ -131,39 +132,22 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }
     },
     setActiveTradeAccountId: async (accountId?: string) => {
-      const prevAccountId = get().user.info.activeTradeAccountId
+      // 切换账户时立即清空仓位和挂单，避免旧数据在新账户数据到来前引起渲染异常
+      get().trade.position.reset()
+      get().trade.order.reset()
+
+      // 切换账户后重新订阅 WS 持仓/消息/通知
+      MulletWS.getInstance().onAccountSwitch()
+
+      // // 订阅新的账户
+      if (accountId) {
+        await get().market.symbol.fetchInfoList(accountId)
+        await Promise.all([get().trade.position.fetch(accountId), get().trade.order.fetch(accountId)])
+      }
 
       setRoot((state) => {
         state.user.info.activeTradeAccountId = accountId
       })
-
-      // 取消上一个账户的订阅
-      if (accountId !== prevAccountId) {
-        // 取消上一个账户的订阅
-        ws.send({
-          topic: `/${DEFAULT_TENANT_ID}/trade/${prevAccountId}`,
-          cancel: true,
-        })
-
-        const prevAccountInfo = createAccountInfoSelector(prevAccountId)(get())
-        get().trade.position.subscribePositionMarketQuote(get().trade.position.idList, prevAccountInfo, {
-          cancel: true,
-        })
-
-        get().trade.order.subscribeOrderMarketQuote(get().trade.order.idList, prevAccountInfo, { cancel: true })
-      }
-
-      // 订阅新的账户
-      if (accountId) {
-        // 添加当前订阅
-        ws.send({
-          topic: `/${DEFAULT_TENANT_ID}/trade/${accountId}`,
-          cancel: false,
-        })
-
-        await get().market.symbol.fetchInfoList(accountId)
-        await Promise.all([get().trade.position.fetch(), get().trade.order.fetch()])
-      }
     },
   }
 }

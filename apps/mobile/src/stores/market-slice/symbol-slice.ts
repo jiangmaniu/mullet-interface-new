@@ -1,17 +1,20 @@
 import { useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { keyBy } from 'lodash-es'
+import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
+import { loadSnapshot, saveSnapshot } from '@/lib/storage/snapshot'
 import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { loadSnapshot, saveSnapshot } from '@/lib/storage/snapshot'
-import ws, { SymbolWSItem } from '@/v1/stores/ws'
+import { getAllSymbols } from '@/v1/services/tradeCore/symbol'
 
 import { useRootStore } from '../index'
 
 // ============ 状态 & Actions 类型 ============
+
+type MarketSymbolSimpleMap = Record<string, Symbol.AllSymbolItem>
 
 export interface MarketSymbolSliceState {
   /** 品种列表加载状态 */
@@ -20,6 +23,8 @@ export interface MarketSymbolSliceState {
   infoMap: Record<string, Account.TradeSymbolListItem>
   /** 全部品种信息列表 */
   infoList: Account.TradeSymbolListItem[]
+
+  simpleMap: MarketSymbolSimpleMap
 }
 
 export interface MarketSymbolSliceActions {
@@ -36,57 +41,58 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
   const snapshotList = loadSnapshot<Account.TradeSymbolListItem[]>('symbol') ?? []
   const snapshotInfoMap = snapshotList.length ? keyBy<Account.TradeSymbolListItem>(snapshotList, 'symbol') : {}
 
+  const snapshotSymbolSimpleMap = loadSnapshot<MarketSymbolSimpleMap>('symbolSimple') ?? {}
+
   return {
     loading: false,
+    simpleMap: snapshotSymbolSimpleMap,
     infoMap: snapshotInfoMap,
     infoList: snapshotList,
 
-  fetchInfoList: async (accountId?: string) => {
-    if (!get().market.symbol.infoList.length) {
-      set((state) => {
-        state.market.symbol.loading = true
-      })
-    }
-
-    try {
-      const res = await getTradeSymbolList({ accountId })
-
-      if (res.success) {
-        const list = (res.data || []) as Account.TradeSymbolListItem[]
-        const infoMap = keyBy<Account.TradeSymbolListItem>(list, 'symbol')
-
+    fetchInfoList: async (accountId?: string) => {
+      if (!get().market.symbol.infoList.length) {
         set((state) => {
-          state.market.symbol.infoList = list
-          state.market.symbol.infoMap = infoMap
+          state.market.symbol.loading = true
         })
-
-        // 拉取成功后存快照，下次启动可立即显示
-        saveSnapshot('symbol', list)
-
-        const activeTradeSymbol = get().trade.activeTradeSymbol
-        if (!activeTradeSymbol || !infoMap[activeTradeSymbol]) {
-          get().trade.setActiveTradeSymbol(list[0]?.symbol)
-        }
-
-        // 全量订阅品种行情
-        const accountGroupId = get().user.info.accountMap[accountId ?? '']?.accountGroupId
-        if (accountGroupId) {
-          ws.checkSocketReady(() => {
-            ws.openSymbol({
-              symbols: list.map<SymbolWSItem>((item) => ({ symbol: item.symbol, accountGroupId })),
-              cover: true,
-            })
-          })
-        }
       }
-    } catch (error) {
-      console.error('Failed to fetch trade symbol list:', error)
-    } finally {
-      set((state) => {
-        state.market.symbol.loading = false
-      })
-    }
-  },
+
+      try {
+        const [res, simpleRes] = await Promise.all([getTradeSymbolList({ accountId }), getAllSymbols()])
+
+        if (res.success) {
+          const list = (res.data || []) as Account.TradeSymbolListItem[]
+          const infoMap = keyBy<Account.TradeSymbolListItem>(list, 'symbol')
+
+          set((state) => {
+            state.market.symbol.infoList = list
+            state.market.symbol.infoMap = infoMap
+          })
+
+          // 拉取成功后存快照，下次启动可立即显示
+          saveSnapshot('symbol', list)
+
+          const activeTradeSymbol = get().trade.activeTradeSymbol
+          if (!activeTradeSymbol || !infoMap[activeTradeSymbol]) {
+            get().trade.setActiveTradeSymbol(list[0]?.symbol)
+          }
+        }
+
+        if (simpleRes.success) {
+          const simpleMap = keyBy(simpleRes.data, 'symbol')
+          set((state) => {
+            state.market.symbol.simpleMap = simpleMap
+          })
+          // 拉取成功后存快照，下次启动可立即初始化
+          saveSnapshot('symbolSimple', simpleMap)
+        }
+      } catch (error) {
+        console.error('Failed to fetch trade symbol list:', error)
+      } finally {
+        set((state) => {
+          state.market.symbol.loading = false
+        })
+      }
+    },
   }
 }
 
@@ -94,6 +100,7 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
 
 export const marketFetchMarketListLoadingSelector = (state: RootStoreState) => state.market.symbol.loading
 export const marketSymbolInfoMapSelector = (state: RootStoreState) => state.market.symbol.infoMap
+export const marketSymbolSimpleMapSelector = (state: RootStoreState) => state.market.symbol.simpleMap
 export const marketSymbolInfoListSelector = (state: RootStoreState) => state.market.symbol.infoList
 
 /** 工厂：根据 symbol 查找对应的 symbolInfo */
@@ -101,12 +108,5 @@ export const createSymbolInfoSelector = (symbol?: string) => (state: RootStoreSt
   symbol ? state.market.symbol.infoMap[symbol] : undefined
 
 export const useMarketSymbolInfo = (symbol?: string) => {
-  return useRootStore(
-    useShallow(
-      useCallback(
-        (s: RootStoreState) => createSymbolInfoSelector(symbol)(s),
-        [symbol],
-      ),
-    ),
-  )
+  return useRootStore(useShallow(useCallback((s: RootStoreState) => createSymbolInfoSelector(symbol)(s), [symbol])))
 }

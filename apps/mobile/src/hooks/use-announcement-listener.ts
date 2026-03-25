@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 import { toast } from '@/components/ui/toast'
-import { MessagePopupInfo } from '@/v1/stores/ws'
+import { MessagePopupInfo } from '@/lib/ws/types'
 import mitt from '@/v1/utils/mitt'
 
 /** 全局监听 ws 公告推送，弹出通知 Toast */

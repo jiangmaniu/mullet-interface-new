@@ -90,8 +90,7 @@ export const TradePendingOrders = () => {
 
 const PendingOrderItemById = ({ id }: { id: string }) => {
   const order = useRootStore(createOrderItemSelector(id))
-  if (!order) return null
-  return <PendingOrderItem order={order} />
+  return order ? <PendingOrderItem order={order} /> : null
 }
 
 // ============ PendingOrderItem ============

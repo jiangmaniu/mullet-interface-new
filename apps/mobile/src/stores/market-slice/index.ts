@@ -1,4 +1,4 @@
-import type { ImmerStateCreator } from '../_helpers/types'
+import type { ImmerStateCreator, SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 import type { MarketFavoriteSlice } from './favorite-slice'
 import type { MarketQuoteSlice } from './quote-slice'
@@ -25,7 +25,7 @@ export type MarketSlice = {
   initSubscribe: () => void
 }
 
-export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> = (set, get, store) => ({
+export const createMarketSlice: SliceCreator<RootStoreState, MarketSlice> = (set, get, store) => ({
   symbol: createMarketSymbolSlice(set, get, store),
   favorite: createMarketFavoriteSlice(set, get, store),
   quote: createMarketQuoteSlice(set, get, store),
@@ -33,11 +33,10 @@ export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> =
   initSubscribe: () => {
     store.subscribe(
       (state) => state.user.info.activeTradeAccountId,
-      (accountId, prevAccountId) => {
-        if (accountId && accountId !== prevAccountId) {
-          get().market.symbol.fetchInfoList(accountId)
-        }
+      (accountId) => {
+        if (accountId) get().market.symbol.fetchInfoList(accountId)
       },
+      { fireImmediately: true },
     )
   },
 })

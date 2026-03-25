@@ -6,11 +6,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useShallow } from 'zustand/react/shallow'
 import { router, useRouter } from 'expo-router'
 import { useResolveClassNames } from 'uniwind'
+import { symbol } from 'zod'
 
 import { SparkLine } from '@/components/charts/spark-line'
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   CollapsibleFlatList,
   CollapsibleStickyContent,
@@ -20,10 +20,11 @@ import {
   CollapsibleTabScene,
 } from '@/components/ui/collapsible-tab'
 import { IconDepth, IconDepthTB, IconifyBell, IconifySearch } from '@/components/ui/icons'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfo, useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
@@ -114,7 +115,7 @@ interface AssetMarketRowProps {
 }
 
 const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
   const userSellPricePriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
@@ -308,6 +309,7 @@ export default function Index() {
     <View className="bg-secondary flex-1">
       <View className="flex-1">
         <CollapsibleTab
+          lazy
           variant="underline"
           size="md"
           // minHeaderHeight={100}

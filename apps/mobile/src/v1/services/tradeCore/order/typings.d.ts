@@ -5,6 +5,7 @@ import type {
   OrderTypeEnum,
 } from '@/options/trade/order'
 import type { TradePositionDirectionEnum, TradePositionStatusEnum } from '@/options/trade/position'
+import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 declare namespace Order {
   // 下单

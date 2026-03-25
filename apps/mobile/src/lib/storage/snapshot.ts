@@ -1,9 +1,15 @@
-import { storageGet, storageSet, storageRemove } from './storage'
-import { STORAGE_KEY_SNAPSHOT_QUOTE, STORAGE_KEY_SNAPSHOT_SYMBOL, STORAGE_KEY_ROOT_STORE } from './keys'
+import {
+  STORAGE_KEY_ROOT_STORE,
+  STORAGE_KEY_SNAPSHOT_QUOTE,
+  STORAGE_KEY_SNAPSHOT_SYMBOL,
+  STORAGE_KEY_SNAPSHOT_SYMBOL_SIMPLE,
+} from './keys'
+import { storageGet, storageRemove, storageSet } from './storage'
 
 const SNAPSHOT_KEYS = {
   quote: STORAGE_KEY_SNAPSHOT_QUOTE,
   symbol: STORAGE_KEY_SNAPSHOT_SYMBOL,
+  symbolSimple: STORAGE_KEY_SNAPSHOT_SYMBOL_SIMPLE,
 } as const
 
 type SnapshotKey = keyof typeof SNAPSHOT_KEYS

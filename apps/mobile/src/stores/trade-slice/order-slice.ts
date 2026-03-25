@@ -2,16 +2,15 @@ import { keyBy } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
+import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
+import MulletWS from '@/lib/ws/mullet-ws'
+import { Unsubscribe } from '@/lib/ws/types'
 import { parseTradePendingOrderInfo, TradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers/pending-order'
-import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
-import { formaOrderList, getOrderPage } from '@/v1/services/tradeCore/order'
+import { getOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import ws, { SymbolWSItem } from '@/v1/stores/ws'
-import { subscribePendingSymbol } from '@/v1/utils/wsUtil'
 
-import { useRootStore } from '../index'
+import { marketSymbolSimpleMapSelector } from '../market-slice/symbol-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '../user-slice/infoSlice'
-import { createPositionItemSelector } from './position-slice'
 
 // ============ 状态 & Actions 类型 ============
 
@@ -26,9 +25,11 @@ export interface OrderSliceState {
 
 export interface OrderSliceActions {
   /** HTTP 拉取挂单列表 */
-  fetch: () => Promise<void>
+  fetch: (accountId?: string) => Promise<void>
   /** WebSocket 推送更新 */
   update: (list: Order.OrderPageListItem[]) => void
+  /** 切换账户时清空数据 */
+  reset: () => void
   /** 设置加载状态 */
   setLoading: (loading: boolean) => void
   /** 订阅订单的行情 */
@@ -51,110 +52,131 @@ function toIdListAndMap(list: Order.OrderPageListItem[]) {
 
 // ============ 工厂函数 ============
 
-export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, get, store) => ({
-  idList: [],
-  map: {},
-  loading: true,
+export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, get, store) => {
+  let unsubscribe: Unsubscribe | undefined
 
-  fetch: async () => {
-    const accountId = get().user.info.activeTradeAccountId
-    if (!accountId) return
+  return {
+    idList: [],
+    map: {},
+    loading: true,
 
-    const res = await getOrderPage({
-      current: 1,
-      size: 999,
-      status: 'ENTRUST',
-      type: 'LIMIT_BUY_ORDER,LIMIT_SELL_ORDER,STOP_LOSS_LIMIT_BUY_ORDER,STOP_LOSS_LIMIT_SELL_ORDER,STOP_LOSS_MARKET_BUY_ORDER,STOP_LOSS_MARKET_SELL_ORDER',
-      accountId,
-    })
+    fetch: async (accountId) => {
+      accountId = accountId ?? get().user.info.activeTradeAccountId
+      if (!accountId) return
 
-    // 延迟关闭 loading，避免闪烁
-    setTimeout(() => {
-      set((state) => {
-        state.trade.order.loading = false
+      const res = await getOrderPage({
+        current: 1,
+        size: 999,
+        status: 'ENTRUST',
+        type: 'LIMIT_BUY_ORDER,LIMIT_SELL_ORDER,STOP_LOSS_LIMIT_BUY_ORDER,STOP_LOSS_LIMIT_SELL_ORDER,STOP_LOSS_MARKET_BUY_ORDER,STOP_LOSS_MARKET_SELL_ORDER',
+        accountId,
       })
-    }, 300)
 
-    if (res.success) {
-      const data = (res.data?.records || []) as Order.OrderPageListItem[]
-      const { idList, map } = toIdListAndMap(data)
+      // 延迟关闭 loading，避免闪烁
+      setTimeout(() => {
+        set((state) => {
+          state.trade.order.loading = false
+        })
+      }, 300)
+
+      if (res.success) {
+        const data = (res.data?.records || []) as Order.OrderPageListItem[]
+        const { idList, map } = toIdListAndMap(data)
+        set((state) => {
+          state.trade.order.idList = idList
+          state.trade.order.map = map
+        })
+      }
+    },
+
+    initSubscribe: () => {
+      store.subscribe(
+        (state) => state.trade.order.idList,
+        (idList, prevIdList) => {
+          const newIdList = idList.filter((id) => !prevIdList.includes(id))
+          const activeTradeAccountInfo = userInfoActiveTradeAccountInfoSelector(get())
+          get().trade.order.subscribeOrderMarketQuote(newIdList, activeTradeAccountInfo)
+        },
+      )
+
+      store.subscribe(
+        (state) => state.user.info.activeTradeAccountId,
+        async (accountId, prevAccountId) => {
+          unsubscribe?.()
+        },
+      )
+    },
+
+    subscribeOrderMarketQuote: (
+      newIdList: string[] = [],
+      accountInfo?: User.AccountItem,
+      { cancel = false }: { cancel?: boolean } = {},
+    ) => {
+      if (newIdList.length <= 0) {
+        return
+      }
+
+      const accountGroupId = accountInfo?.accountGroupId
+      if (!accountGroupId) {
+        return
+      }
+
+      const orderInfoList = Array.from(new Set(newIdList))
+        .map<TradePendingOrderInfo | undefined>((id) => {
+          const order = createOrderItemSelector(id)(get())
+          const orderInfo = parseTradePendingOrderInfo(order)
+          if (!orderInfo?.symbol) return
+
+          return orderInfo
+        })
+        .filter((item) => !!item)
+
+      const ws = MulletWS.getInstance()
+      const topics = orderInfoList.map((orderInfo) => {
+        const orderTopic = [`/${DEFAULT_TENANT_ID}/symbol/${orderInfo.symbol}/${accountGroupId}`]
+
+        const profitCurrency = orderInfo.conf?.profitCurrency
+        const userUnit = accountInfo.currencyUnit
+
+        const simpleMap = marketSymbolSimpleMapSelector(get())
+
+        const divName = `${userUnit}${profitCurrency}`.toUpperCase()
+        const mulName = `${profitCurrency}${userUnit}`.toUpperCase()
+
+        const simpleInfo = simpleMap[divName] || simpleMap[mulName]
+
+        if (simpleInfo) {
+          orderTopic.push(`/${DEFAULT_TENANT_ID}/symbol/${simpleInfo.symbol}/${accountGroupId}`)
+        }
+
+        return orderTopic.join(',')
+      })
+
+      unsubscribe = ws.subscribe(topics)
+    },
+
+    update: (list) => {
+      const { idList, map } = toIdListAndMap(list)
       set((state) => {
         state.trade.order.idList = idList
         state.trade.order.map = map
       })
-    }
-  },
+    },
 
-  initSubscribe: () => {
-    store.subscribe(
-      (state) => state.trade.order.idList,
-      (idList, prevIdList) => {
-        const newIdList = idList.filter((id) => !prevIdList.includes(id))
-        const activeTradeAccountInfo = userInfoActiveTradeAccountInfoSelector(get())
-        get().trade.order.subscribeOrderMarketQuote(newIdList, activeTradeAccountInfo)
-      },
-    )
-  },
-
-  subscribeOrderMarketQuote: (
-    newIdList: string[] = [],
-    accountInfo?: User.AccountItem,
-    { cancel = false }: { cancel?: boolean } = {},
-  ) => {
-    if (newIdList.length <= 0) {
-      return
-    }
-
-    const accountGroupId = accountInfo?.accountGroupId
-    if (!accountGroupId) {
-      return
-    }
-
-    const orderInfoList = Array.from(new Set(newIdList))
-      .map<TradePendingOrderInfo | undefined>((id) => {
-        const order = createOrderItemSelector(id)(get())
-        const orderInfo = parseTradePendingOrderInfo(order)
-        if (!orderInfo?.symbol) return
-
-        return orderInfo
+    reset: () => {
+      set((state) => {
+        state.trade.order.idList = []
+        state.trade.order.map = {}
       })
-      .filter((item) => !!item)
+    },
 
-    ws.checkSocketReady(() => {
-      ws.openSymbol({
-        symbols: orderInfoList.map<SymbolWSItem>((info) => {
-          return {
-            symbol: info.symbol!,
-            accountGroupId,
-          }
-        }),
-        cover: false,
-        cancel,
+    setLoading: (loading) => {
+      set((state) => {
+        state.trade.order.loading = loading
       })
-
-      // 动态订阅汇率品种行情，用于计算下单时保证金等
-      orderInfoList.forEach((info) => {
-        if (info?.conf) {
-          ws.subscribeExchangeRateQuote(info.conf, info.symbol, { accountInfo, cancel })
-        }
-      })
-    })
-  },
-
-  update: (list) => {
-    const { idList, map } = toIdListAndMap(list)
-    set((state) => {
-      state.trade.order.idList = idList
-      state.trade.order.map = map
-    })
-  },
-
-  setLoading: (loading) => {
-    set((state) => {
-      state.trade.order.loading = loading
-    })
-  },
-})
+    },
+  }
+}
 
 // ============ Selectors ============
 
