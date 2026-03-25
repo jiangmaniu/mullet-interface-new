@@ -59,9 +59,11 @@ const Trade = () => {
     initData()
   }, [activeTradeAccountId])
 
-  useAppState(() => {
-    // 回到前台时，重新获取数据
-    initData()
+  useAppState({
+    onForeground: () => {
+      // 回到前台时，重新获取数据
+      initData()
+    },
   })
 
   return (

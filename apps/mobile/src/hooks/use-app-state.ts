@@ -1,10 +1,12 @@
 import { useEffect } from 'react'
 import { AppState } from 'react-native'
 
-export const useAppState = (
-  onForeground: () => void,
-  onBackground?: () => void,
-) => {
+interface UseAppStateOptions {
+  onForeground?: () => void
+  onBackground?: () => void
+}
+
+export const useAppState = ({ onForeground, onBackground }: UseAppStateOptions = {}) => {
   useEffect(() => {
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') onForeground?.()

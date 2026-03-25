@@ -28,5 +28,7 @@ export function useAppSnapshot() {
     }
   }, [])
 
-  useAppState(() => {}, onBackground)
+  useAppState({
+    onBackground,
+  })
 }
