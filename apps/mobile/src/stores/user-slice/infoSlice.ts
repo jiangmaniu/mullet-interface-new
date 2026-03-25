@@ -3,12 +3,15 @@ import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
 
 import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
+import { calcAccountOccupiedMargin } from '@/helpers/calc/account'
 import { getClientDetail } from '@/v1/services/crm/customer'
 import ws from '@/v1/stores/ws'
 
 import { createSetter } from '../_helpers/createSetter'
 import { ImmerStateCreator } from '../_helpers/types'
 import { ClientInfo, UserInfo } from './info-slice-type'
+
+export type UserAccountInfo = User.AccountItem
 
 export interface InfoSliceState {
   fetchClientInfoLoading: boolean
@@ -182,6 +185,29 @@ export const createAccountInfoSelector =
   (accountId?: string | number | null) =>
   (state: RootStoreState): User.AccountItem | undefined =>
     accountId != null ? state.user.info.accountMap[String(accountId)] : undefined
+
+export type AccountMarginInfo = {
+  occupiedMargin?: string
+} & Pick<User.AccountItem, 'margin' | 'isolatedMargin'>
+
+/** 生成式 selector - 根据 accountId 查找对应的账户保证金信息（O(1)） */
+export const createAccountMarginInfoSelector =
+  (accountId?: string | number | null) =>
+  (state: RootStoreState): AccountMarginInfo | undefined => {
+    const account = createAccountInfoSelector(accountId)(state)
+    if (!account) return
+
+    const { margin, isolatedMargin } = account
+    const occupiedMargin = calcAccountOccupiedMargin({
+      margin,
+      isolatedMargin,
+    })
+    return {
+      occupiedMargin,
+      isolatedMargin,
+      margin,
+    }
+  }
 
 /** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
 export const createRealAccountInfoSelector =

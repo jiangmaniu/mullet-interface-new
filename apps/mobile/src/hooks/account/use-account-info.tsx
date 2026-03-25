@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import type { RootStoreState } from '@/stores'
 
 import { useRootStore } from '@/stores'
-import type { RootStoreState } from '@/stores'
 import { createAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 
 /**
@@ -11,12 +11,7 @@ import { createAccountInfoSelector } from '@/stores/user-slice/infoSlice'
  */
 export const useAccountInfo = (accountId?: string | number | null): User.AccountItem | undefined => {
   const accountInfo = useRootStore(
-    useShallow(
-      useCallback(
-        (s: RootStoreState) => createAccountInfoSelector(accountId)(s),
-        [accountId],
-      ),
-    ),
+    useShallow(useCallback((s: RootStoreState) => createAccountInfoSelector(accountId)(s), [accountId])),
   )
   return accountInfo
 }

@@ -18,21 +18,20 @@ import { Separator } from '@/components/ui/separator'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
+import { useAccountOccupiedMargin } from '@/hooks/account/use-account-balance'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useRootStore } from '@/stores'
-import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
+import { UserAccountInfo, userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
-interface TradeAccountOverviewCardProps {}
-
-export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardProps) => {
+export const TradeAccountOverviewCard = observer(() => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
   const { textColorContent4, textColorContent1 } = useThemeColors()
 
@@ -47,7 +46,8 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
   }
 
   const getAccountBalance = useGetAccountBalanceCallback()
-  const { balance, availableMargin, totalProfit, occupyMargin } = getAccountBalance(currentAccountInfo, undefined)
+  const { balance, totalProfit } = getAccountBalance(currentAccountInfo, undefined)
+  const occupiedMargin = useAccountOccupiedMargin(currentAccountInfo?.id)
 
   // 获取钱包地址
   const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
@@ -177,9 +177,7 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
             <Trans>可用保证金</Trans>
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden
-              ? '******'
-              : `${BNumber.toFormatNumber(availableMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
+            {isBalanceHidden ? '******' : <AccountAvailableMargin accountInfo={currentAccountInfo} />}
           </Text>
         </View>
         <View className="flex-row items-center justify-between">
@@ -189,10 +187,22 @@ export const TradeAccountOverviewCard = observer(({}: TradeAccountOverviewCardPr
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
               ? '******'
-              : `${BNumber.toFormatNumber(occupyMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
+              : `${BNumber.toFormatNumber(occupiedMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
       </View>
     </Card>
   )
 })
+
+const AccountAvailableMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
+  // const availableMargin = useAccountAvailableMargin(accountInfo?.id)
+  const getAccountBalance = useGetAccountBalanceCallback()
+  const { availableMargin } = getAccountBalance(accountInfo, undefined)
+
+  return (
+    <>
+      {`${BNumber.toFormatNumber(availableMargin, { unit: accountInfo?.currencyUnit, volScale: accountInfo?.currencyDecimal })}`}
+    </>
+  )
+}
