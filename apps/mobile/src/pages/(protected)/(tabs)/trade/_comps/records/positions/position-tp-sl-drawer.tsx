@@ -25,10 +25,8 @@ import {
   userInfoActiveTradeAccountIdSelector,
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { modifyStopProfitLoss } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
 import { useVerifyOrderTpSlData } from '../../../_hooks/use-verify-order'
@@ -116,7 +114,6 @@ export const PositionTpSlDrawer = observer(
 
 const PositionTpSlDrawerContent = observer(() => {
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
-  const { trade } = useStores()
 
   const { tpPrice, slPrice, position, setLeft: setFalse } = usePositionTpSlDrawerContext()
 

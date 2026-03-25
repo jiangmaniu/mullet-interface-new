@@ -48,8 +48,9 @@ const Trade = () => {
   const [topBannerHeight, setTopBannerHeight] = useState(0)
 
   const initData = () => {
-    useRootStore.getState().trade.position.fetch(true)
+    useRootStore.getState().trade.position.fetch()
     useRootStore.getState().trade.order.fetch()
+    useRootStore.getState().user.info.fetchLoginClientInfo()
     user.fetchUserInfo(true)
   }
 

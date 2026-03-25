@@ -21,6 +21,7 @@ import {
   DEFAULT_SIMULATE_ACCOUNT_SINGLE_TIME_DEPOSIT_AMOUNT,
 } from '@/constants/config/trade'
 import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
+import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { rechargeSimulate } from '@/v1/services/tradeCore/account'
 import { BNumber } from '@mullet/utils/number'
@@ -62,6 +63,7 @@ export const TradeSimulateAccountDepositDrawer = observer(
         if (result.success) {
           // 刷新账户列表
           await user.fetchUserInfo(false)
+          useRootStore.getState().user.info.fetchLoginClientInfo()
           toast.success(t`入存款成功`)
           setClose()
         }

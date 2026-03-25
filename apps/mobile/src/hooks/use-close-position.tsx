@@ -8,6 +8,7 @@ import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useRootStore } from '@/stores'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { createOrder } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { msg } from '@lingui/core/macro'
 
@@ -59,7 +60,7 @@ export function useClosePosition() {
         executeOrderId: positionInfo?.id,
       }
 
-      const res = await trade.createOrder(params)
+      const res = await createOrder(params)
 
       if (!res.success) {
         throw new Error(res.message || renderLinguiMsg(msg`平仓失败`))
@@ -69,7 +70,12 @@ export function useClosePosition() {
     },
     onSuccess: async () => {
       // 更新账户余额信息和仓位列表
-      await Promise.allSettled([user.fetchUserInfo(), useRootStore.getState().trade.position.fetch()])
+      await Promise.all([
+        trade.getPositionList(),
+        useRootStore.getState().trade.position.fetch(),
+        user.fetchUserInfo(),
+        useRootStore.getState().user.info.fetchLoginClientInfo(),
+      ])
 
       toast.success(<Trans>平仓成功</Trans>)
     },

@@ -8,11 +8,12 @@ import ws from '@/v1/stores/ws'
 
 import { createSetter } from '../_helpers/createSetter'
 import { ImmerStateCreator } from '../_helpers/types'
-import { ClientInfo } from './info-slice-type'
+import { ClientInfo, UserInfo } from './info-slice-type'
 
 export interface InfoSliceState {
   fetchClientInfoLoading: boolean
   clientInfo: ClientInfo | undefined
+  userInfo: UserInfo | undefined
   accountList: User.AccountItem[]
   accountMap: Record<string, User.AccountItem>
   /** 当前激活的交易账户 ID */
@@ -23,7 +24,9 @@ export interface InfoSliceActions {
   setInfo: (partial: Partial<InfoSliceState>) => void
   setActiveTradeAccountId: (accountId?: string) => Promise<void>
   setClientInfo: Setter<ClientInfo | undefined>
+  setUserInfo: Setter<UserInfo | undefined>
   fetchClientInfo: (accountId?: string) => Promise<void>
+  fetchLoginClientInfo: () => Promise<void>
   setAccountList: (accountList: User.AccountItem[]) => void
   updateAccount: (account: User.AccountItem) => void
 }
@@ -41,6 +44,7 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
   return {
     fetchClientInfoLoading: false,
     clientInfo: undefined,
+    userInfo: undefined,
     accountList: [],
     accountMap: {},
     activeTradeAccountId: undefined,
@@ -51,6 +55,7 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }),
 
     setClientInfo: infoSetter('clientInfo'),
+    setUserInfo: infoSetter('userInfo'),
 
     updateAccount: (account: User.AccountItem) => {
       const oldAccountList = get().user.info.accountList
@@ -90,6 +95,11 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }
     },
 
+    fetchLoginClientInfo: async () => {
+      const id = get().user.auth.loginInfo?.user_id
+      return get().user.info.fetchClientInfo(id)
+    },
+
     fetchClientInfo: async (userId?: string) => {
       // 如果 symbolInfoList 为空，显示 loading
       if (!get().user.info.clientInfo) {
@@ -104,10 +114,11 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
         if (!res?.success) {
           return
         }
-        const { accountList = [], ...clientInfo } = res.data ?? {}
+        const { accountList = [], userInfo, ...clientInfo } = res.data ?? {}
 
         get().user.info.setAccountList(accountList)
         get().user.info.setClientInfo(clientInfo)
+        get().user.info.setUserInfo(userInfo)
       } catch (error) {
         console.error('Failed to fetch client info:', error)
       } finally {
@@ -197,7 +208,7 @@ export const userInfoActiveTradeAccountInfoSelector = (state: RootStoreState): U
 /** 当前激活交易账户的货币信息（id + currencyDecimal + currencyUnit） */
 export const userInfoActiveTradeAccountCurrencyInfoSelector = (
   state: RootStoreState,
-): { id: string; currencyDecimal: number | undefined; currencyUnit: string | undefined } => {
+): { id: string | undefined; currencyDecimal: number | undefined; currencyUnit: string | undefined } => {
   const { id, currencyDecimal, currencyUnit } = userInfoActiveTradeAccountInfoSelector(state) ?? {}
   return { id, currencyDecimal, currencyUnit }
 }

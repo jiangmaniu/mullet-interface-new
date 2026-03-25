@@ -22,6 +22,8 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { useRootStore } from '@/stores'
+import { userInfoClientInfoSelector } from '@/stores/user-slice/infoSlice'
 import { useStores } from '@/v1/provider/mobxProvider'
 import { AddAccount } from '@/v1/services/tradeCore/account'
 import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
@@ -124,6 +126,7 @@ export default function CrateAccountScreen() {
 
   const [isLoading, { setTrue: setIsLoadingTrue, setFalse: setIsLoadingFalse }] = useBoolean(false)
   const { user } = useStores()
+  const clientId = useRootStore((s) => userInfoClientInfoSelector(s)?.id)
   const selectedSynopsis = useAccountSynopsis(selectedAccountGroup?.synopsis)
 
   const handleCreateAccount = async () => {
@@ -136,11 +139,12 @@ export default function CrateAccountScreen() {
 
       const result = await AddAccount({
         accountGroupId: selectedAccountGroup.id,
-        clientId: user.currentUser?.user_id,
+        clientId: String(clientId),
         name: name,
       })
       if (result?.success) {
         const userInfo = await user.fetchUserInfo(true)
+        await useRootStore.getState().user.info.fetchLoginClientInfo()
         // console.log(userInfo)
 
         toast.success(t`创建账户成功`, {

@@ -36,7 +36,6 @@ class UserStore {
       const localUserInfo = useRootStore.getState().user.auth.loginInfo as User.UserInfo
 
       const id = localUserInfo?.user_id
-      await useRootStore.getState().user.info.fetchClientInfo(id)
 
       // 查询客户信息
       const res = await getClientDetail({
@@ -100,7 +99,8 @@ class UserStore {
 
     // 初始化设置默认当前账号信息
     const localAccountId =
-      stores.trade.currentAccountInfo?.id || storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO)?.currentAccountInfo?.id
+      stores.trade.currentAccountInfo?.id ||
+      storageGet<Record<string, any>>(STORAGE_KEY_USER_CONF_INFO)?.currentAccountInfo?.id
     // const hasAccount = (currentUser?.accountList || []).filter((v) => !v.isSimulate).some((item) => item.id === localAccountId)
     const hasAccount = (currentUser?.accountList || []).some((item) => item.id === localAccountId)
     // 本地不存在账号或本地存在账号但不在登录返回的accountList中，需重新设置默认值，避免切换不同账号登录使用上一次缓存

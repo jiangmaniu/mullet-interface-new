@@ -2,6 +2,7 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React, { useRef } from 'react'
 import { Pressable, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
 import {
@@ -19,14 +20,14 @@ import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
-import { useStores } from '@/v1/provider/mobxProvider'
+import { useRootStore } from '@/stores'
+import { userInfoRealAccountListSelector, userInfoSimulateAccountListSelector } from '@/stores/user-slice/infoSlice'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
 export const RealAccountList = observer(() => {
-  const { user } = useStores()
-  const realAccountList = user.currentUser?.accountList?.filter((item) => !item.isSimulate && item.enableConnect) || []
+  const realAccountList = useRootStore(useShallow(userInfoRealAccountListSelector))
 
   if (realAccountList.length === 0) {
     return (
@@ -39,6 +40,7 @@ export const RealAccountList = observer(() => {
   return (
     <>
       {realAccountList.map((account) => {
+        if (!account.enableConnect) return
         return <RealAccountRow key={account.id} account={account} />
       })}
     </>
@@ -151,9 +153,7 @@ const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
 })
 
 export const SimulateAccountList = observer(() => {
-  const { user } = useStores()
-  const simulateAccountList =
-    user.currentUser?.accountList?.filter((item) => item.isSimulate && item.enableConnect) || []
+  const simulateAccountList = useRootStore(useShallow(userInfoSimulateAccountListSelector))
 
   if (simulateAccountList.length === 0) {
     return (
@@ -166,6 +166,7 @@ export const SimulateAccountList = observer(() => {
   return (
     <>
       {simulateAccountList.map((account) => {
+        if (!account.enableConnect) return null
         return <SimulateAccountRow key={account.id} account={account} />
       })}
     </>

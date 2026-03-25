@@ -18,9 +18,9 @@ import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { useRootStore } from '@/stores'
 import { createRealAccountInfoSelector } from '@/stores/user-slice/infoSlice'
+import { useStores } from '@/v1/provider/mobxProvider'
 import { transferAccount } from '@/v1/services/tradeCore/account'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { msg, t } from '@lingui/core/macro'
@@ -80,7 +80,6 @@ export default function TransferScreen() {
     if (!accountId) return
     const account = createRealAccountInfoSelector(accountId)(useRootStore.getState())
     if (account) setFromAccount(account)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accountId])
 
   const handleSwap = () => {
@@ -121,7 +120,8 @@ export default function TransferScreen() {
       })
 
       if (res.success) {
-        await user.fetchUserInfo(true)
+        await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+
         setIsConfirmDrawerOpen(false)
 
         // 跳转到详情页面

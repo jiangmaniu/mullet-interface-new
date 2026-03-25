@@ -51,6 +51,7 @@ export const TradePendingOrders = () => {
   const onRefresh = async () => {
     await useRootStore.getState().trade.order.fetch()
     await user.fetchUserInfo(true)
+    await useRootStore.getState().user.info.fetchLoginClientInfo()
   }
 
   const renderEmpty = () => {
