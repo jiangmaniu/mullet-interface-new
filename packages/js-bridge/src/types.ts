@@ -10,14 +10,16 @@
 //  同步注入上下文
 // ═══════════════════════════════════════════════════════════════════
 
-/** App 在 WebView 加载前注入的同步上下文 */
+/**
+ * App 在 WebView 加载前同步注入的环境上下文
+ *
+ * 只包含环境/设备信息，不含 token / user（通过异步 GetAuth / GetUserInfo 获取）
+ */
 export interface BridgeContext {
-  /** 认证 token */
-  token: string | null
-  /** 用户信息 */
-  user: UserInfo | null
-  /** 设备信息 */
+  /** 硬件/系统信息（不随运行时变化） */
   device: DeviceInfo
+  /** 视口/布局信息（随屏幕旋转等变化） */
+  window: WindowInfo
   /** 当前主题 */
   theme: 'light' | 'dark'
   /** 当前语言 */
@@ -192,10 +194,11 @@ export interface DeviceInfo {
   osVersion: string
   appVersion: string
   deviceModel: string
+}
+
+export interface WindowInfo {
   screenWidth: number
   screenHeight: number
   safeAreaTop: number
   safeAreaBottom: number
-  locale: string
-  theme: 'light' | 'dark'
 }
