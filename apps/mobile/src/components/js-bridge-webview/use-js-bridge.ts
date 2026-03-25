@@ -101,7 +101,7 @@ export function useJsBridge({ webviewRef, uiCallbacks }: UseBridgeOptions): UseB
   // ── 同步注入脚本 ──
 
   const injectedJS = useMemo(
-    () => buildInjectedScript({ safeAreaTop, safeAreaBottom, locale, theme }),
+    () => buildInjectedScript({ safeAreaTop, safeAreaBottom, locale, theme: theme as 'light' | 'dark' }),
     [safeAreaTop, safeAreaBottom, locale, theme],
   )
 

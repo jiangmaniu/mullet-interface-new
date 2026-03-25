@@ -12,7 +12,7 @@ import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
 import { useRootStore } from '@/stores'
-import { userInfoClientInfoSelector } from '@/stores/user-slice/infoSlice'
+import { userInfoClientInfoSelector, userInfoSelector } from '@/stores/user-slice/infoSlice'
 
 import { useSendOtp } from '../../_apis/use-send-otp'
 import { useSolanaWithdraw } from '../../_apis/use-solana-transfer'
@@ -40,8 +40,8 @@ const VerifyScreen = observer(function VerifyScreen() {
   const { tokenInfo } = useSelectedChainInfo()
   const { mutate: transfer, isPending: isTransferring } = useSolanaWithdraw()
 
-  const userEmail = useRootStore((s) => userInfoClientInfoSelector(s)?.userInfo?.email)
-  const userId = useRootStore((s) => userInfoClientInfoSelector(s)?.userInfo?.id)
+  const userEmail = useRootStore((s) => userInfoSelector(s).userInfo?.email)
+  const userId = useRootStore((s) => userInfoClientInfoSelector(s)?.id)
 
   // 页面加载时自动发送验证码
   useEffect(() => {
