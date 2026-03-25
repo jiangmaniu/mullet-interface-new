@@ -89,7 +89,7 @@ const NumberInputPrimitiveBase = ({
   keyboardType = 'decimal-pad',
   isAllowed,
   ...props
-}: NumberInputPrimitiveProps) => {
+}: NumberInputPrimitiveProps, ref: React.Ref<TextInput>) => {
   const inputRef = useRef<TextInput>(null)
   // 用于强制 RN TextInput 在值未变时也能回退原生显示
   const [, forceRender] = useState(0)
@@ -242,6 +242,9 @@ const NumberInputPrimitiveBase = ({
     onFocus?.(e)
   }, [onFocus])
 
+  // 使用 useImperativeHandle 暴露 ref 方法
+  React.useImperativeHandle(ref, () => inputRef.current as TextInput, [])
+
   return (
     <TextInput
       ref={inputRef}
@@ -262,4 +265,5 @@ const NumberInputPrimitiveBase = ({
 
 NumberInputPrimitiveBase.displayName = NumberInputPrimitiveBase.name
 
-export const NumberInputPrimitive = NumberInputPrimitiveBase
+// React 19 支持直接在函数组件上使用 ref，但为了兼容性使用 forwardRef
+export const NumberInputPrimitive = React.forwardRef(NumberInputPrimitiveBase)
