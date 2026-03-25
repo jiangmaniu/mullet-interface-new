@@ -167,7 +167,7 @@ export type SymbolWSItemSemi = {
   // dataSourceCode?: string
 }
 
-const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 100 : 200 // ms
+const THROTTLE_QUOTE_INTERVAL = Platform.OS === 'ios' ? 150 : 200 // ms
 const THROTTLE_DEPTH_INTERVAL = 300 // ms
 const MAX_CACHE_SIZE = 150 // 设置最大缓存限制
 
