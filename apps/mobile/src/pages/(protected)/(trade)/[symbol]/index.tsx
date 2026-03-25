@@ -111,13 +111,14 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
 
   return (
     <View className="p-xl flex-row items-center justify-between">
-      <View className="gap-xs">
+      <View className="gap-xs flex-1">
         <Text className="text-paragraph-p3 text-content-1">
           <Trans>最新价格</Trans>
         </Text>
         <View>
           <Text
             className={`text-title-h3 ${userSellPricePriceChangeInfo.isRise ? 'text-market-rise' : userSellPricePriceChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}
+            style={{ fontVariant: ['tabular-nums'] }}
           >
             {BNumber.toFormatNumber(latestPrice, { volScale: symbolInfo?.symbolDecimal })}
           </Text>
@@ -129,19 +130,21 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
 
             <Text
               className={`text-paragraph-p2 ${percentChangeInfo.isRise ? 'text-market-rise' : percentChangeInfo.isFall ? 'text-market-fall' : 'text-content-1'}`}
+              style={{ fontVariant: ['tabular-nums'] }}
             >
               {BNumber.toFormatPercent(symbolMarketInfo?.percent, { forceSign: true, isRaw: false })}
             </Text>
           </View>
         </View>
       </View>
-      <View className="gap-xs">
+      {/* shrink-0：右侧整体不因左侧内容变化而收缩，tabular-nums：等宽数字防止跳动 */}
+      <View className="gap-xs shrink-0">
         <View className="gap-xl flex-row">
           <View className="items-end">
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>最高</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">
+            <Text className="text-paragraph-p4 text-content-1 text-right" style={{ fontVariant: ['tabular-nums'] }}>
               {BNumber.toFormatNumber(high, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
@@ -149,7 +152,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>最低</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">
+            <Text className="text-paragraph-p4 text-content-1 text-right" style={{ fontVariant: ['tabular-nums'] }}>
               {BNumber.toFormatNumber(low, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
@@ -159,7 +162,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>开盘价</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">
+            <Text className="text-paragraph-p4 text-content-1 text-right" style={{ fontVariant: ['tabular-nums'] }}>
               {BNumber.toFormatNumber(open, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
@@ -167,7 +170,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
             <Text className="text-paragraph-p4 text-content-4">
               <Trans>收盘价</Trans>
             </Text>
-            <Text className="text-paragraph-p4 text-content-1">
+            <Text className="text-paragraph-p4 text-content-1 text-right" style={{ fontVariant: ['tabular-nums'] }}>
               {BNumber.toFormatNumber(close, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
