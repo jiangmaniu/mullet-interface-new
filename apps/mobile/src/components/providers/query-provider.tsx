@@ -62,8 +62,12 @@ export function QueryProvider({ children }: PropsWithChildren) {
         maxAge: 7 * 24 * 60 * 60 * 1000,
         dehydrateOptions: {
           // 只持久化 symbol-kline 成功的查询
-          shouldDehydrateQuery: (query) =>
-            query.queryKey[0] === 'symbol-kline' && query.state.status === 'success',
+          shouldDehydrateQuery: (query) => {
+            const [k0, k1, k2] = query.queryKey as string[]
+            if (k0 === 'symbol-kline' && query.state.status === 'success') return true
+            if (k0 === 'account' && k1 === 'wallet' && k2 === 'address' && query.state.status === 'success') return true
+            return false
+          },
         },
       }}
     >

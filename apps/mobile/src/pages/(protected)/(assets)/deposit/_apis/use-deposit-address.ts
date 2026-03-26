@@ -35,7 +35,7 @@ export interface DepositAddressInfo {
  */
 export function useDepositAddress(chainId: string, tradeAccountId: string) {
   return useQuery({
-    queryKey: ['deposit', 'address', chainId, tradeAccountId],
+    queryKey: ['account', 'wallet', 'address', chainId, tradeAccountId],
     queryFn: async () => {
       const response = await depositRequest<DepositAddressInfo>('/api/deposit/address', {
         method: 'GET',
@@ -46,6 +46,8 @@ export function useDepositAddress(chainId: string, tradeAccountId: string) {
       })
       return response.data
     },
-    enabled: !!chainId && !!tradeAccountId, // 只有当两个参数都存在时才执行查询
+    enabled: !!chainId && !!tradeAccountId,
+    // 延长内存缓存时间，配合 MMKV 持久化缓存
+    gcTime: 7 * 24 * 60 * 60 * 1000,
   })
 }
