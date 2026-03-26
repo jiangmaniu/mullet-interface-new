@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { router } from 'expo-router'
+import { CommonActions } from '@react-navigation/native'
 
 import { useAppKit } from '@/lib/appkit'
 import { useRootStore } from '@/stores'
@@ -71,7 +72,8 @@ export function useClearAuthData(): UseClearAuthDataReturn {
 }
 
 /**
- * 退出登录 hook（清除数据 + 跳转到登录页）
+ * 主动退出登录 hook（清除数据 + 清空路由堆栈跳转到登录页）
+ * 使用 CommonActions.reset 清空路由堆栈，防止用户按返回键回到受保护页面
  */
 export function useLogout(): UseLogoutReturn {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
@@ -83,8 +85,13 @@ export function useLogout(): UseLogoutReturn {
     setIsLoggingOut(true)
 
     try {
-      // 先跳转到登录页，再清除数据，避免 LoginGuard 检测到 token 为空后重复重定向
-      router.replace('/login')
+      // 先清空路由堆栈跳转到登录页，再清除数据，避免 LoginGuard 检测到 token 为空后重复重定向
+      router.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: '(public)' }],
+        })
+      )
       await clearAuthData()
     } catch (error) {
       console.error('Logout failed:', error)
