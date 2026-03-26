@@ -18,10 +18,6 @@ import shelljs from 'shelljs'
  *   --dist=adhoc       AdHoc 分发 (ad-hoc 签名，可直接发 ipa)
  *   --dist=testflight  上传 TestFlight (app-store 签名)
  *
- * 清理选项:
- *   --clean            清理构建缓存 (默认)
- *   --no-clean         不清理构建缓存
- *
  * 证书管理:
  *   --force-regenerate-certificates    强制重新生成证书（用于证书过期、添加新设备、修改 Capabilities）
  *   --apple-id=<email>                 Apple Developer 账号邮箱（TestFlight 上传或重新生成证书时需要）
@@ -183,22 +179,11 @@ async function parseArgs() {
         return true
       },
     },
-    {
-      name: 'clean',
-      type: 'select',
-      message: chalk.magentaBright('是否清理构建缓存？'),
-      default: true,
-      choices: [
-        { name: '是', value: true },
-        { name: '否', value: false },
-      ],
-    },
   ])
 
   return {
     platform: platformAnswer.platform,
     env: envAnswer.env,
-    clean: answers.clean,
     androidArchs: answers.androidArchs || ['arm64-v8a'],
     iosDist: answers.iosDist || 'local',
     forceRegenerateCertificates: answers.forceRegenerateCertificates || false,
@@ -300,7 +285,7 @@ function organizeArtifacts(platform, env, version, versionCode, selectedArchs = 
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist, clean, androidArchs, forceRegenerateCertificates, appleId, applePassword } =
+  const { platform, env, iosDist, androidArchs, forceRegenerateCertificates, appleId, applePassword } =
     await parseArgs()
 
   // 从 package.json 读取版本号
@@ -324,7 +309,7 @@ async function main() {
           name: `大版本 ${chalk.gray(`(${currentVersion} → ${semver.inc(currentVersion, 'major')})`)}`,
           value: 'major',
         },
-        { name: `自定义版本号 ${chalk.gray(`(x.x.x)`)}`, value: 'custom' },
+        { name: `自定义 ${chalk.gray(`(x.x.x)`)}`, value: 'custom' },
       ],
     },
   ])
@@ -356,6 +341,7 @@ async function main() {
   }
 
   // versionCode 使用 YYYYMMDDHHMM 格式的时间戳，保证每次构建唯一且递增
+  // 提前生成 versionCode 以便用于 tag 名称
   const now = new Date()
   const versionCode = [
     String(now.getFullYear()),
@@ -364,6 +350,21 @@ async function main() {
     String(now.getHours()).padStart(2, '0'),
     String(now.getMinutes()).padStart(2, '0'),
   ].join('')
+
+  // Git Tag（构建前询问，构建成功后才真正创建）
+  const tag = `${platform}-${version}-${env}-${versionCode}`
+  const { tagAction } = await inquirer.prompt([
+    {
+      name: 'tagAction',
+      type: 'select',
+      message: chalk.magentaBright(`是否创建 Git Tag？(${tag})`),
+      choices: [
+        { name: '创建 & 推送', value: 'push' },
+        { name: '仅创建', value: 'create' },
+        { name: '跳过', value: 'skip' },
+      ],
+    },
+  ])
 
   shelljs.env.VERSION_NAME = version
   shelljs.env.VERSION_CODE = versionCode
@@ -394,8 +395,7 @@ async function main() {
 
   // Step 1: Prebuild
   console.log(chalk.magentaBright(' [1/4] 执行 expo prebuild... '))
-  const cleanFlag = clean ? '--clean' : ''
-  run(`pnpm expo-prebuild ${env} --platform ${platform} ${cleanFlag}`.trim())
+  run(`pnpm expo-prebuild ${env} --platform ${platform} --clean`)
 
   // Restore Android signing config (prebuild --clean deletes android/)
   if (platform === 'android') {
@@ -500,61 +500,24 @@ async function main() {
 
   // --- 构建后操作 ---
 
-  // 版本号变更提交
+  // 版本号变更：改了就提交，推送跟着 tag 走
   if (version !== currentVersion) {
     run(`git add package.json`)
     run(`git commit -m "chore: bump version to ${version}"`)
     console.log(chalk.green(`  ✅ 版本号变更已提交`))
 
-    const { pushCommit } = await inquirer.prompt([
-      {
-        name: 'pushCommit',
-        type: 'select',
-        message: chalk.magentaBright('是否推送版本号变更到远程？'),
-        choices: [
-          { name: '是', value: true },
-          { name: '否', value: false },
-        ],
-      },
-    ])
-
-    if (pushCommit) {
+    if (tagAction === 'push') {
       run(`git push`)
       console.log(chalk.green(`  ✅ 版本号变更已推送到远程`))
     }
   }
 
-  // Git Tag
-  const tag = `${version}-${env}-${versionCode}`
-  const { createTag } = await inquirer.prompt([
-    {
-      name: 'createTag',
-      type: 'select',
-      message: chalk.magentaBright(`是否创建 Git Tag？(${tag})`),
-      choices: [
-        { name: '是', value: true },
-        { name: '否', value: false },
-      ],
-    },
-  ])
-
-  if (createTag) {
+  // 创建 & 推送 Git Tag
+  if (tagAction !== 'skip') {
     run(`git tag ${tag}`)
     console.log(chalk.green(`  ✅ Git Tag 已创建: ${tag}`))
 
-    const { pushTag } = await inquirer.prompt([
-      {
-        name: 'pushTag',
-        type: 'select',
-        message: chalk.magentaBright(`是否推送 Tag 到远程？(${tag})`),
-        choices: [
-          { name: '是', value: true },
-          { name: '否', value: false },
-        ],
-      },
-    ])
-
-    if (pushTag) {
+    if (tagAction === 'push') {
       run(`git push origin ${tag}`)
       console.log(chalk.green(`  ✅ Tag ${tag} 已推送到远程`))
     }
