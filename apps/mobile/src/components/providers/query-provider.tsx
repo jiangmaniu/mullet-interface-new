@@ -1,8 +1,11 @@
 import { useReactQueryDevTools } from '@dev-plugins/react-query'
 import NetInfo from '@react-native-community/netinfo'
-import { focusManager, onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query'
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { PropsWithChildren, useEffect, useState } from 'react'
 import { AppState, AppStateStatus, Platform } from 'react-native'
+
+import { klinePersister } from '@/lib/kline-storage'
 
 // 配置 onlineManager 以使用 NetInfo 检测网络状态
 onlineManager.setEventListener((setOnline) => {
@@ -32,6 +35,7 @@ const createQueryClient = () =>
     },
   })
 
+
 export function QueryProvider({ children }: PropsWithChildren) {
   // 使用 useState 确保 QueryClient 只创建一次
   const [queryClient] = useState(() => createQueryClient())
@@ -50,11 +54,23 @@ export function QueryProvider({ children }: PropsWithChildren) {
   useReactQueryDevTools(queryClient)
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{
+        persister: klinePersister,
+        // 缓存有效期 7 天
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        dehydrateOptions: {
+          // 只持久化 symbol-kline 成功的查询
+          shouldDehydrateQuery: (query) =>
+            query.queryKey[0] === 'symbol-kline' && query.state.status === 'success',
+        },
+      }}
+    >
       {children}
       {/* React Query DevTools - 仅在开发模式下启用 */}
       {__DEV__ && <QueryDevtools queryClient={queryClient} />}
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   )
 }
 

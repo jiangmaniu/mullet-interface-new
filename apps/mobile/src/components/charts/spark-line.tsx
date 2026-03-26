@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { ViewStyle } from 'react-native'
 import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg'
+
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface SparkLineProps {
   /** 数据点数组，空数组时显示居中横线 */
@@ -63,6 +65,16 @@ export const SparkLine = React.memo(function SparkLine({
   fillEnabled = false,
   style,
 }: SparkLineProps) {
+  // 延迟渲染 SVG，避免列表中多个 SVG 同时计算阻塞 JS 线程
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setReady(true)
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [])
+
   const { linePath, areaPath } = useMemo(() => {
     // 空数组或只有 1 个点时画居中横线
     if (data.length < 2) {
@@ -75,6 +87,10 @@ export const SparkLine = React.memo(function SparkLine({
     const area = fillEnabled ? buildAreaPath(line, width, height) : ''
     return { linePath: line, areaPath: area }
   }, [data, width, height, fillEnabled])
+
+  if (!ready) {
+    return <Skeleton style={{ width, height, borderRadius: 4, ...(style as object) }} />
+  }
 
   if (!linePath) return null
 
