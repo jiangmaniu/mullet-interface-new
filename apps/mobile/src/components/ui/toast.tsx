@@ -35,6 +35,9 @@ const borderMap: Record<string, string> = {
   error: 'border-status-danger',
 }
 
+// 固定 ID 保证唯一性，新 toast 会替换旧的
+const SINGLETON_TOAST_ID = 'singleton-toast'
+
 function renderToast(config: ToastConfig) {
   const { type, message, options, icon } = config
   const toastIcon = icon ?? (type ? iconMap[type] : undefined)
@@ -51,7 +54,7 @@ function renderToast(config: ToastConfig) {
       {toastIcon}
       <Text className="text-paragraph-p2 text-content-1 flex-shrink">{message}</Text>
     </View>,
-    { ...options, duration: options?.duration ?? 2000 },
+    { ...options, duration: options?.duration ?? 2000, id: options?.id ?? SINGLETON_TOAST_ID },
   )
 }
 

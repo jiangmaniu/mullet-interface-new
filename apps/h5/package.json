@@ -9,10 +9,15 @@
     "preview": "vp preview",
     "serve": "node dist/server/entry.js",
     "check-types": "tsc --noEmit",
-    "lint": "oxlint src"
+    "lint": "oxlint src",
+    "extract": "lingui extract",
+    "compile": "lingui compile"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
+    "@lingui/core": "^5.9.3",
+    "@lingui/macro": "^5.9.3",
+    "@lingui/react": "^5.9.3",
     "@mullet/js-bridge": "workspace:*",
     "@tanstack/react-query": "^5.90.3",
     "@tanstack/react-router": "^1.121.2",
@@ -30,6 +35,9 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@lingui/cli": "^5.9.3",
+    "@lingui/conf": "^5.9.3",
+    "@lingui/vite-plugin": "^5.9.3",
     "@mullet/helpers": "workspace:*",
     "@mullet/typescript-config": "workspace:*",
     "@mullet/utils": "workspace:*",

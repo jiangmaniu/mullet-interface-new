@@ -5,6 +5,10 @@ import { useShallow } from 'zustand/react/shallow'
 
 import { AddBalanceDrawer, AddBalanceDrawerRef } from '@/components/drawers/add-balance-drawer'
 import { TradeAccountSwitchDrawer } from '@/components/drawers/trade-account-switch-drawer'
+import {
+  TradeSimulateAccountDepositDrawer,
+  TradeSimulateAccountDepositDrawerRef,
+} from '@/components/drawers/trade-simulate-account-deposit-drawer'
 import { Badge } from '@/components/ui/badge'
 import { IconButton } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -20,9 +24,10 @@ import { BNumber } from '@mullet/utils/number'
 // ============ AccountCard ============
 interface AccountCardProps {}
 
-export const AccountCard = ({}: AccountCardProps) => {
+export const AccountCard = () => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
+  const simulateDepositDrawerRef = useRef<TradeSimulateAccountDepositDrawerRef>(null)
   const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
   const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {
@@ -71,7 +76,11 @@ export const AccountCard = ({}: AccountCardProps) => {
                   color="primary"
                   onPress={(e) => {
                     e.stopPropagation()
-                    addBalanceDrawerRef.current?.open()
+                    if (currentAccountInfo?.isSimulate) {
+                      simulateDepositDrawerRef.current?.open()
+                    } else {
+                      addBalanceDrawerRef.current?.open()
+                    }
                   }}
                 >
                   <IconifyPlusCircle width={14} height={14} />
@@ -91,6 +100,11 @@ export const AccountCard = ({}: AccountCardProps) => {
 
       {/* Add Balance Drawer */}
       {currentAccountInfo && <AddBalanceDrawer ref={addBalanceDrawerRef} accountInfo={currentAccountInfo} />}
+
+      {/* 虚拟账户存款 Drawer */}
+      {currentAccountInfo && (
+        <TradeSimulateAccountDepositDrawer ref={simulateDepositDrawerRef} account={currentAccountInfo} />
+      )}
     </>
   )
 }

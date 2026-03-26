@@ -65,7 +65,8 @@ export const useGetSymbolKlineOptions = (params: GetSymbolKlineParams) => {
     }, [params]),
     refetchInterval: 15 * 60 * 1000, // 15分钟轮询一次
     staleTime: 14 * 60 * 1000, // 14分钟内数据视为新鲜
-    refetchOnMount: true,
+    // 延长内存缓存时间，配合 MMKV 持久化缓存
+    gcTime: 7 * 24 * 60 * 60 * 1000,
   })
 
   return { getSymbolKlineOptions }

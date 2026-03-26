@@ -58,7 +58,7 @@ export const appKit = createAppKit({
   defaultNetwork: selectedNetwork,
   adapters: [solanaAdapter],
   storage,
-  debug: __DEV__,
+  // debug: __DEV__,
   // themeMode 由 Providers 中的 useUniwind 动态控制
   metadata: {
     name: 'Mullet',

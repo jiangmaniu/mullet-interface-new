@@ -2,22 +2,18 @@
  * @mullet/js-bridge/h5/hooks — React Hooks
  */
 
-import { useEffect, useState, useSyncExternalStore } from 'react'
+import { useEffect, useState } from 'react'
 import { fetchDeviceInfo, getAuth, getContextSync, getUserInfo, isInAppSync } from './api'
 import { on } from './core'
 import { AppEvent, type AppEventPayloadMap, type BridgeContext, type DeviceInfo, type UserInfo } from '../types'
 
-/** 是否在 App WebView 中 */
+/** 是否在 App WebView 中（页面加载后不会变化，初始化一次即可） */
 export function useIsInApp(): boolean {
-  return useSyncExternalStore(
-    () => () => {},
-    () => isInAppSync(),
-    () => false,
-  )
+  return useState(isInAppSync)[0]
 }
 
 /**
- * 同步读取 App 注入的上下文（无需等待 async）
+ * 同步读取 App 注入的上下文（页面加载前已注入，不会变化）
  *
  * @example
  * ```tsx
@@ -26,11 +22,7 @@ export function useIsInApp(): boolean {
  * ```
  */
 export function useBridgeContext(): BridgeContext | null {
-  return useSyncExternalStore(
-    () => () => {},
-    () => getContextSync(),
-    () => null,
-  )
+  return useState(getContextSync)[0]
 }
 
 /** 监听 App 事件 */
@@ -42,95 +34,80 @@ export function useAppEvent<E extends AppEvent>(
 }
 
 /**
- * 认证信息 — 同步初始化 + 异步更新
- *
- * 首次渲染即可从注入上下文同步拿到 token，无 loading 闪烁。
- * 后续通过 AppEvent.AuthChanged 实时更新。
+ * 认证信息 — 异步获取 + 事件更新
  */
 export function useAppAuth() {
-  const ctx = useBridgeContext()
-  const [token, setToken] = useState<string | null>(ctx?.token ?? null)
-  const [loading, setLoading] = useState(!ctx)
   const inApp = useIsInApp()
+  const [token, setToken] = useState<string | null>(null)
+  const [loading, setLoading] = useState(inApp)
 
   useEffect(() => {
-    if (!inApp) {
-      setLoading(false)
-      return
-    }
-    // 如果同步上下文已有 token，跳过 async 请求
-    if (ctx?.token !== undefined) {
-      setToken(ctx.token)
-      setLoading(false)
-    } else {
-      getAuth()
-        .then((auth) => setToken(auth.token))
-        .catch(() => setToken(null))
-        .finally(() => setLoading(false))
-    }
+    if (!inApp) return
+
+    getAuth()
+      .then((auth) => setToken(auth.token))
+      .catch(() => setToken(null))
+      .finally(() => setLoading(false))
 
     return on(AppEvent.AuthChanged, ({ token }) => setToken(token))
-  }, [inApp, ctx?.token])
+  }, [inApp])
 
   return { token, loading }
 }
 
-/** 用户信息 — 同步初始化 + 异步更新 */
+/** 用户信息 — 异步获取 + 事件更新 */
 export function useAppUser() {
-  const ctx = useBridgeContext()
-  const [user, setUser] = useState<UserInfo | null>(ctx?.user ?? null)
-  const [loading, setLoading] = useState(!ctx)
   const inApp = useIsInApp()
+  const [user, setUser] = useState<UserInfo | null>(null)
+  const [loading, setLoading] = useState(inApp)
 
   useEffect(() => {
-    if (!inApp) { setLoading(false); return }
-    if (ctx?.user !== undefined) {
-      setUser(ctx.user)
-      setLoading(false)
-    } else {
-      getUserInfo()
-        .then(setUser)
-        .catch(() => setUser(null))
-        .finally(() => setLoading(false))
-    }
+    if (!inApp) return
+
+    getUserInfo()
+      .then(setUser)
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false))
+
     return on(AppEvent.UserChanged, ({ user }) => setUser(user))
-  }, [inApp, ctx?.user])
+  }, [inApp])
 
   return { user, loading }
 }
 
-/** 主题 — 同步初始化 + 事件更新 */
+/** 主题 — 同步初始化 + 事件更新（仅返回值，DOM class 由 initTheme 统一管理） */
 export function useAppTheme(): 'light' | 'dark' {
   const ctx = useBridgeContext()
   const [theme, setTheme] = useState<'light' | 'dark'>(ctx?.theme ?? 'dark')
 
   useEffect(() => {
-    return on(AppEvent.ThemeChanged, ({ theme }) => {
-      setTheme(theme)
-      document.documentElement.classList.toggle('dark', theme === 'dark')
-    })
+    if (!isInAppSync()) return
+    return on(AppEvent.ThemeChanged, ({ theme }) => setTheme(theme))
   }, [])
 
   return theme
 }
 
-/** 设备信息 — 同步初始化 */
+/** 设备信息 — 同步初始化，非 App 环境返回 null */
 export function useDeviceInfo(): DeviceInfo | null {
+  const inApp = useIsInApp()
   const ctx = useBridgeContext()
   const [info, setInfo] = useState<DeviceInfo | null>(ctx?.device ?? null)
-  const inApp = useIsInApp()
 
   useEffect(() => {
     if (!inApp || info) return
     fetchDeviceInfo().then(setInfo).catch(() => {})
-  }, [inApp, info])
+  }, [inApp]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return info
 }
 
-/** 键盘状态 */
+/** 键盘状态（仅 App 内有效） */
 export function useKeyboard() {
   const [state, setState] = useState({ visible: false, height: 0 })
-  useEffect(() => on(AppEvent.KeyboardChanged, setState), [])
+  useEffect(() => {
+    if (!isInAppSync()) return
+    return on(AppEvent.KeyboardChanged, setState)
+  }, [])
   return state
 }
