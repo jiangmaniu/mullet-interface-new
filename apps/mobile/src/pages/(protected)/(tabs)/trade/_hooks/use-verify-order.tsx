@@ -36,6 +36,7 @@ export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
       return false
     } else if (BNumber.from(amount).gt(symbolInfo?.symbolConf?.maxTrade)) {
       toast.warning(<Trans>单笔交易量不得超出可交易范围</Trans>)
+      return false
     } else if (BNumber.from(amount).lt(symbolInfo?.symbolConf?.minTrade)) {
       toast.warning(<Trans>单笔交易量不得低于最小交易量</Trans>)
       return false
