@@ -422,8 +422,8 @@ export const usePositionTotalPnl = (): CalcPnlInfoResult | undefined => {
 
   // console.log(positionList, priceData)
   // 计算层：在 hook 层用 useMemo 做 PnL 运算，依赖稳定的原始数据快照
-  // return useMemo(() => {
-  //   return computeTotalPnl(priceData, positionList)
-  // }, [priceData, positionList])
-  return priceData
+  return useMemo(() => {
+    return computeTotalPnl(priceData, positionList)
+  }, [priceData, positionList])
+  // return priceData
 }

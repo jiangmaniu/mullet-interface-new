@@ -102,105 +102,86 @@ export class BNumber extends BigNumberBase {
     return BNumber.from(super.div(100))
   }
 
+  private sanitizeInput(n: any): any {
+    if (n instanceof BigNumber) return n;
+    return BNumber.from(n);
+  }
+
   pow(n: BNumberValue, base?: number): BNumber
   pow(n?: BNumberValue, base?: number): BNumber | undefined
   pow(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.pow(value.toString(), base) : super.pow(value.toString()))
+    return (base !== undefined ? super.pow(this.sanitizeInput(n) as any, base) : super.pow(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   multipliedBy(n: BNumberValue, base?: number): BNumber
   multipliedBy(n?: BNumberValue, base?: number): BNumber | undefined
   multipliedBy(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(
-      base !== undefined ? super.multipliedBy(value.toString(), base) : super.multipliedBy(value.toString()),
-    )
+    return (base !== undefined ? super.multipliedBy(this.sanitizeInput(n) as any, base) : super.multipliedBy(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   div(n: BNumberValue, base?: number): BNumber
   div(n?: BNumberValue, base?: number): BNumber | undefined
   div(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.div(value.toString(), base) : super.div(value.toString()))
+    return (base !== undefined ? super.div(this.sanitizeInput(n) as any, base) : super.div(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   times(n: BNumberValue, base?: number): BNumber
   times(n?: BNumberValue, base?: number): BNumber | undefined
   times(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.times(value.toString(), base) : super.times(value.toString()))
+    return (base !== undefined ? super.times(this.sanitizeInput(n) as any, base) : super.times(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   gt(n: BNumberValue, base?: number): boolean
   gt(n?: BNumberValue, base?: number): boolean | undefined
   gt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return base !== undefined ? super.gt(value.toString(), base) : super.gt(value.toString())
+    return base !== undefined ? super.gt(this.sanitizeInput(n) as any, base) : super.gt(this.sanitizeInput(n) as any)
   }
 
   lt(n: BNumberValue, base?: number): boolean
   lt(n?: BNumberValue, base?: number): boolean | undefined
   lt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return base !== undefined ? super.lt(value.toString(), base) : super.lt(value.toString())
+    return base !== undefined ? super.lt(this.sanitizeInput(n) as any, base) : super.lt(this.sanitizeInput(n) as any)
   }
 
   lte(n: BNumberValue, base?: number): boolean
   lte(n?: BNumberValue, base?: number): boolean | undefined
   lte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return base !== undefined ? super.lte(value.toString(), base) : super.lte(value.toString())
+    return base !== undefined ? super.lte(this.sanitizeInput(n) as any, base) : super.lte(this.sanitizeInput(n) as any)
   }
 
   gte(n: BNumberValue, base?: number): boolean
   gte(n?: BNumberValue, base?: number): boolean | undefined
   gte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return base !== undefined ? super.gte(value.toString(), base) : super.gte(value.toString())
+    return base !== undefined ? super.gte(this.sanitizeInput(n) as any, base) : super.gte(this.sanitizeInput(n) as any)
   }
 
   eq(n: BNumberValue, base?: number): boolean
   eq(n?: BNumberValue, base?: number): boolean | undefined
   eq(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return base !== undefined ? super.eq(value.toString(), base) : super.eq(value.toString())
+    return base !== undefined ? super.eq(this.sanitizeInput(n) as any, base) : super.eq(this.sanitizeInput(n) as any)
   }
 
   minus(n: BNumberValue, base?: number): BNumber
   minus(n?: BNumberValue, base?: number): BNumber | undefined
   minus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.minus(value.toString(), base) : super.minus(value.toString()))
+    return (base !== undefined ? super.minus(this.sanitizeInput(n) as any, base) : super.minus(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   plus(n: BNumberValue, base?: number): BNumber
   plus(n?: BNumberValue, base?: number): BNumber | undefined
   plus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.plus(value.toString(), base) : super.plus(value.toString()))
+    return (base !== undefined ? super.plus(this.sanitizeInput(n) as any, base) : super.plus(this.sanitizeInput(n) as any)) as unknown as BNumber
   }
 
   cutDecimalPlaces(decimalPlaces?: number, roundingMode?: BNumberRoundingMode): BNumber {
