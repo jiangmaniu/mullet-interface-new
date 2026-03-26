@@ -132,6 +132,10 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }
     },
     setActiveTradeAccountId: async (accountId?: string) => {
+      if (accountId === get().user.info.activeTradeAccountId) {
+        return
+      }
+
       // 切换账户时立即清空仓位和挂单，避免旧数据在新账户数据到来前引起渲染异常
       get().trade.position.reset()
       get().trade.order.reset()
