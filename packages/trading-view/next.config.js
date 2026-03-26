@@ -37,6 +37,8 @@ if (process.env.NODE_ENV === 'production') {
   if (!BASE_PATH) {
     nextConfig.assetPrefix = '.'
   }
+  // 去掉 crossorigin 属性，避免 file:// 协议下三星/Vivo 等 Android WebView 阻断脚本加载
+  nextConfig.crossOrigin = false
 }
 
 module.exports = nextConfig
