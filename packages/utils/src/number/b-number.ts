@@ -1,17 +1,17 @@
-import BigNumber from 'bignumber.js'
+import { BigNumber } from 'bignumber.js'
 import { isNil, isUndefined } from 'lodash-es'
 
 import { FormatNumberOpt, FormatPercentOpt, toFormatNumber, toFormatPercent } from '../format'
 
-const BigNumberConfig = {
+const BigNumberConfig: BigNumber.Config = {
   ROUNDING_MODE: BigNumber.ROUND_DOWN,
-  EXPONENTIAL_AT: [-30, 40] as [number, number],
+  EXPONENTIAL_AT: [-30, 40],
   DECIMAL_PLACES: 30,
 }
 
 BigNumber.config(BigNumberConfig)
 
-export type BNumberValue = string | number | bigint | BNumber | BigNumber.Value
+export type BNumberValue = string | number | BNumber | BigNumber | bigint
 
 export type BNumberRoundingMode = BigNumber.RoundingMode
 
@@ -24,12 +24,10 @@ export class BNumber extends BigNumberBase {
   constructor(n: BNumberValue, base?: number) {
     n = n === '' ? 0 : n
 
-    const value = n.toString().replace(/,/g, '')
-    // v10 中 base 参数不接受 undefined，需要条件传递
-    if (base !== undefined) {
-      super(value, base)
+    if (isUndefined(base)) {
+      super(typeof n === 'bigint' ? n.toString() : (n as any))
     } else {
-      super(value)
+      super(n.toString(), base)
     }
   }
 
@@ -67,11 +65,11 @@ export class BNumber extends BigNumberBase {
   }
 
   static max(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toString())))
+    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toFixed(0))))
   }
 
   static min(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toString())))
+    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toFixed(0))))
   }
 
   static parseUnits(value: BNumberValue, unitName: BNumberValue): BNumber
@@ -102,89 +100,97 @@ export class BNumber extends BigNumberBase {
     return BNumber.from(super.div(100))
   }
 
-  private sanitizeInput(n: any): any {
-    if (n instanceof BigNumber) return n;
-    return BNumber.from(n);
-  }
-
-  pow(n: BNumberValue, base?: number): BNumber
-  pow(n?: BNumberValue, base?: number): BNumber | undefined
-  pow(n?: BNumberValue, base?: number) {
-    if (isNil(n)) return
-    return (base !== undefined ? super.pow(this.sanitizeInput(n) as any, base) : super.pow(this.sanitizeInput(n) as any)) as unknown as BNumber
-  }
-
   multipliedBy(n: BNumberValue, base?: number): BNumber
   multipliedBy(n?: BNumberValue, base?: number): BNumber | undefined
   multipliedBy(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return (base !== undefined ? super.multipliedBy(this.sanitizeInput(n) as any, base) : super.multipliedBy(this.sanitizeInput(n) as any)) as unknown as BNumber
+
+    return isUndefined(base)
+      ? BNumber.from(super.multipliedBy(BNumber.from(n)))
+      : BNumber.from(super.multipliedBy(BNumber.from(n).toString(), base))
   }
 
   div(n: BNumberValue, base?: number): BNumber
   div(n?: BNumberValue, base?: number): BNumber | undefined
   div(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return (base !== undefined ? super.div(this.sanitizeInput(n) as any, base) : super.div(this.sanitizeInput(n) as any)) as unknown as BNumber
+
+    return isUndefined(base)
+      ? BNumber.from(super.div(BNumber.from(n)))
+      : BNumber.from(super.div(BNumber.from(n).toString(), base))
   }
 
   times(n: BNumberValue, base?: number): BNumber
   times(n?: BNumberValue, base?: number): BNumber | undefined
   times(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return (base !== undefined ? super.times(this.sanitizeInput(n) as any, base) : super.times(this.sanitizeInput(n) as any)) as unknown as BNumber
+
+    return isUndefined(base)
+      ? BNumber.from(super.times(BNumber.from(n)))
+      : BNumber.from(super.times(BNumber.from(n).toString(), base))
   }
 
   gt(n: BNumberValue, base?: number): boolean
   gt(n?: BNumberValue, base?: number): boolean | undefined
   gt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return base !== undefined ? super.gt(this.sanitizeInput(n) as any, base) : super.gt(this.sanitizeInput(n) as any)
+
+    return isUndefined(base) ? super.gt(BNumber.from(n)) : super.gt(BNumber.from(n).toString(), base)
   }
 
   lt(n: BNumberValue, base?: number): boolean
   lt(n?: BNumberValue, base?: number): boolean | undefined
   lt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return base !== undefined ? super.lt(this.sanitizeInput(n) as any, base) : super.lt(this.sanitizeInput(n) as any)
+
+    return isUndefined(base) ? super.lt(BNumber.from(n)) : super.lt(BNumber.from(n).toString(), base)
   }
 
   lte(n: BNumberValue, base?: number): boolean
   lte(n?: BNumberValue, base?: number): boolean | undefined
   lte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return base !== undefined ? super.lte(this.sanitizeInput(n) as any, base) : super.lte(this.sanitizeInput(n) as any)
+
+    return isUndefined(base) ? super.lte(BNumber.from(n)) : super.lte(BNumber.from(n).toString(), base)
   }
 
   gte(n: BNumberValue, base?: number): boolean
   gte(n?: BNumberValue, base?: number): boolean | undefined
   gte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return base !== undefined ? super.gte(this.sanitizeInput(n) as any, base) : super.gte(this.sanitizeInput(n) as any)
+
+    return isUndefined(base) ? super.gte(BNumber.from(n)) : super.gte(BNumber.from(n).toString(), base)
   }
 
   eq(n: BNumberValue, base?: number): boolean
   eq(n?: BNumberValue, base?: number): boolean | undefined
   eq(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return base !== undefined ? super.eq(this.sanitizeInput(n) as any, base) : super.eq(this.sanitizeInput(n) as any)
+
+    return isUndefined(base) ? super.eq(BNumber.from(n)) : super.eq(BNumber.from(n).toString(), base)
   }
 
   minus(n: BNumberValue, base?: number): BNumber
   minus(n?: BNumberValue, base?: number): BNumber | undefined
   minus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return (base !== undefined ? super.minus(this.sanitizeInput(n) as any, base) : super.minus(this.sanitizeInput(n) as any)) as unknown as BNumber
+
+    return isUndefined(base)
+      ? BNumber.from(super.minus(BNumber.from(n)))
+      : BNumber.from(super.minus(BNumber.from(n).toString(), base))
   }
 
   plus(n: BNumberValue, base?: number): BNumber
   plus(n?: BNumberValue, base?: number): BNumber | undefined
   plus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
-    return (base !== undefined ? super.plus(this.sanitizeInput(n) as any, base) : super.plus(this.sanitizeInput(n) as any)) as unknown as BNumber
+
+    return isUndefined(base)
+      ? BNumber.from(super.plus(BNumber.from(n)))
+      : BNumber.from(super.plus(BNumber.from(n).toString(), base))
   }
 
-  cutDecimalPlaces(decimalPlaces?: number, roundingMode?: BNumberRoundingMode): BNumber {
+  cutDecimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode): BNumber {
     if (!decimalPlaces) {
       return this
     }
@@ -192,8 +198,8 @@ export class BNumber extends BigNumberBase {
   }
 
   decimalPlaces(): number
-  decimalPlaces(decimalPlaces: number, roundingMode?: BNumberRoundingMode): BNumber
-  decimalPlaces(decimalPlaces?: number, roundingMode?: BNumberRoundingMode) {
+  decimalPlaces(decimalPlaces: number, roundingMode?: BigNumber.RoundingMode): BNumber
+  decimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode) {
     if (isUndefined(decimalPlaces)) {
       return super.decimalPlaces()
     }
