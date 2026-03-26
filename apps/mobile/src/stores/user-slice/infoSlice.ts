@@ -178,26 +178,21 @@ export type AccountMarginInfo = {
 } & Pick<User.AccountItem, 'margin' | 'isolatedMargin'>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户保证金信息（O(1)） */
-export const createAccountMarginInfoSelector = (accountId?: string | number | null) =>
+export const createAccountMarginInfoSelector = (accountId?: string | number) =>
   selectorMemoize((state: RootStoreState): AccountMarginInfo | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     if (!account) return
 
-    const { margin, isolatedMargin } = account
-    const occupiedMargin = calcAccountOccupiedMargin({
-      margin,
-      isolatedMargin,
-    })
-    return {
-      occupiedMargin,
-      isolatedMargin,
-      margin,
-    }
+    // 解构原始值，避免返回 Immer draft 对象导致 Proxy 报错
+    const margin = account.margin
+    const isolatedMargin = account.isolatedMargin
+    const occupiedMargin = calcAccountOccupiedMargin({ margin, isolatedMargin })
+    return { occupiedMargin, isolatedMargin, margin }
   })
 
 /** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
 export const createRealAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     return account && !account.isSimulate ? account : undefined
@@ -205,7 +200,7 @@ export const createRealAccountInfoSelector =
 
 /** 生成式 selector - 根据 accountId 查找模拟账户，依赖 createAccountInfoSelector（O(1)） */
 export const createSimulateAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     return account && account.isSimulate ? account : undefined

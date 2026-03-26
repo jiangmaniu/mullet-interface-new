@@ -7,5 +7,5 @@ import { useWithdrawStore } from '../_store'
  */
 export function useSelectedWithdrawAccount() {
   const selectedAccountId = useWithdrawStore((s) => s.selectedAccountId)
-  return useAccountInfo(selectedAccountId) ?? null
+  return useAccountInfo(selectedAccountId)
 }

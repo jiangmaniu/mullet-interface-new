@@ -71,7 +71,7 @@ interface UseDisabledTradeParams {
  * 基于 RootStore 状态，根据传入的 accountId 和 symbol 计算禁用状态
  */
 export function useDisabledTrade({ accountId, symbol }: UseDisabledTradeParams): DisabledTradeResult {
-  const accountInfo = useAccountInfo(accountId)
+  const accountInfo = useAccountInfo(accountId ?? undefined)
   const symbolInfo = useMarketSymbolInfo(symbol ?? undefined)
 
   return calcDisabledTrade(accountInfo, symbolInfo)

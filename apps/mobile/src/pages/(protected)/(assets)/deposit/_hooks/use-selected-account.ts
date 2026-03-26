@@ -7,5 +7,5 @@ import { useDepositStore } from '../_store'
  */
 export function useSelectedDepositAccount() {
   const selectedAccountId = useDepositStore((s) => s.selectedAccountId)
-  return useAccountInfo(selectedAccountId) ?? null
+  return useAccountInfo(selectedAccountId)
 }

@@ -28,7 +28,7 @@ export function useWalletSync() {
     }
     // Web2 登录：清空地址,需要在 ConnectWalletDrawer 中手动连接
     else if (loginType === LoginType.Web2) {
-      setFromWalletAddress(null)
+      setFromWalletAddress('')
     }
   }, [loginType, isGlobalWalletConnected, globalWalletAddress, setFromWalletAddress])
 

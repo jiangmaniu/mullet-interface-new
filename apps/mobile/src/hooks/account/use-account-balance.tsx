@@ -36,7 +36,7 @@ export const getAccountOccupiedMargin = (params?: GetAccountOccupiedMarginParams
 /**
  * Hook：获取账户占用保证金
  */
-export const useAccountOccupiedMargin = (accountId?: string | number | null): string | undefined => {
+export const useAccountOccupiedMargin = (accountId?: string | number): string | undefined => {
   const accountInfo = useRootStore(
     useShallow(useCallback((s: RootStoreState) => createAccountMarginInfoSelector(accountId)(s), [accountId])),
   )
