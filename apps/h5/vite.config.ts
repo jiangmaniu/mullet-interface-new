@@ -2,12 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { TanStackRouterVite } from '@tanstack/router-vite-plugin'
+import { lingui } from '@lingui/vite-plugin'
 import { resolve } from 'node:path'
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({ babel: { plugins: ['macros'] } }),
     tailwindcss(),
+    lingui(),
     TanStackRouterVite({
       routesDirectory: './src/routes',
       generatedRouteTree: './src/route-tree.gen.ts',
