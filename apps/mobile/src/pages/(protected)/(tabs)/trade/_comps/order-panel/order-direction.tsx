@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
@@ -13,7 +12,7 @@ import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataDirectionSelector, tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { BNumber } from '@mullet/utils/number'
 
-export const OrderDirection = observer(({ symbol }: { symbol?: string }) => {
+export const OrderDirection = ({ symbol }: { symbol?: string }) => {
   const symbolInfo = useMarketSymbolInfo(symbol)
   const quoteInfo = useMarketQuoteInfoWithSub(symbol)
 
@@ -66,4 +65,4 @@ export const OrderDirection = observer(({ symbol }: { symbol?: string }) => {
       </Pressable>
     </View>
   )
-})
+}

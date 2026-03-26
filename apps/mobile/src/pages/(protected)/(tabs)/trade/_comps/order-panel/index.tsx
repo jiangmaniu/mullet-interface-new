@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 
 import { useRootStore } from '@/stores'
@@ -13,7 +12,7 @@ import { OrderSubmit } from './order-submit'
 import { OrderTpSl } from './order-tp-sl'
 import { OrderType } from './order-type'
 
-export const OrderPanel = observer(() => {
+export const OrderPanel = () => {
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
 
   return (
@@ -38,4 +37,4 @@ export const OrderPanel = observer(() => {
       <OrderOverview symbol={activeSymbol} />
     </View>
   )
-})
+}

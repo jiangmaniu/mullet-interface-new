@@ -1,5 +1,4 @@
-import { useCallback, useMemo } from 'react'
-import { useShallow } from 'zustand/react/shallow'
+import { useMemo } from 'react'
 
 import {
   CalcPnlInfoResult,
@@ -9,18 +8,12 @@ import {
   calcPositionNetPnlInfo,
   calcTotalPnlInfo,
 } from '@/helpers/calc/pnl'
+import { calcGrossPnlFromSnapshot, extractPositionPriceData } from '@/helpers/calc/quote'
 import { calcCurrencyExchangeRate } from '@/helpers/calc/trade'
-import { parseDataSourceKey } from '@/helpers/parse/symbol'
-import { getMarketPlatformPrice } from '@/hooks/market/use-market-quote'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { RootStoreState, useRootStore } from '@/stores'
 import { selectorMemoize } from '@/stores/_helpers/memo'
-import { createSymbolInfoSelector } from '@/stores/market-slice'
-import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
-import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
-import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 // ============ Gross PnL 业务封装 ============
@@ -188,7 +181,7 @@ type GetQuotePriceFn = (symbol?: string, direction?: TradePositionDirectionEnum)
 
 /** 账户总盈亏仓位信息 */
 type AccountTotalPnlPositionInfo = Pick<
-  Order.BgaOrderPageListItem,
+  TradePositionInfo,
   'symbol' | 'buySell' | 'startPrice' | 'orderVolume' | 'handlingFees' | 'interestFees' | 'conf'
 > & {
   /** 仓位方向（parseTradePositionInfo 解析后） */
@@ -246,90 +239,17 @@ export const getPositionTotalPnlInfo = (params: GetAccountTotalPnlInfoParams): C
 // ============ 账户总盈亏 Hook ============
 
 /** 从 Zustand state 提取价格快照（供 hook 和方法版共用） */
-export const extractPriceData = (
-  s: RootStoreState,
-  parsedList: ReturnType<typeof parseTradePositionInfo>[],
-): Record<string, string | number | undefined> => {
-  const acctCurrency = userInfoActiveTradeAccountInfoSelector(s)?.currencyUnit
-  const result: Record<string, string | number | undefined> = { __acctCurrency: acctCurrency }
-
-  parsedList.forEach((pos) => {
-    if (!pos?.symbol) return
-
-    const symbolInfo = createSymbolInfoSelector(pos.symbol)(s)
-    const dataKey = symbolInfo ? parseDataSourceKey(symbolInfo) : undefined
-    const quote = dataKey ? createMarketQuoteSelector(dataKey)(s) : undefined
-    result[`${pos.symbol}_bid`] = quote?.priceData?.buy
-    result[`${pos.symbol}_ask`] = quote?.priceData?.sell
-
-    const profitCurrency = pos.conf?.profitCurrency
-    if (acctCurrency && profitCurrency && acctCurrency !== profitCurrency) {
-      const divName = `USD${profitCurrency}`.toUpperCase()
-      const mulName = `${profitCurrency}USD`.toUpperCase()
-      const divInfo = createSymbolInfoSelector(divName)(s)
-      const mulInfo = createSymbolInfoSelector(mulName)(s)
-      const divKey = divInfo ? parseDataSourceKey(divInfo) : undefined
-      const mulKey = mulInfo ? parseDataSourceKey(mulInfo) : undefined
-      const divQ = divKey ? createMarketQuoteSelector(divKey)(s) : undefined
-      const mulQ = mulKey ? createMarketQuoteSelector(mulKey)(s) : undefined
-      result[`${divName}_bid`] = divQ?.priceData?.buy
-      result[`${divName}_ask`] = divQ?.priceData?.sell
-      result[`${mulName}_bid`] = mulQ?.priceData?.buy
-      result[`${mulName}_ask`] = mulQ?.priceData?.sell
-    }
-  })
-
-  return result
-}
+export const extractPriceData = extractPositionPriceData
 
 /** 根据价格快照计算总盈亏（纯函数，供 hook 和方法版共用） */
-export const computeTotalPnl = (
+export const computeTotalPnlInfo = (
   priceData: Record<string, string | number | undefined> = {},
-  parsedList: ReturnType<typeof parseTradePositionInfo>[],
+  positionInfoList: ReturnType<typeof parseTradePositionInfo>[],
 ): CalcPnlInfoResult | undefined => {
-  const acctCurrency = priceData.__acctCurrency
-
-  const pnlList = parsedList.map((pos) => {
+  const pnlList = positionInfoList.map((pos) => {
     if (!pos?.symbol) return undefined
 
-    const bid = priceData[`${pos.symbol}_bid`]
-    const ask = priceData[`${pos.symbol}_ask`]
-    const closePrice = getMarketPlatformPrice(pos.direction, { bid, ask })
-
-    const grossPnlInfo = calcPositionGrossPnlInfo({
-      positionInfo: {
-        direction: pos.direction,
-        startPrice: pos.startPrice,
-        amount: pos.orderVolume,
-        conf: pos.conf,
-      },
-      closePrice,
-    })
-
-    if (!grossPnlInfo?.pnl) return undefined
-
-    let grossPnl: BNumberValue | undefined = grossPnlInfo.pnl
-    const profitCurrency = pos.conf?.profitCurrency
-
-    if (acctCurrency && profitCurrency && acctCurrency !== profitCurrency) {
-      const divName = `USD${profitCurrency}`.toUpperCase()
-      const mulName = `${profitCurrency}USD`.toUpperCase()
-      const isBuy = pos.direction === TradePositionDirectionEnum.BUY
-      const rawPnl = Number(grossPnlInfo.pnl)
-
-      const divBid = priceData[`${divName}_bid`]
-      const divAsk = priceData[`${divName}_ask`]
-      const mulBid = priceData[`${mulName}_bid`]
-      const mulAsk = priceData[`${mulName}_ask`]
-
-      if (divBid || divAsk) {
-        const price = Number(isBuy ? divBid : divAsk)
-        if (price) grossPnl = rawPnl / price
-      } else if (mulBid || mulAsk) {
-        const price = Number(isBuy ? mulBid : mulAsk)
-        if (price) grossPnl = rawPnl * price
-      }
-    }
+    const grossPnl = calcGrossPnlFromSnapshot(pos, priceData)
 
     const netPnlInfo = calcPositionNetPnlInfo({
       grossPnl,
@@ -348,51 +268,20 @@ export const computeTotalPnl = (
  *
  * 使用 getState() 读取快照，不订阅 store
  */
-export const getPositionTotalPnl = (positionList?: Order.BgaOrderPageListItem[]): CalcPnlInfoResult | undefined => {
+export const getPositionTotalPnl = (positionList?: TradePositionInfo[]): CalcPnlInfoResult | undefined => {
   if (!positionList?.length) return undefined
   const parsedList = positionList.map(parseTradePositionInfo).filter(Boolean) as ReturnType<
     typeof parseTradePositionInfo
   >[]
   const priceData = extractPriceData(useRootStore.getState(), parsedList)
-  return computeTotalPnl(priceData, parsedList)
+  return computeTotalPnlInfo(priceData, parsedList)
 }
 
 const createPriceDataSelector = (positionList?: TradePositionInfo[]) => {
   return selectorMemoize((s: RootStoreState): Record<string | number, string | number | undefined> => {
     if (!positionList?.length) return {}
-
-    const acctCurrency = userInfoActiveTradeAccountInfoSelector(s)?.currencyUnit
-    const result: Record<string | number, string | number | undefined> = { __acctCurrency: acctCurrency }
-
-    positionList.forEach((pos) => {
-      if (!pos?.symbol) return
-
-      // 仓位品种报价
-      const symbolInfo = createSymbolInfoSelector(pos.symbol)(s)
-      const dataKey = symbolInfo ? parseDataSourceKey(symbolInfo) : undefined
-      const quote = dataKey ? createMarketQuoteSelector(dataKey)(s) : undefined
-      result[`${pos.symbol}_bid`] = quote?.priceData?.buy
-      result[`${pos.symbol}_ask`] = quote?.priceData?.sell
-
-      // 换汇品种报价（仅在货币不一致时）
-      const profitCurrency = pos.conf?.profitCurrency
-      if (acctCurrency && profitCurrency && acctCurrency !== profitCurrency) {
-        const divName = `USD${profitCurrency}`.toUpperCase() // 如 USDNZD
-        const mulName = `${profitCurrency}USD`.toUpperCase() // 如 NZDUSD
-        const divInfo = createSymbolInfoSelector(divName)(s)
-        const mulInfo = createSymbolInfoSelector(mulName)(s)
-        const divKey = divInfo ? parseDataSourceKey(divInfo) : undefined
-        const mulKey = mulInfo ? parseDataSourceKey(mulInfo) : undefined
-        const divQ = divKey ? createMarketQuoteSelector(divKey)(s) : undefined
-        const mulQ = mulKey ? createMarketQuoteSelector(mulKey)(s) : undefined
-        result[`${divName}_bid`] = divQ?.priceData?.buy
-        result[`${divName}_ask`] = divQ?.priceData?.sell
-        result[`${mulName}_bid`] = mulQ?.priceData?.buy
-        result[`${mulName}_ask`] = mulQ?.priceData?.sell
-      }
-    })
-
-    return result
+    const parsedList = positionList.map(parseTradePositionInfo)
+    return extractPositionPriceData(s, parsedList)
   })
 }
 
@@ -408,22 +297,21 @@ const createPriceDataSelector = (positionList?: TradePositionInfo[]) => {
  * - 使用纯计算函数，不调用依赖 MobX 的业务封装方法
  * - selector 内只做纯数学运算，保证引用稳定性
  */
-export const usePositionTotalPnl = (): CalcPnlInfoResult | undefined => {
-  const positionList = useRootStore(tradePositionListSelector)
-
+export const usePositionTotalPnlInfo = ({
+  positionList,
+}: {
+  positionList: TradePositionInfo[]
+}): CalcPnlInfoResult | undefined => {
   // Selector 职责：仅从 Zustand 提取原始价格字符串（扁平 Record），不做任何计算
-  // useShallow 对字符串字段逐一 Object.is 比较，价格不变时引用稳定，不触发重渲染
   const priceData = useRootStore(
     useMemo(() => {
       return createPriceDataSelector(positionList)
     }, [positionList]),
   )
-  // computeTotalPnl(priceData, positionList)
 
   // console.log(positionList, priceData)
   // 计算层：在 hook 层用 useMemo 做 PnL 运算，依赖稳定的原始数据快照
   return useMemo(() => {
-    return computeTotalPnl(priceData, positionList)
+    return computeTotalPnlInfo(priceData, positionList)
   }, [priceData, positionList])
-  // return priceData
 }

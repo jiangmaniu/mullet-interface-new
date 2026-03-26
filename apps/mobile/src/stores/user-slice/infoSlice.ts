@@ -1,14 +1,13 @@
-import { get, keyBy } from 'lodash-es'
+import { keyBy } from 'lodash-es'
 import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
 
-import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { calcAccountOccupiedMargin } from '@/helpers/calc/account'
 import MulletWS from '@/lib/ws/mullet-ws'
 import { getClientDetail } from '@/v1/services/crm/customer'
-import ws from '@/v1/stores/ws'
 
 import { createSetter } from '../_helpers/createSetter'
+import { selectorMemoize } from '../_helpers/memo'
 import { ImmerStateCreator } from '../_helpers/types'
 import { ClientInfo, UserInfo } from './info-slice-type'
 
@@ -170,18 +169,17 @@ export const userInfoSimulateAccountListSelector = (state: RootStoreState) =>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户信息（O(1)） */
 export const createAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined =>
-    accountId != null ? state.user.info.accountMap[String(accountId)] : undefined
+    !!accountId ? state.user.info.accountMap[String(accountId)] : undefined
 
 export type AccountMarginInfo = {
   occupiedMargin?: string
 } & Pick<User.AccountItem, 'margin' | 'isolatedMargin'>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户保证金信息（O(1)） */
-export const createAccountMarginInfoSelector =
-  (accountId?: string | number | null) =>
-  (state: RootStoreState): AccountMarginInfo | undefined => {
+export const createAccountMarginInfoSelector = (accountId?: string | number | null) =>
+  selectorMemoize((state: RootStoreState): AccountMarginInfo | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     if (!account) return
 
@@ -195,7 +193,7 @@ export const createAccountMarginInfoSelector =
       isolatedMargin,
       margin,
     }
-  }
+  })
 
 /** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
 export const createRealAccountInfoSelector =

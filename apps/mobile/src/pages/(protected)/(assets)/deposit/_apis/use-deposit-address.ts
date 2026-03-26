@@ -35,7 +35,7 @@ export interface DepositAddressInfo {
  */
 export function useDepositAddress(chainId: string, tradeAccountId: string) {
   return useQuery({
-    queryKey: ['deposit', 'address', chainId, tradeAccountId],
+    queryKey: ['account', 'wallet', 'address', chainId, tradeAccountId],
     queryFn: async () => {
       const response = await depositRequest<DepositAddressInfo>('/api/deposit/address', {
         method: 'GET',

@@ -19,6 +19,7 @@ import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { parseSymbolLotsVolScale, renderFormatSymbolName } from '@/helpers/symbol'
 import { useMarketPlatformPrice } from '@/hooks/market/use-market-quote'
+import { getPositionGrossPnlInfo } from '@/hooks/trade/use-position-pnl'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
@@ -29,7 +30,6 @@ import { getImgSource } from '@/utils/img'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 
-import { getPositionGrossPnlInfo } from '../../../_hooks/trade/use-position-pnl'
 import { PositionCurrentPrice } from '../../common/position-current-price'
 
 interface ClosePositionDrawerProps {

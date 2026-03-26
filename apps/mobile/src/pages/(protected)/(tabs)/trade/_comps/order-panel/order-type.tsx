@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
@@ -7,7 +6,7 @@ import { ORDER_CREATE_TYPE_ENUM_OPTIONS, OrderCreateTypeEnum } from '@/options/t
 import { useRootStore } from '@/stores'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 
-export const OrderType = observer(() => {
+export const OrderType = () => {
   const { renderLinguiMsg } = useI18n()
   const orderType = useRootStore((s) => tradeFormDataSelector(s).orderType)
 
@@ -26,4 +25,4 @@ export const OrderType = observer(() => {
       </TabsList>
     </Tabs>
   )
-})
+}

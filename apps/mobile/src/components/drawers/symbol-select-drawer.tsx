@@ -1,5 +1,4 @@
 import { Trans, useLingui } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo, useState } from 'react'
 import { FlatList, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -32,7 +31,7 @@ interface SymbolSelectDrawerProps {
 }
 
 // ============ SymbolInfoCell ============
-const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => (
+const SymbolInfoCell = ({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => (
   <View className="gap-medium flex-1 flex-row items-center">
     <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
     <View>
@@ -40,10 +39,9 @@ const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
       <Text className="text-paragraph-p3 text-content-4">{symbolInfo?.alias}</Text>
     </View>
   </View>
-))
+)
 // ============ Main Drawer ============
-export const SymbolSelectDrawer = observer(
-  ({ visible, onClose, selectedSymbol, onSelect }: SymbolSelectDrawerProps) => {
+export const SymbolSelectDrawer = ({ visible, onClose, selectedSymbol, onSelect }: SymbolSelectDrawerProps) => {
     const { i18n } = useLingui()
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -120,8 +118,7 @@ export const SymbolSelectDrawer = observer(
         </DrawerContent>
       </Drawer>
     )
-  },
-)
+}
 
 function AssetTradeHeader() {
   return (
@@ -145,7 +142,7 @@ interface SymbolMarketRowProps {
   symbolInfo: Account.TradeSymbolListItem
 }
 
-const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
+const SymbolMarketRow = ({ symbolInfo }: SymbolMarketRowProps) => {
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const sellPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
@@ -186,18 +183,17 @@ const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
       </View>
     </View>
   )
-})
+}
 
-const CategoryTabListContent = observer(
-  ({
-    searchQuery,
-    categoryOption,
-    onSelect,
-  }: {
-    searchQuery: string
-    categoryOption: SymbolCategoryOption
-    onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
-  }) => {
+const CategoryTabListContent = ({
+  searchQuery,
+  categoryOption,
+  onSelect,
+}: {
+  searchQuery: string
+  categoryOption: SymbolCategoryOption
+  onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
+}) => {
     const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
     const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
     let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
@@ -231,25 +227,22 @@ const CategoryTabListContent = observer(
         }
       />
     )
-  },
-)
+}
 
-const MarketRow = observer(
-  ({
-    onSelect,
-    symbolInfo,
-  }: {
-    onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
-    symbolInfo: Account.TradeSymbolListItem
-  }) => {
-    const handlePress = () => {
-      onSelect(symbolInfo)
-    }
+const MarketRow = ({
+  onSelect,
+  symbolInfo,
+}: {
+  onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
+  symbolInfo: Account.TradeSymbolListItem
+}) => {
+  const handlePress = () => {
+    onSelect(symbolInfo)
+  }
 
-    return (
-      <Pressable onPress={handlePress}>
-        <SymbolMarketRow symbolInfo={symbolInfo} />
-      </Pressable>
-    )
-  },
-)
+  return (
+    <Pressable onPress={handlePress}>
+      <SymbolMarketRow symbolInfo={symbolInfo} />
+    </Pressable>
+  )
+}

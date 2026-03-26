@@ -1,16 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
-import { calcAccountAvailableMargin, calcAccountOccupiedMargin } from '@/helpers/calc/account'
-import {
-  computeTotalPnl,
-  extractPriceData,
-} from '@/pages/(protected)/(tabs)/trade/_hooks/trade/use-position-pnl'
+import { calcAccountAvailableMargin, calcAccountNetAssets, calcAccountOccupiedMargin } from '@/helpers/calc/account'
+import { usePositionTotalPnlInfo } from '@/hooks/trade/use-position-pnl'
 import { RootStoreState, useRootStore } from '@/stores'
 import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
 import { createAccountInfoSelector, createAccountMarginInfoSelector } from '@/stores/user-slice/infoSlice'
-import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { BNumberValue } from '@mullet/utils/number'
+
+import { useAccountInfo } from './use-account-info'
 
 // ============ 占用保证金（Occupied Margin） ============
 
@@ -86,16 +84,8 @@ export const getAccountAvailableMargin = (params?: GetAccountAvailableMarginPara
  * 将账户信息与仓位价格合并到单一 Zustand selector（扁平原始值），
  * 避免嵌套调用 usePositionTotalPnl 产生的递归订阅问题。
  */
-export const useAccountAvailableMargin = (accountId?: string | number | null): string | undefined => {
-  // 持仓列表（useShallow 保证元素不变时引用稳定）
-  const rawPositionList = useRootStore(useShallow(tradePositionListSelector))
-  const parsedList = useMemo(
-    () =>
-      (rawPositionList?.map(parseTradePositionInfo).filter(Boolean) as ReturnType<
-        typeof parseTradePositionInfo
-      >[]) ?? [],
-    [rawPositionList],
-  )
+export const useAccountAvailableMargin = (accountId?: string | number): string | undefined => {
+  const positionList = useRootStore(tradePositionListSelector)
 
   // 单一 Zustand 订阅：账户字段 + 价格字段展开为扁平原始值
   // useShallow 做字段级 Object.is 比较，值不变时引用稳定，不触发重渲染
@@ -104,28 +94,43 @@ export const useAccountAvailableMargin = (accountId?: string | number | null): s
       useCallback(
         (s: RootStoreState) => {
           const account = createAccountInfoSelector(accountId)(s)
-          const priceData = parsedList.length ? extractPriceData(s, parsedList) : {}
           return {
             money: account?.money,
             margin: account?.margin,
             isolatedMargin: account?.isolatedMargin,
             usableAdvanceCharge: account?.usableAdvanceCharge,
-            ...priceData,
           }
         },
-        [accountId, parsedList],
+        [accountId],
       ),
     ),
   )
 
+  const totalPnlInfo = usePositionTotalPnlInfo({ positionList })
+
   return useMemo(() => {
-    const { money, margin, isolatedMargin, usableAdvanceCharge, ...priceData } = snapshot ?? {}
-    const totalPnlInfo = parsedList.length
-      ? computeTotalPnl(priceData as Record<string, string | number | undefined>, parsedList)
-      : undefined
     return getAccountAvailableMargin({
-      accountInfo: { money, margin, isolatedMargin, usableAdvanceCharge },
+      accountInfo: snapshot,
       totalPnl: totalPnlInfo?.pnl,
     })
-  }, [snapshot, parsedList])
+  }, [snapshot, totalPnlInfo])
+}
+
+/**
+ * Hook：根据 accountId 获取账户净值（Net Assets）
+ *
+ * 内部获取账户信息和持仓总盈亏，计算净值
+ *
+ * 公式：netAssets = money + totalPnl
+ */
+export const useAccountNetAssets = (accountId?: string | number) => {
+  const accountInfo = useAccountInfo(accountId)
+
+  const positionList = useRootStore(tradePositionListSelector)
+  const totalPnlInfo = usePositionTotalPnlInfo({ positionList })
+
+  return useMemo(
+    () => calcAccountNetAssets({ money: accountInfo?.money, totalPnl: totalPnlInfo?.pnl }),
+    [accountInfo?.money, totalPnlInfo?.pnl],
+  )
 }
