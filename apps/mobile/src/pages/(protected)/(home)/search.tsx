@@ -18,7 +18,7 @@ import { Text } from '@/components/ui/text'
 import { HOT_SYMBOL_LIST } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useRootStore } from '@/stores'
@@ -123,7 +123,7 @@ const SearchAssetRow = observer(function SearchAssetRow({
   searchChars: string[]
   onSelect: () => void
 }) {
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const price = symbolMarketInfo?.userSellPrice
   const priceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
@@ -173,7 +173,7 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
   searchChars: string[]
   onSelect: () => void
 }) {
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
 
   return (
     <Pressable onPress={onSelect} className="p-xl gap-xl flex-row items-center">

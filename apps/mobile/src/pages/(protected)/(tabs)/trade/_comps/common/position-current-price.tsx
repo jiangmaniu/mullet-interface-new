@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
 
 import { Text } from '@/components/ui/text'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
@@ -16,7 +16,7 @@ export const PositionCurrentPrice = observer(
     info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
     className?: string
   }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
+    const symbolMarketInfo = useMarketQuoteInfoWithSub(info?.symbol)
     const currentPrice =
       info?.buySell === TradePositionDirectionEnum.BUY
         ? symbolMarketInfo?.userSellPrice
@@ -52,7 +52,7 @@ export const PendingCurrentPrice = observer(
     info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
     className?: string
   }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
+    const symbolMarketInfo = useMarketQuoteInfoWithSub(info?.symbol)
 
     const isLimitOrder = info?.type !== OrderTypeEnum.MARKET_ORDER
 

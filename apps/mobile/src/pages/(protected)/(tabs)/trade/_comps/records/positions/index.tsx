@@ -17,9 +17,11 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useMarketPlatformPrice } from '@/hooks/market/use-market-quote'
 import { useClosePosition } from '@/hooks/use-close-position'
 import { useI18n } from '@/hooks/use-i18n'
+import { useCrossMarginRateInfo, useIsolatedMarginRateInfo } from '@/hooks/use-margin-rate-info'
 import { cn } from '@/lib/utils'
+import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
-import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
@@ -34,6 +36,7 @@ import {
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
+import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
@@ -108,13 +111,13 @@ const PositionItemById = ({ id }: { id: string }) => {
   ) : null
 }
 
-// ============ PositionItemContent：保留 observer 因为依赖 MobX trade.getMarginRateInfo ============
+// ============ PositionItemContent ============
 
 const PositionItemContent = observer(
   ({ position }: { position: NonNullable<ReturnType<ReturnType<typeof createPositionItemSelector>>> }) => {
+    const { trade } = useStores()
     const positionInfo = parseTradePositionInfo(position)
     const { isExpanded } = AccordionPrimitive.useItemContext()
-    const { trade } = useStores()
     const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
     const { renderLinguiMsg } = useI18n()
 
@@ -226,10 +229,9 @@ const PositionItemContent = observer(
               <Text className="text-paragraph-p3 text-content-4">
                 <Trans>保证金率</Trans>
               </Text>
-              <Text className="text-paragraph-p3 text-content-1">
-                {BNumber.toFormatPercent(trade.getMarginRateInfo(position)?.marginRate, { isRaw: false })}
-              </Text>
+              <PositionMarginRate positionInfo={positionInfo} />
             </View>
+
             <View className="w-[100px]">
               <Text className="text-paragraph-p3 text-content-4">
                 <Trans>保证金({currentAccountCurrencyInfo?.currencyUnit})</Trans>
@@ -322,3 +324,40 @@ const PositionItemContent = observer(
     )
   },
 )
+
+const PositionMarginRate = ({ positionInfo }: { positionInfo?: TradePositionInfo }) => {
+  if (positionInfo?.marginType === OrderMarginTypeEnum.CROSS_MARGIN) {
+    return <CrossPositionMarginRate positionInfo={positionInfo} />
+  } else if (positionInfo?.marginType === OrderMarginTypeEnum.ISOLATED_MARGIN) {
+    return <IsolatedPositionMarginRate positionInfo={positionInfo} />
+  }
+
+  return <Text className="text-paragraph-p3 text-content-1">{renderFallback()}</Text>
+}
+
+const CrossPositionMarginRate = ({ positionInfo }: { positionInfo?: TradePositionInfo }) => {
+  const marginRateInfo = useCrossMarginRateInfo()
+  // console.log('marginRateInfo', marginRateInfo)
+
+  return (
+    <Text>
+      <Text className="text-paragraph-p3 text-content-1">
+        {BNumber.toFormatPercent(marginRateInfo?.marginRate, { isRaw: false })}
+      </Text>
+      {/* -
+      <Text className="text-paragraph-p3 text-content-1">
+        <AccountTotalPnl />
+      </Text> */}
+    </Text>
+  )
+}
+
+const IsolatedPositionMarginRate = ({ positionInfo }: { positionInfo?: TradePositionInfo }) => {
+  const marginRateInfo = useIsolatedMarginRateInfo(positionInfo)
+
+  return (
+    <Text className="text-paragraph-p3 text-content-1">
+      {BNumber.toFormatPercent(marginRateInfo?.marginRate, { isRaw: false })}
+    </Text>
+  )
+}

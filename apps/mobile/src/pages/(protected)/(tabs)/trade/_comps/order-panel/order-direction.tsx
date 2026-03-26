@@ -6,7 +6,7 @@ import { useLocalSearchParams } from 'expo-router'
 
 import { Text } from '@/components/ui/text'
 import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { TRADE_POSITION_DIRECTION_ENUM_OPTIONS, TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
@@ -15,7 +15,7 @@ import { BNumber } from '@mullet/utils/number'
 
 export const OrderDirection = observer(({ symbol }: { symbol?: string }) => {
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const quoteInfo = useMarketQuoteInfo(symbol)
+  const quoteInfo = useMarketQuoteInfoWithSub(symbol)
 
   // Get URL params
   const { direction: urlDirection } = useLocalSearchParams<{ direction?: TradePositionDirectionEnum }>()

@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input'
 import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
 import { useRootStore } from '@/stores'
@@ -146,7 +146,7 @@ interface SymbolMarketRowProps {
 }
 
 const SymbolMarketRow = observer(({ symbolInfo }: SymbolMarketRowProps) => {
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const sellPriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 

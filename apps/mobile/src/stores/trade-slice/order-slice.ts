@@ -149,7 +149,7 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
           orderTopic.push(`/${DEFAULT_TENANT_ID}/symbol/${simpleInfo.symbol}/${accountGroupId}`)
         }
 
-        return orderTopic.join(',')
+        return orderTopic
       })
 
       unsubscribe = ws.subscribe(topics)

@@ -10,6 +10,7 @@ import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(
 import { getBgaOrderPage } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 
+import { selectorMemoize } from '../_helpers/memo'
 import { marketSymbolSimpleMapSelector } from '../market-slice/symbol-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '../user-slice/infoSlice'
 
@@ -19,9 +20,9 @@ export interface PositionSliceState {
   /** 持仓 ID 列表（保持顺序） */
   idList: string[]
   /** 持仓 Map（以 id 为 key） */
-  map: Record<string, Order.BgaOrderPageListItem>
+  map: Record<string, TradePositionInfo>
   /** 计算缓存 Map */
-  calcCacheMap: Record<string, Order.BgaOrderPageListItem>
+  calcCacheMap: Record<string, TradePositionInfo>
   /** 加载状态 */
   loading: boolean
 }
@@ -50,7 +51,10 @@ export type PositionSlice = PositionSliceState & PositionSliceActions
 
 function toIdListAndMap(list: Order.BgaOrderPageListItem[]) {
   const idList = list.map((item) => item.id)
-  const map = keyBy(list, 'id')
+  const map = keyBy(
+    list.map((item) => parseTradePositionInfo(item)),
+    'id',
+  )
   return { idList, map }
 }
 
@@ -163,7 +167,7 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
           orderTopic.push(`/${DEFAULT_TENANT_ID}/symbol/${simpleInfo.symbol}/${accountGroupId}`)
         }
 
-        return orderTopic.join(',')
+        return orderTopic
       })
 
       unsubscribe = ws.subscribe(topics)
@@ -181,13 +185,14 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
       set((state) => {
         state.trade.position.idList = []
         state.trade.position.map = {}
+        state.trade.position.loading = true
       })
     },
 
     setCalcCache: (list) => {
       set((state) => {
         for (const item of list) {
-          state.trade.position.calcCacheMap[item.id] = item
+          state.trade.position.calcCacheMap[item.id] = parseTradePositionInfo(item)
         }
       })
     },
@@ -220,5 +225,6 @@ export const tradePositionLoadingSelector = (s: RootStoreState) => s.trade.posit
 export const tradePositionCountSelector = (s: RootStoreState) => s.trade.position.idList.length
 
 /** 兼容：从 map 还原完整列表（给需要完整列表的场景用，如 account-card） */
-export const tradePositionListSelector = (s: RootStoreState) =>
-  s.trade.position.idList.map((id) => s.trade.position.map[id]).filter(Boolean)
+export const tradePositionListSelector = selectorMemoize((s: RootStoreState) =>
+  s.trade.position.idList.map((id) => s.trade.position.map[id]).filter(Boolean),
+)

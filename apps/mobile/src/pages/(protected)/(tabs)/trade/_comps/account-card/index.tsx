@@ -24,7 +24,7 @@ interface AccountCardProps {}
 export const AccountCard = ({}: AccountCardProps) => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
-  const positionList = useRootStore(useShallow(tradePositionListSelector))
+  const positionList = useRootStore(tradePositionListSelector)
   const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
   const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {

@@ -19,6 +19,7 @@ import mitt from '@/v1/utils/mitt'
 
 import { parseDepthBodyData, parseQuoteBodyData } from './quote-parser'
 
+
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
 if (__DEV__) {
@@ -169,8 +170,9 @@ class MulletWS {
    * - 订阅通过 queueMicrotask 批量合并
    * - 取消订阅延迟 UNSUBSCRIBE_DELAY s 批量合并，避免页面切换时无效取消
    */
-  subscribe(topics: string[]): Unsubscribe {
-    topics.forEach((topic) => {
+  subscribe(topics: NestedStringArray[]): Unsubscribe {
+    const flatTopics = (topics as unknown[]).flat(Infinity) as string[]
+    flatTopics.forEach((topic) => {
       const count = this.refCounts.get(topic) || 0
       this.refCounts.set(topic, count + 1)
       if (count === 0) {
@@ -187,7 +189,7 @@ class MulletWS {
     return () => {
       if (disposed) return
       disposed = true
-      topics.forEach((topic) => {
+      flatTopics.forEach((topic) => {
         const count = this.refCounts.get(topic) || 0
         if (count <= 1) {
           this.refCounts.delete(topic)

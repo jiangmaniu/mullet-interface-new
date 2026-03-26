@@ -11,7 +11,7 @@ import { Text } from '@/components/ui/text'
 import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
@@ -73,7 +73,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
   const { colorStatusSuccess, colorStatusDanger, textColorContent1 } = useThemeColors()
   const symbolInfo = useMarketSymbolInfo(symbol)
   // 获取行情数据
-  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
 
   // 计算涨跌幅和价格（从订阅数据获取）
   const price = symbolMarketInfo?.userSellPrice

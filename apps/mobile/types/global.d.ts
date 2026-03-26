@@ -15,6 +15,8 @@ declare global {
 
   type MaybeArray<T> = T | T[]
 
+  type NestedStringArray = string | NestedStringArray[]
+
   type DeepRequired<T> = T extends (...args: any[]) => any
     ? T
     : T extends object

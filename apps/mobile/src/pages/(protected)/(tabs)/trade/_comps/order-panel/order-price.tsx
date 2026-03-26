@@ -7,7 +7,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { NumberInput, NumberInputSourceType } from '@/components/ui/number-input'
 import { Text } from '@/components/ui/text'
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
@@ -30,7 +30,7 @@ export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
   const { isBuy: isBuyOrder } = parseTradeDirectionInfo(direction)
   const { isMarket } = parseTradeOrderCreateTypeInfo(type)
 
-  const quoteInfo = useMarketQuoteInfo(symbol)
+  const quoteInfo = useMarketQuoteInfoWithSub(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { disabledInput } = useDisabledTrade({

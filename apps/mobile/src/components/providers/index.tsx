@@ -27,6 +27,14 @@ import { InspectorProvider } from './inspector-provider'
 import { QueryProvider } from './query-provider'
 import { WalletStateInjector } from './wallet-state-injector'
 
+/** 在 PrivyProvider 内部挂载，确保 Privy 客户端初始化后再启动 store 订阅 */
+function StoreSubscribesInit() {
+  useEffect(() => {
+    initStoreSubscribes()
+  }, [])
+  return null
+}
+
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
   const { theme } = useUniwind()
@@ -57,7 +65,6 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
     SystemUI.setBackgroundColorAsync(backgroundColorSecondary)
     dynamicActivate(initialLocale).then(() => {
       setIsI18nLoaded(true)
-      initStoreSubscribes()
     })
   }, [])
 
@@ -85,6 +92,8 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                 {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
                 <AppKitProvider instance={appKit}>
                   <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
+                    {/* Privy 初始化后再启动 store 订阅，避免 getAccessToken before client initialized */}
+                    <StoreSubscribesInit />
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
                       <V1Provider>

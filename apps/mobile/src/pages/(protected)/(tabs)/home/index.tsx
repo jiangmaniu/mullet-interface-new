@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useShallow } from 'zustand/react/shallow'
 import { router, useRouter } from 'expo-router'
 import { useResolveClassNames } from 'uniwind'
-import { symbol } from 'zod'
 
 import { SparkLine } from '@/components/charts/spark-line'
 import { EmptyState } from '@/components/states/empty-state'
@@ -24,7 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
-import { useMarketQuoteInfo, useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
@@ -208,7 +207,7 @@ interface AssetPriceRowProps {
 }
 
 const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   return (
     <View className="p-xl gap-xl flex-row items-center">
       <SymbolInfoCell symbolInfo={symbolInfo} />
@@ -217,7 +216,7 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
         <View className="gap-xs flex-1">
           <View className="bg-market-rise/15 border-market-rise rounded-small h-[24px] flex-col items-center justify-center border">
             <Text className="text-paragraph-p2 text-market-rise">
-              {BNumber.toFormatNumber(symbolMarketInfo?.userSellPrice, { volScale: symbolInfo?.symbolDecimal })}
+              {BNumber.toFormatNumber(symbolMarketInfo?.userBuyPrice, { volScale: symbolInfo?.symbolDecimal })}
             </Text>
           </View>
           <Text className="text-paragraph-p3 text-content-4">

@@ -31,6 +31,8 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
+import { usePositionTotalPnl } from '../../../trade/_hooks/trade/use-position-pnl'
+
 export const TradeAccountOverviewCard = observer(() => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
   const { textColorContent4, textColorContent1 } = useThemeColors()
@@ -134,25 +136,8 @@ export const TradeAccountOverviewCard = observer(() => {
               </Text>
               <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo?.currencyUnit}</Text>
             </View>
-            <Text
-              className={cn(
-                'text-paragraph-p2',
-                BNumber.from(totalProfit).gt(0)
-                  ? 'text-market-rise'
-                  : BNumber.from(totalProfit).lt(0)
-                    ? 'text-market-fall'
-                    : 'text-content-1',
-              )}
-            >
-              {isBalanceHidden
-                ? '******'
-                : `${BNumber.toFormatNumber(totalProfit, {
-                    unit: currentAccountInfo?.currencyUnit,
-                    volScale: currentAccountInfo?.currencyDecimal,
-                    positive: false,
-                    forceSign: true,
-                  })}`}
-            </Text>
+
+            {isBalanceHidden ? <Text className="text-paragraph-p2 text-content-1">******</Text> : <AccountTotalPnl />}
           </View>
         </View>
       </View>
@@ -203,6 +188,27 @@ const AccountAvailableMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo
   return (
     <>
       {`${BNumber.toFormatNumber(availableMargin, { unit: accountInfo?.currencyUnit, volScale: accountInfo?.currencyDecimal })}`}
+    </>
+  )
+}
+
+const AccountTotalPnl = () => {
+  const a = usePositionTotalPnl()
+  console.log('AccountTotalPnl', a)
+  return (
+    <>
+      <Text>123123</Text>
+      {/* <Text
+  className={cn(
+    'text-paragraph-p2',
+    BNumber.from(totalProfit).gt(0)
+      ? 'text-market-rise'
+      : BNumber.from(totalProfit).lt(0)
+        ? 'text-market-fall'
+        : 'text-content-1',
+  )}
+>
+  123</Text> */}
     </>
   )
 }

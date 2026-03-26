@@ -991,19 +991,18 @@ export function getCurrentQuoteV2(
 export const useGetCurrentQuoteCallback = () => {
   const activeSymbolName = useRootStore(tradeActiveTradeSymbolSelector)
 
-  const { trade } = useStores()
-  const symbolMap = trade.symbolMapAll
-
   return useCallback(
     (currentSymbolName?: string) => {
       const symbol = currentSymbolName ?? activeSymbolName
       if (symbol) {
-        // 从 Zustand store 读取行情数据
-        const quoteMap = useRootStore.getState().market.quote.quoteMap
+        // callback 内按需读取快照，不订阅整个 map 避免无效重渲染
+        const state = useRootStore.getState()
+        const quoteMap = state.market.quote.quoteMap
+        const symbolMap = state.market.symbol.infoMap
         return getCurrentQuoteV2(quoteMap, symbol, symbolMap)
       }
     },
-    [activeSymbolName, symbolMap],
+    [activeSymbolName],
   )
 }
 

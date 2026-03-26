@@ -15,7 +15,7 @@ import { SwipeableTabs } from '@/components/ui/tabs'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { t } from '@/locales/i18n'
@@ -100,7 +100,7 @@ interface PriceInfoProps {
 
 const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
   const symbolInfo = useMarketSymbolInfo(symbol)
-  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const latestPrice = symbolMarketInfo?.userSellPrice
   const userSellPricePriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
   const high = symbolMarketInfo?.high
@@ -197,7 +197,7 @@ function ChartView({ symbol }: { symbol?: string }) {
 
 // ============ DetailsView Component ============
 function DetailsView({ symbol }: { symbol?: string }) {
-  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const tradeTimeConf = symbolMarketInfo?.tradeTimeConf as any[]
   const symbolConf = symbolMarketInfo?.symbolConf
   const holdingCostConf = symbolMarketInfo?.holdingCostConf
@@ -313,7 +313,7 @@ interface BottomActionBarProps {
 }
 
 const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
-  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const userSellPricePrice = symbolMarketInfo?.userSellPrice
   const userBuyPricePrice = symbolMarketInfo?.userSellPrice

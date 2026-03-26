@@ -54,7 +54,6 @@ export const SYMBOL_CATEGORY_OPTIONS: SymbolCategoryOption[] = [
     label: msg`外汇`,
     value: SymbolCategory.Forex,
   },
-
   {
     label: msg`商品`,
     value: SymbolCategory.Commodities,
