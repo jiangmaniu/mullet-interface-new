@@ -6,11 +6,23 @@ import { IconLogo, IconPrivy } from '@/components/ui/icons/set'
 import { Web2LoginSection } from './_comps/web2-login-section'
 import { Web3LoginSection } from './_comps/web3-login-section'
 import { useRootStore } from '@/stores'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { useClearAuthData } from '@/hooks/use-logout'
 
 const Login = () => {
   const { accessToken, loginInfo } = useRootStore((state) => state.user.auth)
   console.log('accessToken', accessToken, loginInfo)
+
+  const { clearAuthData } = useClearAuthData()
+  const hasClearedRef = useRef(false)
+
+  // 页面渲染时清空钱包连接状态和 Privy 登录状态
+  useEffect(() => {
+    if (!hasClearedRef.current) {
+      hasClearedRef.current = true
+      clearAuthData()
+    }
+  }, [clearAuthData])
 
   // 🚫 禁止 Android 物理返回
   useEffect(() => {
