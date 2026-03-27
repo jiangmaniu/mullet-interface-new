@@ -50,6 +50,10 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
     infoList: snapshotList,
 
     fetchInfoList: async (accountId?: string) => {
+      if (accountId) {
+        return
+      }
+
       if (!get().market.symbol.infoList.length) {
         set((state) => {
           state.market.symbol.loading = true

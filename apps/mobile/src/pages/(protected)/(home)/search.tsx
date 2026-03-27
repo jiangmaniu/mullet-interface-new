@@ -221,7 +221,7 @@ const SearchPage = observer(function SearchPage() {
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
     trade.getSymbolList()
-    useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId ?? '')
+    useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
   }, [activeTradeAccountId])
 
   console.log(trade.symbolListAll)

@@ -30,7 +30,7 @@ export interface InfoSliceActions {
   setUserInfo: Setter<UserInfo | undefined>
   fetchClientInfo: (accountId?: string) => Promise<void>
   fetchLoginClientInfo: () => Promise<void>
-  setAccountList: (accountList: User.AccountItem[]) => void
+  setAccountList: (accountList: User.AccountItem[]) => Promise<void>
   updateAccount: (account: User.AccountItem) => void
 }
 
@@ -84,7 +84,7 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }
     },
 
-    setAccountList: (accountList: User.AccountItem[]) => {
+    setAccountList: async (accountList: User.AccountItem[]) => {
       const accountMap = keyBy(accountList, 'id')
 
       setRoot((state) => {
@@ -94,7 +94,7 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
 
       const activeTradeAccountId = userInfoActiveTradeAccountIdSelector(get())
       if (!activeTradeAccountId || !accountMap[activeTradeAccountId]) {
-        userInfoSelector(get()).setActiveTradeAccountId(accountList?.[0]?.id)
+        await userInfoSelector(get()).setActiveTradeAccountId(accountList?.[0]?.id)
       }
     },
 
@@ -119,7 +119,7 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
         }
         const { accountList = [], userInfo, ...clientInfo } = res.data ?? {}
 
-        get().user.info.setAccountList(accountList)
+        await get().user.info.setAccountList(accountList)
         get().user.info.setClientInfo(clientInfo)
         get().user.info.setUserInfo(userInfo)
       } catch (error) {

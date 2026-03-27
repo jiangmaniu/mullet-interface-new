@@ -44,6 +44,10 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
 
       // 重新获取用户信息
       await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+      const activeTradeAccountId = useRootStore.getState().user.info.activeTradeAccountId
+      if (activeTradeAccountId) {
+        await useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
+      }
 
       return userinfo
     },

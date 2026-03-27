@@ -285,7 +285,6 @@ const PositionItemContent = ({
           </View>
         </View>
       </AccordionContent>
-
       {/* Fixed: Action Buttons (always visible) */}
       <View className="px-xl">
         <View className="gap-xl flex-row">
