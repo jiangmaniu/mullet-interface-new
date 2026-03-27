@@ -70,12 +70,8 @@ export function useClosePosition() {
     },
     onSuccess: async () => {
       // 更新账户余额信息和仓位列表
-      await Promise.all([
-        trade.getPositionList(),
-        useRootStore.getState().trade.position.fetch(),
-        user.fetchUserInfo(),
-        useRootStore.getState().user.info.fetchLoginClientInfo(),
-      ])
+      await Promise.all([user.fetchUserInfo(), useRootStore.getState().user.info.fetchLoginClientInfo()])
+      await Promise.all([trade.getPositionList(), useRootStore.getState().trade.position.fetch()])
 
       toast.success(<Trans>平仓成功</Trans>)
     },

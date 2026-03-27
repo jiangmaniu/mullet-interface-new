@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -26,17 +25,12 @@ import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
-import {
-  createPositionItemSelector,
-  tradePositionIdListSelector,
-  tradePositionLoadingSelector,
-} from '@/stores/trade-slice/position-slice'
+import { createPositionItemSelector, tradePositionIdListSelector } from '@/stores/trade-slice/position-slice'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
   userInfoActiveTradeAccountIdSelector,
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
@@ -49,9 +43,9 @@ import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 
 export const TradePositions = () => {
   const positionIdList = useRootStore(useShallow(tradePositionIdListSelector))
-  const positionListLoading = useRootStore(tradePositionLoadingSelector)
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
+  const [refreshing, setRefreshing] = useState(false)
   useEffect(() => {
     if (!currentAccountId) return
     useRootStore
@@ -61,12 +55,17 @@ export const TradePositions = () => {
   }, [currentAccountId])
 
   const refetch = async () => {
-    const res = await useRootStore.getState().trade.position.fetch()
-    return res?.success
+    try {
+      setRefreshing(true)
+      const res = await useRootStore.getState().trade.position.fetch()
+      return res?.success
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   const renderEmpty = () => {
-    if (positionListLoading) {
+    if (refreshing) {
       return (
         <View className="py-3xl items-center">
           <ActivityIndicator />
@@ -90,7 +89,7 @@ export const TradePositions = () => {
       ItemSeparatorComponent={() => <View className="h-xl" />}
       ListEmptyComponent={renderEmpty}
       onEndReachedThreshold={0.3}
-      refreshing={positionListLoading}
+      refreshing={refreshing}
       onRefresh={() => refetch()}
       style={{ paddingTop: 16 }}
     />

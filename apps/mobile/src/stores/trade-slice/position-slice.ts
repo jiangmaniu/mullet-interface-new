@@ -67,39 +67,47 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
     idList: [],
     map: {},
     calcCacheMap: {},
-    loading: true,
+    loading: false,
 
     fetch: async (accountId) => {
-      const token = get().user.auth.accessToken
-      if (!token) return
+      try {
+        const token = get().user.auth.accessToken
+        if (!token) return
 
-      accountId = accountId ?? get().user.info.activeTradeAccountId
-      if (!accountId) return
+        accountId = accountId ?? get().user.info.activeTradeAccountId
+        if (!accountId) return
 
-      const res = await getBgaOrderPage({
-        current: 1,
-        size: 999,
-        status: TradePositionStatusEnum.BAG,
-        accountId,
-      })
+        if (get().trade.position.idList.length <= 0) {
+          set((state) => {
+            state.trade.position.loading = true
+          })
+        }
 
-      // 延迟关闭 loading，避免闪烁
-      setTimeout(() => {
-        set((state) => {
-          state.trade.position.loading = false
+        const res = await getBgaOrderPage({
+          current: 1,
+          size: 999,
+          status: TradePositionStatusEnum.BAG,
+          accountId,
         })
-      }, 300)
 
-      if (res.success) {
-        const data = (res.data?.records || []) as Order.BgaOrderPageListItem[]
-        const { idList, map } = toIdListAndMap(data)
-        set((state) => {
-          state.trade.position.idList = idList
-          state.trade.position.map = map
-        })
+        if (res.success) {
+          const data = (res.data?.records || []) as Order.BgaOrderPageListItem[]
+          const { idList, map } = toIdListAndMap(data)
+          set((state) => {
+            state.trade.position.idList = idList
+            state.trade.position.map = map
+          })
+        }
+
+        return res
+      } finally {
+        // 延迟关闭 loading，避免闪烁
+        setTimeout(() => {
+          set((state) => {
+            state.trade.position.loading = false
+          })
+        }, 300)
       }
-
-      return res
     },
 
     initSubscribe: () => {
@@ -185,7 +193,7 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
       set((state) => {
         state.trade.position.idList = []
         state.trade.position.map = {}
-        state.trade.position.loading = true
+        state.trade.position.loading = false
       })
     },
 

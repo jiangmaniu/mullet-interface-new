@@ -43,8 +43,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       })
 
       // 重新获取用户信息
-      await user.fetchUserInfo(true)
-      // console.log('Backend login successful')
+      await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
 
       return userinfo
     },

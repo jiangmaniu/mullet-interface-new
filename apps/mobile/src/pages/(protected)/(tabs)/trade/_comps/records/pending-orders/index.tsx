@@ -20,11 +20,7 @@ import { parseTradePendingOrderInfo } from '@/pages/(protected)/(trade)/_helpers
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
-import {
-  createOrderItemSelector,
-  tradeOrderIdListSelector,
-  tradeOrderLoadingSelector,
-} from '@/stores/trade-slice/order-slice'
+import { createOrderItemSelector, tradeOrderIdListSelector } from '@/stores/trade-slice/order-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
@@ -40,22 +36,26 @@ import { PendingCurrentPrice } from '../../common/position-current-price'
 export const TradePendingOrders = () => {
   const { user } = useStores()
   const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
-  const pendingListLoading = useRootStore(tradeOrderLoadingSelector)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
+  const [refreshing, setRefreshing] = useState(false)
   useEffect(() => {
     if (!activeTradeAccountId) return
     useRootStore.getState().trade.order.fetch()
   }, [activeTradeAccountId])
 
   const onRefresh = async () => {
-    await useRootStore.getState().trade.order.fetch()
-    await user.fetchUserInfo(true)
-    await useRootStore.getState().user.info.fetchLoginClientInfo()
+    try {
+      setRefreshing(true)
+      await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+      await Promise.all([useRootStore.getState().trade.order.fetch()])
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   const renderEmpty = () => {
-    if (pendingListLoading) {
+    if (refreshing) {
       return (
         <View className="py-3xl items-center">
           <ActivityIndicator />
@@ -79,7 +79,7 @@ export const TradePendingOrders = () => {
       ItemSeparatorComponent={() => <View className="h-xl" />}
       ListEmptyComponent={renderEmpty}
       onEndReachedThreshold={0.3}
-      refreshing={pendingListLoading}
+      refreshing={refreshing}
       onRefresh={() => onRefresh()}
       style={{ paddingTop: 16 }}
     />

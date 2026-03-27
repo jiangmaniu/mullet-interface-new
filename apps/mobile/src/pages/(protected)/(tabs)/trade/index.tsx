@@ -47,11 +47,10 @@ const Trade = () => {
   // 图表+账户卡的高度，作为键盘避让的最大偏移量
   const [topBannerHeight, setTopBannerHeight] = useState(0)
 
-  const initData = () => {
-    useRootStore.getState().trade.position.fetch()
-    useRootStore.getState().trade.order.fetch()
-    useRootStore.getState().user.info.fetchLoginClientInfo()
-    user.fetchUserInfo(true)
+  const initData = async () => {
+    await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo(), user.fetchUserInfo(true)])
+
+    await Promise.all([useRootStore.getState().trade.position.fetch(), useRootStore.getState().trade.order.fetch()])
   }
 
   useEffect(() => {

@@ -58,34 +58,42 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
   return {
     idList: [],
     map: {},
-    loading: true,
+    loading: false,
 
     fetch: async (accountId) => {
-      accountId = accountId ?? get().user.info.activeTradeAccountId
-      if (!accountId) return
+      try {
+        accountId = accountId ?? get().user.info.activeTradeAccountId
+        if (!accountId) return
 
-      const res = await getOrderPage({
-        current: 1,
-        size: 999,
-        status: 'ENTRUST',
-        type: 'LIMIT_BUY_ORDER,LIMIT_SELL_ORDER,STOP_LOSS_LIMIT_BUY_ORDER,STOP_LOSS_LIMIT_SELL_ORDER,STOP_LOSS_MARKET_BUY_ORDER,STOP_LOSS_MARKET_SELL_ORDER',
-        accountId,
-      })
+        if (get().trade.order.idList.length <= 0) {
+          set((state) => {
+            state.trade.order.loading = true
+          })
+        }
 
-      // 延迟关闭 loading，避免闪烁
-      setTimeout(() => {
-        set((state) => {
-          state.trade.order.loading = false
+        const res = await getOrderPage({
+          current: 1,
+          size: 999,
+          status: 'ENTRUST',
+          type: 'LIMIT_BUY_ORDER,LIMIT_SELL_ORDER,STOP_LOSS_LIMIT_BUY_ORDER,STOP_LOSS_LIMIT_SELL_ORDER,STOP_LOSS_MARKET_BUY_ORDER,STOP_LOSS_MARKET_SELL_ORDER',
+          accountId,
         })
-      }, 300)
 
-      if (res.success) {
-        const data = (res.data?.records || []) as Order.OrderPageListItem[]
-        const { idList, map } = toIdListAndMap(data)
-        set((state) => {
-          state.trade.order.idList = idList
-          state.trade.order.map = map
-        })
+        if (res.success) {
+          const data = (res.data?.records || []) as Order.OrderPageListItem[]
+          const { idList, map } = toIdListAndMap(data)
+          set((state) => {
+            state.trade.order.idList = idList
+            state.trade.order.map = map
+          })
+        }
+      } finally {
+        // 延迟关闭 loading，避免闪烁
+        setTimeout(() => {
+          set((state) => {
+            state.trade.order.loading = false
+          })
+        }, 300)
       }
     },
 
@@ -167,6 +175,7 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
       set((state) => {
         state.trade.order.idList = []
         state.trade.order.map = {}
+        state.trade.order.loading = false
       })
     },
 
