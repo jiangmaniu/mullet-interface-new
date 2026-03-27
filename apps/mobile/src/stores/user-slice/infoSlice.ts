@@ -178,8 +178,9 @@ export type AccountMarginInfo = {
 } & Pick<User.AccountItem, 'margin' | 'isolatedMargin'>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户保证金信息（O(1)） */
-export const createAccountMarginInfoSelector = (accountId?: string | number) =>
-  selectorMemoize((state: RootStoreState): AccountMarginInfo | undefined => {
+export const createAccountMarginInfoSelector =
+  (accountId?: string | number) =>
+  (state: RootStoreState): AccountMarginInfo | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     if (!account) return
 
@@ -188,8 +189,7 @@ export const createAccountMarginInfoSelector = (accountId?: string | number) =>
     const isolatedMargin = account.isolatedMargin
     const occupiedMargin = calcAccountOccupiedMargin({ margin, isolatedMargin })
     return { occupiedMargin, isolatedMargin, margin }
-  })
-
+  }
 /** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
 export const createRealAccountInfoSelector =
   (accountId?: string | number) =>
