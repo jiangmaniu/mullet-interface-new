@@ -50,7 +50,7 @@ export const createMarketSymbolSlice: SliceCreator<RootStoreState, MarketSymbolS
     infoList: snapshotList,
 
     fetchInfoList: async (accountId?: string) => {
-      if (accountId) {
+      if (!accountId) {
         return
       }
 
