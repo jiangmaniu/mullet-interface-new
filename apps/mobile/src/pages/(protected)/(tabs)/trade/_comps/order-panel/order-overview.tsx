@@ -10,20 +10,23 @@ import { useI18n } from '@/hooks/use-i18n'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
 import { useRootStore } from '@/stores'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { tradeFormDataAmountSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
-import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
 import { BNumber } from '@mullet/utils/number'
 
 import { useOrderMargin } from '../../_apis/use-order-margin'
+import { useOpenMaxAmount } from '../../_hooks/use-max-amount'
 
 export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const symbolInfo = useMarketSymbolInfo(symbol)
   const lotVolScale = parseSymbolLotsVolScale(symbolInfo?.symbolConf)
-  const { maxOpenVolume } = useOpenVolumn() // 最大可开仓量
   const { renderLinguiMsg } = useI18n()
 
-  const { data: expectedMargin } = useOrderMargin(symbol)
+  const amount = useRootStore(tradeFormDataAmountSelector)
+  const { data: expectedMargin } = useOrderMargin({ symbol, amount })
+
+  const openMaxAmount = useOpenMaxAmount({ symbol })
 
   return (
     <>
@@ -54,7 +57,7 @@ export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
           </TooltipContent>
         </Tooltip>
         <Text className="text-paragraph-p3 text-content-1">
-          {BNumber.toFormatNumber(maxOpenVolume, { volScale: lotVolScale, unit: renderLinguiMsg(LOTS_UNIT_LABEL) })}
+          {BNumber.toFormatNumber(openMaxAmount, { volScale: lotVolScale, unit: renderLinguiMsg(LOTS_UNIT_LABEL) })}
         </Text>
       </View>
     </>
