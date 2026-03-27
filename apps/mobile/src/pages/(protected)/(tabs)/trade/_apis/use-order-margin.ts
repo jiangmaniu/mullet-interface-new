@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
+import { useEffect, useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useDebounce } from 'ahooks'
-import { useEffect, useRef, useState } from 'react'
 
 import { OrderCreateTypeEnum } from '@/options/trade/order'
 import { useRootStore } from '@/stores'
@@ -87,12 +87,11 @@ const useMarketOrderPrice = (orderPrice: string | undefined) => {
  * - 请求失败后标记 hasError，暂停后续由 marketPrice 驱动的请求
  * - 用户主动修改 amount 或 orderType 时重置 hasError，恢复请求
  */
-export const useOrderMargin = (symbol?: string) => {
+export const useOrderMargin = ({ symbol, amount }: { symbol?: string; amount: string }) => {
   const accountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   // 只订阅需要的字段，避免无关字段变化触发重渲染
   const direction = useRootStore(tradeFormDataDirectionSelector)
-  const amount = useRootStore(tradeFormDataAmountSelector)
   const inputLimitPrice = useRootStore(tradeFormDataLimitPriceSelector)
   const orderType = useRootStore(tradeFormDataTypeSelector)
   const formData = useRootStore(

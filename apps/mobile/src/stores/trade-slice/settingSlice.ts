@@ -1,6 +1,7 @@
 import { Uniwind } from 'uniwind'
-
 import type { RootStoreState } from '../index'
+
+import { SliceCreator } from '../_helpers/types'
 
 // 涨跌颜色方案
 export type ColorScheme = 'green-up' | 'red-up'
@@ -53,10 +54,7 @@ function applyColorSchemeWithColors(scheme: ColorScheme) {
  * 创建 setting 命名空间切片（状态 + actions）
  * 访问路径: state.trade.setting.xxx
  */
-export function createTradeSettingSlice(
-  setRoot: (fn: (state: RootStoreState) => void) => void,
-  getRoot: () => RootStoreState,
-): SettingSlice {
+export const createTradeSettingSlice: SliceCreator<RootStoreState, SettingSlice> = (setRoot, getRoot) => {
   return {
     colorScheme: 'green-up',
     orderConfirmation: true,

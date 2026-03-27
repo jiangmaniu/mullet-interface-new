@@ -4,41 +4,28 @@ import { isUndefined } from 'lodash-es'
 import { toast } from '@/components/ui/toast'
 import { calcOrderTpSlScopePriceInfo, TpSlDirectionEnum } from '@/helpers/calc/order'
 import { CalcLimitStopLevelValueParams } from '@/helpers/calc/symbol'
-import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
+import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores'
 import { createSymbolInfoSelector } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
-// import useOpenVolumn from '@/v1/hooks/trade/useOpenVolumn'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { useCreateOrderPrice } from '../_comps/order-panel/_hooks/use-order-price'
+import { useOpenMaxAmount } from './use-max-amount'
 
 export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
-  // const { maxOpenVolume } = useOpenVolumn()
-
+  const openMaxAmount = useOpenMaxAmount({ symbol })
   const createOrderPrice = useCreateOrderPrice({ symbol })
 
   const { verifyOrderTpSlData } = useVerifyOrderTpSlData()
   const verifyCreateOrderData = () => {
     const symbolInfo = createSymbolInfoSelector(symbol)(useRootStore.getState())
 
-    const { amount, hasTpSl, tpPrice, slPrice, direction, orderType } = tradeFormDataSelector(useRootStore.getState())
-    const orderTypeInfo = parseTradeOrderCreateTypeInfo(orderType)
+    const { amount, hasTpSl, tpPrice, slPrice, direction } = tradeFormDataSelector(useRootStore.getState())
 
     if (!symbolInfo) {
       toast.error(<Trans>交易品种信息不存在</Trans>)
-      return false
-    }
-
-    if (BNumber.from(amount).lte(0)) {
-      toast.warning(<Trans>请输入手数</Trans>)
-      return false
-    } else if (BNumber.from(amount).gt(symbolInfo?.symbolConf?.maxTrade)) {
-      toast.warning(<Trans>单笔交易量不得超出可交易范围</Trans>)
-      return false
-    } else if (BNumber.from(amount).lt(symbolInfo?.symbolConf?.minTrade)) {
-      toast.warning(<Trans>单笔交易量不得低于最小交易量</Trans>)
       return false
     }
 
@@ -48,12 +35,24 @@ export const useVerifyCreateOrderData = ({ symbol }: { symbol?: string }) => {
       return false
     }
 
-    // 验证余额
-    if (orderTypeInfo.isMarket) {
-      // if (!Number(maxOpenVolume) || BNumber.from(maxOpenVolume).lt(amount)) {
-      //   toast.warning(<Trans>余额不足</Trans>)
-      //   return false
-      // }
+    if (BNumber.from(amount).lte(0)) {
+      toast.warning(<Trans>请输入手数</Trans>)
+      return false
+    } else if (!openMaxAmount) {
+      toast.warning(<Trans>未获得可开仓量数据，请检查订单数据或网络</Trans>)
+      return false
+    } else if (BNumber.from(openMaxAmount)?.lte(0)) {
+      toast.warning(<Trans>当前没有可开仓量</Trans>)
+      return false
+    } else if (BNumber.from(amount)?.gt(openMaxAmount)) {
+      toast.warning(<Trans>开仓数量不得超过可开仓量</Trans>)
+      return false
+    } else if (BNumber.from(amount).gt(symbolInfo?.symbolConf?.maxTrade)) {
+      toast.warning(<Trans>单笔交易量不得超出可交易范围</Trans>)
+      return false
+    } else if (BNumber.from(amount).lt(symbolInfo?.symbolConf?.minTrade)) {
+      toast.warning(<Trans>单笔交易量不得低于最小交易量</Trans>)
+      return false
     }
 
     // 验证止盈止损

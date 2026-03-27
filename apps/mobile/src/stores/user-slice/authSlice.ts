@@ -1,5 +1,7 @@
 import type { RootStoreState } from '../index'
 
+import MulletWS from '@/lib/ws/mullet-ws'
+
 import { ImmerStateCreator } from '../_helpers/types'
 
 export enum LoginType {
@@ -18,6 +20,7 @@ export interface AuthSliceState {
 export interface AuthSliceActions {
   setAuth: (partial: Partial<AuthSliceState>) => void
   logout: () => void
+  initSubscribe: () => void
 }
 
 /** auth 命名空间（状态 + actions 扁平化） */
@@ -27,7 +30,7 @@ export type AuthSlice = AuthSliceState & AuthSliceActions
  * 创建 auth 命名空间切片（状态 + actions）
  * 访问路径: state.user.auth.xxx
  */
-export const createUserAuthSlice: ImmerStateCreator<RootStoreState, AuthSlice> = (setRoot, get) => {
+export const createUserAuthSlice: ImmerStateCreator<RootStoreState, AuthSlice> = (setRoot, get, store) => {
   return {
     accessToken: undefined,
     loginInfo: null,
@@ -38,6 +41,16 @@ export const createUserAuthSlice: ImmerStateCreator<RootStoreState, AuthSlice> =
       setRoot((state) => {
         Object.assign(state.user.auth, partial)
       }),
+
+    initSubscribe: () => {
+      store.subscribe(
+        (state) => state.user.auth.accessToken,
+        (accessToken, prevAccessToken) => {
+          MulletWS.getInstance().connect(accessToken)
+        },
+        { fireImmediately: true },
+      )
+    },
 
     logout: () =>
       setRoot((state) => {

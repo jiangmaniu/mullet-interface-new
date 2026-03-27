@@ -1,17 +1,17 @@
-import BigNumber from 'bignumber.js'
+import { BigNumber } from 'bignumber.js'
 import { isNil, isUndefined } from 'lodash-es'
 
 import { FormatNumberOpt, FormatPercentOpt, toFormatNumber, toFormatPercent } from '../format'
 
-const BigNumberConfig = {
+const BigNumberConfig: BigNumber.Config = {
   ROUNDING_MODE: BigNumber.ROUND_DOWN,
-  EXPONENTIAL_AT: [-30, 40] as [number, number],
+  EXPONENTIAL_AT: [-30, 40],
   DECIMAL_PLACES: 30,
 }
 
 BigNumber.config(BigNumberConfig)
 
-export type BNumberValue = string | number | bigint | BNumber | BigNumber.Value
+export type BNumberValue = string | number | BNumber | BigNumber | bigint
 
 export type BNumberRoundingMode = BigNumber.RoundingMode
 
@@ -24,12 +24,10 @@ export class BNumber extends BigNumberBase {
   constructor(n: BNumberValue, base?: number) {
     n = n === '' ? 0 : n
 
-    const value = n.toString().replace(/,/g, '')
-    // v10 中 base 参数不接受 undefined，需要条件传递
-    if (base !== undefined) {
-      super(value, base)
+    if (isUndefined(base)) {
+      super(typeof n === 'bigint' ? n.toString() : (n as any))
     } else {
-      super(value)
+      super(n.toString(), base)
     }
   }
 
@@ -67,11 +65,11 @@ export class BNumber extends BigNumberBase {
   }
 
   static max(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toString())))
+    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toFixed(0))))
   }
 
   static min(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toString())))
+    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toFixed(0))))
   }
 
   static parseUnits(value: BNumberValue, unitName: BNumberValue): BNumber
@@ -102,24 +100,14 @@ export class BNumber extends BigNumberBase {
     return BNumber.from(super.div(100))
   }
 
-  pow(n: BNumberValue, base?: number): BNumber
-  pow(n?: BNumberValue, base?: number): BNumber | undefined
-  pow(n?: BNumberValue, base?: number) {
-    if (isNil(n)) return
-
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.pow(value.toString(), base) : super.pow(value.toString()))
-  }
-
   multipliedBy(n: BNumberValue, base?: number): BNumber
   multipliedBy(n?: BNumberValue, base?: number): BNumber | undefined
   multipliedBy(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return BNumber.from(
-      base !== undefined ? super.multipliedBy(value.toString(), base) : super.multipliedBy(value.toString()),
-    )
+    return isUndefined(base)
+      ? BNumber.from(super.multipliedBy(BNumber.from(n)))
+      : BNumber.from(super.multipliedBy(BNumber.from(n).toString(), base))
   }
 
   div(n: BNumberValue, base?: number): BNumber
@@ -127,8 +115,9 @@ export class BNumber extends BigNumberBase {
   div(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.div(value.toString(), base) : super.div(value.toString()))
+    return isUndefined(base)
+      ? BNumber.from(super.div(BNumber.from(n)))
+      : BNumber.from(super.div(BNumber.from(n).toString(), base))
   }
 
   times(n: BNumberValue, base?: number): BNumber
@@ -136,8 +125,9 @@ export class BNumber extends BigNumberBase {
   times(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.times(value.toString(), base) : super.times(value.toString()))
+    return isUndefined(base)
+      ? BNumber.from(super.times(BNumber.from(n)))
+      : BNumber.from(super.times(BNumber.from(n).toString(), base))
   }
 
   gt(n: BNumberValue, base?: number): boolean
@@ -145,8 +135,7 @@ export class BNumber extends BigNumberBase {
   gt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return base !== undefined ? super.gt(value.toString(), base) : super.gt(value.toString())
+    return isUndefined(base) ? super.gt(BNumber.from(n)) : super.gt(BNumber.from(n).toString(), base)
   }
 
   lt(n: BNumberValue, base?: number): boolean
@@ -154,8 +143,7 @@ export class BNumber extends BigNumberBase {
   lt(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return base !== undefined ? super.lt(value.toString(), base) : super.lt(value.toString())
+    return isUndefined(base) ? super.lt(BNumber.from(n)) : super.lt(BNumber.from(n).toString(), base)
   }
 
   lte(n: BNumberValue, base?: number): boolean
@@ -163,8 +151,7 @@ export class BNumber extends BigNumberBase {
   lte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return base !== undefined ? super.lte(value.toString(), base) : super.lte(value.toString())
+    return isUndefined(base) ? super.lte(BNumber.from(n)) : super.lte(BNumber.from(n).toString(), base)
   }
 
   gte(n: BNumberValue, base?: number): boolean
@@ -172,8 +159,7 @@ export class BNumber extends BigNumberBase {
   gte(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return base !== undefined ? super.gte(value.toString(), base) : super.gte(value.toString())
+    return isUndefined(base) ? super.gte(BNumber.from(n)) : super.gte(BNumber.from(n).toString(), base)
   }
 
   eq(n: BNumberValue, base?: number): boolean
@@ -181,8 +167,7 @@ export class BNumber extends BigNumberBase {
   eq(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return base !== undefined ? super.eq(value.toString(), base) : super.eq(value.toString())
+    return isUndefined(base) ? super.eq(BNumber.from(n)) : super.eq(BNumber.from(n).toString(), base)
   }
 
   minus(n: BNumberValue, base?: number): BNumber
@@ -190,8 +175,9 @@ export class BNumber extends BigNumberBase {
   minus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.minus(value.toString(), base) : super.minus(value.toString()))
+    return isUndefined(base)
+      ? BNumber.from(super.minus(BNumber.from(n)))
+      : BNumber.from(super.minus(BNumber.from(n).toString(), base))
   }
 
   plus(n: BNumberValue, base?: number): BNumber
@@ -199,11 +185,12 @@ export class BNumber extends BigNumberBase {
   plus(n?: BNumberValue, base?: number) {
     if (isNil(n)) return
 
-    const value = BNumber.from(n)
-    return BNumber.from(base !== undefined ? super.plus(value.toString(), base) : super.plus(value.toString()))
+    return isUndefined(base)
+      ? BNumber.from(super.plus(BNumber.from(n)))
+      : BNumber.from(super.plus(BNumber.from(n).toString(), base))
   }
 
-  cutDecimalPlaces(decimalPlaces?: number, roundingMode?: BNumberRoundingMode): BNumber {
+  cutDecimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode): BNumber {
     if (!decimalPlaces) {
       return this
     }
@@ -211,8 +198,8 @@ export class BNumber extends BigNumberBase {
   }
 
   decimalPlaces(): number
-  decimalPlaces(decimalPlaces: number, roundingMode?: BNumberRoundingMode): BNumber
-  decimalPlaces(decimalPlaces?: number, roundingMode?: BNumberRoundingMode) {
+  decimalPlaces(decimalPlaces: number, roundingMode?: BigNumber.RoundingMode): BNumber
+  decimalPlaces(decimalPlaces?: number, roundingMode?: BigNumber.RoundingMode) {
     if (isUndefined(decimalPlaces)) {
       return super.decimalPlaces()
     }

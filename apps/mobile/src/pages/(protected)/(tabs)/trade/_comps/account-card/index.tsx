@@ -15,29 +15,24 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconifyNavArrowDown, IconifyPlusCircle, IconifyUserCircle } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useAccountAvailableMargin } from '@/hooks/account/use-account-balance'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useRootStore } from '@/stores'
-import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
-import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
+import { UserAccountInfo, userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { BNumber } from '@mullet/utils/number'
 
 // ============ AccountCard ============
 interface AccountCardProps {}
 
-export const AccountCard = ({}: AccountCardProps) => {
+export const AccountCard = () => {
   const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false)
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const simulateDepositDrawerRef = useRef<TradeSimulateAccountDepositDrawerRef>(null)
-  const positionList = useRootStore(useShallow(tradePositionListSelector))
   const currentAccountInfo = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
   const synopsis = useAccountSynopsis(currentAccountInfo?.synopsis)
   const handleAccountPress = () => {
     setIsAccountDrawerOpen(true)
   }
-
-  const getAccountBalance = useGetAccountBalanceCallback()
-  const { availableMargin } = getAccountBalance(currentAccountInfo, positionList)
 
   return (
     <>
@@ -76,12 +71,7 @@ export const AccountCard = ({}: AccountCardProps) => {
                 </TooltipContent>
               </Tooltip>
               <View className="gap-xs flex-row items-center">
-                <Text className="text-paragraph-p3 text-content-1">
-                  {BNumber.toFormatNumber(availableMargin, {
-                    unit: currentAccountInfo?.currencyUnit,
-                    volScale: currentAccountInfo?.currencyDecimal,
-                  })}
-                </Text>
+                <AccountAvailableMargin accountInfo={currentAccountInfo} />
                 <IconButton
                   color="primary"
                   onPress={(e) => {
@@ -116,5 +106,18 @@ export const AccountCard = ({}: AccountCardProps) => {
         <TradeSimulateAccountDepositDrawer ref={simulateDepositDrawerRef} account={currentAccountInfo} />
       )}
     </>
+  )
+}
+
+const AccountAvailableMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
+  const availableMargin = useAccountAvailableMargin(accountInfo?.id)
+
+  return (
+    <Text className="text-paragraph-p3 text-content-1">
+      {BNumber.toFormatNumber(availableMargin, {
+        unit: accountInfo?.currencyUnit,
+        volScale: accountInfo?.currencyDecimal,
+      })}
+    </Text>
   )
 }

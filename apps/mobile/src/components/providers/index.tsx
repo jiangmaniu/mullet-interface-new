@@ -1,39 +1,51 @@
+import { I18nProvider } from '@lingui/react'
 import { DarkTheme, Theme, ThemeProvider } from '@react-navigation/native'
-import { AppKitProvider } from '@reown/appkit-react-native'
 import { ThemeController } from '@reown/appkit-core-react-native'
+import { AppKitProvider } from '@reown/appkit-react-native'
+import { IconoirProvider } from 'iconoir-react-native'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
-import { useUniwind, Uniwind } from 'uniwind'
-import { PrivyElements } from '@privy-io/expo/ui'
-import { AppKit, appKit } from '@/lib/appkit'
-import { I18nProvider } from '@lingui/react'
-import { EXPO_ENV_CONFIG } from '@/constants/expo'
-import { dynamicActivate, i18n, initialLocale } from '@/locales/i18n'
-import { PrivyProvider } from '@privy-io/expo'
-import { useThemeColors } from '@/hooks/use-theme-colors'
-import { IconoirProvider } from 'iconoir-react-native'
-import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter';
-import { useFonts } from 'expo-font';
-import { V1Provider } from '@/v1/provider'
-import { QueryProvider } from './query-provider'
-import { InspectorProvider } from './inspector-provider'
-import { WalletStateInjector } from './wallet-state-injector'
-import { VersionCheckProvider } from '@/components/app-update/version-check-provider'
-import { Toaster } from '@/components/ui/toast'
-import { Loading } from '@/components/ui/loading'
+import { useFonts } from 'expo-font'
 import * as SystemUI from 'expo-system-ui'
+import { Uniwind, useUniwind } from 'uniwind'
+
+import { VersionCheckProvider } from '@/components/app-update/version-check-provider'
+import { Loading } from '@/components/ui/loading'
+import { Toaster } from '@/components/ui/toast'
+import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useThemeColors } from '@/hooks/use-theme-colors'
+import { AppKit, appKit } from '@/lib/appkit'
+import { dynamicActivate, i18n, initialLocale } from '@/locales/i18n'
+import { initStoreSubscribes } from '@/stores'
+import { V1Provider } from '@/v1/provider'
+import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter'
+import { PrivyProvider } from '@privy-io/expo'
+import { PrivyElements } from '@privy-io/expo/ui'
+
+import { InspectorProvider } from './inspector-provider'
+import { QueryProvider } from './query-provider'
+import { WalletStateInjector } from './wallet-state-injector'
+
+/** 在 PrivyProvider 内部挂载，确保 Privy 客户端初始化后再启动 store 订阅 */
+function StoreSubscribesInit() {
+  useEffect(() => {
+    initStoreSubscribes()
+  }, [])
+  return null
+}
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
   const [isI18nLoaded, setIsI18nLoaded] = useState(false)
   const { theme } = useUniwind()
-  const { colorBrandPrimary, backgroundColorSecondary, textColorContent1, colorBrandDefault, backgroundColorCard } = useThemeColors()
+  const { colorBrandPrimary, backgroundColorSecondary, textColorContent1, colorBrandDefault, backgroundColorCard } =
+    useThemeColors()
 
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
-  });
+  })
 
   const UniwindDarkTheme: Theme = {
     ...DarkTheme,
@@ -80,12 +92,12 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                 {/* AppKit Provider - 必须在使用 AppKit hooks 的组件之上 */}
                 <AppKitProvider instance={appKit}>
                   <PrivyProvider appId={EXPO_ENV_CONFIG.PRIVY_APP_ID} clientId={EXPO_ENV_CONFIG.PRIVY_CLIENT_ID}>
+                    {/* Privy 初始化后再启动 store 订阅，避免 getAccessToken before client initialized */}
+                    <StoreSubscribesInit />
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
                       <V1Provider>
-                        <VersionCheckProvider>
-                          {children}
-                        </VersionCheckProvider>
+                        <VersionCheckProvider>{children}</VersionCheckProvider>
                       </V1Provider>
                       <Toaster position="center" />
                       <Loading />
@@ -95,7 +107,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                       config={{
                         appearance: {
                           colorScheme: theme === 'dark' ? 'dark' : 'light',
-                          accentColor: '#EED94C'
+                          accentColor: '#EED94C',
                         },
                       }}
                     />
@@ -106,7 +118,6 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                       <AppKit />
                     </View>
                   </PrivyProvider>
-
                 </AppKitProvider>
               </IconoirProvider>
             </ThemeProvider>

@@ -339,7 +339,7 @@ class WSStore {
     // 监听socket打开事件，开启时打开心跳发送和系统消息监听
     this.socket.addEventListener('open', () => {
       this.startHeartbeat()
-      this.subscribeMessage()
+      // this.subscribeMessage()
       // console.log('=============== open ================', this.socket.readyState)
       resolve?.()
     })

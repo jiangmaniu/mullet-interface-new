@@ -18,18 +18,25 @@ import { Separator } from '@/components/ui/separator'
 import { Spinning } from '@/components/ui/spinning'
 import { Text } from '@/components/ui/text'
 import { DEPOSIT_SOLANA_CHAIN_ID } from '@/constants/config/deposit'
-import { useAccountOccupiedMargin } from '@/hooks/account/use-account-balance'
+import {
+  useAccountAvailableMargin,
+  useAccountNetAssets,
+  useAccountOccupiedMargin,
+} from '@/hooks/account/use-account-balance'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { usePositionTotalPnlInfo } from '@/hooks/trade/use-position-pnl'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useDepositAddress } from '@/pages/(protected)/(assets)/deposit/_apis/use-deposit-address'
 import { useRootStore } from '@/stores'
+import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
 import { UserAccountInfo, userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { useGetAccountBalanceCallback } from '@/v1/utils/wsUtil'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
+
+const BalanceHiddenFallback = '******'
 
 export const TradeAccountOverviewCard = observer(() => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
@@ -44,10 +51,6 @@ export const TradeAccountOverviewCard = observer(() => {
   const onPressSwitch = () => {
     setIsSwitcherVisible(true)
   }
-
-  const getAccountBalance = useGetAccountBalanceCallback()
-  const { balance, totalProfit } = getAccountBalance(currentAccountInfo, undefined)
-  const occupiedMargin = useAccountOccupiedMargin(currentAccountInfo?.id)
 
   // 获取钱包地址
   const { data: depositAddressInfo, isLoading: isAddressLoading } = useDepositAddress(
@@ -127,32 +130,20 @@ export const TradeAccountOverviewCard = observer(() => {
 
           <View className="flex-row items-end justify-between">
             <View className="gap-medium flex-row items-baseline">
-              <Text className="text-title-h3 text-content-1">
-                {isBalanceHidden
-                  ? '******'
-                  : `${BNumber.toFormatNumber(balance, { volScale: currentAccountInfo?.currencyDecimal })}`}
-              </Text>
+              {isBalanceHidden ? (
+                <Text className="text-title-h3 text-content-1">{BalanceHiddenFallback}</Text>
+              ) : (
+                <AccountNetAssets accountInfo={currentAccountInfo} />
+              )}
+
               <Text className="text-paragraph-p2 text-content-1">{currentAccountInfo?.currencyUnit}</Text>
             </View>
-            <Text
-              className={cn(
-                'text-paragraph-p2',
-                BNumber.from(totalProfit).gt(0)
-                  ? 'text-market-rise'
-                  : BNumber.from(totalProfit).lt(0)
-                    ? 'text-market-fall'
-                    : 'text-content-1',
-              )}
-            >
-              {isBalanceHidden
-                ? '******'
-                : `${BNumber.toFormatNumber(totalProfit, {
-                    unit: currentAccountInfo?.currencyUnit,
-                    volScale: currentAccountInfo?.currencyDecimal,
-                    positive: false,
-                    forceSign: true,
-                  })}`}
-            </Text>
+
+            {isBalanceHidden ? (
+              <Text className="text-title-h3 text-content-1">{BalanceHiddenFallback}</Text>
+            ) : (
+              <AccountTotalPnl accountInfo={currentAccountInfo} />
+            )}
           </View>
         </View>
       </View>
@@ -168,7 +159,7 @@ export const TradeAccountOverviewCard = observer(() => {
           </Text>
           <Text className="text-paragraph-p3 text-content-1">
             {isBalanceHidden
-              ? '******'
+              ? BalanceHiddenFallback
               : `${BNumber.toFormatNumber(currentAccountInfo?.money, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
           </Text>
         </View>
@@ -176,19 +167,22 @@ export const TradeAccountOverviewCard = observer(() => {
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>可用保证金</Trans>
           </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden ? '******' : <AccountAvailableMargin accountInfo={currentAccountInfo} />}
-          </Text>
+
+          {isBalanceHidden ? (
+            <Text className="text-paragraph-p3 text-content-1">{BalanceHiddenFallback}</Text>
+          ) : (
+            <AccountAvailableMargin accountInfo={currentAccountInfo} />
+          )}
         </View>
         <View className="flex-row items-center justify-between">
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>占用保证金</Trans>
           </Text>
-          <Text className="text-paragraph-p3 text-content-1">
-            {isBalanceHidden
-              ? '******'
-              : `${BNumber.toFormatNumber(occupiedMargin, { unit: currentAccountInfo?.currencyUnit, volScale: currentAccountInfo?.currencyDecimal })}`}
-          </Text>
+          {isBalanceHidden ? (
+            <Text className="text-paragraph-p3 text-content-1">{BalanceHiddenFallback}</Text>
+          ) : (
+            <AccountOccupiedMargin accountInfo={currentAccountInfo} />
+          )}
         </View>
       </View>
     </Card>
@@ -196,13 +190,57 @@ export const TradeAccountOverviewCard = observer(() => {
 })
 
 const AccountAvailableMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
-  // const availableMargin = useAccountAvailableMargin(accountInfo?.id)
-  const getAccountBalance = useGetAccountBalanceCallback()
-  const { availableMargin } = getAccountBalance(accountInfo, undefined)
+  const availableMargin = useAccountAvailableMargin(accountInfo?.id)
+
+  return (
+    <Text className="text-content-1 text-paragraph-p2">
+      {`${BNumber.toFormatNumber(availableMargin, { unit: accountInfo?.currencyUnit, volScale: accountInfo?.currencyDecimal })}`}
+    </Text>
+  )
+}
+
+const AccountTotalPnl = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
+  const positionList = useRootStore(useShallow(tradePositionListSelector))
+  const totalPnlInfo = usePositionTotalPnlInfo({ positionList })
 
   return (
     <>
-      {`${BNumber.toFormatNumber(availableMargin, { unit: accountInfo?.currencyUnit, volScale: accountInfo?.currencyDecimal })}`}
+      <Text
+        className={cn(
+          'text-paragraph-p2',
+          totalPnlInfo?.isProfit ? 'text-market-rise' : totalPnlInfo?.isLoss ? 'text-market-fall' : 'text-content-1',
+        )}
+      >
+        {BNumber.toFormatNumber(totalPnlInfo?.pnl, {
+          unit: accountInfo?.currencyUnit,
+          volScale: accountInfo?.currencyDecimal,
+          positive: false,
+          forceSign: true,
+        })}
+      </Text>
     </>
+  )
+}
+
+const AccountNetAssets = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
+  const netAssets = useAccountNetAssets(accountInfo?.id)
+
+  return (
+    <Text className="text-content-1 text-title-h3">
+      {BNumber.toFormatNumber(netAssets, { volScale: accountInfo?.currencyDecimal })}
+    </Text>
+  )
+}
+
+const AccountOccupiedMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
+  const occupiedMargin = useAccountOccupiedMargin(accountInfo?.id)
+
+  return (
+    <Text className="text-content-1 text-paragraph-p2">
+      {BNumber.toFormatNumber(occupiedMargin, {
+        unit: accountInfo?.currencyUnit,
+        volScale: accountInfo?.currencyDecimal,
+      })}
+    </Text>
   )
 }

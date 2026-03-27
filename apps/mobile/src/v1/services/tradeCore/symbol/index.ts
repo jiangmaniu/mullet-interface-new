@@ -1,6 +1,6 @@
 import qs from 'qs'
 
-import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 import { parseJsonFields } from '@/v1/utils'
 import {
   formatMultipleValue,

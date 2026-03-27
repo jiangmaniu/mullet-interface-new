@@ -1,22 +1,20 @@
-import { observer } from 'mobx-react-lite'
 
 import { Text } from '@/components/ui/text'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 
-export const PositionCurrentPrice = observer(
-  ({
-    info,
-    className,
-  }: {
-    info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
-    className?: string
-  }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
+export const PositionCurrentPrice = ({
+  info,
+  className,
+}: {
+  info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'symbolDecimal'>
+  className?: string
+}) => {
+    const symbolMarketInfo = useMarketQuoteInfoWithSub(info?.symbol)
     const currentPrice =
       info?.buySell === TradePositionDirectionEnum.BUY
         ? symbolMarketInfo?.userSellPrice
@@ -41,18 +39,16 @@ export const PositionCurrentPrice = observer(
         {BNumber.toFormatNumber(currentPrice, { volScale: info?.symbolDecimal })}
       </Text>
     )
-  },
-)
+}
 
-export const PendingCurrentPrice = observer(
-  ({
-    info,
-    className,
-  }: {
-    info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
-    className?: string
-  }) => {
-    const symbolMarketInfo = useMarketQuoteInfo(info?.symbol)
+export const PendingCurrentPrice = ({
+  info,
+  className,
+}: {
+  info?: Pick<Order.BgaOrderPageListItem, 'symbol' | 'buySell' | 'type' | 'symbolDecimal'>
+  className?: string
+}) => {
+    const symbolMarketInfo = useMarketQuoteInfoWithSub(info?.symbol)
 
     const isLimitOrder = info?.type !== OrderTypeEnum.MARKET_ORDER
 
@@ -84,5 +80,4 @@ export const PendingCurrentPrice = observer(
         {BNumber.toFormatNumber(currentPrice, { volScale: info?.symbolDecimal })}
       </Text>
     )
-  },
-)
+}

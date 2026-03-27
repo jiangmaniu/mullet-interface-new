@@ -2,8 +2,8 @@ import { isArray } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
-import { IQuoteItem } from '@/v1/stores/ws'
 import { loadSnapshot } from '@/lib/storage/snapshot'
+import { IQuoteItem } from '@/lib/ws/types'
 
 interface MarketQuoteSliceState {
   /** 行情信息 Map */
@@ -49,6 +49,10 @@ export const createMarketQuoteSlice: SliceCreator<RootStoreState, MarketQuoteSli
 
 export const marketQuoteSliceSelector = (state: RootStoreState) => {
   return state.market.quote
+}
+
+export const marketQuoteMapSelector = (state: RootStoreState) => {
+  return state.market.quote.quoteMap
 }
 
 /** 工厂：根据 dataSourceKey 获取对应的 quote */

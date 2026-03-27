@@ -1,13 +1,13 @@
-import { get, keyBy } from 'lodash-es'
+import { keyBy } from 'lodash-es'
 import type { Setter } from '../_helpers/createSetter'
 import type { RootStoreState } from '../index'
 
-import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
 import { calcAccountOccupiedMargin } from '@/helpers/calc/account'
+import MulletWS from '@/lib/ws/mullet-ws'
 import { getClientDetail } from '@/v1/services/crm/customer'
-import ws from '@/v1/stores/ws'
 
 import { createSetter } from '../_helpers/createSetter'
+import { selectorMemoize } from '../_helpers/memo'
 import { ImmerStateCreator } from '../_helpers/types'
 import { ClientInfo, UserInfo } from './info-slice-type'
 
@@ -131,39 +131,26 @@ export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> =
       }
     },
     setActiveTradeAccountId: async (accountId?: string) => {
-      const prevAccountId = get().user.info.activeTradeAccountId
+      if (accountId === get().user.info.activeTradeAccountId) {
+        return
+      }
+
+      // 切换账户时立即清空仓位和挂单，避免旧数据在新账户数据到来前引起渲染异常
+      get().trade.position.reset()
+      get().trade.order.reset()
+
+      // 切换账户后重新订阅 WS 持仓/消息/通知
+      MulletWS.getInstance().onAccountSwitch()
+
+      // // 订阅新的账户
+      if (accountId) {
+        await get().market.symbol.fetchInfoList(accountId)
+        await Promise.all([get().trade.position.fetch(accountId), get().trade.order.fetch(accountId)])
+      }
 
       setRoot((state) => {
         state.user.info.activeTradeAccountId = accountId
       })
-
-      // 取消上一个账户的订阅
-      if (accountId !== prevAccountId) {
-        // 取消上一个账户的订阅
-        ws.send({
-          topic: `/${DEFAULT_TENANT_ID}/trade/${prevAccountId}`,
-          cancel: true,
-        })
-
-        const prevAccountInfo = createAccountInfoSelector(prevAccountId)(get())
-        get().trade.position.subscribePositionMarketQuote(get().trade.position.idList, prevAccountInfo, {
-          cancel: true,
-        })
-
-        get().trade.order.subscribeOrderMarketQuote(get().trade.order.idList, prevAccountInfo, { cancel: true })
-      }
-
-      // 订阅新的账户
-      if (accountId) {
-        // 添加当前订阅
-        ws.send({
-          topic: `/${DEFAULT_TENANT_ID}/trade/${accountId}`,
-          cancel: false,
-        })
-
-        await get().market.symbol.fetchInfoList(accountId)
-        await Promise.all([get().trade.position.fetch(), get().trade.order.fetch()])
-      }
     },
   }
 }
@@ -182,36 +169,30 @@ export const userInfoSimulateAccountListSelector = (state: RootStoreState) =>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户信息（O(1)） */
 export const createAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined =>
-    accountId != null ? state.user.info.accountMap[String(accountId)] : undefined
+    !!accountId ? state.user.info.accountMap[String(accountId)] : undefined
 
 export type AccountMarginInfo = {
   occupiedMargin?: string
 } & Pick<User.AccountItem, 'margin' | 'isolatedMargin'>
 
 /** 生成式 selector - 根据 accountId 查找对应的账户保证金信息（O(1)） */
-export const createAccountMarginInfoSelector =
-  (accountId?: string | number | null) =>
-  (state: RootStoreState): AccountMarginInfo | undefined => {
+export const createAccountMarginInfoSelector = (accountId?: string | number) =>
+  selectorMemoize((state: RootStoreState): AccountMarginInfo | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     if (!account) return
 
-    const { margin, isolatedMargin } = account
-    const occupiedMargin = calcAccountOccupiedMargin({
-      margin,
-      isolatedMargin,
-    })
-    return {
-      occupiedMargin,
-      isolatedMargin,
-      margin,
-    }
-  }
+    // 解构原始值，避免返回 Immer draft 对象导致 Proxy 报错
+    const margin = account.margin
+    const isolatedMargin = account.isolatedMargin
+    const occupiedMargin = calcAccountOccupiedMargin({ margin, isolatedMargin })
+    return { occupiedMargin, isolatedMargin, margin }
+  })
 
 /** 生成式 selector - 根据 accountId 查找真实账户，依赖 createAccountInfoSelector（O(1)） */
 export const createRealAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     return account && !account.isSimulate ? account : undefined
@@ -219,7 +200,7 @@ export const createRealAccountInfoSelector =
 
 /** 生成式 selector - 根据 accountId 查找模拟账户，依赖 createAccountInfoSelector（O(1)） */
 export const createSimulateAccountInfoSelector =
-  (accountId?: string | number | null) =>
+  (accountId?: string | number) =>
   (state: RootStoreState): User.AccountItem | undefined => {
     const account = createAccountInfoSelector(accountId)(state)
     return account && account.isSimulate ? account : undefined

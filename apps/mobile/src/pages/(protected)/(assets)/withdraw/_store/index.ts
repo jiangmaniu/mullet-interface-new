@@ -13,7 +13,7 @@ interface WithdrawState {
   toWalletAddress: string // 用户输入的目标地址（收款方）
 
   // 选中的账户ID
-  selectedAccountId: string | null
+  selectedAccountId: string | undefined
 
   // Actions
   setSelectedTokenSymbol: (tokenSymbol: string) => void
@@ -21,7 +21,7 @@ interface WithdrawState {
   setWithdrawAmount: (amount: string) => void
   setFromWalletAddress: (address: string) => void
   setToWalletAddress: (address: string) => void
-  setSelectedAccountId: (accountId: string | null) => void
+  setSelectedAccountId: (accountId: string | undefined) => void
 
   // 重置状态（离开提现流程时调用）
   reset: () => void
@@ -33,7 +33,7 @@ const initialState = {
   withdrawAmount: '',
   fromWalletAddress: undefined,
   toWalletAddress: '',
-  selectedAccountId: null,
+  selectedAccountId: undefined,
 }
 
 export const useWithdrawStore = create<WithdrawState>((set) => ({

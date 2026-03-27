@@ -138,7 +138,6 @@ export const calcPositionNetPnlInfo = (params: CalcPositionNetPnlInfoParams): Ca
 
   // 净盈亏 = 浮动盈亏 + 手续费 + 库存费
   const netPnl = BNumber.from(grossPnl)?.plus(handlingFees)?.plus(interestFees)
-
   if (!netPnl) return undefined
 
   const isProfit = netPnl.gt(0)

@@ -1,3 +1,5 @@
+import { cloneDeep } from 'lodash-es'
+
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
@@ -13,7 +15,9 @@ export type TradePositionInfo = Order.BgaOrderPageListItem & {
   amount?: BNumberValue
 }
 
-export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) => {
+export function parseTradePositionInfo(position: Order.BgaOrderPageListItem): TradePositionInfo
+export function parseTradePositionInfo(position?: Order.BgaOrderPageListItem): TradePositionInfo | undefined
+export function parseTradePositionInfo(position?: Order.BgaOrderPageListItem): TradePositionInfo | undefined {
   if (!position) return
   const isBuy = position.buySell === TradePositionDirectionEnum.BUY
   const isSell = position.buySell === TradePositionDirectionEnum.SELL
@@ -24,6 +28,7 @@ export const parseTradePositionInfo = (position?: Order.BgaOrderPageListItem) =>
   const amount = position.orderVolume
 
   const info: TradePositionInfo = {
+    // ...cloneDeep(position),
     ...position,
     isBuy,
     isSell,

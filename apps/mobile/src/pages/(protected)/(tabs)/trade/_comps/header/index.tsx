@@ -15,7 +15,7 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
@@ -130,7 +130,7 @@ export const SymbolSelector = observer(({ symbol }: { symbol?: string }) => {
   const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
   const symbolInfo = useMarketSymbolInfo(symbol)
 
-  const symbolMarketInfo = useMarketQuoteInfo(symbolInfo?.symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const percentChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.percent)
 
   const handleSymbolPress = () => {

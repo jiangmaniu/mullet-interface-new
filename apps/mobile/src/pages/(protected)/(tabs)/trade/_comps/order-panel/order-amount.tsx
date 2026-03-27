@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -17,7 +16,7 @@ import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSl
 import { renderFallbackPlaceholder } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
-export const OrderAmount = observer(({ symbol }: { symbol?: string }) => {
+export const OrderAmount = ({ symbol }: { symbol?: string }) => {
   const setFormData = useRootStore.getState().trade.formData.setFormData
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { disabledInput } = useDisabledTrade({
@@ -75,4 +74,4 @@ export const OrderAmount = observer(({ symbol }: { symbol?: string }) => {
       </Text>
     </View>
   )
-})
+}

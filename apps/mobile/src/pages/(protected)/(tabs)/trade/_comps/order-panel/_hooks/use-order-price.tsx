@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
-import { useMarketQuoteInfo } from '@/hooks/market/use-market-quote'
+import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
@@ -11,7 +11,7 @@ export const useOrderMarketPrice = (props: { symbol?: string; direction?: TradeP
   const { symbol, direction } = props
 
   const { isBuy, isSell } = parseTradeDirectionInfo(direction)
-  const symbolMarketInfo = useMarketQuoteInfo(symbol)
+  const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
 
   const orderMarketPrice = isBuy ? symbolMarketInfo?.userBuyPrice : isSell ? symbolMarketInfo?.userSellPrice : undefined
 

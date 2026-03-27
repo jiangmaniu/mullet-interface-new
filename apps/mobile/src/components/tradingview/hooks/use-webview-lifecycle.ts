@@ -56,7 +56,10 @@ export function useWebviewLifecycle(
     storageSet(STORAGE_KEY_TRADINGVIEW_RELOAD_TIME, Date.now())
   }, [])
 
-  useAppState(handleForeground, handleBackground)
+  useAppState({
+    onForeground: handleForeground,
+    onBackground: handleBackground,
+  })
 }
 
 function checkShouldReload(): boolean {
