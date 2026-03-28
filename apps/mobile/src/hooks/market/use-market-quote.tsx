@@ -141,6 +141,7 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
     userSellPriceDiff,
     userBuyPriceDiff,
   }
+
   return {
     symbol,
     dataSourceSymbol,
