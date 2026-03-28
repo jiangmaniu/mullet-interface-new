@@ -27,8 +27,8 @@ export function useQuoteSync(webviewRef: React.RefObject<WebView | null>, accoun
     if (!currentQuote?.priceData) return
     const tick = {
       n: currentQuote.symbol,
-      b: currentQuote.priceData.sell,
-      a: currentQuote.priceData.buy,
+      b: currentQuote.priceData.buy,
+      a: currentQuote.priceData.sell,
       t: Math.floor(currentQuote.priceData.id / 1000),
     }
     webviewRef.current?.postMessage(JSON.stringify({ payload: { type: BridgeIncoming.SyncQuote, payload: tick } }))

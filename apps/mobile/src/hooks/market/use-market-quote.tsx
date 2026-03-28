@@ -129,17 +129,17 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
   const spread = Math.abs(multiply(Math.abs(Number(subtract(bid, ask))), Math.pow(10, digits)) as number)
 
   const info: MarketQuoteInfo = {
-    platformBidPrice: platformBidPrice,
-    platformAskPrice: platformAskPrice,
+    platformBidPrice,
+    platformAskPrice,
 
-    platformBidPriceDiff: platformBidPriceDiff,
-    platformAskPriceDiff: platformAskPriceDiff,
+    platformBidPriceDiff,
+    platformAskPriceDiff,
 
-    userSellPrice: userBuyPrice,
-    userBuyPrice: userSellPrice,
+    userSellPrice,
+    userBuyPrice,
 
-    userSellPriceDiff: userSellPriceDiff,
-    userBuyPriceDiff: userBuyPriceDiff,
+    userSellPriceDiff,
+    userBuyPriceDiff,
   }
   return {
     symbol,
