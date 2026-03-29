@@ -23,6 +23,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@lingui/core": "^5.9.3",
     "@lingui/react": "^5.9.3",
+    "@mstfmedeni/collapsible-tab-view": "^0.4.1",
     "@mullet/js-bridge": "workspace:*",
     "@mullet/trading-view": "workspace:*",
     "@mullet/utils": "workspace:*",
