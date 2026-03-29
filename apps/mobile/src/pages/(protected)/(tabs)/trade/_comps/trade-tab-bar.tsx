@@ -1,5 +1,6 @@
+import React, { useCallback, useEffect } from 'react'
 import { Pressable, View } from 'react-native'
-import Animated, { interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated'
+import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated'
 
 import { IconButton } from '@/components/ui/button'
 import { tabBarVariants, tabItemVariants, tabTextVariants } from '@/components/ui/collapsible-tab'
@@ -24,11 +25,15 @@ interface TabItemProps {
   onPress: () => void
 }
 
-const TabItem = ({ label, isActive, onPress }: TabItemProps) => {
+const TabItem = React.memo(({ label, isActive, onPress }: TabItemProps) => {
   const { textColorContent1 } = useThemeColors()
   // 用 sharedValue 驱动文字颜色透明度，与 collapsible-tab.tsx 保持一致
   const activeValue = useSharedValue(isActive ? 0 : 1)
-  activeValue.value = isActive ? 0 : 1
+
+  // 修复：渲染阶段不直接赋值 sharedValue，改用 useEffect + withTiming 驱动动画
+  useEffect(() => {
+    activeValue.value = withTiming(isActive ? 0 : 1, { duration: 200 })
+  }, [isActive, activeValue])
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: interpolate(activeValue.value, [0, 1], [1, 0.45]),
@@ -51,7 +56,7 @@ const TabItem = ({ label, isActive, onPress }: TabItemProps) => {
       </Animated.Text>
     </Pressable>
   )
-}
+})
 
 export function TradeTabBar({
   activeTab,
@@ -61,10 +66,18 @@ export function TradeTabBar({
   onRecordsPress,
   onLayout,
 }: TradeTabBarProps) {
+  // 用 useCallback 避免每次渲染创建新的内联函数
+  const handleLayout = useCallback(
+    (e: { nativeEvent: { layout: { height: number } } }) => {
+      onLayout?.(e.nativeEvent.layout.height)
+    },
+    [onLayout],
+  )
+
   return (
     <View
       className={cn(tabBarVariants({ variant: 'underline', size: 'md' }), 'px-xl bg-secondary')}
-      onLayout={onLayout ? (e) => onLayout(e.nativeEvent.layout.height) : undefined}
+      onLayout={handleLayout}
     >
       <TabItem
         label={`持仓(${positionCount})`}
