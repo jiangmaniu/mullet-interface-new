@@ -74,6 +74,9 @@ export function TradeTabBar({
     [onLayout],
   )
 
+  const handlePressPositions = useCallback(() => onTabChange('positions'), [onTabChange])
+  const handlePressOrders = useCallback(() => onTabChange('orders'), [onTabChange])
+
   return (
     <View
       className={cn(tabBarVariants({ variant: 'underline', size: 'md' }), 'px-xl bg-secondary')}
@@ -82,12 +85,12 @@ export function TradeTabBar({
       <TabItem
         label={`持仓(${positionCount})`}
         isActive={activeTab === 'positions'}
-        onPress={() => onTabChange('positions')}
+        onPress={handlePressPositions}
       />
       <TabItem
         label={`挂单(${orderCount})`}
         isActive={activeTab === 'orders'}
-        onPress={() => onTabChange('orders')}
+        onPress={handlePressOrders}
       />
       <IconButton onPress={onRecordsPress}>
         <IconifyPage width={22} height={22} />
