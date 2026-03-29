@@ -1,13 +1,12 @@
 import { Trans } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Pressable, View } from 'react-native'
+import { FlatList, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
 import { IconifyChatBubbleXmark, IconifyNavArrowRight } from '@/components/ui/icons'
 import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal'
 import { Spinning } from '@/components/ui/spinning'
@@ -30,6 +29,7 @@ import trade from '@/v1/stores/trade'
 import { BNumber } from '@mullet/utils/number'
 
 import { PendingCurrentPrice } from '../../common/position-current-price'
+import { useTradeRefresh } from '../../../_context/trade-refresh-context'
 
 // ============ 列表容器：只订阅 idList ============
 
@@ -37,50 +37,41 @@ export const TradePendingOrders = () => {
   const { user } = useStores()
   const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const { registerRefresh } = useTradeRefresh()
 
-  const [refreshing, setRefreshing] = useState(false)
+  // 初始加载
   useEffect(() => {
     if (!activeTradeAccountId) return
     useRootStore.getState().trade.order.fetch()
   }, [activeTradeAccountId])
 
-  const onRefresh = async () => {
-    try {
-      setRefreshing(true)
-      await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
-      await Promise.all([useRootStore.getState().trade.order.fetch()])
-    } finally {
-      setRefreshing(false)
-    }
-  }
+  // 注册下拉刷新回调，组件卸载时自动注销
+  useEffect(() => {
+    return registerRefresh(async () => {
+      await Promise.all([
+        user.fetchUserInfo(true),
+        useRootStore.getState().user.info.fetchLoginClientInfo(),
+        useRootStore.getState().trade.order.fetch(),
+      ])
+    })
+  }, [registerRefresh, user])
 
-  const renderEmpty = () => {
-    if (refreshing) {
-      return (
-        <View className="py-3xl items-center">
-          <ActivityIndicator />
-        </View>
-      )
-    }
-    return (
-      <View className="items-center py-[60px]">
-        <EmptyState message={<Trans>暂无委托记录</Trans>} />
-      </View>
-    )
-  }
+  const renderEmpty = () => (
+    <View className="items-center py-[60px]">
+      <EmptyState message={<Trans>暂无委托记录</Trans>} />
+    </View>
+  )
 
   return (
-    <CollapsibleFlatList
+    <FlatList
       className="flex-1"
+      scrollEnabled={false}
       contentContainerStyle={{ paddingBottom: 24 }}
       data={orderIdList}
       keyExtractor={(id) => id}
       renderItem={({ item: id }) => <PendingOrderItemById id={id} />}
       ItemSeparatorComponent={() => <View className="h-xl" />}
       ListEmptyComponent={renderEmpty}
-      onEndReachedThreshold={0.3}
-      refreshing={refreshing}
-      onRefresh={() => onRefresh()}
       style={{ paddingTop: 16 }}
     />
   )
