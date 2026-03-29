@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
-import { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, Pressable, View } from 'react-native'
+import { useEffect, useRef } from 'react'
+import { FlatList, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
@@ -8,7 +8,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
 import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { Text } from '@/components/ui/text'
@@ -36,6 +35,7 @@ import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
 import { PositionCurrentPrice } from '../../common/position-current-price'
+import { useTradeRefresh } from '../../../_context/trade-refresh-context'
 import { ClosePositionDrawer } from './close-position-drawer'
 import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 
@@ -44,8 +44,9 @@ import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 export const TradePositions = () => {
   const positionIdList = useRootStore(useShallow(tradePositionIdListSelector))
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const { registerRefresh } = useTradeRefresh()
 
-  const [refreshing, setRefreshing] = useState(false)
+  // 初始加载
   useEffect(() => {
     if (!currentAccountId) return
     useRootStore
@@ -54,43 +55,29 @@ export const TradePositions = () => {
       .catch(() => {})
   }, [currentAccountId])
 
-  const refetch = async () => {
-    try {
-      setRefreshing(true)
-      const res = await useRootStore.getState().trade.position.fetch()
-      return res?.success
-    } finally {
-      setRefreshing(false)
-    }
-  }
+  // 注册下拉刷新回调，组件卸载时自动注销
+  useEffect(() => {
+    return registerRefresh(async () => {
+      await useRootStore.getState().trade.position.fetch()
+    })
+  }, [registerRefresh])
 
-  const renderEmpty = () => {
-    if (refreshing) {
-      return (
-        <View className="py-3xl items-center">
-          <ActivityIndicator />
-        </View>
-      )
-    }
-    return (
-      <View className="items-center py-[60px]">
-        <EmptyState message={<Trans>暂无仓位记录</Trans>} />
-      </View>
-    )
-  }
+  const renderEmpty = () => (
+    <View className="items-center py-[60px]">
+      <EmptyState message={<Trans>暂无仓位记录</Trans>} />
+    </View>
+  )
 
   return (
-    <CollapsibleFlatList
+    <FlatList
       className="flex-1"
+      scrollEnabled={false}
       contentContainerStyle={{ paddingBottom: 24 }}
       data={positionIdList}
       keyExtractor={(id) => id}
       renderItem={({ item: id }) => <PositionItemById id={id} />}
       ItemSeparatorComponent={() => <View className="h-xl" />}
       ListEmptyComponent={renderEmpty}
-      onEndReachedThreshold={0.3}
-      refreshing={refreshing}
-      onRefresh={() => refetch()}
       style={{ paddingTop: 16 }}
     />
   )
