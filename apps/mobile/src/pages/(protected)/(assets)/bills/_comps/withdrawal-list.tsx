@@ -2,7 +2,6 @@ import { Trans } from '@lingui/react/macro'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
-import { format } from 'date-fns'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { Card, CardContent } from '@/components/ui/card'
@@ -11,14 +10,14 @@ import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useCopyText } from '@/hooks/use-copy-text'
 import { useI18n } from '@/hooks/use-i18n'
-import { DepositEventTypeEnum } from '@/options/deposit/event'
-import { getWithdrawalStatusEnumOption } from '@/options/deposit/status'
+import { cn } from '@/lib/utils'
+import { getMoneyTransferStatusEnumOption, MoneyTransferStatusEnum } from '@/options/deposit/status'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress, formatTxHash } from '@mullet/utils/web3'
 
-import { FundFlowHistoryItem, useFundFlowHistory } from '../_apis/use-fund-flow-history'
+import { MoneyTransferTypeEnum, MoneyTransferVO, useMoneyTransferList } from '../_apis/use-money-transfer-list'
 import { useBillsScreenContext } from '../index'
 import { AccountTypeBadge, BillsCardRow } from './card-row'
 
@@ -28,28 +27,21 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
   const { dateRange, selectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
 
-  // 格式化时间为 API 需要的格式
-  const formatDateTime = (date: Date | null) => {
-    if (!date) return undefined
-    return format(date, 'yyyy-MM-dd HH:mm:ss')
-  }
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } =
+    useMoneyTransferList(
+      {
+        tradeAccountId: selectedAccount?.id,
+        type: MoneyTransferTypeEnum.WITHDRAW,
+        startDate: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD') : undefined,
+        endDate: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD') : undefined,
+      },
+      PAGE_SIZE,
+    )
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useFundFlowHistory(
-    {
-      accountId: selectedAccount?.id,
-      eventType: DepositEventTypeEnum.WITHDRAWAL_COMPLETED,
-      startTime: formatDateTime(dateRange.startDate),
-      endTime: formatDateTime(dateRange.endDate),
-    },
-    PAGE_SIZE,
-  )
-
-  // 合并所有页数据并去重
   const records = React.useMemo(() => {
     if (!data?.pages) return []
-    const all = data.pages.flatMap((page) => page?.data ?? [])
-    // 使用 Map 去重，保留最新的记录（后面的覆盖前面的）
-    const recordMap = new Map<number, FundFlowHistoryItem>()
+    const all = data.pages.flatMap((page) => page?.records ?? [])
+    const recordMap = new Map<number, MoneyTransferVO>()
     all.forEach((item) => {
       if (item.id != null) {
         recordMap.set(item.id, item)
@@ -64,9 +56,7 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
     }
   }
 
-  const renderItem = ({ item }: { item: FundFlowHistoryItem }) => (
-    <WithdrawalCard record={item} account={selectedAccount} />
-  )
+  const renderItem = ({ item }: { item: MoneyTransferVO }) => <WithdrawalCard record={item} account={selectedAccount} />
 
   const renderFooter = () => {
     if (isFetchingNextPage) {
@@ -124,96 +114,93 @@ export const WithdrawalList = observer(({ accountSelector }: { accountSelector: 
 })
 
 // 提现卡片组件
-const WithdrawalCard = observer(({ record, account }: { record: FundFlowHistoryItem; account: User.AccountItem | undefined }) => {
-  const { renderLinguiMsg } = useI18n()
+const WithdrawalCard = observer(
+  ({ record, account }: { record: MoneyTransferVO; account: User.AccountItem | undefined }) => {
+    const { renderLinguiMsg } = useI18n()
 
-  const synopsis = useAccountSynopsis(account?.synopsis)
-  const copyText = useCopyText()
-  if (!account) return null
-  return (
-    <Card>
-      <CardContent className="gap-medium">
-        <BillsCardRow
-          label={<Trans>取现金额</Trans>}
-          value={BNumber.toFormatNumber(record.amountDisplay, {
-            unit: account.currencyUnit,
-            volScale: account.currencyDecimal,
-          })}
-        />
-        <BillsCardRow
-          label={<Trans>取现状态</Trans>}
-          value={renderLinguiMsg(
-            getWithdrawalStatusEnumOption({ value: record.withdrawalStatus })?.label,
-            record.withdrawalStatus ?? <Trans>未知</Trans>,
-          )}
-        />
+    const synopsis = useAccountSynopsis(account?.synopsis)
+    const copyText = useCopyText()
+    if (!account) return null
 
-        <BillsCardRow
-          label={<Trans>取现账户</Trans>}
-          valueComponent={
-            <View className="gap-xs flex-row items-center">
-              {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
-              <Text className="text-paragraph-p3 text-content-1">{renderFallback(account.id)}</Text>
-            </View>
-          }
-        />
-
-        <BillsCardRow
-          label={<Trans>收款地址</Trans>}
-          valueComponent={
-            <View className="gap-xs flex-row items-center">
-              <Pressable
-                onPress={() => {
-                  if (record.withdrawalToAddress) {
-                    copyText(record.withdrawalToAddress)
-                  }
-                }}
-              >
-                <Text className="text-paragraph-p3 text-content-1">{formatAddress(record.withdrawalToAddress)}</Text>
-              </Pressable>
-            </View>
-          }
-        />
-
-        <BillsCardRow label={<Trans>链</Trans>} value={renderFallback(record.chain)} />
-        <BillsCardRow
-          label={<Trans>操作前余额</Trans>}
-          value={BNumber.toFormatNumber(record.balanceBefore, {
-            unit: account.currencyUnit,
-            volScale: account.currencyDecimal,
-          })}
-        />
-        <BillsCardRow
-          label={<Trans>操作后余额</Trans>}
-          value={BNumber.toFormatNumber(record.balanceAfter, {
-            unit: account.currencyUnit,
-            volScale: account.currencyDecimal,
-          })}
-        />
-
-        {record.txHash && (
+    const statusOption = getMoneyTransferStatusEnumOption({ value: record.status as MoneyTransferStatusEnum })
+    const statusColor =
+      record.status === MoneyTransferStatusEnum.SUCCESS
+        ? 'text-market-rise'
+        : record.status === MoneyTransferStatusEnum.FAIL || record.status === MoneyTransferStatusEnum.RETURN
+          ? 'text-market-fall'
+          : 'text-content-1'
+    return (
+      <Card>
+        <CardContent className="gap-medium">
           <BillsCardRow
-            label={<Trans>交易哈希</Trans>}
+            label={<Trans>出金金额</Trans>}
+            value={BNumber.toFormatNumber(record.money, {
+              positive: false,
+              unit: account.currencyUnit,
+              volScale: account.currencyDecimal,
+            })}
+          />
+          <BillsCardRow
+            label={<Trans>出金状态</Trans>}
+            valueComponent={
+              <Text className={cn('text-paragraph-p3', statusColor)}>
+                {renderLinguiMsg(statusOption?.label, record.status ?? <Trans>未知</Trans>)}
+              </Text>
+            }
+          />
+
+          <BillsCardRow
+            label={<Trans>转出账户</Trans>}
+            valueComponent={
+              <View className="gap-xs flex-row items-center">
+                {synopsis.abbr && <AccountTypeBadge type={synopsis.abbr} />}
+                <Text className="text-paragraph-p3 text-content-1">{renderFallback(account.id)}</Text>
+              </View>
+            }
+          />
+
+          <BillsCardRow
+            label={<Trans>收款地址</Trans>}
             valueComponent={
               <View className="gap-xs flex-row items-center">
                 <Pressable
                   onPress={() => {
-                    if (record.txHash) {
-                      copyText(record.txHash)
+                    if (record.toAddress) {
+                      copyText(record.toAddress)
                     }
                   }}
                 >
-                  <Text className="text-paragraph-p3 text-content-1">{formatTxHash(record.txHash)}</Text>
+                  <Text className="text-paragraph-p3 text-content-1">{formatAddress(record.toAddress)}</Text>
                 </Pressable>
               </View>
             }
           />
-        )}
-        <BillsCardRow
-          label={<Trans>时间</Trans>}
-          value={renderFallback(dayjs(record.createdAt).format('YYYY-MM-DD HH:mm:ss'), { verify: !!record.createdAt })}
-        />
-      </CardContent>
-    </Card>
-  )
-})
+
+          <BillsCardRow
+            label="哈希地址"
+            valueComponent={
+              <Pressable
+                onPress={() => {
+                  if (record.signature) {
+                    copyText(record.signature)
+                  }
+                }}
+              >
+                <Text className="text-paragraph-p3 text-content-1">
+                  {renderFallback(formatTxHash(record.signature), { verify: !!record.signature })}
+                </Text>
+              </Pressable>
+            }
+          />
+
+          <BillsCardRow
+            label={<Trans>时间</Trans>}
+            value={renderFallback(dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss'), {
+              verify: !!record.createTime,
+            })}
+          />
+        </CardContent>
+      </Card>
+    )
+  },
+)

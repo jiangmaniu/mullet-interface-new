@@ -3,7 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { request } from '@/v1/utils/request'
 
 /**
- * 划转记录项
+ * 交易账户金额转移记录项
  */
 export interface MoneyTransferVO {
   /** 主键 */
@@ -50,14 +50,23 @@ export interface MoneyTransferVO {
   finishTime: string
 }
 
+export enum MoneyTransferTypeEnum {
+  /** 划转 */
+  TRANSFER = 'TRANSFER',
+  /** 入金 */
+  RECHARGE = 'RECHARGE',
+  /** 出金 */
+  WITHDRAW = 'WITHDRAW',
+}
+
 /**
- * 划转列表请求参数
+ * 交易账户金额转移请求参数
  */
 export interface MoneyTransferListParams {
   /** 交易账户ID */
   tradeAccountId?: number | string
   /** 类型: RECHARGE, WITHDRAW, TRANSFER */
-  type?: string
+  type: MoneyTransferTypeEnum
   /** 交易Hash */
   signature?: string
   /** 状态: CREATE, SUCCESS, FAIL, RETURN */
@@ -73,7 +82,7 @@ export interface MoneyTransferListParams {
 }
 
 /**
- * 获取划转列表
+ * 获取交易账户金额转移列表
  */
 export async function getMoneyTransferList(params: MoneyTransferListParams) {
   return request<API.Response<API.PageResult<MoneyTransferVO>>>('/api/trade-node/coreApi/money-transfer/list', {
@@ -83,20 +92,11 @@ export async function getMoneyTransferList(params: MoneyTransferListParams) {
 }
 
 /**
- * 划转列表 hook（无限滚动）
+ * 交易账户金额转移列表 hook（无限滚动）
  */
-export function useMoneyTransferList(
-  params: Omit<MoneyTransferListParams, 'current' | 'size'>,
-  pageSize: number = 10,
-) {
+export function useMoneyTransferList(params: Omit<MoneyTransferListParams, 'current' | 'size'>, pageSize: number = 10) {
   return useInfiniteQuery({
-    queryKey: [
-      'moneyTransferList',
-      params.tradeAccountId,
-      params.type,
-      params.startDate,
-      params.endDate,
-    ],
+    queryKey: ['moneyTransferList', params.tradeAccountId, params.type, params.startDate, params.endDate],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await getMoneyTransferList({
         ...params,

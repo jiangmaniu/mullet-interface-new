@@ -9,12 +9,15 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Text } from '@/components/ui/text'
 import { useAccountInfo } from '@/hooks/account/use-account-info'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
+import { useI18n } from '@/hooks/use-i18n'
+import { cn } from '@/lib/utils'
+import { getMoneyTransferStatusEnumOption, MoneyTransferStatusEnum } from '@/options/deposit/status'
 import { dayjs } from '@mullet/utils/dayjs'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
-import { formatAddress } from '@mullet/utils/web3'
+import { formatAddress, formatTxHash } from '@mullet/utils/web3'
 
-import { MoneyTransferVO, useMoneyTransferList } from '../_apis/use-money-transfer-list'
+import { MoneyTransferTypeEnum, MoneyTransferVO, useMoneyTransferList } from '../_apis/use-money-transfer-list'
 import { useBillsScreenContext } from '../index'
 import { BillsCardRow } from './card-row'
 
@@ -27,6 +30,7 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } =
     useMoneyTransferList(
       {
+        type: MoneyTransferTypeEnum.TRANSFER,
         tradeAccountId: selectedAccount?.id,
         startDate: dateRange.startDate ? dayjs(dateRange.startDate).format('YYYY-MM-DD') : undefined,
         endDate: dateRange.endDate ? dayjs(dateRange.endDate).format('YYYY-MM-DD') : undefined,
@@ -114,6 +118,7 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
 const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
   const { selectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
+  const { renderLinguiMsg } = useI18n()
 
   const fromAccount = useAccountInfo(record?.tradeAccountId)
   const toAccount = useAccountInfo(record?.toAccountId)
@@ -121,15 +126,32 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
   const fromSynopsis = useAccountSynopsis(fromAccount?.synopsis)
   const toSynopsis = useAccountSynopsis(toAccount?.synopsis)
 
+  const statusOption = getMoneyTransferStatusEnumOption({ value: record.status as MoneyTransferStatusEnum })
+  const statusColor =
+    record.status === MoneyTransferStatusEnum.SUCCESS
+      ? 'text-market-rise'
+      : record.status === MoneyTransferStatusEnum.FAIL || record.status === MoneyTransferStatusEnum.RETURN
+        ? 'text-market-fall'
+        : 'text-content-1'
+
   return (
     <Card>
       <CardContent className="gap-medium">
         <BillsCardRow
           label={<Trans>划转金额</Trans>}
           value={BNumber.toFormatNumber(record.money, {
+            positive: false,
             unit: selectedAccount?.currencyUnit,
             volScale: selectedAccount?.currencyDecimal,
           })}
+        />
+        <BillsCardRow
+          label={<Trans>划转状态</Trans>}
+          valueComponent={
+            <Text className={cn('text-paragraph-p3', statusColor)}>
+              {renderLinguiMsg(statusOption?.label, record.status ?? <Trans>未知</Trans>)}
+            </Text>
+          }
         />
         <BillsCardRow
           label={<Trans>转出账户</Trans>}
@@ -155,8 +177,14 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
           }
         />
         <BillsCardRow label={<Trans>转入地址</Trans>} value={formatAddress(record?.toAddress)} />
-        <BillsCardRow label={<Trans>哈希地址</Trans>} value={formatAddress(record?.signature)} />
-        <BillsCardRow label={<Trans>时间</Trans>} value={renderFallback(record?.createTime)} />
+        <BillsCardRow
+          label={<Trans>哈希地址</Trans>}
+          value={renderFallback(formatTxHash(record?.signature), { verify: !!record?.signature })}
+        />
+        <BillsCardRow
+          label={<Trans>时间</Trans>}
+          value={renderFallback(dayjs(record?.createTime).format('YYYY-MM-DD HH:mm:ss'), { verify: !!record?.createTime })}
+        />
       </CardContent>
     </Card>
   )

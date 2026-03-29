@@ -45,3 +45,24 @@ export const WITHDRAWAL_STATUS_ENUM_OPTIONS: EnumOption<WithdrawalStatusEnum>[] 
 export const getWithdrawalStatusEnumOption = (option: NilablePartial<EnumOption<WithdrawalStatusEnum>>) => {
   return getEnumOption(WITHDRAWAL_STATUS_ENUM_OPTIONS, option)
 }
+
+/**
+ * 资金转移状态枚举（MoneyTransfer 接口）
+ */
+export enum MoneyTransferStatusEnum {
+  CREATE = 'CREATE',
+  SUCCESS = 'SUCCESS',
+  FAIL = 'FAIL',
+  RETURN = 'RETURN',
+}
+
+export const MONEY_TRANSFER_STATUS_ENUM_OPTIONS: EnumOption<MoneyTransferStatusEnum>[] = [
+  { label: msg`待处理`, value: MoneyTransferStatusEnum.CREATE },
+  { label: msg`成功`, value: MoneyTransferStatusEnum.SUCCESS },
+  { label: msg`失败`, value: MoneyTransferStatusEnum.FAIL },
+  { label: msg`已退回`, value: MoneyTransferStatusEnum.RETURN },
+]
+
+export const getMoneyTransferStatusEnumOption = (option: NilablePartial<EnumOption<MoneyTransferStatusEnum>>) => {
+  return getEnumOption(MONEY_TRANSFER_STATUS_ENUM_OPTIONS, option)
+}
