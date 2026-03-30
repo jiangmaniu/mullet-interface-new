@@ -16,7 +16,6 @@ interface TradeTabBarProps {
   positionCount: number
   orderCount: number
   onRecordsPress: () => void
-  onLayout?: (height: number) => void
 }
 
 interface TabItemProps {
@@ -25,7 +24,7 @@ interface TabItemProps {
   onPress: () => void
 }
 
-const TabItem = React.memo(({ label, isActive, onPress }: TabItemProps) => {
+const TabItem = ({ label, isActive, onPress }: TabItemProps) => {
   const { textColorContent1 } = useThemeColors()
   // 用 sharedValue 驱动文字颜色透明度，与 collapsible-tab.tsx 保持一致
   const activeValue = useSharedValue(isActive ? 0 : 1)
@@ -44,9 +43,9 @@ const TabItem = React.memo(({ label, isActive, onPress }: TabItemProps) => {
       onPress={onPress}
       className={cn(
         tabItemVariants({ variant: 'underline', size: 'md', selected: false }),
-        'flex-1',
-        isActive && 'border-b-2 border-brand-primary',
+        isActive && 'border-brand-primary h-full border-b-2',
       )}
+      style={isActive ? { marginBottom: -1 } : undefined}
     >
       <Animated.Text
         className={cn(tabTextVariants({ variant: 'underline', size: 'md', selected: false }))}
@@ -56,42 +55,18 @@ const TabItem = React.memo(({ label, isActive, onPress }: TabItemProps) => {
       </Animated.Text>
     </Pressable>
   )
-})
+}
 
-export function TradeTabBar({
-  activeTab,
-  onTabChange,
-  positionCount,
-  orderCount,
-  onRecordsPress,
-  onLayout,
-}: TradeTabBarProps) {
-  // 用 useCallback 避免每次渲染创建新的内联函数
-  const handleLayout = useCallback(
-    (e: { nativeEvent: { layout: { height: number } } }) => {
-      onLayout?.(e.nativeEvent.layout.height)
-    },
-    [onLayout],
-  )
-
+export function TradeTabBar({ activeTab, onTabChange, positionCount, orderCount, onRecordsPress }: TradeTabBarProps) {
   const handlePressPositions = useCallback(() => onTabChange('positions'), [onTabChange])
   const handlePressOrders = useCallback(() => onTabChange('orders'), [onTabChange])
 
   return (
-    <View
-      className={cn(tabBarVariants({ variant: 'underline', size: 'md' }), 'px-xl bg-secondary')}
-      onLayout={handleLayout}
-    >
-      <TabItem
-        label={`持仓(${positionCount})`}
-        isActive={activeTab === 'positions'}
-        onPress={handlePressPositions}
-      />
-      <TabItem
-        label={`挂单(${orderCount})`}
-        isActive={activeTab === 'orders'}
-        onPress={handlePressOrders}
-      />
+    <View className={cn(tabBarVariants({ variant: 'underline', size: 'md' }), 'px-xl bg-secondary')}>
+      <View pointerEvents="box-none" className="h-full flex-1 flex-row">
+        <TabItem label={`持仓(${positionCount})`} isActive={activeTab === 'positions'} onPress={handlePressPositions} />
+        <TabItem label={`挂单(${orderCount})`} isActive={activeTab === 'orders'} onPress={handlePressOrders} />
+      </View>
       <IconButton onPress={onRecordsPress}>
         <IconifyPage width={22} height={22} />
       </IconButton>

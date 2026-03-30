@@ -1,6 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 import { TradingviewChart } from '@/components/tradingview'
 import { IconNavArrowDown, IconNavArrowSuperior } from '@/components/ui/icons'
@@ -18,9 +19,12 @@ const TIME_PERIODS = ['1分', '5分', '15分', '30分', '1小时', '4小时', '1
 interface SymbolChartViewProps {
   isVisible?: boolean
   onToggle?: (visible: boolean) => void
+  onInteractionStart?: () => void
+  onInteractionEnd?: () => void
+  onInteractionCancel?: () => void
 }
 
-export function SymbolChartView({ isVisible: externalIsVisible, onToggle }: SymbolChartViewProps = {}) {
+export function SymbolChartView({ isVisible: externalIsVisible, onToggle, onInteractionStart, onInteractionEnd, onInteractionCancel }: SymbolChartViewProps = {}) {
   const [internalIsVisible, setInternalIsVisible] = useState(true)
   const selectedPeriod = useRootStore(tradeSettingChartResolutionSelector)
   const setSelectedPeriod = useRootStore((s) => s.trade.setting.setChartResolution)
@@ -77,14 +81,21 @@ export function SymbolChartView({ isVisible: externalIsVisible, onToggle }: Symb
       </View>
 
       {/* 图表：隐藏时高度为 0，不销毁 WebView */}
-      <View
-        className={cn({
-          'border-brand-default border-b': isVisible,
-        })}
-        style={{ height: isVisible ? 193 : 0, overflow: 'hidden' }}
-      >
-        <TradingviewChart mode="simple" resolution={PERIOD_TO_RESOLUTION[selectedPeriod] ?? '15'} />
-      </View>
+      {/* Gesture.Native() 让 RNGH 将触摸事件直接交给 WebView 原生处理，
+          避免外层 ScrollView 的 PanGesture 拦截图表内的拖拽/捏合操作 */}
+      <GestureDetector gesture={Gesture.Native()}>
+        <View
+          className={cn({
+            'border-brand-default border-b': isVisible,
+          })}
+          style={{ height: isVisible ? 193 : 0, overflow: 'hidden' }}
+          onTouchStart={onInteractionStart}
+          onTouchEnd={onInteractionEnd}
+          onTouchCancel={onInteractionCancel}
+        >
+          <TradingviewChart mode="simple" resolution={PERIOD_TO_RESOLUTION[selectedPeriod] ?? '15'} />
+        </View>
+      </GestureDetector>
     </View>
   )
 }

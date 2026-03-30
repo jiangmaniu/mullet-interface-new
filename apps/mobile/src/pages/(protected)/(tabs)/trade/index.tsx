@@ -1,4 +1,4 @@
-import { Activity, useCallback, useEffect, useRef, useState } from 'react'
+import React, { Activity, useCallback, useEffect, useRef, useState } from 'react'
 import { Dimensions, RefreshControl, View } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useRouter } from 'expo-router'
@@ -34,6 +34,11 @@ const Trade = () => {
   const [activeTab, setActiveTab] = useState<TradeTab>('positions')
   const [isChartVisible, setIsChartVisible] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
+
+  // 图表交互时禁用外层 ScrollView 滚动，防止手势被拦截
+  // 用 ref + setNativeProps，避免 setState 触发 re-render 打断原生触摸序列
+  const scrollViewRef = useRef<any>(null)
+  const scrollViewInnerRef = useCallback((ref: any) => { scrollViewRef.current = ref }, [])
 
   // 测量固定元素高度，用于计算列表区 minHeight
   const [tradeHeaderHeight, setTradeHeaderHeight] = useState(0)
@@ -88,16 +93,21 @@ const Trade = () => {
         {/* 滚动区域 */}
         <View className="flex-1">
           <KeyboardAwareScrollView
-            keyboardShouldPersistTaps="handled"
-            extraScrollHeight={20}
-            enableOnAndroid
-            stickyHeaderIndices={[1]}
+            innerRef={scrollViewInnerRef}
+            keyboardShouldPersistTaps="always"
+            // stickyHeaderIndices={[1]}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
           >
             {/* 索引 0：内容区（随页面滚动） */}
             <View>
               {chartPosition !== 'bottom' && (
-                <SymbolChartView isVisible={isChartVisible} onToggle={setIsChartVisible} />
+                <SymbolChartView
+                  isVisible={isChartVisible}
+                  onToggle={setIsChartVisible}
+                  onInteractionStart={() => scrollViewRef.current?.setNativeProps?.({ scrollEnabled: false })}
+                  onInteractionEnd={() => scrollViewRef.current?.setNativeProps?.({ scrollEnabled: true })}
+                  onInteractionCancel={() => scrollViewRef.current?.setNativeProps?.({ scrollEnabled: true })}
+                />
               )}
               <View className="pt-xl px-xl">
                 <AccountCard />
@@ -106,17 +116,25 @@ const Trade = () => {
             </View>
 
             {/* 索引 1：TabBar 吸顶 */}
-            <TradeTabBar
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              positionCount={positionCount}
-              orderCount={orderCount}
-              onRecordsPress={() => router.push('/(trade)/records')}
-              onLayout={setTabBarHeight}
-            />
+            <View
+              style={{ zIndex: 100, elevation: 100 }}
+              onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}
+            >
+              <TradeTabBar
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                positionCount={positionCount}
+                orderCount={orderCount}
+                onRecordsPress={() => router.push('/(trade)/records')}
+              />
+            </View>
 
-            {/* 索引 2：列表区，minHeight 保证撑满剩余屏幕 */}
-            <View style={{ minHeight: listMinHeight }}>
+            {/* 索引 2：列表区，用 Activity 保持两个列表挂载 */}
+            <View
+              style={{
+                minHeight: listMinHeight,
+              }}
+            >
               <Activity mode={activeTab === 'positions' ? 'visible' : 'hidden'}>
                 <TradePositions />
               </Activity>

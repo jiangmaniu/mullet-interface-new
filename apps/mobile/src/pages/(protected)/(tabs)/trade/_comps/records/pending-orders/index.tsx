@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
 import { useEffect, useState } from 'react'
-import { FlatList, Pressable, View } from 'react-native'
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
@@ -20,6 +20,7 @@ import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/u
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { createOrderItemSelector, tradeOrderIdListSelector } from '@/stores/trade-slice/order-slice'
+import { tradePositionLoadingSelector } from '@/stores/trade-slice/position-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { useStores } from '@/v1/provider/mobxProvider'
@@ -28,8 +29,8 @@ import { Order } from '@/v1/services/tradeCore/order/typings'
 import trade from '@/v1/stores/trade'
 import { BNumber } from '@mullet/utils/number'
 
-import { PendingCurrentPrice } from '../../common/position-current-price'
 import { useTradeRefresh } from '../../../_context/trade-refresh-context'
+import { PendingCurrentPrice } from '../../common/position-current-price'
 
 // ============ 列表容器：只订阅 idList ============
 
@@ -38,6 +39,9 @@ export const TradePendingOrders = () => {
   const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { registerRefresh } = useTradeRefresh()
+
+  const [refreshing, setRefreshing] = useState(false)
+  const loading = useRootStore(tradePositionLoadingSelector)
 
   // 初始加载
   useEffect(() => {
@@ -48,23 +52,36 @@ export const TradePendingOrders = () => {
   // 注册下拉刷新回调，组件卸载时自动注销
   useEffect(() => {
     return registerRefresh(async () => {
-      await Promise.all([
-        user.fetchUserInfo(true),
-        useRootStore.getState().user.info.fetchLoginClientInfo(),
-        useRootStore.getState().trade.order.fetch(),
-      ])
+      try {
+        setRefreshing(true)
+        await Promise.all([
+          user.fetchUserInfo(true),
+          useRootStore.getState().user.info.fetchLoginClientInfo(),
+          useRootStore.getState().trade.order.fetch(),
+        ])
+      } finally {
+        setRefreshing(false)
+      }
     })
   }, [registerRefresh, user])
 
-  const renderEmpty = () => (
-    <View className="items-center py-[60px]">
-      <EmptyState message={<Trans>暂无委托记录</Trans>} />
-    </View>
-  )
+  const renderEmpty = () => {
+    if (refreshing || loading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      )
+    }
 
+    return (
+      <View className="items-center py-[60px]">
+        <EmptyState message={<Trans>暂无仓位记录</Trans>} />
+      </View>
+    )
+  }
   return (
     <FlatList
-      className="flex-1"
       scrollEnabled={false}
       contentContainerStyle={{ paddingBottom: 24 }}
       data={orderIdList}

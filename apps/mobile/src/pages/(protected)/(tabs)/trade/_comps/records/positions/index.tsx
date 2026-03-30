@@ -1,6 +1,6 @@
 import { Trans } from '@lingui/react/macro'
-import { useEffect, useRef } from 'react'
-import { FlatList, Pressable, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, FlatList, Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
@@ -24,7 +24,11 @@ import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
-import { createPositionItemSelector, tradePositionIdListSelector } from '@/stores/trade-slice/position-slice'
+import {
+  createPositionItemSelector,
+  tradePositionIdListSelector,
+  tradePositionLoadingSelector,
+} from '@/stores/trade-slice/position-slice'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
   userInfoActiveTradeAccountIdSelector,
@@ -34,8 +38,8 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import * as AccordionPrimitive from '@rn-primitives/accordion'
 
-import { PositionCurrentPrice } from '../../common/position-current-price'
 import { useTradeRefresh } from '../../../_context/trade-refresh-context'
+import { PositionCurrentPrice } from '../../common/position-current-price'
 import { ClosePositionDrawer } from './close-position-drawer'
 import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 
@@ -45,6 +49,9 @@ export const TradePositions = () => {
   const positionIdList = useRootStore(useShallow(tradePositionIdListSelector))
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const { registerRefresh } = useTradeRefresh()
+  const loading = useRootStore(tradePositionLoadingSelector)
+
+  const [refreshing, setRefreshing] = useState(false)
 
   // 初始加载
   useEffect(() => {
@@ -58,28 +65,45 @@ export const TradePositions = () => {
   // 注册下拉刷新回调，组件卸载时自动注销
   useEffect(() => {
     return registerRefresh(async () => {
-      await useRootStore.getState().trade.position.fetch()
+      try {
+        setRefreshing(true)
+        const res = await useRootStore.getState().trade.position.fetch()
+        return res?.success
+      } finally {
+        setRefreshing(false)
+      }
     })
   }, [registerRefresh])
 
-  const renderEmpty = () => (
-    <View className="items-center py-[60px]">
-      <EmptyState message={<Trans>暂无仓位记录</Trans>} />
-    </View>
-  )
+  const renderEmpty = () => {
+    if (refreshing || loading) {
+      return (
+        <View className="py-3xl items-center">
+          <ActivityIndicator />
+        </View>
+      )
+    }
+
+    return (
+      <View className="items-center py-[60px]">
+        <EmptyState message={<Trans>暂无仓位记录</Trans>} />
+      </View>
+    )
+  }
 
   return (
-    <FlatList
-      className="flex-1"
-      scrollEnabled={false}
-      contentContainerStyle={{ paddingBottom: 24 }}
-      data={positionIdList}
-      keyExtractor={(id) => id}
-      renderItem={({ item: id }) => <PositionItemById id={id} />}
-      ItemSeparatorComponent={() => <View className="h-xl" />}
-      ListEmptyComponent={renderEmpty}
-      style={{ paddingTop: 16 }}
-    />
+    <>
+      <FlatList
+        scrollEnabled={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        data={positionIdList}
+        keyExtractor={(id) => id}
+        renderItem={({ item: id }) => <PositionItemById id={id} />}
+        ItemSeparatorComponent={() => <View className="h-xl" />}
+        ListEmptyComponent={renderEmpty}
+        style={{ paddingTop: 16 }}
+      />
+    </>
   )
 }
 
