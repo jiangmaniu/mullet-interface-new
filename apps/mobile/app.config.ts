@@ -181,6 +181,8 @@ export default ({ config }: { config: ConfigContext }) => {
       './plugins/withNetworkSecurityConfig.js',
       // TradingView Advanced Charts - 复制 charting library 到原生 assets
       './plugins/withTradingView.js',
+      // 修复 Android 16+ 上 WebView onMessage 不触发：强制走 addJavascriptInterface，绕开 addWebMessageListener 的 file:// origin 限制
+      './plugins/withWebViewAndroidFix.js',
       // Android Release 签名配置
       './plugins/withAndroidSigning.js',
       // iOS Debug 自动签名 - prebuild --clean 后无需手动到 Xcode 重新开启

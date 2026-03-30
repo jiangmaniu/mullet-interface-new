@@ -152,16 +152,9 @@ export function initBridge(
     console.log('[Bridge] ReactNativeWebView available:', !!(window as any).ReactNativeWebView)
     console.log('[Bridge] User Agent:', navigator.userAgent)
 
-    // 某些安卓设备（如 OPPO）可能需要同时监听 window 和 document 的 message 事件
+    // 同时监听 window 和 document，兼容不同厂商 Android WebView 实现差异
     window.addEventListener('message', handleMessage)
     document.addEventListener('message', handleMessage as EventListener)
-
-    // 额外监听 Android WebView 的消息事件
-    if ((window as any).ReactNativeWebView) {
-      console.log('[Bridge] ReactNativeWebView detected, bridge ready')
-    } else {
-      console.warn('[Bridge] ReactNativeWebView not found, bridge may not work')
-    }
 
     listening = true
   }

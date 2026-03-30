@@ -3,13 +3,11 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
 import { TVChart } from '@/components/tv-chart'
-import { BASE_PATH } from '@/constants'
 import { useConfig } from '@/context/config-provider'
 import { ThemeConst } from '@/theme/theme'
 
 export default function Home() {
   const [showChart, setShowChart] = useState(false)
-  const [isScriptReady, setIsScriptReady] = useState(false)
   const { isMobile } = useConfig()
   const { query } = useRouter()
 
@@ -31,13 +29,6 @@ export default function Home() {
           }}
         />
       )}
-      <Script
-        src={`${BASE_PATH || '.'}/static/datafeeds/udf/dist/bundle.js`}
-        strategy="afterInteractive"
-        onReady={() => {
-          setIsScriptReady(true)
-        }}
-      />
       {query.name && (
         <div
           style={{
@@ -45,7 +36,7 @@ export default function Home() {
             height: '100vh'
           }}
         >
-          {isScriptReady && showChart && <TVChart />}
+          {showChart && <TVChart />}
         </div>
       )}
     </>

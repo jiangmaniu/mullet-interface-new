@@ -127,21 +127,7 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
         allowsInlineMediaPlayback
         mixedContentMode="always"
         overScrollMode="never"
-        // 修复 react-native-webview #3776：部分 Android 设备（三星/Vivo）新版 Chrome WebView
-        // 改变了 postMessage 签名，导致 ReactNativeWebView.postMessage 调用后 onMessage 不触发。
-        // 在页面 JS 执行前注入补丁，将 window.postMessage 代理到 ReactNativeWebView.postMessage。
-        injectedJavaScriptBeforeContentLoaded={`
-          (function() {
-            var rnwv = window.ReactNativeWebView;
-            if (rnwv && typeof rnwv.postMessage === 'function') {
-              var orig = window.postMessage.bind(window);
-              window.postMessage = function(msg) {
-                try { rnwv.postMessage(String(msg)); } catch(e) { orig(msg, '*'); }
-              };
-            }
-          })();
-          true;
-        `}
+        injectedJavaScriptBeforeContentLoaded="true"
         webviewDebuggingEnabled={__DEV__} // 开发环境下可通过 Safari/Chrome 远程调试 WebView
         {...(Platform.OS === 'android' && { androidLayerType: 'hardware' as const })}
         onMessage={handleMessage}
