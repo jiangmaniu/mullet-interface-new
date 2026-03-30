@@ -7,8 +7,7 @@ import MulletWS from '@/lib/ws/mullet-ws'
 import { getClientDetail } from '@/v1/services/crm/customer'
 
 import { createSetter } from '../_helpers/createSetter'
-import { selectorMemoize } from '../_helpers/memo'
-import { ImmerStateCreator } from '../_helpers/types'
+import { SliceCreator } from '../_helpers/types'
 import { ClientInfo, UserInfo } from './info-slice-type'
 
 export type UserAccountInfo = User.AccountItem
@@ -41,7 +40,7 @@ export type InfoSlice = InfoSliceState & InfoSliceActions
  * 创建 info 命名空间切片（状态 + actions）
  * 访问路径: state.user.info.xxx
  */
-export const createUserInfoSlice: ImmerStateCreator<RootStoreState, InfoSlice> = (setRoot, get, store) => {
+export const createUserInfoSlice: SliceCreator<RootStoreState, InfoSlice> = (setRoot, get, store) => {
   const infoSetter = createSetter<InfoSlice>(setRoot, (s) => s.user.info)
 
   return {

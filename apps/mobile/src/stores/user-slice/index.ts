@@ -1,4 +1,4 @@
-import type { ImmerStateCreator } from '../_helpers/types'
+import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 import type { AuthSlice } from './authSlice'
 import type { InfoSlice } from './infoSlice'
@@ -14,7 +14,7 @@ export type UserSlice = {
   auth: AuthSlice
 }
 
-export const createUserSlice: ImmerStateCreator<RootStoreState, UserSlice> = (set, get, store) => ({
+export const createUserSlice: SliceCreator<RootStoreState, UserSlice> = (set, get, store) => ({
   info: createUserInfoSlice(set, get, store),
   auth: createUserAuthSlice(set, get, store),
 })

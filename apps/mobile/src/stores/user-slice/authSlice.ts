@@ -2,7 +2,7 @@ import type { RootStoreState } from '../index'
 
 import MulletWS from '@/lib/ws/mullet-ws'
 
-import { ImmerStateCreator } from '../_helpers/types'
+import { SliceCreator } from '../_helpers/types'
 
 export enum LoginType {
   Web2 = 'web2',
@@ -30,7 +30,7 @@ export type AuthSlice = AuthSliceState & AuthSliceActions
  * 创建 auth 命名空间切片（状态 + actions）
  * 访问路径: state.user.auth.xxx
  */
-export const createUserAuthSlice: ImmerStateCreator<RootStoreState, AuthSlice> = (setRoot, get, store) => {
+export const createUserAuthSlice: SliceCreator<RootStoreState, AuthSlice> = (setRoot, get, store) => {
   return {
     accessToken: undefined,
     loginInfo: null,

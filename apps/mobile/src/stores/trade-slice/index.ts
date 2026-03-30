@@ -1,5 +1,5 @@
 import type { Setter } from '../_helpers/createSetter'
-import type { ImmerStateCreator } from '../_helpers/types'
+import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 import type { FormDataSlice } from './formDataSlice'
 import type { OrderSlice } from './order-slice'
@@ -34,7 +34,7 @@ export type TradeSlice = TradeSliceState & {
   order: OrderSlice
 }
 
-export const createTradeSlice: ImmerStateCreator<RootStoreState, TradeSlice> = (set, get, store) => {
+export const createTradeSlice: SliceCreator<RootStoreState, TradeSlice> = (set, get, store) => {
   const tradeSetter = createSetter<TradeSlice>(set, (s) => s.trade)
 
   return {
