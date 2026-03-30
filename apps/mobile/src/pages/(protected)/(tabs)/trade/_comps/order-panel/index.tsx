@@ -2,7 +2,6 @@ import { View } from 'react-native'
 
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
-import { ChartPosition } from '@/stores/trade-slice/settingSlice'
 
 import { OrderAmount } from './order-amount'
 import { OrderDirection } from './order-direction'

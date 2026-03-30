@@ -46,7 +46,7 @@ export const OrderDirection = ({ symbol }: { symbol?: string }) => {
       </Pressable>
 
       {/* Spread Badge - Centered */}
-      <View className="absolute top-1/2 left-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
+      <View className="absolute top-1/2 left-1/2 z-10 h-[20px] max-w-20 min-w-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
         <Text className="text-paragraph-p3 text-content-foreground">{BNumber.toFormatNumber(quoteInfo?.spread)}</Text>
       </View>
 

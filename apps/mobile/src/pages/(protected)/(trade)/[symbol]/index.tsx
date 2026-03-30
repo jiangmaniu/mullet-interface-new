@@ -316,7 +316,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const userSellPricePrice = symbolMarketInfo?.userSellPrice
-  const userBuyPricePrice = symbolMarketInfo?.userSellPrice
+  const userBuyPricePrice = symbolMarketInfo?.userBuyPrice
   const spread = symbolMarketInfo?.spread
 
   return (
@@ -336,7 +336,7 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
           </Pressable>
 
           {/* Spread Badge */}
-          <View className="absolute top-1/2 left-1/2 z-10 size-[20px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
+          <View className="absolute top-1/2 left-1/2 z-10 h-5 max-w-20 min-w-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xs bg-white p-[2px]">
             <Text className="text-paragraph-p3 text-market-content-foreground">{BNumber.toFormatNumber(spread)}</Text>
           </View>
 

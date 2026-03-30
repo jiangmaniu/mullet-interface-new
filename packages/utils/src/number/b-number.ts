@@ -65,11 +65,11 @@ export class BNumber extends BigNumberBase {
   }
 
   static max(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toFixed(0))))
+    return BNumber.from(BigNumber.max(...n.map((i) => BNumber.from(i).toFixed())))
   }
 
   static min(...n: BNumberValue[]) {
-    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toFixed(0))))
+    return BNumber.from(BigNumber.min(...n.map((i) => BNumber.from(i).toFixed())))
   }
 
   static parseUnits(value: BNumberValue, unitName: BNumberValue): BNumber
@@ -98,6 +98,19 @@ export class BNumber extends BigNumberBase {
 
   toPercentRatio() {
     return BNumber.from(super.div(100))
+  }
+
+  pow(n: BNumberValue, base?: number): BNumber
+  pow(n?: BNumberValue, base?: number): BNumber | undefined
+  pow(n?: BNumberValue, base?: number) {
+    if (isNil(n)) return
+    return isUndefined(base)
+      ? BNumber.from(super.pow(BNumber.from(n)))
+      : BNumber.from(super.pow(BNumber.from(n).toString(), base))
+  }
+
+  abs(): BNumber {
+    return BNumber.from(super.abs())
   }
 
   multipliedBy(n: BNumberValue, base?: number): BNumber

@@ -1,6 +1,5 @@
 import { useCallback, useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
-import { multiply, subtract } from 'lodash-es'
 import type { RootStoreState } from '@/stores/index'
 import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
@@ -11,9 +10,7 @@ import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { useRootStore } from '@/stores/index'
 import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
-import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
-import { toFixed } from '@/v1/utils'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { useSubscribeQuote } from './use-subscribe-quote'
@@ -102,11 +99,11 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
   const spreadConf = currentSymbol?.symbolConf?.spreadConf as Symbol.SpreadConf
   const tradeTimeConf = currentSymbol?.symbolConf?.tradeTimeConf as Symbol.TradeTimeConf
   const quotationConf = currentSymbol?.symbolConf?.quotationConf as Symbol.QuotationConf
-  const symbolNewTicker = stores.trade.tradeSymbolTickerMap[symbol] || currentSymbol.symbolNewTicker
+  const symbolNewTicker = currentSymbol.symbolNewTicker
   const symbolNewPrice = currentSymbol.symbolNewPrice
   const quoteTimeStamp = currentQuote?.priceData?.id || symbolNewPrice?.id
 
-  const digits = Number(currentSymbol?.symbolDecimal || 2)
+  const digits = currentSymbol?.symbolDecimal
   const platformAskPrice = BNumber.from(currentQuote?.priceData?.sell || symbolNewPrice?.sell)?.toFixed()
   const platformBidPrice = BNumber.from(currentQuote?.priceData?.buy || symbolNewPrice?.buy)?.toFixed()
   const userBuyPrice = platformAskPrice
@@ -118,15 +115,31 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
   const userBuyPriceDiff = platformAskPriceDiff
   const userSellPriceDiff = platformBidPriceDiff
 
-  let bid = toFixed(Number(currentQuote?.priceData?.buy || symbolNewPrice?.buy || 0), digits, false)
-  let ask = toFixed(Number(currentQuote?.priceData?.sell || symbolNewPrice?.sell || 0), digits, false)
+  const bid = BNumber.from(currentQuote?.priceData?.buy || symbolNewPrice?.buy)?.toFixed()
+  const ask = BNumber.from(currentQuote?.priceData?.sell || symbolNewPrice?.sell)?.toFixed()
 
-  const open = Number(symbolNewTicker?.open || 0)
-  const high = Math.max.apply(Math, [Number(symbolNewTicker?.high || 0), bid])
-  const low = Math.min.apply(Math, [Number(symbolNewTicker?.low || 0), bid])
-  const close = Number(bid || symbolNewTicker?.close || 0)
-  const percent = bid && open ? (((bid - open) / open) * 100).toFixed(2) : 0
-  const spread = Math.abs(multiply(Math.abs(Number(subtract(bid, ask))), Math.pow(10, digits)) as number)
+  const open = BNumber.from(symbolNewTicker?.open)?.toFixed()
+  const high =
+    symbolNewTicker?.high && bid
+      ? BNumber.max(symbolNewTicker?.high, bid)?.toFixed()
+      : symbolNewTicker?.high
+        ? BNumber.from(symbolNewTicker.high)?.toFixed()
+        : bid
+          ? BNumber.from(bid).toFixed()
+          : undefined
+  const low =
+    symbolNewTicker?.low && bid
+      ? BNumber.min(symbolNewTicker?.low, bid)?.toFixed()
+      : symbolNewTicker?.low
+        ? BNumber.from(symbolNewTicker.low)?.toFixed()
+        : bid
+          ? BNumber.from(bid).toFixed()
+          : undefined
+
+  const close = BNumber.from(bid || symbolNewTicker?.close)?.toFixed()
+  const changeRate = BNumber.from(bid)?.minus(open)?.div(open)?.toFixed()
+  const percent = BNumber.from(changeRate)?.toPercent()?.toFixed()
+  const spread = BNumber.from(bid)?.minus(ask)?.abs().multipliedBy(BNumber.from(10).pow(digits))?.toFixed()
 
   const info: MarketQuoteInfo = {
     platformBidPrice,
@@ -160,16 +173,16 @@ export function parseMarketQuote({ quote, symbolInfo }: ParseMarketQuoteParams) 
     symbolNewTicker,
     symbolNewPrice,
     percent,
-    consize: Number(symbolConf?.contractSize || 0),
+    consize: symbolConf?.contractSize,
     ask: platformAskPrice,
     bid: platformBidPrice,
-    high: toFixed(high, digits, false),
-    low: toFixed(low, digits, false),
-    open: toFixed(open, digits, false),
-    close: toFixed(close, digits, false),
+    high,
+    low,
+    open,
+    close,
     spread,
-    bidDiff: currentQuote?.bidDiff || 0,
-    askDiff: currentQuote?.askDiff || 0,
+    bidDiff: currentQuote?.bidDiff,
+    askDiff: currentQuote?.askDiff,
     hasQuote: !!currentQuote?.priceData?.buy,
 
     ...info,
