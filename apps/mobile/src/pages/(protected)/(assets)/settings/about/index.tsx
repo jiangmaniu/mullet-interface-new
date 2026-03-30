@@ -11,20 +11,25 @@ import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
-import { useVersionCheck } from '@/hooks/use-version-check'
+import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
+import { useVersionCheck } from '@/hooks/use-version-check'
+import { clearAppCache, formatBytes, getCacheSize } from '@/lib/storage/cache'
 import { useAppUpdateStore } from '@/stores/app-update'
-import { clearAppCache, getCacheSize } from '@/lib/storage/cache'
+import { msg } from '@lingui/core/macro'
+import { BNumber } from '@mullet/utils/number'
 
 import { ClearCacheModal } from './_comps/clear-cache-modal'
+
+const CACHE_SIZE_DECIMAlS = 2
 
 export default function AboutScreen() {
   const router = useRouter()
   const { textColorContent4 } = useThemeColors()
-  const [cacheSize, setCacheSize] = useState('-')
+  const [cacheSize, setCacheSize] = useState('0')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
-
+  const { renderLinguiMsg } = useI18n()
   // 页面加载时读取真实缓存大小
   useEffect(() => {
     getCacheSize().then(setCacheSize)
@@ -40,8 +45,8 @@ export default function AboutScreen() {
   // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
   const APP_VERSION = useMemo(() => {
     const { APP_VERSION: version, APP_ENV: env, BUILD_TIME: buildTime } = EXPO_ENV_CONFIG
-    const versionStr = env === 'prod' ? `v${version}` : `v${version}-${env}`
-    return `${versionStr} (${buildTime})`
+    const versionStr = env === 'prod' ? `v${version}` : `v${version}-${env} (${buildTime})`
+    return `${versionStr}`
   }, [])
 
   const handleCheckUpdate = useCallback(async () => {
@@ -57,7 +62,7 @@ export default function AboutScreen() {
     setClearCacheVisible(false)
     try {
       await clearAppCache()
-      setCacheSize('0.00 B')
+      setCacheSize('0')
       toast.success('成功清除缓存')
     } catch {
       toast.error('清除缓存失败')
@@ -87,7 +92,14 @@ export default function AboutScreen() {
       {/* 菜单项 */}
       <View className="gap-xl">
         {/* 服务条款 */}
-        <Pressable onPress={() => router.push({ pathname: '/webview', params: { url: 'https://client.mullet.top/privacy/terms.html', title: '服务条款' } })}>
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: '/webview',
+              params: { url: 'https://client.mullet.top/privacy/terms.html', title: renderLinguiMsg(msg`服务条款`) },
+            })
+          }
+        >
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>服务条款</Trans>
@@ -97,7 +109,14 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 隐私政策 */}
-        <Pressable onPress={() => router.push({ pathname: '/webview', params: { url: 'https://client.mullet.top/privacy/privacy.html', title: '隐私政策' } })}>
+        <Pressable
+          onPress={() =>
+            router.push({
+              pathname: '/webview',
+              params: { url: 'https://client.mullet.top/privacy/privacy.html', title: renderLinguiMsg(msg`隐私政策`) },
+            })
+          }
+        >
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>隐私政策</Trans>
@@ -131,13 +150,23 @@ export default function AboutScreen() {
         </Pressable>
 
         {/* 清除缓存 */}
-        <Pressable onPress={() => setClearCacheVisible(true)}>
+        <Pressable
+          onPress={() => {
+            if (!BNumber.from(cacheSize).lte(0)) {
+              toast.info(<Trans>没有需要清理的缓存</Trans>)
+              return
+            }
+            setClearCacheVisible(true)
+          }}
+        >
           <View className="h-[48px] flex-row items-center justify-between px-[32px]">
             <Text className="text-paragraph-p2 text-content-1">
               <Trans>清除缓存</Trans>
             </Text>
             <View className="gap-xs flex-row items-center">
-              <Text className="text-paragraph-p2 text-content-4">{cacheSize}</Text>
+              <Text className="text-paragraph-p2 text-content-4">
+                {formatBytes(cacheSize, { decimals: CACHE_SIZE_DECIMAlS })}
+              </Text>
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
           </View>
