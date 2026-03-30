@@ -1,18 +1,14 @@
+import { CollapsibleTabView, TabFlatList } from '@mullet/react-native-tabs'
 import React, { useState } from 'react'
 import { View } from 'react-native'
-import { CollapsibleTabView, TabFlatList } from '@mstfmedeni/collapsible-tab-view'
-import type { Route } from '@mstfmedeni/collapsible-tab-view'
-import { TabBar } from 'react-native-tab-view'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { TabBar } from 'react-native-tab-view'
+import type { Route } from '@mullet/react-native-tabs'
 import type { VariantProps } from 'class-variance-authority'
 
+import { tabBarVariants, tabItemVariants, tabTextVariants } from '@/components/ui/collapsible-tab'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
-import {
-  tabBarVariants,
-  tabItemVariants,
-  tabTextVariants,
-} from '@/components/ui/collapsible-tab'
 
 // 定义 Props
 interface TradeCollapsibleTabProps extends VariantProps<typeof tabBarVariants> {
@@ -64,11 +60,7 @@ export function TradeCollapsibleTab({
         activeColor={textColorContent1}
         inactiveColor={textColorContent4}
       />
-      {renderTabBarRight && (
-        <View className="flex-shrink-0 flex-row items-center">
-          {renderTabBarRight()}
-        </View>
-      )}
+      {renderTabBarRight && <View className="flex-shrink-0 flex-row items-center">{renderTabBarRight()}</View>}
     </View>
   )
 

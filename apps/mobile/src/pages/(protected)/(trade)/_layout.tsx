@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Stack } from 'expo-router'
 
 export default function TradeLayout() {
   return (
@@ -7,5 +7,5 @@ export default function TradeLayout() {
       <Stack.Screen name="records/index" />
       <Stack.Screen name="settings" />
     </Stack>
-  );
+  )
 }

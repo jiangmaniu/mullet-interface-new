@@ -7,6 +7,9 @@ import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import type { ComponentType } from 'react'
+import type { FlatListProps } from 'react-native'
+
 import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
 import { IconifyChatBubbleXmark, IconifyNavArrowRight } from '@/components/ui/icons'
 import { Modal, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal'
@@ -33,7 +36,9 @@ import { PendingCurrentPrice } from '../../common/position-current-price'
 
 // ============ 列表容器：只订阅 idList ============
 
-export const TradePendingOrders = () => {
+export const TradePendingOrders = ({ FlatListComponent = CollapsibleFlatList as ComponentType<FlatListProps<any>> }: {
+  FlatListComponent?: ComponentType<FlatListProps<any>>
+}) => {
   const { user } = useStores()
   const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
@@ -70,7 +75,7 @@ export const TradePendingOrders = () => {
   }
 
   return (
-    <CollapsibleFlatList
+    <FlatListComponent
       className="flex-1"
       contentContainerStyle={{ paddingBottom: 24 }}
       data={orderIdList}

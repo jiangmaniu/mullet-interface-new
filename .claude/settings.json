@@ -10,7 +10,12 @@
       "Bash(node -e \"const plugin = require\\(''./plugins/withGradleJvmArgs.js''\\); console.log\\(''插件加载成功:'', typeof plugin\\);\")",
       "Bash(ls apps/mobile/src/pages/\\\\\\(protected\\\\\\)/\\\\\\(tabs\\\\\\)/trade/_hooks/trade/)",
       "Bash(git add:*)",
-      "Bash(pnpm tsc:*)"
+      "Bash(pnpm tsc:*)",
+      "Bash(node -e \"const r = require\\(''''/Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/node_modules/.pnpm/react-native-reanimated@4.1.2_react-native@0.83.2_@babel+core@7.28.4__react@19.1.0/node_modules/react-native-reanimated/package.json''''\\); console.log\\(r.version\\)\")",
+      "Bash(ls \"/Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/apps/mobile/src/pages/\\(protected\\)/\\(tabs\\)/trade/_comps/header/\")",
+      "Bash(ls \"/Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/apps/mobile/src/pages/\\(protected\\)/\\(tabs\\)/trade/_comps/records/\")",
+      "Bash(ls \"/Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/apps/mobile/src/pages/\\(protected\\)/\\(tabs\\)/trade/_comps/records/positions/\")",
+      "Bash(ls \"/Users/maniu/Documents/Web/company/stellux/mullet/interface-featuter-1/apps/mobile/src/pages/\\(protected\\)/\\(tabs\\)/trade/_comps/records/pending-orders/\")"
     ]
   },
   "enabledPlugins": {

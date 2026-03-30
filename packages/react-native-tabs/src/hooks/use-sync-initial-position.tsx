@@ -1,0 +1,35 @@
+import { useCallback, useRef } from "react";
+
+import type { AnimatedRef } from "react-native-reanimated";
+import Animated, { runOnUI, useSharedValue } from "react-native-reanimated";
+
+import { useHeaderTabContext } from "../context";
+import { _ScrollTo } from "../utils";
+
+export const useSyncInitialPosition = (
+  ref: AnimatedRef<Animated.ScrollView>
+) => {
+  const opacityValue = useSharedValue(0);
+  const isInitiated = useRef(true);
+  const { headerHeight, minHeaderHeight } = useHeaderTabContext();
+
+  const initialPosition = useCallback(
+    (position: number) => {
+      if (!isInitiated.current) return;
+      isInitiated.current = false;
+      runOnUI(_ScrollTo)(
+        ref,
+        0,
+        Math.min(position, headerHeight - minHeaderHeight),
+        false
+      );
+      opacityValue.value = 1;
+    },
+    [headerHeight, minHeaderHeight, ref]
+  );
+
+  return {
+    opacityValue,
+    initialPosition,
+  };
+};

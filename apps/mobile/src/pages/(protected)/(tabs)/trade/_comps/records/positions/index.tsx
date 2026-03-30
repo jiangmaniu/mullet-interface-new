@@ -8,6 +8,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import type { ComponentType } from 'react'
+import type { FlatListProps } from 'react-native'
+
 import { CollapsibleFlatList } from '@/components/ui/collapsible-tab'
 import { DrawerRef } from '@/components/ui/drawer'
 import { IconifyNavArrowRight } from '@/components/ui/icons'
@@ -41,7 +44,9 @@ import { PositionTpSlDrawer } from './position-tp-sl-drawer'
 
 // ============ 列表容器：只订阅 idList ============
 
-export const TradePositions = () => {
+export const TradePositions = ({ FlatListComponent = CollapsibleFlatList as ComponentType<FlatListProps<any>> }: {
+  FlatListComponent?: ComponentType<FlatListProps<any>>
+}) => {
   const positionIdList = useRootStore(useShallow(tradePositionIdListSelector))
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
@@ -80,7 +85,7 @@ export const TradePositions = () => {
   }
 
   return (
-    <CollapsibleFlatList
+    <FlatListComponent
       className="flex-1"
       contentContainerStyle={{ paddingBottom: 24 }}
       data={positionIdList}
