@@ -338,6 +338,7 @@ msgid "转账金额"
 msgstr "Transfer Amount"
 
 #: src/pages/(protected)/(assets)/settings/about/index.tsx
+#: src/pages/(protected)/(assets)/settings/about/index.tsx
 msgid "隐私政策"
 msgstr "Privacy Policy"
 
@@ -745,6 +746,7 @@ msgstr "Completed"
 msgid "暂无内容"
 msgstr "No content"
 
+#: src/pages/(protected)/(assets)/settings/about/index.tsx
 #: src/pages/(protected)/(assets)/settings/about/index.tsx
 msgid "服务条款"
 msgstr "Terms of Service"
@@ -1549,6 +1551,10 @@ msgstr "TP/SL"
 #: src/pages/(protected)/(tabs)/trade/_comps/open-order-confirm-drawer.tsx
 msgid "止损"
 msgstr "Stop Loss"
+
+#: src/pages/(protected)/(assets)/settings/about/index.tsx
+msgid "没有需要清理的缓存"
+msgstr "No cache to clear"
 
 #: src/pages/(protected)/(assets)/settings/about/_comps/upgrade-modal.tsx
 #~ msgid "更新App，体验最新版本"
