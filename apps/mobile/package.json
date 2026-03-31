@@ -1,7 +1,7 @@
 {
   "name": "@mullet/mobile",
   "main": "entrypoint.ts",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "scripts": {
     "expo-prebuild": "node ./scripts/prebuild.js",
     "reset-project": "node ./scripts/reset-project.js",
