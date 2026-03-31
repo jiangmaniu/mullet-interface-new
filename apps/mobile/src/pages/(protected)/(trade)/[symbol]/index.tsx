@@ -383,11 +383,11 @@ const SymbolDepth = () => {
   }
 
   const handleBuy = useCallback(() => {
-    router.push(`/trade?direction=${TradePositionDirectionEnum.BUY}`)
+    router.dismissTo(`/(protected)/(tabs)/trade?direction=${TradePositionDirectionEnum.BUY}`)
   }, [router])
 
   const handleSell = useCallback(() => {
-    router.push(`/trade?direction=${TradePositionDirectionEnum.SELL}`)
+    router.dismissTo(`/(protected)/(tabs)/trade?direction=${TradePositionDirectionEnum.SELL}`)
   }, [router])
 
   return (

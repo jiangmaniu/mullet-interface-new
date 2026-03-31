@@ -62,19 +62,12 @@ export const TradeHeader = ({ symbol }: TradeHeaderProps) => {
         left={<SymbolSelector symbol={symbol} />}
         right={
           <View className="gap-xl flex-row items-center">
-            <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
-              {/* <View
-                className="bg-button h-[24px] w-[36px] items-center justify-center rounded-full"
-              >
-                <IconifyActivity width={22} height={22} className="text-content-1" />
-              </View> */}
-              <Pressable
-                onPress={() => handleViewChange('depth')}
-                className="h-[24px] w-[36px] items-center justify-center rounded-full"
-              >
-                <IconifyCandlestickChart width={22} height={22} className="text-content-1" />
-              </Pressable>
-            </View>
+            <Pressable
+              onPress={() => handleViewChange('depth')}
+              className="h-[24px] w-[36px] items-center justify-center rounded-full"
+            >
+              <IconifyCandlestickChart width={22} height={22} className="text-content-1" />
+            </Pressable>
 
             <>
               <Pressable onPress={handleMorePress}>
