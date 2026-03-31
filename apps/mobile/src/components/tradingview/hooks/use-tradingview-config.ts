@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { IEnv } from '@/v1/env'
+import type { IEnv } from '@/env'
 
+import { getEnv } from '@/env'
 import { i18n } from '@/locales/i18n'
 import { useRootStore } from '@/stores'
-import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { getEnv } from '@/v1/env'
 
 import { getTradingviewLocale } from '../utils'
 
@@ -58,7 +58,6 @@ export function useTradingviewConfig(opts?: UseTradingviewConfigOpts) {
       ...(opts?.mode === 'simple' && { mode: 'simple' }),
       ...(resolutionRef.current && { resolution: resolutionRef.current }),
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [symbolItem, symbolName, tvLocale, colorType, opts?.mode])
 
   return {

@@ -4,9 +4,9 @@ import type { BarData, BridgeSymbolInfo, RequestBarsPayload } from '@mullet/trad
 import type { WebView } from 'react-native-webview'
 
 import { useRootStore } from '@/stores'
-import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { createSymbolInfoSelector } from '@/stores/market-slice'
-import { request } from '@/v1/utils/request'
+import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
+import { request } from '@/utils/request'
 import { BridgeIncoming, BridgeOutgoing } from '@mullet/trading-view'
 
 const RESOLUTION_MAP: Record<string, string> = {

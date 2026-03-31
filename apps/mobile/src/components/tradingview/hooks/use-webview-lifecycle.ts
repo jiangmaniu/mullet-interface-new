@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef } from 'react'
-import type { IEnv } from '@/v1/env'
+import type { IEnv } from '@/env'
 import type { WebView } from 'react-native-webview'
 
 import { useAppState } from '@/hooks/use-app-state'
-import { Account } from '@/v1/services/tradeCore/account/typings'
-import { storageGet, storageSet } from '@/lib/storage/storage'
 import { STORAGE_KEY_TRADINGVIEW_RELOAD_TIME } from '@/lib/storage/keys'
+import { storageGet, storageSet } from '@/lib/storage/storage'
+import { Account } from '@/services/tradeCore/account/typings'
 import { BridgeIncoming } from '@mullet/trading-view'
 
 import { buildSymbolInfo, RELOAD_THRESHOLD } from '../utils'

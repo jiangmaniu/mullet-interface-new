@@ -47,6 +47,9 @@ declare namespace API {
     label?: string
   }
 
+  // 注册方式
+  type RegisterWay = string
+
   // 交易-计算类型
   type CalculationType =
     /** 外汇 */
