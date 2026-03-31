@@ -13,10 +13,13 @@ expo-env.d.ts
 .kotlin/
 *.orig.*
 *.jks
-*.p8
 *.p12
 *.key
 *.mobileprovision
+
+# API Keys - 允许团队共享的 App Store Connect API Key
+*.p8
+!fastlane/AuthKey_LK96T3ND89.p8
 
 # Metro
 .metro-health-check*

@@ -5,6 +5,20 @@ before_all do
     env_vars: ["APP_ENV", "TEAM_ID"]
   )
   UI.message("🏗️  当前构建环境: #{ENV['APP_ENV']}")
+
+  # 配置 App Store Connect API Key（替代 Apple ID 密码认证）
+  if ENV["APP_STORE_CONNECT_KEY_ID"] && ENV["APP_STORE_CONNECT_ISSUER_ID"]
+    app_store_connect_api_key(
+      key_id: ENV["APP_STORE_CONNECT_KEY_ID"],
+      issuer_id: ENV["APP_STORE_CONNECT_ISSUER_ID"],
+      key_filepath: "./fastlane/AuthKey_#{ENV['APP_STORE_CONNECT_KEY_ID']}.p8",
+      duration: 1200,
+      in_house: false
+    )
+    UI.success("✅ 已配置 App Store Connect API Key 认证")
+  else
+    UI.message("⚠️  未配置 API Key，将使用 Apple ID 密码认证")
+  end
 end
 
 # ============================================
@@ -14,11 +28,6 @@ platform :ios do
 
   desc "Build iOS and upload to TestFlight"
   lane :beta do
-    # TestFlight 上传必须提供 Apple ID
-    unless ENV["APPLE_ID"]
-      UI.user_error!("TestFlight 上传需要 Apple ID，请设置 APPLE_ID 环境变量")
-    end
-
     ios_build(export_method: "app-store")
 
     begin
@@ -86,21 +95,6 @@ platform :ios do
       force: force_regenerate,               # 强制重新生成所有证书和 Profile
       force_for_new_devices: force_regenerate && match_type == "adhoc"  # Ad Hoc 自动添加新设备
     }
-
-    # 如果提供了 APPLE_ID，则使用它（TestFlight 上传或重新生成证书时必需）
-    if ENV["APPLE_ID"]
-      match_options[:username] = ENV["APPLE_ID"]
-      UI.message("🔐 Apple Developer Email: #{ENV['APPLE_ID']}")
-
-      if force_regenerate
-        UI.important("🔄 强制重新生成证书和 Provisioning Profile")
-      elsif export_method == "app-store"
-        UI.message("📤 准备上传到 TestFlight")
-      end
-    else
-      # 本地开发构建不需要 username，Match 会使用 Git 凭证
-      UI.message("📦 从 Match 仓库下载现有证书（使用 Git 凭证）")
-    end
 
     begin
       match(match_options)

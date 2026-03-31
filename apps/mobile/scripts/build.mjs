@@ -2,7 +2,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import chalk from 'chalk'
-import dotenv from 'dotenv'
 import inquirer from 'inquirer'
 import semver from 'semver'
 import shelljs from 'shelljs'
@@ -20,32 +19,11 @@ import shelljs from 'shelljs'
  *
  * 证书管理:
  *   --force-regenerate-certificates    强制重新生成证书（用于证书过期、添加新设备、修改 Capabilities）
- *   --apple-id=<email>                 Apple Developer 账号邮箱（TestFlight 上传或重新生成证书时需要）
- *   --apple-password=<app-password>    Apple 专用密码（TestFlight 上传或重新生成证书时需要）
  */
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const PROJECT_DIR = path.resolve(__dirname, '..')
-
-// --- 加载环境变量 ---
-
-/**
- * 从 fastlane/.env.[env].local 加载环境变量
- * @param {string} env - 环境名称 (dev/test/prod)
- */
-function loadEnvFile(env) {
-  const fileName = `.env.${env}.local`
-  const envPath = path.join(PROJECT_DIR, 'fastlane', fileName)
-  if (fs.existsSync(envPath)) {
-    const result = dotenv.config({ path: envPath })
-    if (result.error) {
-      console.warn(chalk.yellow(`  警告: 加载 ${fileName} 文件失败: ${result.error.message}`))
-    }
-    return result.parsed || {}
-  }
-  return {}
-}
 
 // --- 工具函数 ---
 
@@ -87,9 +65,6 @@ async function parseArgs() {
       default: 'test',
     },
   ])
-
-  // 加载对应环境的 .env 文件
-  const envVars = loadEnvFile(envAnswer.env)
 
   const answers = await inquirer.prompt([
     {
@@ -141,44 +116,6 @@ async function parseArgs() {
         { name: '否', value: false },
       ],
     },
-    {
-      name: 'appleId',
-      type: 'input',
-      message: chalk.magentaBright('请输入 Apple Developer 账号:'),
-      when: () => platformAnswer.platform === 'ios',
-      default: envVars.APPLE_ID || '',
-      validate: (input) => {
-        if (!input || !input.includes('@')) {
-          return '请输入有效的邮箱地址'
-        }
-        return true
-      },
-    },
-    {
-      name: 'applePassword',
-      type: 'input',
-      message: chalk.magentaBright('请输入 Apple 专用密码:'),
-      when: (ans) => {
-        const needsPassword = ans.iosDist === 'testflight' || ans.forceRegenerateCertificates
-        if (needsPassword) {
-          console.log('')
-          console.log(chalk.gray('  💡 提示: 专用密码获取方式'))
-          console.log(chalk.gray('     1. 访问 https://appleid.apple.com'))
-          console.log(chalk.gray('     2. 登录后进入"安全"部分'))
-          console.log(chalk.gray('     3. 点击"App 专用密码" → "生成密码"'))
-          console.log(chalk.gray('     4. 格式: xxxx-xxxx-xxxx-xxxx'))
-          console.log('')
-        }
-        return needsPassword
-      },
-      default: envVars.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD || '',
-      validate: (input) => {
-        if (!input || input.length < 4) {
-          return '请输入有效的专用密码'
-        }
-        return true
-      },
-    },
   ])
 
   return {
@@ -187,8 +124,6 @@ async function parseArgs() {
     androidArchs: answers.androidArchs || ['arm64-v8a'],
     iosDist: answers.iosDist || 'local',
     forceRegenerateCertificates: answers.forceRegenerateCertificates || false,
-    appleId: answers.appleId,
-    applePassword: answers.applePassword,
   }
 }
 
@@ -285,12 +220,12 @@ function organizeArtifacts(platform, env, version, versionCode, selectedArchs = 
 // --- 构建流程 ---
 
 async function main() {
-  const { platform, env, iosDist, androidArchs, forceRegenerateCertificates, appleId, applePassword } =
-    await parseArgs()
+  const { platform, env, iosDist, androidArchs, forceRegenerateCertificates } = await parseArgs()
 
   // 从 package.json 读取版本号
   const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_DIR, 'package.json'), 'utf-8'))
   const currentVersion = pkg.version
+  const originalVersion = currentVersion // 保存原始版本号，用于构建失败时回滚
 
   // 版本号选择（构建前，确保新版本号打进包里）
   const { bumpVersion } = await inquirer.prompt([
@@ -370,160 +305,166 @@ async function main() {
   shelljs.env.VERSION_CODE = versionCode
   shelljs.env.ENV = env
 
-  // iOS 构建需要设置 APPLE_ID（Match 需要 username）
-  if (platform === 'ios' && appleId) {
-    shelljs.env.APPLE_ID = appleId
-  }
-
-  // TestFlight 上传或重新生成证书需要专用密码
-  const needsPassword = (platform === 'ios' && iosDist === 'testflight') || forceRegenerateCertificates
-
-  if (needsPassword) {
-    if (!applePassword) {
-      console.error(chalk.red('\n错误: TestFlight 上传或重新生成证书需要 Apple 专用密码'))
-      process.exit(1)
-    }
-    shelljs.env.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD = applePassword
-    if (forceRegenerateCertificates) {
-      shelljs.env.FORCE_REGENERATE_CERTIFICATES = 'true'
-    }
+  // 强制重新生成证书时设置环境变量
+  if (forceRegenerateCertificates) {
+    shelljs.env.FORCE_REGENERATE_CERTIFICATES = 'true'
   }
 
   console.log('')
   console.log(chalk.green(`✨ 开始构建 Mullet... (v${version}, 构建号: ${versionCode})`))
   console.log('')
 
-  // Step 1: Prebuild
-  console.log(chalk.magentaBright(' [1/4] 执行 expo prebuild... '))
-  run(`pnpm expo-prebuild ${env} --platform ${platform} --clean`)
+  try {
+    // Step 1: Prebuild
+    console.log(chalk.magentaBright(' [1/4] 执行 expo prebuild... '))
+    run(`pnpm expo-prebuild ${env} --platform ${platform} --clean`)
 
-  // Restore Android signing config (prebuild --clean deletes android/)
-  if (platform === 'android') {
-    const src = path.join(PROJECT_DIR, 'keystores', 'signing.properties')
-    const dest = path.join(PROJECT_DIR, 'android', 'app', 'signing.properties')
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, dest)
-      console.log(chalk.gray('  已恢复 android/signing.properties'))
-    } else {
-      console.error(chalk.red('  错误: keystores/signing.properties 未找到！'))
-      console.error(chalk.red('  请将 keystores/ 目录放到 apps/mobile/ 下（从团队获取）'))
-      process.exit(1)
-    }
-  }
-
-  // Step 2: Pod Install (iOS only)
-  if (platform === 'ios') {
-    console.log(chalk.magentaBright(' [2/4] 安装 CocoaPods 依赖... '))
-    run('bundle exec pod install', path.join(PROJECT_DIR, 'ios'))
-  } else {
-    console.log(chalk.gray(' [2/4] 跳过 pod install (Android)'))
-  }
-
-  // Step 3: Fastlane Build
-  console.log(chalk.magentaBright(' [3/4] 执行 Fastlane 构建... '))
-  if (platform === 'ios') {
-    const iosLaneMap = {
-      local: 'build_only',
-      adhoc: 'adhoc',
-      testflight: 'beta',
-    }
-    const lane = iosLaneMap[iosDist]
-    run(`bundle exec fastlane ios ${lane} --env ${env}`)
-  } else {
-    run(`bundle exec fastlane android apk --env ${env}`)
-  }
-
-  // Step 4: Organize build artifacts
-  console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
-  const outputResults = organizeArtifacts(platform, env, version, versionCode, androidArchs)
-
-  // 分析 APK 体积（仅 Android）
-  const apkSizes = []
-  if (platform === 'android' && outputResults.length > 0) {
-    outputResults.forEach((result) => {
-      const apkPath = path.join(result.outputDir, result.fileName)
-      const sizeInfo = analyzeApkSize(apkPath)
-      if (sizeInfo) {
-        apkSizes.push({
-          name: result.fileName,
-          arch: result.arch,
-          ...sizeInfo,
-        })
+    // Restore Android signing config (prebuild --clean deletes android/)
+    if (platform === 'android') {
+      const src = path.join(PROJECT_DIR, 'keystores', 'signing.properties')
+      const dest = path.join(PROJECT_DIR, 'android', 'app', 'signing.properties')
+      if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dest)
+        console.log(chalk.gray('  已恢复 android/signing.properties'))
+      } else {
+        console.error(chalk.red('  错误: keystores/signing.properties 未找到！'))
+        console.error(chalk.red('  请将 keystores/ 目录放到 apps/mobile/ 下（从团队获取）'))
+        process.exit(1)
       }
-    })
-  }
-
-  // 构建成功汇总
-  console.log('')
-  console.log(chalk.green('━'.repeat(50)))
-  console.log(chalk.green.bold(' ✅ 构建完成！'))
-  console.log(chalk.green('━'.repeat(50)))
-  console.log('')
-  console.log(chalk.white(` 应用版本:  v${version} (${versionCode})`))
-  console.log(chalk.white(` 构建平台:  ${platform === 'ios' ? '🍎 iOS' : '🤖 Android'}`))
-  console.log(chalk.white(` 构建环境:  ${env}`))
-
-  if (platform === 'android' && outputResults.length > 0) {
-    console.log(chalk.white(` 构建架构:  ${androidArchs.join(', ')}`))
-  }
-  console.log(chalk.white(` 产物目录:  ${path.relative(PROJECT_DIR, outputResults[0].outputDir)}/`))
-
-  // 显示 APK 体积信息
-  if (apkSizes.length > 0) {
-    console.log('')
-    console.log(chalk.cyan(' 📦 生成的 APK 文件:'))
-    apkSizes.forEach((apk) => {
-      console.log(chalk.white(`    • ${apk.name.padEnd(40)} `) + chalk.green(`${apk.sizeMB} MB`))
-    })
-    console.log('')
-    console.log(chalk.cyan(' 💡 体积优化提示:'))
-    console.log(chalk.gray('    • 已启用 Split APKs（按架构拆分）'))
-    console.log(chalk.gray('    • 已启用 R8 混淆和资源压缩'))
-    console.log(chalk.gray('    • 单架构 APK 体积约为通用 APK 的 25-30%'))
-    console.log(chalk.gray('    • arm64-v8a: 主流设备（覆盖 95%）'))
-    console.log(chalk.gray('    • armeabi-v7a: 旧设备'))
-  }
-
-  if (platform === 'ios' && iosDist === 'testflight') {
-    console.log('')
-    console.log(chalk.cyan.bold(' 🚀 TestFlight 上传已提交'))
-    console.log(chalk.white('    构建正在 App Store Connect 中处理，通常需要 15-30 分钟'))
-    console.log(chalk.white('    处理完成后测试人员会自动收到通知'))
-    console.log(chalk.white(`    查看状态: ${chalk.underline('https://appstoreconnect.apple.com')}`))
-  } else if (platform === 'ios' && iosDist === 'adhoc') {
-    console.log('')
-    console.log(chalk.cyan.bold(' 📦 AdHoc IPA 已生成'))
-    console.log(chalk.white('    可通过蒲公英、fir.im 等平台分发给测试人员'))
-  }
-
-  console.log('')
-
-  // --- 构建后操作 ---
-
-  // 版本号变更：改了就提交，推送跟着 tag 走
-  if (version !== currentVersion) {
-    run(`git add package.json`)
-    run(`git commit -m "chore: bump version to ${version}"`)
-    console.log(chalk.green(`  ✅ 版本号变更已提交`))
-
-    if (tagAction === 'push') {
-      run(`git push`)
-      console.log(chalk.green(`  ✅ 版本号变更已推送到远程`))
     }
-  }
 
-  // 创建 & 推送 Git Tag
-  if (tagAction !== 'skip') {
-    run(`git tag ${tag}`)
-    console.log(chalk.green(`  ✅ Git Tag 已创建: ${tag}`))
-
-    if (tagAction === 'push') {
-      run(`git push origin ${tag}`)
-      console.log(chalk.green(`  ✅ Tag ${tag} 已推送到远程`))
+    // Step 2: Pod Install (iOS only)
+    if (platform === 'ios') {
+      console.log(chalk.magentaBright(' [2/4] 安装 CocoaPods 依赖... '))
+      run('bundle exec pod install', path.join(PROJECT_DIR, 'ios'))
+    } else {
+      console.log(chalk.gray(' [2/4] 跳过 pod install (Android)'))
     }
-  }
 
-  console.log('')
+    // Step 3: Fastlane Build
+    console.log(chalk.magentaBright(' [3/4] 执行 Fastlane 构建... '))
+    if (platform === 'ios') {
+      const iosLaneMap = {
+        local: 'build_only',
+        adhoc: 'adhoc',
+        testflight: 'beta',
+      }
+      const lane = iosLaneMap[iosDist]
+      run(`bundle exec fastlane ios ${lane} --env ${env}`)
+    } else {
+      run(`bundle exec fastlane android apk --env ${env}`)
+    }
+
+    // Step 4: Organize build artifacts
+    console.log(chalk.magentaBright(' [4/4] 整理构建产物... '))
+    const outputResults = organizeArtifacts(platform, env, version, versionCode, androidArchs)
+
+    // 分析 APK 体积（仅 Android）
+    const apkSizes = []
+    if (platform === 'android' && outputResults.length > 0) {
+      outputResults.forEach((result) => {
+        const apkPath = path.join(result.outputDir, result.fileName)
+        const sizeInfo = analyzeApkSize(apkPath)
+        if (sizeInfo) {
+          apkSizes.push({
+            name: result.fileName,
+            arch: result.arch,
+            ...sizeInfo,
+          })
+        }
+      })
+    }
+
+    // 构建成功汇总
+    console.log('')
+    console.log(chalk.green('━'.repeat(50)))
+    console.log(chalk.green.bold(' ✅ 构建完成！'))
+    console.log(chalk.green('━'.repeat(50)))
+    console.log('')
+    console.log(chalk.white(` 应用版本:  v${version} (${versionCode})`))
+    console.log(chalk.white(` 构建平台:  ${platform === 'ios' ? '🍎 iOS' : '🤖 Android'}`))
+    console.log(chalk.white(` 构建环境:  ${env}`))
+
+    if (platform === 'android' && outputResults.length > 0) {
+      console.log(chalk.white(` 构建架构:  ${androidArchs.join(', ')}`))
+    }
+    console.log(chalk.white(` 产物目录:  ${path.relative(PROJECT_DIR, outputResults[0].outputDir)}/`))
+
+    // 显示 APK 体积信息
+    if (apkSizes.length > 0) {
+      console.log('')
+      console.log(chalk.cyan(' 📦 生成的 APK 文件:'))
+      apkSizes.forEach((apk) => {
+        console.log(chalk.white(`    • ${apk.name.padEnd(40)} `) + chalk.green(`${apk.sizeMB} MB`))
+      })
+      console.log('')
+      console.log(chalk.cyan(' 💡 体积优化提示:'))
+      console.log(chalk.gray('    • 已启用 Split APKs（按架构拆分）'))
+      console.log(chalk.gray('    • 已启用 R8 混淆和资源压缩'))
+      console.log(chalk.gray('    • 单架构 APK 体积约为通用 APK 的 25-30%'))
+      console.log(chalk.gray('    • arm64-v8a: 主流设备（覆盖 95%）'))
+      console.log(chalk.gray('    • armeabi-v7a: 旧设备'))
+    }
+
+    if (platform === 'ios' && iosDist === 'testflight') {
+      console.log('')
+      console.log(chalk.cyan.bold(' 🚀 TestFlight 上传已提交'))
+      console.log(chalk.white('    构建正在 App Store Connect 中处理，通常需要 15-30 分钟'))
+      console.log(chalk.white(`    查看状态: ${chalk.underline('https://appstoreconnect.apple.com')}`))
+    } else if (platform === 'ios' && iosDist === 'adhoc') {
+      console.log('')
+      console.log(chalk.cyan.bold(' 📦 AdHoc IPA 已生成'))
+      console.log(chalk.white('    可通过蒲公英、fir.im 等平台分发给测试人员'))
+    }
+
+    console.log('')
+
+    // --- 构建后操作 ---
+
+    // 版本号变更：改了就提交，推送跟着 tag 走
+    if (version !== currentVersion) {
+      run(`git add package.json`)
+      run(`git commit -m "chore: bump version to ${version}"`)
+      console.log(chalk.green(`  ✅ 版本号变更已提交`))
+
+      if (tagAction === 'push') {
+        run(`git push`)
+        console.log(chalk.green(`  ✅ 版本号变更已推送到远程`))
+      }
+    }
+
+    // 创建 & 推送 Git Tag
+    if (tagAction !== 'skip') {
+      run(`git tag ${tag}`)
+      console.log(chalk.green(`  ✅ Git Tag 已创建: ${tag}`))
+
+      if (tagAction === 'push') {
+        run(`git push origin ${tag}`)
+        console.log(chalk.green(`  ✅ Tag ${tag} 已推送到远程`))
+      }
+    }
+
+    console.log('')
+  } catch (error) {
+    // 构建失败，回滚版本号
+    console.log('')
+    console.log(chalk.red('━'.repeat(50)))
+    console.log(chalk.red.bold(' ❌ 构建失败'))
+    console.log(chalk.red('━'.repeat(50)))
+    console.log('')
+
+    if (version !== originalVersion) {
+      // 恢复原版本号
+      const pkgPath = path.join(PROJECT_DIR, 'package.json')
+      const pkgData = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'))
+      pkgData.version = originalVersion
+      fs.writeFileSync(pkgPath, JSON.stringify(pkgData, null, 2) + '\n')
+    }
+
+    console.log(chalk.red(`  错误信息: ${error.message || error}`))
+    console.log('')
+    process.exit(1)
+  }
 }
 
 main().catch((err) => {
