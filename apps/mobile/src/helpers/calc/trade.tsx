@@ -6,7 +6,6 @@ import { marketQuoteMapSelector } from '@/stores/market-slice/quote-slice'
 import { marketSymbolSimpleMapSelector } from '@/stores/market-slice/symbol-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 import { TRADE_BUY_SELL } from '@/v1/constants'
-import { stores } from '@/v1/provider/mobxProvider'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 /**

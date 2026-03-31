@@ -4,7 +4,6 @@ import type { LoginType } from '@/stores/user-slice/authSlice'
 
 import { useRootStore } from '@/stores'
 import { login } from '@/v1/services/user'
-import user from '@/v1/stores/user'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseBackendLoginOptions {
@@ -43,7 +42,7 @@ export function useBackendLogin(options: UseBackendLoginOptions = {}) {
       })
 
       // 重新获取用户信息
-      await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+      await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
       const activeTradeAccountId = useRootStore.getState().user.info.activeTradeAccountId
       if (activeTradeAccountId) {
         await useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)

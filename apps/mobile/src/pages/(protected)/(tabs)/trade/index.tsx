@@ -19,7 +19,6 @@ import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { tradeOrderCountSelector } from '@/stores/trade-slice/order-slice'
 import { tradePositionCountSelector } from '@/stores/trade-slice/position-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { msg } from '@lingui/core/macro'
 
 import { AccountCard } from './_comps/account-card'
@@ -31,7 +30,6 @@ import { SymbolChartView } from './_comps/symbol-chart-view'
 
 const Trade = () => {
   const router = useRouter()
-  const { user } = useStores()
   const { renderLinguiMsg } = useI18n()
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
@@ -48,7 +46,7 @@ const Trade = () => {
   const [topBannerHeight, setTopBannerHeight] = useState(0)
 
   const initData = async () => {
-    await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo(), user.fetchUserInfo(true)])
+    await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
 
     await Promise.all([useRootStore.getState().trade.position.fetch(), useRootStore.getState().trade.order.fetch()])
   }

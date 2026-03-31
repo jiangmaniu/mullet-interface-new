@@ -13,12 +13,10 @@ import { useRootStore } from '@/stores'
 import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { formaOrderList } from '@/v1/services/tradeCore/order'
-import trade from '@/v1/stores/trade'
 import { uniqueObjectArray } from '@/v1/utils'
 import mitt from '@/v1/utils/mitt'
 
 import { parseDepthBodyData, parseQuoteBodyData } from './quote-parser'
-
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -539,15 +537,12 @@ class MulletWS {
     const type = data.type
     if (type === 'ACCOUNT') {
       const accountInfo = data.account || {}
-      trade.currentAccountInfo = { ...trade.currentAccountInfo, ...accountInfo }
       useRootStore.getState().user.info.updateAccount(accountInfo)
     } else if (type === 'MARKET_ORDER') {
       const formatted = formaOrderList(data.bagOrderList || [])
-      trade.positionList = formatted
       useRootStore.getState().trade.position.update(formatted)
     } else if (type === 'LIMIT_ORDER') {
       const formatted = formaOrderList(data.limiteOrderList || [])
-      trade.pendingList = formatted
       useRootStore.getState().trade.order.update(formatted)
     }
   }

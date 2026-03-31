@@ -7,7 +7,6 @@ import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useRootStore } from '@/stores'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { createOrder } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
 import { msg } from '@lingui/core/macro'
@@ -39,7 +38,6 @@ type ClosePositionDataQueryParams = Pick<
  * ```
  */
 export function useClosePosition() {
-  const { trade, user } = useStores()
   const { renderLinguiMsg } = useI18n()
 
   return useMutation({
@@ -70,8 +68,8 @@ export function useClosePosition() {
     },
     onSuccess: async () => {
       // 更新账户余额信息和仓位列表
-      await Promise.all([user.fetchUserInfo(), useRootStore.getState().user.info.fetchLoginClientInfo()])
-      await Promise.all([trade.getPositionList(), useRootStore.getState().trade.position.fetch()])
+      await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
+      await Promise.all([useRootStore.getState().trade.position.fetch()])
 
       toast.success(<Trans>平仓成功</Trans>)
     },

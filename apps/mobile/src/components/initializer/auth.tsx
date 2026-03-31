@@ -1,5 +1,3 @@
-import { stores } from "@/v1/provider/mobxProvider"
-
 /**
  * AuthInitializer - 认证初始化组件
  *
@@ -7,8 +5,5 @@ import { stores } from "@/v1/provider/mobxProvider"
  * 而是由各组件直接从 usePrivy() 获取并传入 loginWithPrivy(token)
  */
 export function AuthInitializer() {
-
-
-
   return null
 }

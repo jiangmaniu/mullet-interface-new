@@ -23,10 +23,8 @@ import { tradeActiveTradeSymbolSelector } from '@/stores/trade-slice'
 import { createOrderItemSelector, tradeOrderIdListSelector } from '@/stores/trade-slice/order-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { cancelOrder } from '@/v1/services/tradeCore/order'
 import { Order } from '@/v1/services/tradeCore/order/typings'
-import trade from '@/v1/stores/trade'
 import { BNumber } from '@mullet/utils/number'
 
 import { PendingCurrentPrice } from '../../common/position-current-price'
@@ -34,11 +32,11 @@ import { PendingCurrentPrice } from '../../common/position-current-price'
 // ============ 列表容器：只订阅 idList ============
 
 export const TradePendingOrders = () => {
-  const { user } = useStores()
   const orderIdList = useRootStore(useShallow(tradeOrderIdListSelector))
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const [refreshing, setRefreshing] = useState(false)
+
   useEffect(() => {
     if (!activeTradeAccountId) return
     useRootStore.getState().trade.order.fetch()
@@ -47,8 +45,8 @@ export const TradePendingOrders = () => {
   const onRefresh = async () => {
     try {
       setRefreshing(true)
-      await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
-      await Promise.all([useRootStore.getState().trade.order.fetch()])
+      await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
+      await Promise.all([useRootStore.getState()])
     } finally {
       setRefreshing(false)
     }
@@ -166,7 +164,7 @@ const CancelOrderAction = ({ order }: { order: Order.OrderPageListItem }) => {
     try {
       const { success } = await cancelOrder({ id: order.id })
       if (success) {
-        await Promise.all([trade.getPendingList(), useRootStore.getState().trade.order.fetch()])
+        await Promise.all([useRootStore.getState().trade.order.fetch()])
         setShowConfirm(false)
         toast.success(<Trans>取消成功</Trans>)
       }

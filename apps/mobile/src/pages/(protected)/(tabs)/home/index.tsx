@@ -36,7 +36,6 @@ import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { stores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { BNumber } from '@mullet/utils/number'
 
@@ -298,9 +297,6 @@ export default function Index() {
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   useLayoutEffect(() => {
-    // 重新刷新品种列表
-    stores.trade.getSymbolList({ accountId: activeTradeAccountId })
-
     useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
   }, [activeTradeAccountId])
 

@@ -24,7 +24,6 @@ import { toast } from '@/components/ui/toast'
 import { useAccountSynopsis } from '@/hooks/account/use-account-synopsis'
 import { useRootStore } from '@/stores'
 import { userInfoClientInfoSelector } from '@/stores/user-slice/infoSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { AddAccount } from '@/v1/services/tradeCore/account'
 import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
 import { t } from '@lingui/core/macro'
@@ -125,7 +124,6 @@ export default function CrateAccountScreen() {
   }, [])
 
   const [isLoading, { setTrue: setIsLoadingTrue, setFalse: setIsLoadingFalse }] = useBoolean(false)
-  const { user } = useStores()
   const clientId = useRootStore((s) => userInfoClientInfoSelector(s)?.id)
   const selectedSynopsis = useAccountSynopsis(selectedAccountGroup?.synopsis)
 
@@ -143,7 +141,7 @@ export default function CrateAccountScreen() {
         name: name,
       })
       if (result?.success) {
-        await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+        await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
 
         toast.success(t`创建账户成功`, {
           onAutoClose: () => {

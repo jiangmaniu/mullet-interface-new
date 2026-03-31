@@ -20,10 +20,9 @@ import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useRootStore } from '@/stores'
 import { createRealAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { transferAccount } from '@/v1/services/tradeCore/account'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { msg, t } from '@lingui/core/macro'
+import { msg } from '@lingui/core/macro'
 import { BNumber } from '@mullet/utils/number'
 
 import { AccountSelectionDrawer } from './_comps/account-selection-drawer'
@@ -33,7 +32,6 @@ export default function TransferScreen() {
   const { textColorContent1 } = useThemeColors()
   const router = useRouter()
   const { accountId } = useLocalSearchParams<{ accountId?: string }>()
-  const { user } = useStores()
   const { renderLinguiMsg } = useI18n()
 
   const [fromAccount, setFromAccount] = useState<User.AccountItem>()
@@ -120,7 +118,7 @@ export default function TransferScreen() {
       })
 
       if (res.success) {
-        await Promise.all([user.fetchUserInfo(true), useRootStore.getState().user.info.fetchLoginClientInfo()])
+        await Promise.all([useRootStore.getState().user.info.fetchLoginClientInfo()])
 
         setIsConfirmDrawerOpen(false)
 

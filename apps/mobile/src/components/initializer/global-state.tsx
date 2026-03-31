@@ -2,16 +2,16 @@ import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useState } from 'react'
 import { Platform, Text, View } from 'react-native'
 
-import { useStores } from '@/v1/provider/mobxProvider'
+import { fetchRemoteConfig } from '@/v1/env'
 
 let unsubscribe: (() => void) | undefined
 
 export const GlobalStateInitializer = observer(({ children }: { children: React.ReactNode }) => {
   const [ready, setReady] = useState(false)
-  const { global } = useStores()
 
   const startApp = async () => {
-    await global.onStartApp()
+    // 拉取动态域名配置信息
+    await fetchRemoteConfig()
   }
 
   const initApp = useCallback(async () => {

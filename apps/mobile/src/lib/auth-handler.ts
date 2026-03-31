@@ -3,7 +3,6 @@
  * 处理 API 返回 401 时的自动重新认证逻辑
  */
 import { useRootStore } from '@/stores'
-import { stores } from '@/v1/provider/mobxProvider'
 import { login, refreshToken as refreshTokenAPI } from '@/v1/services/user'
 import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
 
@@ -122,7 +121,6 @@ async function tryAutoLogin(): Promise<boolean> {
       accessToken: userInfo.access_token,
       loginInfo: userInfo,
     })
-    await stores.user.handleLoginSuccess(userInfo)
 
     // console.log('Auto login successful')
     return true

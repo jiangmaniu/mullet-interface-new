@@ -22,7 +22,6 @@ import {
 } from '@/constants/config/trade'
 import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
 import { useRootStore } from '@/stores'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { rechargeSimulate } from '@/v1/services/tradeCore/account'
 import { BNumber } from '@mullet/utils/number'
 
@@ -49,7 +48,6 @@ export const TradeSimulateAccountDepositDrawer = observer(
     const [isConfirming, setIsConfirming] = useState(false)
     const [open, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle(false)
     const { t } = useLingui()
-    const { user } = useStores()
 
     const handleConfirm = async () => {
       setIsConfirming(true)
@@ -61,8 +59,6 @@ export const TradeSimulateAccountDepositDrawer = observer(
         })
 
         if (result.success) {
-          // 刷新账户列表
-          await user.fetchUserInfo(false)
           useRootStore.getState().user.info.fetchLoginClientInfo()
           toast.success(t`入存款成功`)
           setClose()

@@ -2,15 +2,15 @@ import { useCallback } from 'react'
 
 import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { stores } from '@/v1/provider/mobxProvider'
 import { DEFAULT_LEVERAGE_MULTIPLE } from '@/v1/constants'
+import { stores } from '@/v1/provider/mobxProvider'
 import { toFixed } from '@/v1/utils'
 import {
-  useCalcExchangeRateCallback,
   calcExchangeRate,
+  getCurrentQuoteV2,
+  useCalcExchangeRateCallback,
   useGetAccountBalanceCallback,
   useGetCurrentQuoteCallback,
-  getCurrentQuoteV2,
 } from '@/v1/utils/wsUtil'
 
 type ICalcMaxOpenVolumeParams = {
@@ -27,8 +27,7 @@ export const calcMaxOpenVolume = ({ buySell }: ICalcMaxOpenVolumeParams): string
   const state = useRootStore.getState()
   const currentAccountInfo = userInfoActiveTradeAccountInfoSelector(state)
   const money = currentAccountInfo?.money ?? 0
-  const occupyMargin =
-    Number(currentAccountInfo?.margin || 0) + Number(currentAccountInfo?.isolatedMargin || 0)
+  const occupyMargin = Number(currentAccountInfo?.margin || 0) + Number(currentAccountInfo?.isolatedMargin || 0)
   let availableMargin = Number(money) - occupyMargin
 
   // 获取当前品种行情快照

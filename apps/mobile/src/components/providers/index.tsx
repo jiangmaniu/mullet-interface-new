@@ -18,7 +18,6 @@ import { useThemeColors } from '@/hooks/use-theme-colors'
 import { AppKit, appKit } from '@/lib/appkit'
 import { dynamicActivate, i18n, initialLocale } from '@/locales/i18n'
 import { initStoreSubscribes } from '@/stores'
-import { V1Provider } from '@/v1/provider'
 import { Inter_400Regular, Inter_500Medium, Inter_600SemiBold } from '@expo-google-fonts/inter'
 import { PrivyProvider } from '@privy-io/expo'
 import { PrivyElements } from '@privy-io/expo/ui'
@@ -96,9 +95,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                     <StoreSubscribesInit />
                     {/* 注入钱包状态到 auth-handler */}
                     <WalletStateInjector>
-                      <V1Provider>
-                        <VersionCheckProvider>{children}</VersionCheckProvider>
-                      </V1Provider>
+                      <VersionCheckProvider>{children}</VersionCheckProvider>
                       <Toaster position="center" />
                       <Loading />
                     </WalletStateInjector>

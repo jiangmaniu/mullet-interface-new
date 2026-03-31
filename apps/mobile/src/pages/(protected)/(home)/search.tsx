@@ -22,9 +22,9 @@ import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { cn } from '@/lib/utils'
 import { useRootStore } from '@/stores'
+import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { useStores } from '@/v1/provider/mobxProvider'
 import { Account } from '@/v1/services/tradeCore/account/typings'
 import { BNumber } from '@mullet/utils/number'
 
@@ -212,24 +212,21 @@ const SearchPage = observer(function SearchPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState('list')
   const { colorMarketRise, colorMarketFall, colorBrandSecondary1 } = useThemeColors()
-  const { trade } = useStores()
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
+  const symbolInfoList = useRootStore(marketSymbolInfoListSelector)
 
   // 使用 ahooks 的 useDebounce 进行防抖处理
   const debouncedQuery = useDebounce(searchQuery, { wait: 300 })
 
   useEffect(() => {
     // 页面初始化时调用接口更新品种列表
-    trade.getSymbolList()
     useRootStore.getState().market.symbol.fetchInfoList(activeTradeAccountId)
   }, [activeTradeAccountId])
 
-  console.log(trade.symbolListAll)
-
   // 使用真实数据进行搜索和排序
   const filteredSymbols = useMemo(() => {
-    return searchAndSortSymbols(trade.symbolListAll, debouncedQuery)
-  }, [trade.symbolListAll, debouncedQuery])
+    return searchAndSortSymbols(symbolInfoList, debouncedQuery)
+  }, [symbolInfoList, debouncedQuery])
 
   // 提取搜索字符用于高亮显示（Task 4 会使用）
   const searchChars = useMemo(() => {
