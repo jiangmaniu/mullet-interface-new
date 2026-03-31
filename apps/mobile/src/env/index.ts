@@ -1,8 +1,8 @@
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
 import { STORAGE_KEY_ENV } from '@/lib/storage/keys'
 import { storageGet, storageSet } from '@/lib/storage/storage'
+import { isDomainAvailable } from '@/utils/dns'
 import { Config } from '@/v1/platform/config'
-import { isDomainAvailable } from '@/v1/utils/dns'
 
 export type IEnv = typeof Config & {
   baseURL: string
