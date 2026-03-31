@@ -1,6 +1,6 @@
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { Order } from '@/v1/services/tradeCore/order/typings'
+import { Order } from '@/services/tradeCore/order/typings'
 
 export type TradePendingOrderInfo = Order.OrderPageListItem & {
   isBuy: boolean

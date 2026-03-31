@@ -1,15 +1,13 @@
 import { useCallback, useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
-import type { Order } from '@/v1/services/tradeCore/order/typings'
+import type { Order } from '@/services/tradeCore/order/typings'
 
 import { calcGrossPnlFromSnapshot, extractPositionPriceData } from '@/helpers/calc/quote'
 import { parseTradePositionInfo, TradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { RootStoreState, useRootStore } from '@/stores'
 import { tradePositionListSelector } from '@/stores/trade-slice/position-slice'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
-import { toFixed } from '@/v1/utils'
 import { BNumber } from '@mullet/utils/number'
-
 
 export type MarginRateInfoResult = {
   margin: string | undefined
@@ -50,7 +48,7 @@ export const computeIsolatedMarginRateInfo = (
   const isolatedBalance = orderMargin.plus(interestFees).plus(handlingFees).plus(profit)
   const marginRate = orderMargin && isolatedBalance ? isolatedBalance.div(orderBaseMargin) : undefined
   const margin = orderMargin.multipliedBy(compelCloseRatio)
-  const balance = toFixed(isolatedBalance, 2)
+  const balance = isolatedBalance
 
   const info: MarginRateInfoResult = {
     marginRatePercent: marginRate?.multipliedBy(100).toFixed(),
@@ -84,7 +82,7 @@ export const computeCrossMarginRateInfo = (
 
   let balance = BNumber.from(currentAccountInfo?.money)?.plus(totalProfit)
 
-  const occupyMargin = Number(toFixed(Number(currentAccountInfo?.margin || 0), 2))
+  const occupyMargin = currentAccountInfo?.margin
   const hasCrossMarginOrder = positionList.some((p) => p.marginType === 'CROSS_MARGIN')
 
   let marginRate: BNumber | undefined

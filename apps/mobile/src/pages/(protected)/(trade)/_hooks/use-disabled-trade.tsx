@@ -1,6 +1,6 @@
 import { useAccountInfo } from '@/hooks/account/use-account-info'
+import { Account } from '@/services/tradeCore/account/typings'
 import { useMarketSymbolInfo } from '@/stores/market-slice'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 
 // ============ 纯函数 ============
 

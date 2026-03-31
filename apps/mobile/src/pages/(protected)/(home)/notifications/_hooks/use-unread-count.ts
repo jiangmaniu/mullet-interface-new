@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getUnReadMessageCount } from '@/v1/services/message'
+
+import { getUnReadMessageCount } from '@/services/message'
 
 /**
  * 获取未读消息数量

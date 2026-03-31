@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { getMyMessageInfo } from '@/v1/services/message'
+
+import { getMyMessageInfo } from '@/services/message'
 
 /**
  * 获取消息详情

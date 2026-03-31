@@ -34,7 +34,7 @@
 
 ### 请求
 
-- 使用 `@/v1/utils/request` 进行 API 请求
+- 使用 `@/utils/request` 进行 API 请求
 - 不使用 axios，已重构为 fetch
 
 ## 登录流程
@@ -78,9 +78,12 @@ const formData = useRootStore(useShallow(tradeFormDataSelector))
 ```ts
 // ❌ 禁止：订阅整个 map 导致无效重渲染
 const symbolInfoMap = useRootStore(symbolInfoMapSelector)
-const handle = useCallback((symbol) => {
-  const item = symbolInfoMap[symbol]
-}, [symbolInfoMap])
+const handle = useCallback(
+  (symbol) => {
+    const item = symbolInfoMap[symbol]
+  },
+  [symbolInfoMap],
+)
 
 // ✅ 强制：callback 内按需读取快照
 const handle = useCallback((symbol) => {

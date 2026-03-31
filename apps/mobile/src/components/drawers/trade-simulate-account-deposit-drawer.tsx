@@ -21,8 +21,8 @@ import {
   DEFAULT_SIMULATE_ACCOUNT_SINGLE_TIME_DEPOSIT_AMOUNT,
 } from '@/constants/config/trade'
 import { TradeFundFlowTypeEnum } from '@/options/trade/fund-flow'
+import { rechargeSimulate } from '@/services/tradeCore/account'
 import { useRootStore } from '@/stores'
-import { rechargeSimulate } from '@/v1/services/tradeCore/account'
 import { BNumber } from '@mullet/utils/number'
 
 import { toast } from '../ui/toast'

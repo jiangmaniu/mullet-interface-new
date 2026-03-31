@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useDebounce } from 'ahooks'
 
 import { OrderCreateTypeEnum } from '@/options/trade/order'
+import { getOrderMargin } from '@/services/tradeCore/order'
 import { useRootStore } from '@/stores'
 import {
   tradeFormDataAmountSelector,
@@ -12,7 +13,6 @@ import {
   tradeFormDataTypeSelector,
 } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { getOrderMargin } from '@/v1/services/tradeCore/order'
 import { BNumber } from '@mullet/utils/number'
 
 import { useOrderMarketPrice } from '../_comps/order-panel/_hooks/use-order-price'

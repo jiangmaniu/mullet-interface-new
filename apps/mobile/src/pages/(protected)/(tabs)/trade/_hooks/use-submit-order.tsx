@@ -2,11 +2,11 @@ import { Trans } from '@lingui/react/macro'
 import { useState } from 'react'
 
 import { toast } from '@/components/ui/toast'
+import { createOrder } from '@/services/tradeCore/order'
 import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolInfoSelector } from '@/stores/trade-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { createOrder } from '@/v1/services/tradeCore/order'
 import { vibrate } from '@/v1/utils/native'
 
 import { buildOrderParams } from '../_helpers/build-order-params'

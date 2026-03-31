@@ -15,11 +15,11 @@ import { parseRiseAndFallInfo } from '@/helpers/market'
 import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
 import { cn } from '@/lib/utils'
 import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@/options/market/symbol'
+import { Account } from '@/services/tradeCore/account/typings'
 import { useRootStore } from '@/stores'
 import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { getImgSource } from '@/utils/img'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 import { BNumber } from '@mullet/utils/number'
 
 // ============ Types ============
@@ -42,82 +42,82 @@ const SymbolInfoCell = ({ symbolInfo }: { symbolInfo: Account.TradeSymbolListIte
 )
 // ============ Main Drawer ============
 export const SymbolSelectDrawer = ({ visible, onClose, selectedSymbol, onSelect }: SymbolSelectDrawerProps) => {
-    const { i18n } = useLingui()
-    const [searchQuery, setSearchQuery] = useState('')
+  const { i18n } = useLingui()
+  const [searchQuery, setSearchQuery] = useState('')
 
-    const handleOpenChange = useCallback(
-      (open: boolean) => {
-        if (!open) {
-          setSearchQuery('')
-          onClose()
-        }
-      },
-      [onClose],
-    )
-
-    const handleSelect = useCallback(
-      (symbolInfo: Account.TradeSymbolListItem) => {
-        onSelect(symbolInfo)
+  const handleOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setSearchQuery('')
         onClose()
-      },
-      [onSelect, onClose],
-    )
+      }
+    },
+    [onClose],
+  )
 
-    const routes = useMemo<Route[]>(
-      () =>
-        SYMBOL_CATEGORY_OPTIONS.map((opt) => ({
-          key: opt.value,
-          title: i18n._(opt.label),
-        })),
-      [i18n],
-    )
+  const handleSelect = useCallback(
+    (symbolInfo: Account.TradeSymbolListItem) => {
+      onSelect(symbolInfo)
+      onClose()
+    },
+    [onSelect, onClose],
+  )
 
-    const initialIndex = useMemo(
-      () => SYMBOL_CATEGORY_OPTIONS.findIndex((item) => item.value === SymbolCategory.All) ?? 0,
-      [],
-    )
+  const routes = useMemo<Route[]>(
+    () =>
+      SYMBOL_CATEGORY_OPTIONS.map((opt) => ({
+        key: opt.value,
+        title: i18n._(opt.label),
+      })),
+    [i18n],
+  )
 
-    const renderScene = useCallback(
-      ({ route }: { route: Route }) => {
-        const categoryOption = SYMBOL_CATEGORY_OPTIONS.find((opt) => opt.value === route.key)
-        if (!categoryOption) return null
-        return (
-          <CategoryTabListContent searchQuery={searchQuery} categoryOption={categoryOption} onSelect={handleSelect} />
-        )
-      },
-      [searchQuery, handleSelect],
-    )
+  const initialIndex = useMemo(
+    () => SYMBOL_CATEGORY_OPTIONS.findIndex((item) => item.value === SymbolCategory.All) ?? 0,
+    [],
+  )
 
-    return (
-      <Drawer open={visible} onOpenChange={handleOpenChange}>
-        <DrawerContent className="h-full gap-0 px-0 py-3">
-          {/* 搜索框 */}
-          <View className="px-xl pb-medium">
-            <Input
-              LeftContent={<IconifySearch width={20} height={20} />}
-              value={searchQuery}
-              size="sm"
-              onValueChange={setSearchQuery}
-              hideLabel
-              placeholder={i18n._('搜索')}
-            />
-          </View>
+  const renderScene = useCallback(
+    ({ route }: { route: Route }) => {
+      const categoryOption = SYMBOL_CATEGORY_OPTIONS.find((opt) => opt.value === route.key)
+      if (!categoryOption) return null
+      return (
+        <CategoryTabListContent searchQuery={searchQuery} categoryOption={categoryOption} onSelect={handleSelect} />
+      )
+    },
+    [searchQuery, handleSelect],
+  )
 
-          {/* SwipeableTabs */}
-          <View className="flex-1">
-            <SwipeableTabs
-              routes={routes}
-              renderScene={renderScene}
-              variant="underline"
-              size="md"
-              initialIndex={initialIndex}
-              tabBarClassName="px-xl border-b border-brand-default"
-              renderTabBarBottom={() => <AssetTradeHeader />}
-            />
-          </View>
-        </DrawerContent>
-      </Drawer>
-    )
+  return (
+    <Drawer open={visible} onOpenChange={handleOpenChange}>
+      <DrawerContent className="h-full gap-0 px-0 py-3">
+        {/* 搜索框 */}
+        <View className="px-xl pb-medium">
+          <Input
+            LeftContent={<IconifySearch width={20} height={20} />}
+            value={searchQuery}
+            size="sm"
+            onValueChange={setSearchQuery}
+            hideLabel
+            placeholder={i18n._('搜索')}
+          />
+        </View>
+
+        {/* SwipeableTabs */}
+        <View className="flex-1">
+          <SwipeableTabs
+            routes={routes}
+            renderScene={renderScene}
+            variant="underline"
+            size="md"
+            initialIndex={initialIndex}
+            tabBarClassName="px-xl border-b border-brand-default"
+            renderTabBarBottom={() => <AssetTradeHeader />}
+          />
+        </View>
+      </DrawerContent>
+    </Drawer>
+  )
 }
 
 function AssetTradeHeader() {
@@ -194,39 +194,39 @@ const CategoryTabListContent = ({
   categoryOption: SymbolCategoryOption
   onSelect: (symbolInfo: Account.TradeSymbolListItem) => void
 }) => {
-    const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
-    const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
-    let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
+  const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
+  const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
+  let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
 
-    if (categoryOption.value !== SymbolCategory.Favorite) {
-      tradeList =
-        categoryOption.value === SymbolCategory.All
-          ? symbolListAll
-          : symbolListAll?.filter((item) => item.classify === categoryOption.value)
-    }
+  if (categoryOption.value !== SymbolCategory.Favorite) {
+    tradeList =
+      categoryOption.value === SymbolCategory.All
+        ? symbolListAll
+        : symbolListAll?.filter((item) => item.classify === categoryOption.value)
+  }
 
-    if (searchQuery) {
-      tradeList = tradeList.filter(
-        (trade) =>
-          trade.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          trade.alias?.toLowerCase().includes(searchQuery.toLowerCase()),
-      )
-    }
-
-    return (
-      <FlatList
-        data={tradeList}
-        keyExtractor={(item) => item.symbol}
-        renderItem={({ item }: { item: Account.TradeSymbolListItem }) => (
-          <MarketRow onSelect={onSelect} symbolInfo={item} />
-        )}
-        ListEmptyComponent={
-          <View className="py-[96px]">
-            <EmptyState message={<Trans>暂无数据</Trans>} />
-          </View>
-        }
-      />
+  if (searchQuery) {
+    tradeList = tradeList.filter(
+      (trade) =>
+        trade.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        trade.alias?.toLowerCase().includes(searchQuery.toLowerCase()),
     )
+  }
+
+  return (
+    <FlatList
+      data={tradeList}
+      keyExtractor={(item) => item.symbol}
+      renderItem={({ item }: { item: Account.TradeSymbolListItem }) => (
+        <MarketRow onSelect={onSelect} symbolInfo={item} />
+      )}
+      ListEmptyComponent={
+        <View className="py-[96px]">
+          <EmptyState message={<Trans>暂无数据</Trans>} />
+        </View>
+      }
+    />
+  )
 }
 
 const MarketRow = ({

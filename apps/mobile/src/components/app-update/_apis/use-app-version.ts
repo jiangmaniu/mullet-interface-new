@@ -3,7 +3,7 @@ import { Platform } from 'react-native'
 import DeviceInfo from 'react-native-device-info'
 
 import { EXPO_ENV_CONFIG } from '@/constants/expo'
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 /** Android 架构类型 */
 export type AndroidArch = 'arm64-v8a' | 'armeabi-v7a' | 'x86' | 'x86_64'

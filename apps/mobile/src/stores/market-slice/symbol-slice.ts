@@ -1,14 +1,14 @@
 import { useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { keyBy } from 'lodash-es'
-import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import type { Symbol } from '@/services/tradeCore/symbol/typings'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
 import { loadSnapshot, saveSnapshot } from '@/lib/storage/snapshot'
-import { getTradeSymbolList } from '@/v1/services/tradeCore/account'
-import { Account } from '@/v1/services/tradeCore/account/typings'
-import { getAllSymbols } from '@/v1/services/tradeCore/symbol'
+import { getTradeSymbolList } from '@/services/tradeCore/account'
+import { Account } from '@/services/tradeCore/account/typings'
+import { getAllSymbols } from '@/services/tradeCore/symbol'
 
 import { useRootStore } from '../index'
 

@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import type { LoginType } from '@/stores/user-slice/authSlice'
 
+import { login } from '@/services/user'
 import { useRootStore } from '@/stores'
-import { login } from '@/v1/services/user'
 import { usePrivy } from '@privy-io/expo'
 
 interface UseBackendLoginOptions {

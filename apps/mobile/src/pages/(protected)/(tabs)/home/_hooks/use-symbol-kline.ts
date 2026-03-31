@@ -2,7 +2,7 @@ import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 import { ChartData } from '@/components/trading-view'
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 // K线数据项类型
 interface KlineItem {

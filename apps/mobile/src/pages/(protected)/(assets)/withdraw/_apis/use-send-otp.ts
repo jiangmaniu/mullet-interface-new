@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { depositRequest } from '@/v1/utils/deposit-request'
+import { depositRequest } from '@/utils/deposit-request'
 
 interface SendOtpResponse {
   otpId: string

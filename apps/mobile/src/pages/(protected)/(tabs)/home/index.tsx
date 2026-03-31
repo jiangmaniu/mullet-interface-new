@@ -31,12 +31,12 @@ import { SYMBOL_CATEGORY_OPTIONS, SymbolCategory, SymbolCategoryOption } from '@
 import { NotificationBadge } from '@/pages/(protected)/(home)/notifications/_comps/notification-badge'
 import { useUnreadCount } from '@/pages/(protected)/(home)/notifications/_hooks/use-unread-count'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
+import { Account } from '@/services/tradeCore/account/typings'
 import { useRootStore } from '@/stores'
 import { marketSymbolInfoListSelector } from '@/stores/market-slice'
 import { marketCurrentFavoriteSymbolInfoListSelector } from '@/stores/market-slice/favorite-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 import { BNumber } from '@mullet/utils/number'
 
 import { MarketOverview } from './_comps/market-overview'

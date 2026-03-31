@@ -2,8 +2,8 @@
  * 401 认证错误处理器
  * 处理 API 返回 401 时的自动重新认证逻辑
  */
+import { login, refreshToken as refreshTokenAPI } from '@/services/user'
 import { useRootStore } from '@/stores'
-import { login, refreshToken as refreshTokenAPI } from '@/v1/services/user'
 import { getAccessToken as getPrivyAccessToken } from '@privy-io/expo'
 
 // 防止并发重复处理

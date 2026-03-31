@@ -1,6 +1,6 @@
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 /**
  * 交易账户金额转移记录项

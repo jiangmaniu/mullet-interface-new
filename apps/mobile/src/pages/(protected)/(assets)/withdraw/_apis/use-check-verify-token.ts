@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { depositRequest } from '@/v1/utils/deposit-request'
+import { depositRequest } from '@/utils/deposit-request'
 
 /**
  * 检查验证 token 响应

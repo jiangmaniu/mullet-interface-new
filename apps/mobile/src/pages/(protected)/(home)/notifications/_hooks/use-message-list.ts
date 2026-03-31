@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { getMyMessageList } from '@/v1/services/message'
+
+import { getMyMessageList } from '@/services/message'
 
 const PAGE_SIZE = 10
 

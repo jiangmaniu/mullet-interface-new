@@ -1,4 +1,4 @@
-import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import { Symbol } from '@/services/tradeCore/symbol/typings'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 

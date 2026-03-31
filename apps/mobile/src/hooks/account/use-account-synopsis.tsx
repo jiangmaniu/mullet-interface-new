@@ -1,5 +1,5 @@
 import { getAccountSynopsisByLng } from '@/helpers/account'
-import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
+import { AccountGroup } from '@/services/tradeCore/accountGroup/typings'
 
 import { useI18n } from '../use-i18n'
 

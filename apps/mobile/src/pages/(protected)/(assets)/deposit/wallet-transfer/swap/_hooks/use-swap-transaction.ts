@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import bs58 from 'bs58'
 
 import { useSolanaConnection, useSolanaProvider } from '@/lib/appkit'
-import { depositRequest } from '@/v1/utils/deposit-request'
+import { depositRequest } from '@/utils/deposit-request'
 import { VersionedTransaction } from '@solana/web3.js'
 
 /**

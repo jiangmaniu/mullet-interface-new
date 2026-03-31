@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { readAllMessage } from '@/v1/services/message'
+
+import { readAllMessage } from '@/services/message'
 
 /**
  * 标记所有消息为已读

@@ -1,16 +1,16 @@
 import { useCallback, useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import type { Symbol } from '@/services/tradeCore/symbol/typings'
 import type { RootStoreState } from '@/stores/index'
-import type { Symbol } from '@/v1/services/tradeCore/symbol/typings'
 
 import { parseDataSourceKey } from '@/helpers/parse/symbol'
 import { parseTradeDirectionInfo } from '@/helpers/parse/trade'
 import { IQuoteItem } from '@/lib/ws/types'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
+import { Account } from '@/services/tradeCore/account/typings'
 import { useRootStore } from '@/stores/index'
 import { createSymbolInfoSelector, useMarketSymbolInfo } from '@/stores/market-slice'
 import { createMarketQuoteSelector } from '@/stores/market-slice/quote-slice'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { useSubscribeQuote } from './use-subscribe-quote'

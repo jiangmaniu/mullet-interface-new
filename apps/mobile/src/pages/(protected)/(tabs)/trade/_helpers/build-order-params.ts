@@ -1,7 +1,7 @@
 import { parseTradeDirectionInfo, parseTradeOrderCreateTypeInfo } from '@/helpers/parse/trade'
 import { OrderCreateTypeEnum, OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { Order } from '@/v1/services/tradeCore/order/typings'
+import { Order } from '@/services/tradeCore/order/typings'
 import { t } from '@lingui/core/macro'
 import { BNumber } from '@mullet/utils/number'
 

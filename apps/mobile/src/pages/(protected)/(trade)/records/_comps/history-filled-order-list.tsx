@@ -15,14 +15,14 @@ import { renderFormatLeverage } from '@/helpers/trade'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { getOrderCompletionTypeEnumOption } from '@/options/trade/order'
+import { getTradeRecordsPage } from '@/services/tradeCore/order'
+import { Order } from '@/services/tradeCore/order/typings'
 import { useRootStore } from '@/stores'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
   userInfoActiveTradeAccountIdSelector,
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { getTradeRecordsPage } from '@/v1/services/tradeCore/order'
-import { Order } from '@/v1/services/tradeCore/order/typings'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'

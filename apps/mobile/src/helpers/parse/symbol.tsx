@@ -1,5 +1,5 @@
-import { Account } from '@/v1/services/tradeCore/account/typings'
-import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import { Account } from '@/services/tradeCore/account/typings'
+import { Symbol } from '@/services/tradeCore/symbol/typings'
 
 /**
  * 解析合约大小

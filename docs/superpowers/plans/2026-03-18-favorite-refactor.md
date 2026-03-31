@@ -12,21 +12,22 @@
 
 ## 文件结构
 
-| 操作 | 路径 | 说明 |
-|------|------|------|
-| **新建** | `apps/mobile/src/stores/market-slice/favorite-slice.ts` | FavoriteSlice 状态、actions、selectors |
-| **修改** | `apps/mobile/src/stores/market-slice/index.ts` | 集成 favorite 子命名空间 |
-| **修改** | `apps/mobile/src/stores/user-slice/infoSlice.ts` | 新增 activeTradeAccountId |
-| **修改** | `apps/mobile/src/stores/index.ts` | 更新 partialize + 添加订阅 |
-| **修改** | `apps/mobile/src/components/drawers/trade-account-switch-drawer.tsx` | 同步设置 activeTradeAccountId |
-| **修改** | `apps/mobile/src/v1/stores/user.ts` | 同步设置 activeTradeAccountId |
-| **修改** | 业务页面（见 Task 5） | 替换旧的 favoriteList 调用 |
+| 操作     | 路径                                                                 | 说明                                   |
+| -------- | -------------------------------------------------------------------- | -------------------------------------- |
+| **新建** | `apps/mobile/src/stores/market-slice/favorite-slice.ts`              | FavoriteSlice 状态、actions、selectors |
+| **修改** | `apps/mobile/src/stores/market-slice/index.ts`                       | 集成 favorite 子命名空间               |
+| **修改** | `apps/mobile/src/stores/user-slice/infoSlice.ts`                     | 新增 activeTradeAccountId              |
+| **修改** | `apps/mobile/src/stores/index.ts`                                    | 更新 partialize + 添加订阅             |
+| **修改** | `apps/mobile/src/components/drawers/trade-account-switch-drawer.tsx` | 同步设置 activeTradeAccountId          |
+| **修改** | `apps/mobile/src/v1/stores/user.ts`                                  | 同步设置 activeTradeAccountId          |
+| **修改** | 业务页面（见 Task 5）                                                | 替换旧的 favoriteList 调用             |
 
 ---
 
 ## Task 1：infoSlice 新增 activeTradeAccountId
 
 **Files:**
+
 - Modify: `apps/mobile/src/stores/user-slice/infoSlice.ts`
 
 - [ ] **Step 1: 修改 infoSlice 新增字段和 setter**
@@ -34,8 +35,10 @@
   打开 [infoSlice.ts](apps/mobile/src/stores/user-slice/infoSlice.ts)，替换为：
 
   ```typescript
+  import type { Setter } from '../_helpers/createSetter'
   import type { RootStoreState } from '../index'
-  import { createSetter, type Setter } from '../_helpers/createSetter'
+
+  import { createSetter } from '../_helpers/createSetter'
 
   export interface InfoSliceState {
     clientInfo: User.ClientInfo | null
@@ -51,9 +54,7 @@
   /** info 命名空间（状态 + actions 扁平化） */
   export type InfoSlice = InfoSliceState & InfoSliceActions
 
-  export function createUserInfoSlice(
-    setRoot: (fn: (state: any) => void) => void,
-  ): InfoSlice {
+  export function createUserInfoSlice(setRoot: (fn: (state: any) => void) => void): InfoSlice {
     const infoSetter = createSetter<InfoSlice>(setRoot, (s) => s.user.info)
 
     return {
@@ -73,8 +74,7 @@
 
   export const userInfoSelector = (state: RootStoreState) => state.user.info
   export const userInfoClientInfoSelector = (state: RootStoreState) => state.user.info.clientInfo
-  export const userInfoActiveTradeAccountIdSelector = (state: RootStoreState) =>
-    state.user.info.activeTradeAccountId
+  export const userInfoActiveTradeAccountIdSelector = (state: RootStoreState) => state.user.info.activeTradeAccountId
   ```
 
 - [ ] **Step 2: 验证 TypeScript 编译无报错**
@@ -97,6 +97,7 @@
 ## Task 2：新建 favorite-slice.ts
 
 **Files:**
+
 - Create: `apps/mobile/src/stores/market-slice/favorite-slice.ts`
 
 - [ ] **Step 1: 创建文件**
@@ -105,9 +106,12 @@
 
   ```typescript
   import { createSelector } from 'reselect'
+  import type { Setter } from '../_helpers/createSetter'
   import type { RootStoreState } from '../index'
-  import { createSetter, type Setter } from '../_helpers/createSetter'
-  import { Account } from '@/v1/services/tradeCore/account/typings'
+
+  import { Account } from '@/services/tradeCore/account/typings'
+
+  import { createSetter } from '../_helpers/createSetter'
 
   // ============ 状态 & Actions 类型 ============
 
@@ -222,14 +226,9 @@
    * 自动过滤 marketMap 中不存在的品种（已下架）
    */
   export const marketCurrentFavoriteSymbolsSelector = createSelector(
-    [
-      marketCurrentFavoriteSymbolListSelector,
-      (state: RootStoreState) => state.market.marketMap,
-    ],
+    [marketCurrentFavoriteSymbolListSelector, (state: RootStoreState) => state.market.marketMap],
     (symbolList, marketMap): Account.TradeSymbolListItem[] =>
-      symbolList
-        .map((symbol) => marketMap[symbol])
-        .filter(Boolean) as Account.TradeSymbolListItem[],
+      symbolList.map((symbol) => marketMap[symbol]).filter(Boolean) as Account.TradeSymbolListItem[],
   )
 
   /** 当前账户的收藏数量 */
@@ -244,10 +243,7 @@
    * const selector = useMemo(() => createMarketIsFavoriteSelector(symbol), [symbol])
    */
   export const createMarketIsFavoriteSelector = (symbol: string) =>
-    createSelector(
-      [marketCurrentFavoriteSetSelector],
-      (favoriteSet): boolean => favoriteSet.has(symbol),
-    )
+    createSelector([marketCurrentFavoriteSetSelector], (favoriteSet): boolean => favoriteSet.has(symbol))
 
   /**
    * 获取指定账户的收藏品种完整信息
@@ -260,9 +256,7 @@
         (state: RootStoreState) => state.market.marketMap,
       ],
       (symbolList, marketMap): Account.TradeSymbolListItem[] =>
-        symbolList
-          .map((symbol: string) => marketMap[symbol])
-          .filter(Boolean) as Account.TradeSymbolListItem[],
+        symbolList.map((symbol: string) => marketMap[symbol]).filter(Boolean) as Account.TradeSymbolListItem[],
     )
   ```
 
@@ -273,6 +267,7 @@
   ```
 
   若未安装：
+
   ```bash
   cd apps/mobile && npx expo install reselect
   ```
@@ -297,6 +292,7 @@
 ## Task 3：集成 favorite 到 market-slice
 
 **Files:**
+
 - Modify: `apps/mobile/src/stores/market-slice/index.ts`
 
 - [ ] **Step 1: 更新 market-slice/index.ts**
@@ -304,17 +300,18 @@
   打开 [market-slice/index.ts](apps/mobile/src/stores/market-slice/index.ts)，在现有内容基础上做如下修改：
 
   **新增导入：**
+
   ```typescript
-  import {
-    createMarketFavoriteSlice,
-    type FavoriteSlice,
-  } from './favorite-slice'
+  import type { FavoriteSlice } from './favorite-slice'
+
+  import { createMarketFavoriteSlice } from './favorite-slice'
 
   // 同时 re-export selectors 供外部使用
   export * from './favorite-slice'
   ```
 
   **扩展 MarketSliceState（新增 favorite 字段）：**
+
   ```typescript
   export interface MarketSliceState {
     fetchMarketListLoading: boolean
@@ -326,6 +323,7 @@
   ```
 
   **在 createMarketSlice 工厂函数中初始化 favorite：**
+
   ```typescript
   export const createMarketSlice: ImmerStateCreator<RootStoreState, MarketSlice> = (set, get) => ({
     fetchMarketListLoading: false,
@@ -366,6 +364,7 @@
 ## Task 4：更新 Root Store — partialize + 订阅
 
 **Files:**
+
 - Modify: `apps/mobile/src/stores/index.ts`
 
 - [ ] **Step 1: 更新 partialize 排除 loading 字段**
@@ -417,6 +416,7 @@
 ## Task 5：同步设置 activeTradeAccountId
 
 **Files:**
+
 - Modify: `apps/mobile/src/components/drawers/trade-account-switch-drawer.tsx`
 - Modify: `apps/mobile/src/v1/stores/user.ts`
 
@@ -434,6 +434,7 @@
   ```
 
   完整 `handleSwitch` 函数：
+
   ```typescript
   const handleSwitch = async (account: User.AccountItem) => {
     if (account.id !== selectedAccountId) {
@@ -465,9 +466,7 @@
   ```typescript
   // 处 1：本地不存在账号，自动选择第一个
   stores.trade.setCurrentAccountInfo(currentUser.accountList?.[0] as User.AccountItem)
-  useRootStore.getState().user.info.setActiveTradeAccountId(
-    currentUser.accountList?.[0]?.id ?? null
-  )
+  useRootStore.getState().user.info.setActiveTradeAccountId(currentUser.accountList?.[0]?.id ?? null)
 
   // 处 2：本地存在账号，更新账号信息
   const matchedAccount = currentUser.accountList?.find((item) => item.id === localAccountId) as User.AccountItem
@@ -487,7 +486,7 @@
 
   ```bash
   git add apps/mobile/src/components/drawers/trade-account-switch-drawer.tsx \
-          apps/mobile/src/v1/stores/user.ts
+    apps/mobile/src/v1/stores/user.ts
   git commit -m "feat(store): sync activeTradeAccountId when setCurrentAccountInfo is called"
   ```
 
@@ -498,6 +497,7 @@
 使用旧的 `favoriteList` 的文件有 5 个，逐一替换。
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(tabs)/home/index.tsx`
 - Modify: `apps/mobile/src/pages/(protected)/(trade)/[symbol]/index.tsx`
 - Modify: `apps/mobile/src/pages/(protected)/(tabs)/trade/_comps/header/index.tsx`
@@ -521,15 +521,12 @@
   ```typescript
   // ❌ 旧：MobX
   const { trade } = useStores()
-  const isFavorite = trade.favoriteList.some(item => item.symbol === symbol)
+  const isFavorite = trade.favoriteList.some((item) => item.symbol === symbol)
   const handleToggle = () => trade.toggleSymbolFavorite(symbol)
 
   // ✅ 新：Zustand
   import { useRootStore } from '@/stores'
-  import {
-    marketCurrentFavoriteSetSelector,
-    marketCurrentFavoriteSymbolsSelector,
-  } from '@/stores/market-slice'
+  import { marketCurrentFavoriteSetSelector, marketCurrentFavoriteSymbolsSelector } from '@/stores/market-slice'
 
   // 获取收藏列表（完整信息）
   const favoriteSymbols = useRootStore(marketCurrentFavoriteSymbolsSelector)
@@ -546,6 +543,7 @@
 - [ ] **Step 3: 逐文件修改并验证**
 
   每个文件修改后运行：
+
   ```bash
   cd apps/mobile && npx tsc --noEmit 2>&1 | grep "<文件名>"
   ```
@@ -604,4 +602,4 @@
 
 ---
 
-*计划生成于 2026-03-18*
+_计划生成于 2026-03-18_

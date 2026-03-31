@@ -1,11 +1,11 @@
 import { createSelector } from 'reselect'
 import type { Setter } from '../_helpers/createSetter'
+import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
-import { Account } from '@/v1/services/tradeCore/account/typings'
+import { Account } from '@/services/tradeCore/account/typings'
 
 import { createSetter } from '../_helpers/createSetter'
-import type { SliceCreator } from '../_helpers/types'
 
 // ============ 状态 & Actions 类型 ============
 

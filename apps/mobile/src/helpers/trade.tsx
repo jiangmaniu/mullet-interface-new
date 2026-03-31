@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro'
 
 import { DEFAULT_LEVERAGE_UNIT } from '@/constants/config/trade'
-import { Symbol } from '@/v1/services/tradeCore/symbol/typings'
+import { Symbol } from '@/services/tradeCore/symbol/typings'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 type RenderFormatLeverageParams = {

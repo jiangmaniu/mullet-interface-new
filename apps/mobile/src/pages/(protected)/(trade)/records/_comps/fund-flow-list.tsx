@@ -12,13 +12,13 @@ import { Text } from '@/components/ui/text'
 import { useI18n } from '@/hooks/use-i18n'
 import { cn } from '@/lib/utils'
 import { getTradeFundFlowTypeEnumOption } from '@/options/trade/fund-flow'
+import { getMoneyRecordsPageList } from '@/services/tradeCore/account'
+import { Account } from '@/services/tradeCore/account/typings'
 import { useRootStore } from '@/stores'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
   userInfoActiveTradeAccountIdSelector,
 } from '@/stores/user-slice/infoSlice'
-import { getMoneyRecordsPageList } from '@/v1/services/tradeCore/account'
-import { Account } from '@/v1/services/tradeCore/account/typings'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'

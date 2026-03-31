@@ -19,14 +19,14 @@ import { renderFormatSymbolName } from '@/helpers/symbol'
 import { cn } from '@/lib/utils'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
 import { useDisabledTrade } from '@/pages/(protected)/(trade)/_hooks/use-disabled-trade'
+import { modifyStopProfitLoss } from '@/services/tradeCore/order'
+import { Order } from '@/services/tradeCore/order/typings'
 import { useRootStore } from '@/stores'
 import {
   userInfoActiveTradeAccountCurrencyInfoSelector,
   userInfoActiveTradeAccountIdSelector,
 } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import { modifyStopProfitLoss } from '@/v1/services/tradeCore/order'
-import { Order } from '@/v1/services/tradeCore/order/typings'
 import { BNumber } from '@mullet/utils/number'
 
 import { useVerifyOrderTpSlData } from '../../../_hooks/use-verify-order'

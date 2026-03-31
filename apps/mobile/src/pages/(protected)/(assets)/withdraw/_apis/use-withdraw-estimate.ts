@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { depositRequest } from '@/v1/utils/deposit-request'
+import { depositRequest } from '@/utils/deposit-request'
 
 export interface WithdrawEstimateParams {
   /** 出金金额（USD） */

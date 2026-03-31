@@ -4,7 +4,7 @@ import type { RootStoreState } from '../index'
 
 import { calcAccountOccupiedMargin } from '@/helpers/calc/account'
 import MulletWS from '@/lib/ws/mullet-ws'
-import { getClientDetail } from '@/v1/services/crm/customer'
+import { getClientDetail } from '@/services/crm/customer'
 
 import { createSetter } from '../_helpers/createSetter'
 import { SliceCreator } from '../_helpers/types'

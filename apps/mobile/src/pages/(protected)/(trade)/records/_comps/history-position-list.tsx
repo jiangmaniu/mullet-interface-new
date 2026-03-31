@@ -3,6 +3,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 
 import { EmptyState } from '@/components/states/empty-state'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -16,12 +17,14 @@ import { cn } from '@/lib/utils'
 import { getOrderMarginTypeEnumOption } from '@/options/trade/order'
 import { TradePositionStatusEnum } from '@/options/trade/position'
 import { LOTS_UNIT_LABEL } from '@/options/trade/unit'
-import { getImgSource } from '@/utils/img'
+import { getBgaOrderPage } from '@/services/tradeCore/order'
+import { Order } from '@/services/tradeCore/order/typings'
 import { useRootStore } from '@/stores'
-import { useShallow } from 'zustand/react/shallow'
-import { userInfoActiveTradeAccountIdSelector, userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
-import { getBgaOrderPage } from '@/v1/services/tradeCore/order'
-import { Order } from '@/v1/services/tradeCore/order/typings'
+import {
+  userInfoActiveTradeAccountCurrencyInfoSelector,
+  userInfoActiveTradeAccountIdSelector,
+} from '@/stores/user-slice/infoSlice'
+import { getImgSource } from '@/utils/img'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 

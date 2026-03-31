@@ -1,5 +1,5 @@
 import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { Order } from '@/v1/services/tradeCore/order/typings'
+import { Order } from '@/services/tradeCore/order/typings'
 import { BNumber, BNumberValue } from '@mullet/utils/number'
 
 import { parseTradeDirectionInfo } from '../parse/trade'

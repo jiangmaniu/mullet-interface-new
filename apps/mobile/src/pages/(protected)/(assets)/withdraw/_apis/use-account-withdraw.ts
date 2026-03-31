@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 /**
  * 交易账户出金请求参数

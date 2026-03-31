@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { getAccountGroupList } from '@/v1/services/tradeCore/accountGroup'
-import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
+
+import { getAccountGroupList } from '@/services/tradeCore/accountGroup'
+import { AccountGroup } from '@/services/tradeCore/accountGroup/typings'
 
 /**
  * 获取账户组列表的 React Query Hook

@@ -6,9 +6,9 @@ import { useI18n } from '@/hooks/use-i18n'
 import { OrderTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
 import { parseTradePositionInfo } from '@/pages/(protected)/(trade)/_helpers/position'
+import { createOrder } from '@/services/tradeCore/order'
+import { Order } from '@/services/tradeCore/order/typings'
 import { useRootStore } from '@/stores'
-import { createOrder } from '@/v1/services/tradeCore/order'
-import { Order } from '@/v1/services/tradeCore/order/typings'
 import { msg } from '@lingui/core/macro'
 
 type ClosePositionParams = {

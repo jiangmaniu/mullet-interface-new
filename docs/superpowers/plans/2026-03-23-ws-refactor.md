@@ -15,6 +15,7 @@
 ### Task 1: 类型定义
 
 **Files:**
+
 - Create: `apps/mobile/src/lib/ws/types.ts`
 
 - [ ] **Step 1: 创建类型文件**
@@ -108,6 +109,7 @@ git commit -m "feat(ws): 添加 WS 类型定义文件"
 ### Task 2: 行情/深度解析器
 
 **Files:**
+
 - Create: `apps/mobile/src/lib/ws/quote-parser.ts`
 - Reference: `apps/mobile/src/v1/stores/ws.ts:762-836`（现有解析逻辑）
 
@@ -117,7 +119,7 @@ git commit -m "feat(ws): 添加 WS 类型定义文件"
 
 ```typescript
 // apps/mobile/src/lib/ws/quote-parser.ts
-import type { IQuoteItem, IDepth } from './types'
+import type { IDepth, IQuoteItem } from './types'
 
 /**
  * 解析行情 body 数据
@@ -195,6 +197,7 @@ git commit -m "feat(ws): 提取行情/深度解析器，修正深度 price*amoun
 ### Task 3: MulletWS 核心类
 
 **Files:**
+
 - Create: `apps/mobile/src/lib/ws/mullet-ws.ts`
 - Reference: `apps/mobile/src/v1/stores/ws.ts`（现有 WSStore 全部逻辑）
 - Reference: `apps/mobile/src/lib/ws/types.ts`
@@ -206,27 +209,26 @@ git commit -m "feat(ws): 提取行情/深度解析器，修正深度 price*amoun
 
 ```typescript
 // apps/mobile/src/lib/ws/mullet-ws.ts
-import ReconnectingWebSocket from 'reconnecting-websocket'
 import { AppState, Platform } from 'react-native'
-import type { NativeEventSubscription } from 'react-native'
 import { groupBy } from 'lodash-es'
+import ReconnectingWebSocket from 'reconnecting-websocket'
+import type { NativeEventSubscription } from 'react-native'
+import type Reactotron from 'reactotron-react-native'
+import type { IDepth, IMessage, IQuoteItem, Unsubscribe } from './types'
 
 import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
+import { saveSnapshot } from '@/lib/storage/snapshot'
+import { formaOrderList } from '@/services/tradeCore/order'
 import { useRootStore } from '@/stores'
+import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
 import {
   userInfoActiveTradeAccountIdSelector,
   userInfoActiveTradeAccountInfoSelector,
 } from '@/stores/user-slice/infoSlice'
-import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
-import { saveSnapshot } from '@/lib/storage/snapshot'
-import { formaOrderList } from '@/v1/services/tradeCore/order'
 import { uniqueObjectArray } from '@/v1/utils'
 import mitt from '@/v1/utils/mitt'
-import trade from '@/v1/stores/trade'
-import type Reactotron from 'reactotron-react-native'
 
-import type { IMessage, IQuoteItem, IDepth, Unsubscribe } from './types'
-import { parseQuoteBodyData, parseDepthBodyData } from './quote-parser'
+import { parseDepthBodyData, parseQuoteBodyData } from './quote-parser'
 
 // Reactotron WS 日志（仅开发环境）
 let tron: typeof Reactotron | null = null
@@ -665,15 +667,12 @@ class MulletWS {
     const type = data.type
     if (type === 'ACCOUNT') {
       const accountInfo = data.account || {}
-      trade.currentAccountInfo = { ...trade.currentAccountInfo, ...accountInfo }
       useRootStore.getState().user.info.updateAccount(accountInfo)
     } else if (type === 'MARKET_ORDER') {
       const formatted = formaOrderList(data.bagOrderList || [])
-      trade.positionList = formatted
       useRootStore.getState().trade.position.update(formatted)
     } else if (type === 'LIMIT_ORDER') {
       const formatted = formaOrderList(data.limiteOrderList || [])
-      trade.pendingList = formatted
       useRootStore.getState().trade.order.update(formatted)
     }
   }
@@ -731,6 +730,7 @@ git commit -m "feat(ws): 实现 MulletWS 核心类（连接、心跳、引用计
 ### Task 4: useSubscribeQuote Hook
 
 **Files:**
+
 - Create: `apps/mobile/src/hooks/market/use-subscribe-quote.ts`
 
 - [ ] **Step 1: 创建 hook**
@@ -756,17 +756,13 @@ import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/info
  */
 export function useSubscribeQuote(symbols: string[]): void {
   const symbolsKey = symbols.join(',')
-  const accountGroupId = useRootStore(
-    (s) => userInfoActiveTradeAccountInfoSelector(s)?.accountGroupId,
-  )
+  const accountGroupId = useRootStore((s) => userInfoActiveTradeAccountInfoSelector(s)?.accountGroupId)
 
   useEffect(() => {
     if (!symbolsKey || !accountGroupId) return
 
     const ws = MulletWS.getInstance()
-    const topics = symbolsKey
-      .split(',')
-      .map((symbol) => `/${DEFAULT_TENANT_ID}/symbol/${symbol}/${accountGroupId}`)
+    const topics = symbolsKey.split(',').map((symbol) => `/${DEFAULT_TENANT_ID}/symbol/${symbol}/${accountGroupId}`)
 
     return ws.subscribe(topics)
   }, [symbolsKey, accountGroupId])
@@ -785,6 +781,7 @@ git commit -m "feat(ws): 添加 useSubscribeQuote 声明式订阅 hook"
 ### Task 5: 替换初始化入口
 
 **Files:**
+
 - Modify: `apps/mobile/src/v1/stores/global.ts:94-98`
 
 - [ ] **Step 1: 修改 global.ts**
@@ -817,6 +814,7 @@ git commit -m "refactor(ws): 替换 global.ts 中的 WS 初始化为 MulletWS"
 ### Task 6: 替换 use-ws-reconnect
 
 **Files:**
+
 - Modify: `apps/mobile/src/hooks/use-ws-reconnect.ts`
 
 - [ ] **Step 1: 重写 use-ws-reconnect**
@@ -858,6 +856,7 @@ git commit -m "refactor(ws): 简化 useWsReconnect，复用 MulletWS 内部重�
 ### Task 7: 更新类型导入
 
 **Files:**
+
 - Modify: `apps/mobile/src/stores/market-slice/quote-slice.tsx:5`
 - Modify: `apps/mobile/src/hooks/market/use-market-quote.tsx:13`
 - Modify: `apps/mobile/src/hooks/use-announcement-listener.ts`（如有 ws 类型导入）
@@ -866,6 +865,7 @@ git commit -m "refactor(ws): 简化 useWsReconnect，复用 MulletWS 内部重�
 - [ ] **Step 1: 将 `IQuoteItem` 等类型导入从 `v1/stores/ws` 改为 `@/lib/ws/types`**
 
 各文件将：
+
 ```typescript
 // 旧
 import type { IQuoteItem } from '@/v1/stores/ws'
@@ -879,8 +879,8 @@ import type { IQuoteItem } from '@/lib/ws/types'
 
 ```bash
 git add apps/mobile/src/stores/market-slice/quote-slice.tsx \
-       apps/mobile/src/hooks/market/use-market-quote.tsx \
-       apps/mobile/src/hooks/use-announcement-listener.ts
+  apps/mobile/src/hooks/market/use-market-quote.tsx \
+  apps/mobile/src/hooks/use-announcement-listener.ts
 git commit -m "refactor(ws): 更新 IQuoteItem 等类型导入源为 lib/ws/types"
 ```
 
@@ -889,6 +889,7 @@ git commit -m "refactor(ws): 更新 IQuoteItem 等类型导入源为 lib/ws/type
 ### Task 8: 迁移 wsUtil.ts 中的 WS 依赖
 
 **Files:**
+
 - Modify: `apps/mobile/src/v1/utils/wsUtil.ts`
 
 - [ ] **Step 1: 将 `ws.quotes` 读取改为从 MulletWS.getInstance().quotes 读取**
@@ -908,6 +909,7 @@ const quotes = MulletWS.getInstance().quotes
 - [ ] **Step 2: 将 `subscribeCurrentAndPositionSymbol` 等函数中的 `stores.ws.*` 替换为 MulletWS 调用**
 
 关键替换：
+
 - `stores.ws.checkSocketReady(() => { ... })` → `MulletWS.getInstance().checkSocketReady(() => { ... })`
 - `stores.ws.openPosition({ symbols, cover })` → `MulletWS.getInstance().subscribe(topics)`（构造 topic 字符串）
 - `stores.ws.subscribeExchangeRateQuote(conf, symbol)` → 保留逻辑但改用 `MulletWS.getInstance().subscribe([topic])`
@@ -925,6 +927,7 @@ git commit -m "refactor(ws): 迁移 wsUtil.ts 中的 WS 依赖到 MulletWS"
 ### Task 9: 验证与清理
 
 **Files:**
+
 - Reference: `apps/mobile/src/v1/stores/ws.ts`（确认无其他消费者后可删除）
 
 - [ ] **Step 1: 全局搜索确认没有残留的 `stores.ws` 引用**

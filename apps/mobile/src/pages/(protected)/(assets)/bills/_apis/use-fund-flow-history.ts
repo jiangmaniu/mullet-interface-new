@@ -2,7 +2,7 @@ import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 
 import { DepositEventTypeEnum } from '@/options/deposit/event'
 import { DepositStatusEnum, WithdrawalStatusEnum } from '@/options/deposit/status'
-import { depositRequest } from '@/v1/utils/deposit-request'
+import { depositRequest } from '@/utils/deposit-request'
 
 /**
  * 资金流水历史-参数

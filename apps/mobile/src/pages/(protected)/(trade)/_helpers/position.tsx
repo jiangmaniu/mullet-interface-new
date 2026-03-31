@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash-es'
 import { parseSymbolLotsVolScale } from '@/helpers/symbol'
 import { OrderMarginTypeEnum } from '@/options/trade/order'
 import { TradePositionDirectionEnum } from '@/options/trade/position'
-import { Order } from '@/v1/services/tradeCore/order/typings'
+import { Order } from '@/services/tradeCore/order/typings'
 import { BNumberValue } from '@mullet/utils/number'
 
 export type TradePositionInfo = Order.BgaOrderPageListItem & {

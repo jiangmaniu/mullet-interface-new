@@ -5,6 +5,7 @@
 **Goal:** 1) SparkLine 渲染时显示 loading 骨架屏，SVG 实际绘制完成后再显示图表；2) K线数据通过 MMKV 持久化到本地，App 重启后直接渲染缓存数据。
 
 **Architecture:**
+
 - 需求1：在 `SparkLine` 组件内部用 `InteractionManager.runAfterInteractions` 延迟将 `ready` 状态置为 true，在 ready 前显示 Skeleton 占位，避免 44 个 SVG 同时计算阻塞 JS 线程。
 - 需求2：安装 `@tanstack/react-query-persist-client` + `@tanstack/query-sync-storage-persister`，用 MMKV 实例实现同步 storage 接口，在 `QueryProvider` 中包裹 `PersistQueryClientProvider`，仅对 `symbol-kline` queryKey 持久化。
 
@@ -15,6 +16,7 @@
 ### Task 1: 安装持久化依赖
 
 **Files:**
+
 - Modify: `apps/mobile/package.json`
 
 - [ ] **Step 1: 安装依赖**
@@ -47,6 +49,7 @@ git commit -m "chore(deps): add react-query persist client and sync storage pers
 ### Task 2: 创建 MMKV kline 缓存 storage
 
 **Files:**
+
 - Create: `apps/mobile/src/lib/kline-storage.ts`
 
 - [ ] **Step 1: 创建文件**
@@ -84,6 +87,7 @@ git commit -m "feat(cache): add MMKV storage adapter for kline cache"
 ### Task 3: 改造 QueryProvider 支持 K线持久化
 
 **Files:**
+
 - Modify: `apps/mobile/src/components/providers/query-provider.tsx`
 
 - [ ] **Step 1: 修改 query-provider.tsx**
@@ -191,6 +195,7 @@ git commit -m "feat(cache): integrate MMKV persister into QueryProvider for klin
 ### Task 4: 更新 useSymbolKline 支持缓存初始数据
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(tabs)/home/_hooks/use-symbol-kline.ts`
 
 - [ ] **Step 1: 修改 use-symbol-kline.ts，增加 initialData 和更长的 gcTime**
@@ -200,7 +205,7 @@ import { keepPreviousData, queryOptions, useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 import { ChartData } from '@/components/trading-view'
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 interface KlineItem {
   klineTime: number
@@ -287,6 +292,7 @@ git commit -m "feat(cache): extend gcTime for kline queries to support persisten
 ### Task 5: SparkLine 添加 InteractionManager 延迟渲染
 
 **Files:**
+
 - Modify: `apps/mobile/src/components/charts/spark-line.tsx`
 
 - [ ] **Step 1: 修改 spark-line.tsx，加入 ready 状态和 Skeleton**
@@ -443,4 +449,3 @@ global.queryClient.getQueryCache().findAll({ queryKey: ['symbol-kline'] }).lengt
 - [ ] **Step 4: 验证 SparkLine loading**
 
 首次进入首页时，K线图区域应显示 Skeleton 骨架屏，交互动画完成后切换为 SVG 图表。
-

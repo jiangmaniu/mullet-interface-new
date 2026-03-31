@@ -1,5 +1,5 @@
 import { Locale } from '@/locales/i18n'
-import { AccountGroup } from '@/v1/services/tradeCore/accountGroup/typings'
+import { AccountGroup } from '@/services/tradeCore/accountGroup/typings'
 
 /**
  * 根据当前语言返回当前账户简介信息

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { request } from '@/v1/utils/request'
+import { request } from '@/utils/request'
 
 interface AccountExtractableResponse {
   code: number
