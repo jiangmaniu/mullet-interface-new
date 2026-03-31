@@ -61,11 +61,11 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
 
   return (
     <ScreenHeader
-      showBackButton={false}
+      // showBackButton={false}
       left={<SymbolSelector symbol={symbol} />}
       right={
         <View className="gap-xl flex-row items-center">
-          <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
+          {/* <View className={cn('border-brand-default flex-row overflow-hidden rounded-full border p-[3px]')}>
             <Pressable
               onPress={() => handleViewChange('chart')}
               className="h-[24px] w-[36px] items-center justify-center rounded-full"
@@ -73,12 +73,11 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
               <IconifyActivity width={22} height={22} className="text-content-4" />
             </Pressable>
             <View
-              // onPress={() => handleViewChange('depth')}
               className="bg-button h-[24px] w-[36px] items-center justify-center rounded-full"
             >
               <IconifyCandlestickChart width={22} height={22} className="text-content-1" />
             </View>
-          </View>
+          </View> */}
 
           <Pressable onPress={handleFavoriteToggle}>
             {isFavorite ? (
