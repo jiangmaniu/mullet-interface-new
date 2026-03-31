@@ -21,11 +21,11 @@ import { useMarketSymbolInfo } from '@/stores/market-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountCurrencyInfoSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
-import useMargin from '@/v1/hooks/trade/useMargin'
 import { msg } from '@lingui/core/macro'
 import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 
+import { useOrderMargin } from '../_apis/use-order-margin'
 import { useCreateOrderPrice } from './order-panel/_hooks/use-order-price'
 
 interface OrderConfirmDrawerProps {
@@ -87,7 +87,7 @@ const OrderConfirmDrawerContent = observer(
     const orderAmountValue = BNumber.from(amount).multipliedBy(openOrderPrice)?.multipliedBy(contractSize)
 
     // 接口计算预估保证金
-    const expectedMargin = useMargin()
+    const { data: expectedMargin } = useOrderMargin({ symbol, amount })
 
     const handleConfirm = async () => {
       try {
