@@ -209,22 +209,25 @@ const SimulateAccountRow = ({ account }: SimulateAccountRowProps) => {
           <Text className="text-paragraph-p3 text-content-4">
             <Trans>账户余额</Trans>
           </Text>
-          <View className="gap-xs flex-1 flex-row items-center">
-            <Text className="text-paragraph-p3 text-content-1 flex-1 text-right">
-              {BNumber.toFormatNumber(account.money, { unit: account.currencyUnit, volScale: account.currencyDecimal })}
-            </Text>
-            <>
-              <Pressable
-                onPress={() => {
-                  tradeSimulateAccountDepositDrawerRef.current?.open()
-                }}
-              >
-                <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
-              </Pressable>
+          <>
+            <Pressable
+              className="gap-xs flex-1 flex-row items-center"
+              onPress={() => {
+                tradeSimulateAccountDepositDrawerRef.current?.open()
+              }}
+            >
+              <Text className="text-paragraph-p3 text-content-1 flex-1 text-right">
+                {BNumber.toFormatNumber(account.money, {
+                  unit: account.currencyUnit,
+                  volScale: account.currencyDecimal,
+                })}
+              </Text>
 
-              <TradeSimulateAccountDepositDrawer ref={tradeSimulateAccountDepositDrawerRef} account={account} />
-            </>
-          </View>
+              <IconifyPlusCircle width={14} height={14} color={colorBrandPrimary} />
+            </Pressable>
+
+            <TradeSimulateAccountDepositDrawer ref={tradeSimulateAccountDepositDrawerRef} account={account} />
+          </>
         </View>
       </CardContent>
     </Card>

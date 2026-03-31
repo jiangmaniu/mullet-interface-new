@@ -70,22 +70,22 @@ export const AccountCard = () => {
                   <Trans>当前可用于交易的资金余额</Trans>
                 </TooltipContent>
               </Tooltip>
-              <View className="gap-xs flex-row items-center">
+              <Pressable
+                className="gap-xs flex-row items-center"
+                onPress={(e) => {
+                  e.stopPropagation()
+                  if (currentAccountInfo?.isSimulate) {
+                    simulateDepositDrawerRef.current?.open()
+                  } else {
+                    addBalanceDrawerRef.current?.open()
+                  }
+                }}
+              >
                 <AccountAvailableMargin accountInfo={currentAccountInfo} />
-                <IconButton
-                  color="primary"
-                  onPress={(e) => {
-                    e.stopPropagation()
-                    if (currentAccountInfo?.isSimulate) {
-                      simulateDepositDrawerRef.current?.open()
-                    } else {
-                      addBalanceDrawerRef.current?.open()
-                    }
-                  }}
-                >
+                <IconButton color="primary">
                   <IconifyPlusCircle width={14} height={14} />
                 </IconButton>
-              </View>
+              </Pressable>
             </View>
           </CardContent>
         </Card>
