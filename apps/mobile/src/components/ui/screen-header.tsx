@@ -41,23 +41,24 @@ export function ScreenHeader({
   }
 
   const renderLeft = () => {
-    if (left) return left
-    if (showBackButton && router.canGoBack()) {
-      return (
-        <IconButton variant="icon" className="-ml-2 h-10 w-10 rounded-full" onPress={handleBack}>
-          <NavArrowLeft width={24} height={24} className="text-foreground" />
-        </IconButton>
-      )
-    }
-    return null
+    return (
+      <>
+        {showBackButton && router.canGoBack() && (
+          <IconButton variant="icon" className="w-10rounded-full -ml-2 h-10" onPress={handleBack}>
+            <NavArrowLeft width={24} height={24} className="text-foreground" />
+          </IconButton>
+        )}
+        {left}
+      </>
+    )
   }
 
   const hasLeft = !!left || (showBackButton && router.canGoBack())
 
   return (
     <SafeAreaView edges={['top']}>
-      <View className={cn('px-xl relative h-[44px] flex-row items-center justify-between py-1.5', className)}>
-        <View className="z-10 items-start justify-center">{renderLeft()}</View>
+      <View className={cn('px-xl relative h-11 flex-row items-center justify-between py-1.5', className)}>
+        <View className="z-10 flex-row items-center">{renderLeft()}</View>
 
         {content && (
           <View
