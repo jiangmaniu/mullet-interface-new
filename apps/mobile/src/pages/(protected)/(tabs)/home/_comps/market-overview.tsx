@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { router } from 'expo-router'
+import { includes } from 'lodash-es'
 
 import { SparkLine } from '@/components/charts/spark-line'
 import { AvatarImage } from '@/components/ui/avatar'
@@ -150,11 +151,27 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
 
 // ============ MarketOverview ============
 export const MarketOverview = () => {
+  const marketOverviewSymbolInfoList = useRootStore((s) =>
+    marketSymbolInfoListSelector(s).filter((symbolInfo) => includes(MARKET_OVERVIEW_SYMBOL_LIST, symbolInfo.symbol)),
+  )
+
+  if (marketOverviewSymbolInfoList.length === 0) {
+    return null
+  }
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
-      {MARKET_OVERVIEW_SYMBOL_LIST.map((symbol) => (
-        <MarketCard key={symbol} symbol={symbol} />
-      ))}
+      {marketOverviewSymbolInfoList.length <= 0 ? (
+        <>
+          {MARKET_OVERVIEW_SYMBOL_LIST.map((symbol) => (
+            <MarketCard key={symbol} symbol={symbol} />
+          ))}
+        </>
+      ) : (
+        marketOverviewSymbolInfoList.map((symbolInfo) => (
+          <MarketCard key={symbolInfo.symbol} symbol={symbolInfo.symbol} />
+        ))
+      )}
     </ScrollView>
   )
 }
