@@ -389,10 +389,8 @@ class MulletWS {
   private lastQuoteUpdateTime = 0
   private lastDepthUpdateTime = 0
   private quoteCount = 0
-
-  // 暂保留 quotes 和 depth Map，供 wsUtil.ts 等消费者读取（过渡期）
-  quotes = new Map<string, IQuoteItem>()
-  depth = new Map<string, IDepth>()
+  private quotes = new Map<string, IQuoteItem>()
+  private depth = new Map<string, IDepth>()
 
   private onMessage(res: IMessage): void {
     const msgId = res.header?.msgId
