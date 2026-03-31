@@ -105,13 +105,20 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
           const activeTradeAccountInfo = userInfoActiveTradeAccountInfoSelector(get())
           get().trade.order.subscribeOrderMarketQuote(newIdList, activeTradeAccountInfo)
         },
+        { fireImmediately: true },
       )
 
       store.subscribe(
         (state) => state.user.info.activeTradeAccountId,
         async (accountId, prevAccountId) => {
           unsubscribe?.()
+          unsubscribe = undefined
+
+          if (accountId) {
+            get().trade.order.fetch()
+          }
         },
+        { fireImmediately: true },
       )
     },
 
@@ -159,6 +166,8 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
 
         return orderTopic
       })
+
+      unsubscribe?.()
 
       unsubscribe = ws.subscribe(topics)
     },

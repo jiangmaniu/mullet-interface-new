@@ -1,4 +1,4 @@
-import { keyBy } from 'lodash-es'
+import { get, keyBy } from 'lodash-es'
 import type { SliceCreator } from '../_helpers/types'
 import type { RootStoreState } from '../index'
 
@@ -21,8 +21,6 @@ export interface PositionSliceState {
   idList: string[]
   /** 持仓 Map（以 id 为 key） */
   map: Record<string, TradePositionInfo>
-  /** 计算缓存 Map */
-  calcCacheMap: Record<string, TradePositionInfo>
   /** 加载状态 */
   loading: boolean
 }
@@ -34,8 +32,6 @@ export interface PositionSliceActions {
   update: (list: Order.BgaOrderPageListItem[]) => void
   /** 切换账户时清空数据 */
   reset: () => void
-  /** 更新计算缓存 */
-  setCalcCache: (list: Order.BgaOrderPageListItem[]) => void
   /** 设置加载状态 */
   setLoading: (loading: boolean) => void
   subscribePositionMarketQuote: (
@@ -66,7 +62,7 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
   return {
     idList: [],
     map: {},
-    calcCacheMap: {},
+
     loading: false,
 
     fetch: async (accountId) => {
@@ -128,7 +124,13 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
         (state) => state.user.info.activeTradeAccountId,
         async (accountId, prevAccountId) => {
           unsubscribe?.()
+          unsubscribe = undefined
+
+          if (accountId) {
+            get().trade.position.fetch()
+          }
         },
+        { fireImmediately: true },
       )
     },
 
@@ -178,6 +180,7 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
         return orderTopic
       })
 
+      unsubscribe?.()
       unsubscribe = ws.subscribe(topics)
     },
 
@@ -194,14 +197,6 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
         state.trade.position.idList = []
         state.trade.position.map = {}
         state.trade.position.loading = false
-      })
-    },
-
-    setCalcCache: (list) => {
-      set((state) => {
-        for (const item of list) {
-          state.trade.position.calcCacheMap[item.id] = parseTradePositionInfo(item)
-        }
       })
     },
 

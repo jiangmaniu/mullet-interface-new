@@ -6,8 +6,8 @@ import type { MarketSlice } from './market-slice'
 import type { TradeSlice } from './trade-slice'
 import type { UserSlice } from './user-slice'
 
-import { mmkvStorage } from '@/lib/storage/mmkv'
 import { STORAGE_KEY_ROOT_STORE } from '@/lib/storage/keys'
+import { mmkvStorage } from '@/lib/storage/mmkv'
 
 import { createSelectors } from './_helpers/createSelectors'
 import { createPartialize } from './_helpers/types'
@@ -37,7 +37,7 @@ const useRootStoreBase = create<RootStoreState>()(
         // 行情/持仓/挂单等高频或启动后会重新拉取的数据，通过 snapshot 单独管理
         partialize: createPartialize<RootStoreState>(
           // ── user ──
-          'user.auth.accessToken',  // token（不含 redirectTo）
+          'user.auth.accessToken', // token（不含 redirectTo）
           'user.auth.loginInfo',
           'user.auth.loginType',
           'user.info.activeTradeAccountId',
@@ -45,10 +45,14 @@ const useRootStoreBase = create<RootStoreState>()(
           'user.info.accountList',
           'user.info.accountMap',
           // ── market ──
-          'market.favorite',        // 全命名空间
+          'market.favorite', // 全命名空间
           // ── trade ──
-          'trade.setting',          // 全命名空间
+          'trade.setting', // 全命名空间
           'trade.activeTradeSymbol',
+          'trade.position.idList',
+          'trade.position.map',
+          'trade.order.idList',
+          'trade.order.map',
         ),
         // 深度合并，保留 currentState 的 action 方法
         merge: (persistedState, currentState) => merge({}, currentState, persistedState),
