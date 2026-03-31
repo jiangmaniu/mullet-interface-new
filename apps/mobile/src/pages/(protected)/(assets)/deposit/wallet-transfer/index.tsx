@@ -80,14 +80,18 @@ export default function WalletTransferScreen() {
         symbol: renderFallback(tokenConfig?.symbol),
         displayName: renderFallback(tokenConfig?.symbol),
         iconUrl: tokenConfig?.iconUrl,
-        balance: BNumber.toFormatNumber(tokenBalance?.amount, {
-          volScale: tokenConfig?.displayDecimals,
-          unit: tokenConfig?.symbol,
-        }),
-        balanceUsd: BNumber.toFormatNumber(tokenBalance?.usdValue, {
-          volScale: selectedAccount?.currencyDecimal,
-          unit: selectedAccount?.currencyUnit,
-        }),
+        balance: renderFallback(
+          BNumber.toFormatNumber(tokenBalance?.amount, {
+            volScale: tokenConfig?.displayDecimals,
+            unit: tokenConfig?.symbol,
+          }),
+        ),
+        balanceUsd: renderFallback(
+          BNumber.toFormatNumber(tokenBalance?.usdValue, {
+            volScale: selectedAccount?.currencyDecimal,
+            unit: selectedAccount?.currencyUnit,
+          }),
+        ),
         isInsufficientBalance: !!BNumber.from(tokenBalance?.minAmount)?.gt(tokenBalance?.amount),
       }
     })

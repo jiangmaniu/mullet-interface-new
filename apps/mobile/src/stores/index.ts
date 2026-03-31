@@ -25,11 +25,16 @@ export type RootStoreState = {
 const useRootStoreBase = create<RootStoreState>()(
   subscribeWithSelector(
     persist(
-      immer((set, get, store) => ({
-        trade: createTradeSlice(set, get, store),
-        market: createMarketSlice(set, get, store),
-        user: createUserSlice(set, get, store),
-      })),
+      immer<RootStoreState>((set, get, store) => {
+        // 将 immer 的 set 和 store 转换为 slice 期望的类型
+        const sliceSet = set as any
+        const sliceStore = store as any
+        return {
+          trade: createTradeSlice(sliceSet, get, sliceStore),
+          market: createMarketSlice(sliceSet, get, sliceStore),
+          user: createUserSlice(sliceSet, get, sliceStore),
+        }
+      }),
       {
         name: STORAGE_KEY_ROOT_STORE,
         storage: createJSONStorage(() => mmkvStorage),
