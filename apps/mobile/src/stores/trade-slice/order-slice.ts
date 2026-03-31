@@ -115,7 +115,7 @@ export const createOrderSlice: SliceCreator<RootStoreState, OrderSlice> = (set, 
           unsubscribe = undefined
 
           if (accountId) {
-            get().trade.order.fetch()
+            get().trade.order.fetch(accountId)
           }
         },
         { fireImmediately: true },

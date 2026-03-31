@@ -127,7 +127,7 @@ export const createPositionSlice: SliceCreator<RootStoreState, PositionSlice> = 
           unsubscribe = undefined
 
           if (accountId) {
-            get().trade.position.fetch()
+            get().trade.position.fetch(accountId)
           }
         },
         { fireImmediately: true },
