@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -29,7 +28,7 @@ import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
 export type SignatureStatus = 'idle' | 'signing' | 'success' | 'failed'
 
-const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
+const UsdcConfirmScreen = function UsdcConfirmScreen() {
   const { fromWalletAddress, toWalletAddress, depositAmount } = useDepositState()
   const { setDepositAmount } = useDepositActions()
   const selectedAccount = useSelectedDepositAccount()
@@ -277,7 +276,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
       />
     </View>
   )
-})
+}
 
 export default UsdcConfirmScreen
 

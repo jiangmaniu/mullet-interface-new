@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -14,7 +13,7 @@ import { Text } from '@/components/ui/text'
 import { useRootStore } from '@/stores'
 import { userInfoActiveTradeAccountInfoSelector } from '@/stores/user-slice/infoSlice'
 
-const RealAccountActions = observer(({ account }: { account: User.AccountItem }) => {
+const RealAccountActions = ({ account }: { account: User.AccountItem }) => {
   const router = useRouter()
 
   const handlePressDeposit = () => {
@@ -94,9 +93,9 @@ const RealAccountActions = observer(({ account }: { account: User.AccountItem })
       /> */}
     </>
   )
-})
+}
 
-const SimulateAccountActions = observer(({ account }: { account: User.AccountItem }) => {
+const SimulateAccountActions = ({ account }: { account: User.AccountItem }) => {
   const tradeSimulateAccountDepositDrawerRef = useRef<TradeSimulateAccountDepositDrawerRef>(null)
 
   return (
@@ -123,9 +122,9 @@ const SimulateAccountActions = observer(({ account }: { account: User.AccountIte
       </View>
     </>
   )
-})
+}
 
-export const TradeAccountActions = observer(() => {
+export const TradeAccountActions = () => {
   const account = useRootStore(useShallow(userInfoActiveTradeAccountInfoSelector))
 
   if (!account) return null
@@ -133,4 +132,4 @@ export const TradeAccountActions = observer(() => {
     return <SimulateAccountActions account={account} />
   }
   return <RealAccountActions account={account} />
-})
+}

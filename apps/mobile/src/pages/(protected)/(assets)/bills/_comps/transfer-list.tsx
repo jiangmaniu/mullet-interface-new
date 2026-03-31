@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 
@@ -23,7 +22,7 @@ import { BillsCardRow } from './card-row'
 
 const PAGE_SIZE = 10
 
-export const TransferList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
+export const TransferList = ({ accountSelector }: { accountSelector: React.ReactNode }) => {
   const { selectedAccountId, dateRange } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
 
@@ -112,10 +111,10 @@ export const TransferList = observer(({ accountSelector }: { accountSelector: Re
       style={{ paddingHorizontal: 16 }}
     />
   )
-})
+}
 
 // 划转卡片组件
-const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
+const TransferCard = ({ record }: { record: MoneyTransferVO }) => {
   const { selectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
   const { renderLinguiMsg } = useI18n()
@@ -188,4 +187,4 @@ const TransferCard = observer(({ record }: { record: MoneyTransferVO }) => {
       </CardContent>
     </Card>
   )
-})
+}

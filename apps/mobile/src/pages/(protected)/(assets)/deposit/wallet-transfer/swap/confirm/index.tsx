@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -30,7 +29,7 @@ import { useSelectedDepositAccount } from '../../../_hooks/use-selected-account'
 
 const COUNTDOWN_SECONDS = 30
 
-const SwapConfirmScreen = observer(function SwapConfirmScreen() {
+const SwapConfirmScreen = function SwapConfirmScreen() {
   const { fromWalletAddress, toWalletAddress, depositAmount } = useDepositState()
   const selectedAccount = useSelectedDepositAccount()
   const selectedTokenConfig = useSelectedTokenConfig()
@@ -340,7 +339,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
       />
     </View>
   )
-})
+}
 
 export default SwapConfirmScreen
 

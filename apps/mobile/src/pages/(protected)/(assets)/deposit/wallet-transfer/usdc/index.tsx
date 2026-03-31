@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useState } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -28,7 +27,7 @@ const PERCENT_OPTIONS = [
   { label: 'Max', value: '100' },
 ]
 
-const UsdcDepositScreen = observer(function UsdcDepositScreen() {
+const UsdcDepositScreen = function UsdcDepositScreen() {
   const selectedTokenBalance = useSelectedTokenBalance()
   const selectedTokenConfig = useSelectedTokenConfig()
   const { setDepositAmount } = useDepositActions()
@@ -143,6 +142,6 @@ const UsdcDepositScreen = observer(function UsdcDepositScreen() {
       </SafeAreaView>
     </View>
   )
-})
+}
 
 export default UsdcDepositScreen

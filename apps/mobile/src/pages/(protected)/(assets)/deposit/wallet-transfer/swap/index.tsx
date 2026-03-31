@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Image, Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -44,7 +43,7 @@ const QUICK_AMOUNT_OPTIONS = [
   { label: '$2000', value: '2000' },
 ]
 
-const SwapTransferScreen = observer(function SwapTransferScreen() {
+const SwapTransferScreen = function SwapTransferScreen() {
   const { setDepositAmount } = useDepositActions()
   const { fromWalletAddress } = useDepositState()
   const selectedTokenBalance = useSelectedTokenBalance()
@@ -414,7 +413,7 @@ const SwapTransferScreen = observer(function SwapTransferScreen() {
       </SafeAreaView>
     </View>
   )
-})
+}
 
 export default SwapTransferScreen
 

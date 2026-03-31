@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
@@ -68,7 +67,7 @@ export function useBillsScreenContext() {
   return useContext(BillsScreenContext)
 }
 
-const BillsScreen = observer(() => {
+const BillsScreen = () => {
   const { tab, accountId } = useLocalSearchParams<{ tab?: string; accountId?: string }>()
 
   const [dateFilterVisible, setDateFilterVisible] = useState(false)
@@ -158,11 +157,11 @@ const BillsScreen = observer(() => {
       />
     </BillsScreenContext.Provider>
   )
-})
+}
 
 export default BillsScreen
 
-const BillsAccountSelector = observer(() => {
+const BillsAccountSelector = () => {
   const { selectedAccountId, setSelectedAccountId } = useBillsScreenContext()
   const selectedAccount = useAccountInfo(selectedAccountId)
   const realAccountSelectionDrawerRef = useRef<DrawerRef>(null)
@@ -185,7 +184,7 @@ const BillsAccountSelector = observer(() => {
       />
     </>
   )
-})
+}
 
 // Account Selector Component
 function AccountSelector({ selectedAccount, onPress }: { selectedAccount: User.AccountItem; onPress?: () => void }) {

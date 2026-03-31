@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useState } from 'react'
 import { View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -32,7 +31,7 @@ const PERCENT_OPTIONS = [
   { label: 'Max', value: '100' },
 ]
 
-const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
+const UsdcWithdrawScreen = function UsdcWithdrawScreen() {
   const { toWalletAddress } = useWithdrawState()
   const { setWithdrawAmount } = useWithdrawAmount()
   const { tokenInfo } = useSelectedChainInfo()
@@ -156,6 +155,6 @@ const UsdcWithdrawScreen = observer(function UsdcWithdrawScreen() {
       </SafeAreaView>
     </View>
   )
-})
+}
 
 export default UsdcWithdrawScreen

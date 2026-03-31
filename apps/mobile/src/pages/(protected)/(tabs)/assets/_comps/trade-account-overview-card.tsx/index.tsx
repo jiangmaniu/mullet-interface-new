@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
 import { Pressable, TouchableHighlight, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -38,7 +37,7 @@ import { formatAddress } from '@mullet/utils/web3'
 
 const BalanceHiddenFallback = '******'
 
-export const TradeAccountOverviewCard = observer(() => {
+export const TradeAccountOverviewCard = () => {
   const [isBalanceHidden, setIsBalanceHidden] = useState(false)
   const { textColorContent4, textColorContent1 } = useThemeColors()
 
@@ -187,7 +186,7 @@ export const TradeAccountOverviewCard = observer(() => {
       </View>
     </Card>
   )
-})
+}
 
 const AccountAvailableMargin = ({ accountInfo }: { accountInfo?: UserAccountInfo }) => {
   const availableMargin = useAccountAvailableMargin(accountInfo?.id)

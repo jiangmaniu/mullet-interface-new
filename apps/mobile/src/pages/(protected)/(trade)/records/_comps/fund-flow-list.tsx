@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/react/macro'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -123,7 +122,7 @@ function FundFlowCard({ item }: { item: Account.MoneyRecordsPageListItem }) {
 // List Component
 // ============================================================================
 
-export const FundFlowList = observer(() => {
+export const FundFlowList = () => {
   const accountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
@@ -213,4 +212,4 @@ export const FundFlowList = observer(() => {
       style={{ paddingHorizontal: 16, paddingTop: 16 }}
     />
   )
-})
+}

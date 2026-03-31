@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -30,7 +29,7 @@ import { SignatureFailModal } from '../../../../deposit/wallet-transfer/_comps/s
 
 const COUNTDOWN_SECONDS = 30
 
-const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() {
+const SwapWithdrawConfirmScreen = function SwapWithdrawConfirmScreen() {
   const { toWalletAddress, withdrawAmount, fromWalletAddress, selectedAccountId } = useWithdrawState()
   const usdcTokenConfig = useUSDCTokenConfig()
   const selectedTokenConfig = useSelectedTokenConfig()
@@ -320,7 +319,7 @@ const SwapWithdrawConfirmScreen = observer(function SwapWithdrawConfirmScreen() 
       />
     </View>
   )
-})
+}
 
 export default SwapWithdrawConfirmScreen
 

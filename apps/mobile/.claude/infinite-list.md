@@ -4,19 +4,17 @@
 
 - `@tanstack/react-query` 的 `useInfiniteQuery`
 - React Native 的 `FlatList`
-- `mobx-react-lite` 的 `observer`
 
 ## 标准实现模板
 
 ```tsx
 import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import { FlatList, ActivityIndicator, View } from 'react-native';
-import { observer } from "mobx-react-lite";
 import { dayjs } from "@mullet/utils/dayjs";
 
 const PAGE_SIZE = 10;
 
-export const XxxList = observer(({ accountSelector }: { accountSelector: React.ReactNode }) => {
+export function XxxList({ accountSelector }: { accountSelector: React.ReactNode }) {
   // 1. 通过 Context 获取筛选条件
   const { selectedAccount, dateRange } = useBillsScreenContext();
 
@@ -86,7 +84,7 @@ export const XxxList = observer(({ accountSelector }: { accountSelector: React.R
       style={{ paddingHorizontal: 16 }}
     />
   );
-});
+}
 ```
 
 ## 关键要点

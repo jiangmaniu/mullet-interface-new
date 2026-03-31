@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { router } from 'expo-router'
@@ -29,7 +28,7 @@ interface MarketCardProps {
   symbol: string
 }
 
-const MarketCard = observer(({ symbol }: MarketCardProps) => {
+const MarketCard = ({ symbol }: MarketCardProps) => {
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const hasSymbolData = useRootStore((s) => marketSymbolInfoListSelector(s).length > 0)
 
@@ -63,12 +62,12 @@ const MarketCard = observer(({ symbol }: MarketCardProps) => {
       <MarketCardContent symbol={symbol} />
     </>
   )
-})
+}
 
 const CARD_CHART_WIDTH = 153
 const CARD_CHART_HEIGHT = 60
 
-const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
+const MarketCardContent = ({ symbol }: MarketCardProps) => {
   // 获取 K线历史数据
   const { data: chartData = [], isLoading: isChartLoading } = useSymbolKline(symbol)
   const { colorStatusSuccess, colorStatusDanger, textColorContent1 } = useThemeColors()
@@ -147,7 +146,7 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
       </Card>
     </Pressable>
   )
-})
+}
 
 // ============ MarketOverview ============
 export const MarketOverview = () => {

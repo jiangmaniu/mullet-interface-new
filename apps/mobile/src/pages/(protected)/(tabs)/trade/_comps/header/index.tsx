@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -32,7 +31,7 @@ interface TradeHeaderProps {
   symbol?: string
 }
 
-export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
+export const TradeHeader = ({ symbol }: TradeHeaderProps) => {
   const router = useRouter()
   const symbolInfo = useMarketSymbolInfo(symbol)
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
@@ -122,9 +121,9 @@ export const TradeHeader = observer(({ symbol }: TradeHeaderProps) => {
       />
     </>
   )
-})
+}
 
-export const SymbolSelector = observer(({ symbol }: { symbol?: string }) => {
+export const SymbolSelector = ({ symbol }: { symbol?: string }) => {
   const [isSymbolSelectDrawerOpen, setIsSymbolSelectDrawerOpen] = useState(false)
   const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
   const symbolInfo = useMarketSymbolInfo(symbol)
@@ -172,4 +171,4 @@ export const SymbolSelector = observer(({ symbol }: { symbol?: string }) => {
       />
     </>
   )
-})
+}

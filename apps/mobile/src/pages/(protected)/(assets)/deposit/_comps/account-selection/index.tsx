@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useEffect, useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
@@ -22,7 +21,7 @@ import { BNumber } from '@mullet/utils/number'
 import { useDepositActions, useDepositState } from '../../_hooks/use-deposit-state'
 import { useSelectedDepositAccount } from '../../_hooks/use-selected-account'
 
-export const DepositAccountSelector = observer(function DepositAccountSelector() {
+export const DepositAccountSelector = function DepositAccountSelector() {
   const { selectedAccountId } = useDepositState()
   const { setSelectedAccountId } = useDepositActions()
   const selectedAccount = useSelectedDepositAccount()
@@ -96,4 +95,4 @@ export const DepositAccountSelector = observer(function DepositAccountSelector()
       />
     </>
   )
-})
+}

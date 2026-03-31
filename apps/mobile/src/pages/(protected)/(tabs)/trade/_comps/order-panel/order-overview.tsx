@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -17,7 +16,7 @@ import { BNumber } from '@mullet/utils/number'
 import { useOrderMargin } from '../../_apis/use-order-margin'
 import { useOpenMaxAmount } from '../../_hooks/use-max-amount'
 
-export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
+export const OrderOverview = ({ symbol }: { symbol?: string }) => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const symbolInfo = useMarketSymbolInfo(symbol)
   const lotVolScale = parseSymbolLotsVolScale(symbolInfo?.symbolConf)
@@ -62,4 +61,4 @@ export const OrderOverview = observer(({ symbol }: { symbol?: string }) => {
       </View>
     </>
   )
-})
+}

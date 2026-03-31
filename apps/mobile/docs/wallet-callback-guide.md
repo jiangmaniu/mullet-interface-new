@@ -54,7 +54,7 @@ export enum WalletActionType {
 
 import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
-const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
+const UsdcConfirmScreen = function UsdcConfirmScreen() {
   const { saveContext } = useWalletRouteCallback()
 
   const handleConfirmTransfer = async () => {
@@ -64,7 +64,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
     // 调用转账
     await transferToken(...)
   }
-})
+}
 ```
 
 #### Swap 确认页面
@@ -74,7 +74,7 @@ const UsdcConfirmScreen = observer(function UsdcConfirmScreen() {
 
 import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 
-const SwapConfirmScreen = observer(function SwapConfirmScreen() {
+function SwapConfirmScreen() {
   const { saveContext } = useWalletRouteCallback()
 
   const handleConfirmSwap = async () => {
@@ -84,7 +84,7 @@ const SwapConfirmScreen = observer(function SwapConfirmScreen() {
     // 调用 swap
     await swapToken(...)
   }
-})
+}
 ```
 
 #### 连接钱包页面

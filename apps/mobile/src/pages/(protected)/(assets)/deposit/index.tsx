@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useEffect } from 'react'
 import { Pressable, View } from 'react-native'
 import { router } from 'expo-router'
@@ -14,7 +13,7 @@ import { QrDepositCard } from './_comps/qr-deposit-card'
 import { WalletDepositCard } from './_comps/wallet-deposit-card'
 import { useSelectedDepositAccount } from './_hooks/use-selected-account'
 
-const DepositScreen = observer(function DepositScreen() {
+const DepositScreen = function DepositScreen() {
   const selectedAccount = useSelectedDepositAccount()
 
   return (
@@ -54,6 +53,6 @@ const DepositScreen = observer(function DepositScreen() {
       </View>
     </View>
   )
-})
+}
 
 export default DepositScreen

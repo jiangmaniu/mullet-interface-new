@@ -1,5 +1,4 @@
 import { Trans, useLingui } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { Pressable, ScrollView, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 import type { Route } from 'react-native-tab-view'
@@ -39,21 +38,19 @@ interface AccountSelectDrawerProps {
   onSelect: (account: User.AccountItem) => void
 }
 
-export const AccountSelectDrawer = observer(
-  ({ visible, onClose, selectedAccountId, onSelect }: AccountSelectDrawerProps) => {
-    return (
-      <Drawer open={visible} onOpenChange={onClose}>
-        <DrawerContent className="h-[292px] px-0">
-          <AccountSelectContent
-            selectedAccountId={selectedAccountId}
-            onSelect={onSelect}
-            onClose={onClose}
-          />
-        </DrawerContent>
-      </Drawer>
-    )
-  },
-)
+export const AccountSelectDrawer = ({ visible, onClose, selectedAccountId, onSelect }: AccountSelectDrawerProps) => {
+  return (
+    <Drawer open={visible} onOpenChange={onClose}>
+      <DrawerContent className="h-[292px] px-0">
+        <AccountSelectContent
+          selectedAccountId={selectedAccountId}
+          onSelect={onSelect}
+          onClose={onClose}
+        />
+      </DrawerContent>
+    </Drawer>
+  )
+}
 
 interface AccountSelectContentProps {
   selectedAccountId?: string
@@ -62,7 +59,7 @@ interface AccountSelectContentProps {
 }
 
 // 抽成子组件，确保每次 Drawer 打开时 tab 状态能正确初始化
-const AccountSelectContent = observer(({ selectedAccountId, onSelect, onClose }: AccountSelectContentProps) => {
+const AccountSelectContent = ({ selectedAccountId, onSelect, onClose }: AccountSelectContentProps) => {
   const { t } = useLingui()
   const accountMap = useRootStore(useShallow(userInfoAccountMapSelector))
   const realAccountList = useRootStore(useShallow(userInfoRealAccountListSelector))
@@ -114,7 +111,7 @@ const AccountSelectContent = observer(({ selectedAccountId, onSelect, onClose }:
       initialIndex={initialTabIndex}
     />
   )
-})
+}
 
 interface AccountRowProps {
   account: User.AccountItem
@@ -122,7 +119,7 @@ interface AccountRowProps {
   onPress?: () => void
 }
 
-const AccountRow = observer(({ account, isSelected, onPress }: AccountRowProps) => {
+const AccountRow = ({ account, isSelected, onPress }: AccountRowProps) => {
   const { textColorContent1 } = useThemeColors()
 
   const synopsis = useAccountSynopsis(account.synopsis)
@@ -170,4 +167,4 @@ const AccountRow = observer(({ account, isSelected, onPress }: AccountRowProps) 
       </Card>
     </Pressable>
   )
-})
+}

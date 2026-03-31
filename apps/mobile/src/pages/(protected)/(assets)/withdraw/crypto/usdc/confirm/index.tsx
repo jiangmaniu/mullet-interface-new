@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { Image, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -23,7 +22,7 @@ import { useWithdrawState } from '../../../_hooks/use-withdraw-state'
 import { Web2Confirm } from './_comps/web2-confirm'
 import { Web3Confirm } from './_comps/web3-confirm'
 
-const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() {
+const UsdcWithdrawConfirmScreen = function UsdcWithdrawConfirmScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
   const { toWalletAddress, withdrawAmount, fromWalletAddress } = useWithdrawState()
   const { tokenInfo, chainInfo } = useSelectedChainInfo()
@@ -155,7 +154,7 @@ const UsdcWithdrawConfirmScreen = observer(function UsdcWithdrawConfirmScreen() 
       </SafeAreaView>
     </View>
   )
-})
+}
 
 export default UsdcWithdrawConfirmScreen
 

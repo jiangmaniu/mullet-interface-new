@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { RefObject, useImperativeHandle } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -22,41 +21,39 @@ interface RealAccountSelectionDrawerProps {
   ref?: RefObject<DrawerRef | null>
 }
 
-export const RealAccountSelectionDrawer = observer(
-  ({ onSelect, selectedAccountId, title, ref }: RealAccountSelectionDrawerProps) => {
-    const accountList = useRootStore(useShallow(userInfoRealAccountListSelector))
-    const [isOpen, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle()
+export const RealAccountSelectionDrawer = ({ onSelect, selectedAccountId, title, ref }: RealAccountSelectionDrawerProps) => {
+  const accountList = useRootStore(useShallow(userInfoRealAccountListSelector))
+  const [isOpen, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle()
 
-    useImperativeHandle(ref, () => ({
-      open: setOpen,
-      close: setClose,
-      toggle: toggle,
-    }))
+  useImperativeHandle(ref, () => ({
+    open: setOpen,
+    close: setClose,
+    toggle: toggle,
+  }))
 
-    return (
-      <Drawer open={isOpen} onOpenChange={setToggle}>
-        <DrawerContent className="py-xl h-[240px] gap-0">
-          {title && <DrawerHeader className="px-5">{title}</DrawerHeader>}
+  return (
+    <Drawer open={isOpen} onOpenChange={setToggle}>
+      <DrawerContent className="py-xl h-[240px] gap-0">
+        {title && <DrawerHeader className="px-5">{title}</DrawerHeader>}
 
-          <ScrollView className="pb-3xl flex-1" showsVerticalScrollIndicator={false}>
-            {accountList.map((account) => (
-              <AccountRow
-                key={account.id}
-                account={account}
-                selectedAccountId={selectedAccountId}
-                onPress={() => {
-                  onSelect?.(account)
-                  setClose()
-                }}
-              />
-            ))}
-            <View className="h-safe-bottom" />
-          </ScrollView>
-        </DrawerContent>
-      </Drawer>
-    )
-  },
-)
+        <ScrollView className="pb-3xl flex-1" showsVerticalScrollIndicator={false}>
+          {accountList.map((account) => (
+            <AccountRow
+              key={account.id}
+              account={account}
+              selectedAccountId={selectedAccountId}
+              onPress={() => {
+                onSelect?.(account)
+                setClose()
+              }}
+            />
+          ))}
+          <View className="h-safe-bottom" />
+        </ScrollView>
+      </DrawerContent>
+    </Drawer>
+  )
+}
 
 function AccountRow({
   account,

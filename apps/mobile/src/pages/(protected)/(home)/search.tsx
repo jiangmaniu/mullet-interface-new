@@ -1,6 +1,5 @@
 // React & React Native
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -114,7 +113,7 @@ function SymbolInfoCell({
 }
 
 // ============ SearchAssetRow ============
-const SearchAssetRow = observer(function SearchAssetRow({
+const SearchAssetRow = function SearchAssetRow({
   symbolInfo,
   searchChars,
   onSelect,
@@ -161,10 +160,10 @@ const SearchAssetRow = observer(function SearchAssetRow({
       </View>
     </Pressable>
   )
-})
+}
 
 // ============ SearchAssetTradeRow ============
-const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
+const SearchAssetTradeRow = function SearchAssetTradeRow({
   symbolInfo,
   searchChars,
   onSelect,
@@ -204,10 +203,10 @@ const SearchAssetTradeRow = observer(function SearchAssetTradeRow({
       </View>
     </Pressable>
   )
-})
+}
 
 // ============ Main Search Page ============
-const SearchPage = observer(function SearchPage() {
+const SearchPage = function SearchPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState('list')
@@ -328,6 +327,6 @@ const SearchPage = observer(function SearchPage() {
       </ScrollView>
     </View>
   )
-})
+}
 
 export default SearchPage

@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field'
@@ -25,7 +24,7 @@ const CODE_LENGTH = 6
 const RESEND_COOLDOWN = 60 // seconds
 const CODE_MOCK = '123456'
 
-const VerifyScreen = observer(function VerifyScreen() {
+const VerifyScreen = function VerifyScreen() {
   const { mutateAsync: sendOtpAsync, isPending: isSending } = useSendOtp()
   const [code, setCode] = useState('')
   const [showSuccessModal, setShowSuccessModal] = useState(false)
@@ -245,6 +244,6 @@ const VerifyScreen = observer(function VerifyScreen() {
       />
     </View>
   )
-})
+}
 
 export default VerifyScreen

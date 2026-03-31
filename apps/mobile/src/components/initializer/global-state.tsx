@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useState } from 'react'
 import { Platform, Text, View } from 'react-native'
 
@@ -6,7 +5,7 @@ import { fetchRemoteConfig } from '@/env'
 
 let unsubscribe: (() => void) | undefined
 
-export const GlobalStateInitializer = observer(({ children }: { children: React.ReactNode }) => {
+export const GlobalStateInitializer = ({ children }: { children: React.ReactNode }) => {
   const [ready, setReady] = useState(false)
 
   const startApp = async () => {
@@ -46,4 +45,4 @@ export const GlobalStateInitializer = observer(({ children }: { children: React.
   }
 
   return <>{children}</>
-})
+}

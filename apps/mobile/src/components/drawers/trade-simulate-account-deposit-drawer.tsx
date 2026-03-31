@@ -1,5 +1,4 @@
 import { Trans, useLingui } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { RefObject, useImperativeHandle, useState } from 'react'
 import { View } from 'react-native'
 import { useToggle } from 'ahooks'
@@ -37,82 +36,80 @@ interface TradeSimulateAccountDepositDrawerProps {
   ref?: RefObject<TradeSimulateAccountDepositDrawerRef | null>
 }
 
-export const TradeSimulateAccountDepositDrawer = observer(
-  ({
-    account,
-    dailyDepositAmount = DEFAULT_SIMULATE_ACCOUNT_DAILY_DEPOSIT_AMOUNT,
-    singleTimeDepositAmount = DEFAULT_SIMULATE_ACCOUNT_SINGLE_TIME_DEPOSIT_AMOUNT,
-    onConfirmSuccess,
-    ref,
-  }: TradeSimulateAccountDepositDrawerProps) => {
-    const [isConfirming, setIsConfirming] = useState(false)
-    const [open, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle(false)
-    const { t } = useLingui()
+export const TradeSimulateAccountDepositDrawer = ({
+  account,
+  dailyDepositAmount = DEFAULT_SIMULATE_ACCOUNT_DAILY_DEPOSIT_AMOUNT,
+  singleTimeDepositAmount = DEFAULT_SIMULATE_ACCOUNT_SINGLE_TIME_DEPOSIT_AMOUNT,
+  onConfirmSuccess,
+  ref,
+}: TradeSimulateAccountDepositDrawerProps) => {
+  const [isConfirming, setIsConfirming] = useState(false)
+  const [open, { toggle, setLeft: setClose, setRight: setOpen, set: setToggle }] = useToggle(false)
+  const { t } = useLingui()
 
-    const handleConfirm = async () => {
-      setIsConfirming(true)
-      try {
-        const result = await rechargeSimulate({
-          accountId: account.id,
-          money: singleTimeDepositAmount,
-          type: TradeFundFlowTypeEnum.DEPOSIT_SIMULATE,
-        })
+  const handleConfirm = async () => {
+    setIsConfirming(true)
+    try {
+      const result = await rechargeSimulate({
+        accountId: account.id,
+        money: singleTimeDepositAmount,
+        type: TradeFundFlowTypeEnum.DEPOSIT_SIMULATE,
+      })
 
-        if (result.success) {
-          useRootStore.getState().user.info.fetchLoginClientInfo()
-          toast.success(t`入存款成功`)
-          setClose()
-        }
-      } catch (error: any) {
-        toast.error(error?.message ?? t`存款失败`)
-      } finally {
-        setIsConfirming(false)
+      if (result.success) {
+        useRootStore.getState().user.info.fetchLoginClientInfo()
+        toast.success(t`入存款成功`)
+        setClose()
       }
+    } catch (error: any) {
+      toast.error(error?.message ?? t`存款失败`)
+    } finally {
+      setIsConfirming(false)
     }
+  }
 
-    useImperativeHandle(ref, () => ({
-      open: setOpen,
-      close: setClose,
-      toggle: toggle,
-    }))
+  useImperativeHandle(ref, () => ({
+    open: setOpen,
+    close: setClose,
+    toggle: toggle,
+  }))
 
-    return (
-      <Drawer open={open} onOpenChange={setToggle}>
-        <DrawerContent>
-          <DrawerHeader className="pt-xl px-5">
-            <DrawerTitle>
-              <Trans>模拟账户存款</Trans>
-            </DrawerTitle>
-            <DrawerDescription>
-              <Trans>
-                每日可存款
-                {BNumber.toFormatNumber(dailyDepositAmount, {
-                  unit: account.currencyUnit,
-                  volScale: account.currencyDecimal,
-                })}
-              </Trans>
-            </DrawerDescription>
-          </DrawerHeader>
-
-          <View className="gap-medium items-center">
-            <IconUSDC1 width={40} height={40} />
-            <Text className="text-title-h3 text-content-1">
-              {BNumber.toFormatNumber(singleTimeDepositAmount, {
+  return (
+    <Drawer open={open} onOpenChange={setToggle}>
+      <DrawerContent>
+        <DrawerHeader className="pt-xl px-5">
+          <DrawerTitle>
+            <Trans>模拟账户存款</Trans>
+          </DrawerTitle>
+          <DrawerDescription>
+            <Trans>
+              每日可存款
+              {BNumber.toFormatNumber(dailyDepositAmount, {
                 unit: account.currencyUnit,
                 volScale: account.currencyDecimal,
               })}
-            </Text>
-          </View>
+            </Trans>
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <DrawerFooter className="pb-3xl px-5">
-            <Button color="primary" size="lg" block onPress={handleConfirm} loading={isConfirming}>
-              <Text>
-                <Trans>确定存款</Trans>
-              </Text>
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    )
-  },
-)
+        <View className="gap-medium items-center">
+          <IconUSDC1 width={40} height={40} />
+          <Text className="text-title-h3 text-content-1">
+            {BNumber.toFormatNumber(singleTimeDepositAmount, {
+              unit: account.currencyUnit,
+              volScale: account.currencyDecimal,
+            })}
+          </Text>
+        </View>
+
+        <DrawerFooter className="pb-3xl px-5">
+          <Button color="primary" size="lg" block onPress={handleConfirm} loading={isConfirming}>
+            <Text>
+              <Trans>确定存款</Trans>
+            </Text>
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  )
+}

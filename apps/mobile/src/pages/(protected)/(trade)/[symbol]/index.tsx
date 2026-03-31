@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useMemo } from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -40,7 +39,7 @@ interface SymbolDepthHeaderProps {
   onSymbolPress?: () => void
 }
 
-const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeaderProps) => {
+const SymbolDepthHeader = ({ symbol, onSymbolPress }: SymbolDepthHeaderProps) => {
   const router = useRouter()
   const symbolInfo = useMarketSymbolInfo(symbol)
 
@@ -90,14 +89,14 @@ const SymbolDepthHeader = observer(({ symbol, onSymbolPress }: SymbolDepthHeader
       }
     />
   )
-})
+}
 
 // ============ PriceInfo Component ============
 interface PriceInfoProps {
   symbol?: string
 }
 
-const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
+const PriceInfo = ({ symbol }: PriceInfoProps) => {
   const symbolInfo = useMarketSymbolInfo(symbol)
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const latestPrice = symbolMarketInfo?.userSellPrice
@@ -177,7 +176,7 @@ const PriceInfo = observer(({ symbol }: PriceInfoProps) => {
       </View>
     </View>
   )
-})
+}
 
 // ============ ChartView Component ============
 function ChartView({ symbol }: { symbol?: string }) {
@@ -191,7 +190,7 @@ function ChartView({ symbol }: { symbol?: string }) {
         <TradingviewChart mode="detail" resolution={tvResolution} />
       </View>
     </View>
-  )
+  );
 }
 
 // ============ DetailsView Component ============
@@ -311,7 +310,7 @@ interface BottomActionBarProps {
   onSell: () => void
 }
 
-const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProps) => {
+const BottomActionBar = ({ symbol, onBuy, onSell }: BottomActionBarProps) => {
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbol)
   const symbolInfo = useMarketSymbolInfo(symbol)
   const userSellPricePrice = symbolMarketInfo?.userSellPrice
@@ -354,10 +353,10 @@ const BottomActionBar = observer(({ symbol, onBuy, onSell }: BottomActionBarProp
       </View>
     </SafeAreaView>
   )
-})
+}
 
 // ============ Main SymbolDepth Component ============
-const SymbolDepth = observer(() => {
+const SymbolDepth = () => {
   const router = useRouter()
   // const { symbol } = useLocalSearchParams<{ symbol: string }>()
   const activeSymbol = useRootStore(tradeActiveTradeSymbolSelector)
@@ -408,6 +407,6 @@ const SymbolDepth = observer(() => {
       <BottomActionBar symbol={symbol} onBuy={handleBuy} onSell={handleSell} />
     </View>
   )
-})
+}
 
 export default SymbolDepth

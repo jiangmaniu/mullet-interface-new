@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -72,7 +71,7 @@ function HomeHeader() {
   )
 }
 
-const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
+const SymbolInfoCell = ({ symbolInfo }: { symbolInfo: Account.TradeSymbolListItem }) => {
   return (
     <View className="gap-medium flex-1 flex-row items-center">
       <AvatarImage source={getImgSource(symbolInfo?.imgUrl)} className="size-6 flex-shrink-0 rounded-full" />
@@ -82,37 +81,35 @@ const SymbolInfoCell = observer(({ symbolInfo }: { symbolInfo: Account.TradeSymb
       </View>
     </View>
   )
-})
+}
 
-const MarketRow = observer(
-  ({ viewMode, symbolInfo }: { viewMode: ViewMode; symbolInfo: Account.TradeSymbolListItem }) => {
-    const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
+const MarketRow = ({ viewMode, symbolInfo }: { viewMode: ViewMode; symbolInfo: Account.TradeSymbolListItem }) => {
+  const { switchTradeActiveSymbol } = useTradeSwitchActiveSymbol()
 
-    const handlePress = () => {
-      switchTradeActiveSymbol(symbolInfo?.symbol)
-      router.push(`/${symbolInfo?.symbol}`)
-    }
+  const handlePress = () => {
+    switchTradeActiveSymbol(symbolInfo?.symbol)
+    router.push(`/${symbolInfo?.symbol}`)
+  }
 
-    return (
-      <Pressable onPress={handlePress}>
-        {/* 使用 display 控制显示/隐藏，避免重新挂载组件 */}
-        <View style={{ display: viewMode === ViewMode.Market ? 'flex' : 'none' }}>
-          <AssetMarketRow symbolInfo={symbolInfo} />
-        </View>
-        <View style={{ display: viewMode === ViewMode.Price ? 'flex' : 'none' }}>
-          <AssetPriceRow symbolInfo={symbolInfo} />
-        </View>
-      </Pressable>
-    )
-  },
-)
+  return (
+    <Pressable onPress={handlePress}>
+      {/* 使用 display 控制显示/隐藏，避免重新挂载组件 */}
+      <View style={{ display: viewMode === ViewMode.Market ? 'flex' : 'none' }}>
+        <AssetMarketRow symbolInfo={symbolInfo} />
+      </View>
+      <View style={{ display: viewMode === ViewMode.Price ? 'flex' : 'none' }}>
+        <AssetPriceRow symbolInfo={symbolInfo} />
+      </View>
+    </Pressable>
+  )
+}
 
 // ============ AssetRow ============
 interface AssetMarketRowProps {
   symbolInfo: Account.TradeSymbolListItem
 }
 
-const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
+const AssetMarketRow = ({ symbolInfo }: AssetMarketRowProps) => {
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   const { colorMarketRise, colorMarketFall, textColorContent1 } = useThemeColors()
   const userSellPricePriceChangeInfo = parseRiseAndFallInfo(symbolMarketInfo?.userSellPriceDiff)
@@ -174,7 +171,7 @@ const AssetMarketRow = observer(({ symbolInfo }: AssetMarketRowProps) => {
       </View>
     </View>
   )
-})
+}
 
 function AssetTradeHeader({ viewMode }: { viewMode: ViewMode }) {
   return (
@@ -205,7 +202,7 @@ interface AssetPriceRowProps {
   symbolInfo: Account.TradeSymbolListItem
 }
 
-const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
+const AssetPriceRow = ({ symbolInfo }: AssetPriceRowProps) => {
   const symbolMarketInfo = useMarketQuoteInfoWithSub(symbolInfo?.symbol)
   return (
     <View className="p-xl gap-xl flex-row items-center">
@@ -235,38 +232,36 @@ const AssetPriceRow = observer(({ symbolInfo }: AssetPriceRowProps) => {
       </View>
     </View>
   )
-})
+}
 
 // ============ Main Index ============
-const AssetTabListContent = observer(
-  ({ viewMode, categoryOption }: { viewMode: ViewMode; categoryOption: SymbolCategoryOption }) => {
-    const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
-    let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
-    const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
+const AssetTabListContent = ({ viewMode, categoryOption }: { viewMode: ViewMode; categoryOption: SymbolCategoryOption }) => {
+  const favoriteSymbolInfoList = useRootStore(marketCurrentFavoriteSymbolInfoListSelector)
+  let tradeList: Account.TradeSymbolListItem[] = favoriteSymbolInfoList
+  const symbolListAll = useRootStore(useShallow(marketSymbolInfoListSelector))
 
-    if (categoryOption.value !== SymbolCategory.Favorite) {
-      tradeList =
-        categoryOption.value === SymbolCategory.All
-          ? symbolListAll
-          : symbolListAll.filter((item) => item.classify === categoryOption.value)
-    }
+  if (categoryOption.value !== SymbolCategory.Favorite) {
+    tradeList =
+      categoryOption.value === SymbolCategory.All
+        ? symbolListAll
+        : symbolListAll.filter((item) => item.classify === categoryOption.value)
+  }
 
-    return (
-      <CollapsibleFlatList
-        data={tradeList}
-        keyExtractor={(item) => item.symbol}
-        renderItem={({ item }: { item: Account.TradeSymbolListItem }) => {
-          return <MarketRow viewMode={viewMode} symbolInfo={item} />
-        }}
-        ListEmptyComponent={
-          <View className="py-[96px]">
-            <EmptyState message={<Trans>暂无数据</Trans>} />
-          </View>
-        }
-      />
-    )
-  },
-)
+  return (
+    <CollapsibleFlatList
+      data={tradeList}
+      keyExtractor={(item) => item.symbol}
+      renderItem={({ item }: { item: Account.TradeSymbolListItem }) => {
+        return <MarketRow viewMode={viewMode} symbolInfo={item} />
+      }}
+      ListEmptyComponent={
+        <View className="py-[96px]">
+          <EmptyState message={<Trans>暂无数据</Trans>} />
+        </View>
+      }
+    />
+  )
+}
 
 enum ViewMode {
   Market,

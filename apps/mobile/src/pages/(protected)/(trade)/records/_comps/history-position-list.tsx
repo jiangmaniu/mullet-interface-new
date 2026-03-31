@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/react/macro'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -34,7 +33,7 @@ const PAGE_SIZE = 10
 // Card Component
 // ============================================================================
 
-const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem }) => {
+const PositionCard = ({ order }: { order: Order.BgaOrderPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const lotVolScale = parseSymbolLotsVolScale(order.conf)
@@ -181,13 +180,13 @@ const PositionCard = observer(({ order }: { order: Order.BgaOrderPageListItem })
       </CardContent>
     </Card>
   )
-})
+}
 
 // ============================================================================
 // List Component
 // ============================================================================
 
-export const HistoryPositionList = observer(() => {
+export const HistoryPositionList = () => {
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
@@ -278,4 +277,4 @@ export const HistoryPositionList = observer(() => {
       style={{ paddingHorizontal: 16, paddingTop: 16 }}
     />
   )
-})
+}

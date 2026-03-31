@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { createContext, Dispatch, SetStateAction, useContext, useImperativeHandle, useState } from 'react'
 import { View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -69,50 +68,48 @@ const usePositionTpSlDrawerContext = () => {
   return context
 }
 
-export const PositionTpSlDrawer = observer(
-  ({
-    position,
-    ref,
-  }: PositionTpSlDrawerProps & {
-    ref: React.RefObject<Nilable<DrawerRef>>
-  }) => {
-    const [open, toggleActions] = useToggle()
-    const { toggle, setLeft: setFalse, setRight: setTrue, set: onSet } = toggleActions
+export const PositionTpSlDrawer = ({
+  position,
+  ref,
+}: PositionTpSlDrawerProps & {
+  ref: React.RefObject<Nilable<DrawerRef>>
+}) => {
+  const [open, toggleActions] = useToggle()
+  const { toggle, setLeft: setFalse, setRight: setTrue, set: onSet } = toggleActions
 
-    useImperativeHandle(ref, () => ({
-      open: () => setTrue(),
-      close: () => setFalse(),
-      toggle: () => toggle(),
-    }))
+  useImperativeHandle(ref, () => ({
+    open: () => setTrue(),
+    close: () => setFalse(),
+    toggle: () => toggle(),
+  }))
 
-    const [tpPrice, setTpPrice] = useState(position?.takeProfit?.toString() || '')
-    const [slPrice, setSlPrice] = useState(position?.stopLoss?.toString() || '')
-    const [amount, setAmount] = useState(position?.orderVolume?.toString() || '')
+  const [tpPrice, setTpPrice] = useState(position?.takeProfit?.toString() || '')
+  const [slPrice, setSlPrice] = useState(position?.stopLoss?.toString() || '')
+  const [amount, setAmount] = useState(position?.orderVolume?.toString() || '')
 
-    return (
-      <PositionTpSlDrawerContext.Provider
-        value={{
-          ...toggleActions,
-          tpPrice,
-          setTpPrice,
-          slPrice,
-          setSlPrice,
-          amount,
-          setAmount,
-          position,
-        }}
-      >
-        <Drawer open={open} onOpenChange={onSet}>
-          <DrawerContent>
-            <PositionTpSlDrawerContent />
-          </DrawerContent>
-        </Drawer>
-      </PositionTpSlDrawerContext.Provider>
-    )
-  },
-)
+  return (
+    <PositionTpSlDrawerContext.Provider
+      value={{
+        ...toggleActions,
+        tpPrice,
+        setTpPrice,
+        slPrice,
+        setSlPrice,
+        amount,
+        setAmount,
+        position,
+      }}
+    >
+      <Drawer open={open} onOpenChange={onSet}>
+        <DrawerContent>
+          <PositionTpSlDrawerContent />
+        </DrawerContent>
+      </Drawer>
+    </PositionTpSlDrawerContext.Provider>
+  )
+}
 
-const PositionTpSlDrawerContent = observer(() => {
+const PositionTpSlDrawerContent = () => {
   const currentAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { tpPrice, slPrice, position, setLeft: setFalse } = usePositionTpSlDrawerContext()
@@ -239,9 +236,9 @@ const PositionTpSlDrawerContent = observer(() => {
       </DrawerFooter>
     </>
   )
-})
+}
 
-const PositionTpForm = observer(() => {
+const PositionTpForm = () => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { setTpPrice, position, amount, tpPrice } = usePositionTpSlDrawerContext()
 
@@ -348,9 +345,9 @@ const PositionTpForm = observer(() => {
       </View>
     </View>
   )
-})
+}
 
-const PositionSlForm = observer(() => {
+const PositionSlForm = () => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { slPrice, setSlPrice, position } = usePositionTpSlDrawerContext()
 
@@ -456,4 +453,4 @@ const PositionSlForm = observer(() => {
       </View>
     </View>
   )
-})
+}

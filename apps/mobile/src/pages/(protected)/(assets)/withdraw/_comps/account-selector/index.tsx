@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useEffect, useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
@@ -20,7 +19,7 @@ import { useAccountExtractable } from '../../_apis/use-account-extractable'
 import { useSelectedWithdrawAccount } from '../../_hooks/use-selected-account'
 import { useWithdrawStore } from '../../_store'
 
-export const AccountSelection = observer(function AccountSelection() {
+export const AccountSelection = function AccountSelection() {
   const activeTradeAccountId = useRootStore(userInfoActiveTradeAccountIdSelector)
   const params = useLocalSearchParams<{ accountId?: string }>()
   const setSelectedAccountId = useWithdrawStore((s) => s.setSelectedAccountId)
@@ -116,4 +115,4 @@ export const AccountSelection = observer(function AccountSelection() {
       />
     </>
   )
-})
+}

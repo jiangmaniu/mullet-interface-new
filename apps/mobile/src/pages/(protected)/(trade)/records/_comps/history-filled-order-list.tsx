@@ -1,6 +1,5 @@
 import { Trans } from '@lingui/react/macro'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { ActivityIndicator, FlatList, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -33,7 +32,7 @@ const PAGE_SIZE = 10
 // Card Component
 // ============================================================================
 
-const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageListItem }) => {
+const FilledOrderCard = ({ order }: { order: Order.TradeRecordsPageListItem }) => {
   const isBuy = order.buySell === 'BUY'
   const { renderLinguiMsg } = useI18n()
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
@@ -157,13 +156,13 @@ const FilledOrderCard = observer(({ order }: { order: Order.TradeRecordsPageList
       </CardContent>
     </Card>
   )
-})
+}
 
 // ============================================================================
 // List Component
 // ============================================================================
 
-export const HistoryFilledOrderList = observer(() => {
+export const HistoryFilledOrderList = () => {
   const accountId = useRootStore(userInfoActiveTradeAccountIdSelector)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch, isRefetching } = useInfiniteQuery({
@@ -253,4 +252,4 @@ export const HistoryFilledOrderList = observer(() => {
       style={{ paddingHorizontal: 16, paddingTop: 16 }}
     />
   )
-})
+}

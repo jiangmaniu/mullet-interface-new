@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { createContext, startTransition, useContext, useImperativeHandle, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { NumberFormatValues } from 'react-number-format'
@@ -36,7 +35,7 @@ interface ClosePositionDrawerProps {
   position: Order.BgaOrderPageListItem
 }
 
-const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerProps) => {
+const ClosePositionDrawerContent = ({ position }: ClosePositionDrawerProps) => {
   const [closedLots, setClosedLots] = useState(position.orderVolume?.toString() ?? '')
   const [sliderValue, setSliderValue] = useState(BNumber.from(position.orderVolume)?.gt(0) ? 100 : 0)
   const closeConfirmation = useRootStore((s) => s.trade.setting.closeConfirmation)
@@ -250,7 +249,7 @@ const ClosePositionDrawerContent = observer(({ position }: ClosePositionDrawerPr
       </DrawerFooter>
     </>
   )
-})
+}
 
 const ClosePositionDrawerContext = createContext<Actions<boolean>>({
   setLeft: () => {},

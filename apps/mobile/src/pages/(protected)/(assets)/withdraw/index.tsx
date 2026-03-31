@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, View } from 'react-native'
 import { router } from 'expo-router'
@@ -13,7 +12,7 @@ import { BankWithdrawCard } from './_comps/bank-withdraw-card'
 import { CryptoWithdrawCard } from './_comps/crypto-withdraw-card/index'
 import { useSelectedWithdrawAccount } from './_hooks/use-selected-account'
 
-const WithdrawScreen = observer(function WithdrawScreen() {
+const WithdrawScreen = function WithdrawScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
 
   return (
@@ -51,6 +50,6 @@ const WithdrawScreen = observer(function WithdrawScreen() {
       </View>
     </View>
   )
-})
+}
 
 export default WithdrawScreen

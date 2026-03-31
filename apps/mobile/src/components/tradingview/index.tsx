@@ -1,4 +1,3 @@
-import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Animated, Easing, Platform, View } from 'react-native'
 import { WebView } from 'react-native-webview'
@@ -136,7 +135,7 @@ function TradingviewChartInner({ mode = 'detail', resolution }: TradingviewChart
   )
 }
 
-export const TradingviewChart = observer(TradingviewChartInner)
+export const TradingviewChart = TradingviewChartInner
 
 // ─── 加载动画 ──────────────────────────────────────────────────────
 

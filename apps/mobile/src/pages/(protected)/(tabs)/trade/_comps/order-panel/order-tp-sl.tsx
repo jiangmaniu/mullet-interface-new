@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useMemo } from 'react'
 import { View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -19,7 +18,7 @@ import { BNumber } from '@mullet/utils/number'
 
 import { useCreateOrderPrice } from './_hooks/use-order-price'
 
-export const OrderTpSl = observer(({ symbol }: { symbol?: string }) => {
+export const OrderTpSl = ({ symbol }: { symbol?: string }) => {
   const hasTpSl = useRootStore((s) => {
     return tradeFormDataSelector(s).hasTpSl
   })
@@ -51,9 +50,9 @@ export const OrderTpSl = observer(({ symbol }: { symbol?: string }) => {
       )}
     </View>
   )
-})
+}
 
-const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
+const SetTakeProfit = ({ symbol }: { symbol?: string }) => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
 
   const { disabledInput } = useDisabledTrade({ symbol, accountId: currentAccountCurrencyInfo?.id })
@@ -164,9 +163,9 @@ const SetTakeProfit = observer(({ symbol }: { symbol?: string }) => {
       </View>
     </View>
   )
-})
+}
 
-const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
+const SetStopLoss = ({ symbol }: { symbol?: string }) => {
   const currentAccountCurrencyInfo = useRootStore(useShallow(userInfoActiveTradeAccountCurrencyInfoSelector))
   const { disabledInput } = useDisabledTrade({
     accountId: currentAccountCurrencyInfo?.id,
@@ -280,4 +279,4 @@ const SetStopLoss = observer(({ symbol }: { symbol?: string }) => {
       </View>
     </View>
   )
-})
+}

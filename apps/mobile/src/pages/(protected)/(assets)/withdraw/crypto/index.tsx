@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { ScrollView, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { router } from 'expo-router'
@@ -22,7 +21,7 @@ import { useDepositAddress } from '../../deposit/_apis/use-deposit-address'
 import { TokenChainSelector } from './_comps/token-chain-selector'
 import { WalletSelector } from './_comps/wallet-address-selector'
 
-const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
+const CryptoWithdrawScreen = function CryptoWithdrawScreen() {
   const selectedAccount = useSelectedWithdrawAccount()
   const { selectedTokenSymbol, selectedChainId, toWalletAddress } = useWithdrawState()
   const { chainInfo, tokenInfo } = useSelectedChainInfo()
@@ -105,6 +104,6 @@ const CryptoWithdrawScreen = observer(function CryptoWithdrawScreen() {
       </SafeAreaView>
     </View>
   )
-})
+}
 
 export default CryptoWithdrawScreen

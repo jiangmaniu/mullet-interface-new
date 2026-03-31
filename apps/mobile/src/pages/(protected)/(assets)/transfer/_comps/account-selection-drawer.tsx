@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { Pressable, ScrollView, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -21,33 +20,31 @@ interface AccountSelectionDrawerProps {
   title?: React.ReactNode
 }
 
-export const AccountSelectionDrawer = observer(
-  ({ visible, onClose, onSelect, selectedAccountId, title }: AccountSelectionDrawerProps) => {
-    const accountList = useRootStore(useShallow(userInfoRealAccountListSelector))
-    return (
-      <Drawer open={visible} onOpenChange={onClose}>
-        <DrawerContent className="py-xl h-[240px] gap-0">
-          {title && <DrawerHeader className="px-5">{title}</DrawerHeader>}
+export const AccountSelectionDrawer = ({ visible, onClose, onSelect, selectedAccountId, title }: AccountSelectionDrawerProps) => {
+  const accountList = useRootStore(useShallow(userInfoRealAccountListSelector))
+  return (
+    <Drawer open={visible} onOpenChange={onClose}>
+      <DrawerContent className="py-xl h-[240px] gap-0">
+        {title && <DrawerHeader className="px-5">{title}</DrawerHeader>}
 
-          <ScrollView className="pb-3xl flex-1" showsVerticalScrollIndicator={false}>
-            {accountList.map((account) => (
-              <AccountRow
-                key={account.id}
-                account={account}
-                selectedAccountId={selectedAccountId}
-                onPress={() => {
-                  onSelect(account)
-                  onClose()
-                }}
-              />
-            ))}
-            <View className="h-safe-bottom" />
-          </ScrollView>
-        </DrawerContent>
-      </Drawer>
-    )
-  },
-)
+        <ScrollView className="pb-3xl flex-1" showsVerticalScrollIndicator={false}>
+          {accountList.map((account) => (
+            <AccountRow
+              key={account.id}
+              account={account}
+              selectedAccountId={selectedAccountId}
+              onPress={() => {
+                onSelect(account)
+                onClose()
+              }}
+            />
+          ))}
+          <View className="h-safe-bottom" />
+        </ScrollView>
+      </DrawerContent>
+    </Drawer>
+  )
+}
 
 function AccountRow({
   account,

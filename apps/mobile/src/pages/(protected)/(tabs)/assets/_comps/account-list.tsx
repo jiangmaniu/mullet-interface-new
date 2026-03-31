@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useRef } from 'react'
 import { Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -26,7 +25,7 @@ import { renderFallback } from '@mullet/utils/fallback'
 import { BNumber } from '@mullet/utils/number'
 import { formatAddress } from '@mullet/utils/web3'
 
-export const RealAccountList = observer(() => {
+export const RealAccountList = () => {
   const realAccountList = useRootStore(useShallow(userInfoRealAccountListSelector))
 
   if (realAccountList.length === 0) {
@@ -45,13 +44,13 @@ export const RealAccountList = observer(() => {
       })}
     </>
   )
-})
+}
 
 type RealAccountRowProps = {
   account: User.AccountItem
 }
 
-const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
+const RealAccountRow = ({ account }: RealAccountRowProps) => {
   const { textColorContent1, colorBrandSecondary3, colorBrandPrimary } = useThemeColors()
   const addBalanceDrawerRef = useRef<AddBalanceDrawerRef>(null)
   const synopsis = useAccountSynopsis(account.synopsis)
@@ -150,9 +149,9 @@ const RealAccountRow = observer(({ account }: RealAccountRowProps) => {
       <AddBalanceDrawer ref={addBalanceDrawerRef} accountInfo={account} />
     </>
   )
-})
+}
 
-export const SimulateAccountList = observer(() => {
+export const SimulateAccountList = () => {
   const simulateAccountList = useRootStore(useShallow(userInfoSimulateAccountListSelector))
 
   if (simulateAccountList.length === 0) {
@@ -171,7 +170,7 @@ export const SimulateAccountList = observer(() => {
       })}
     </>
   )
-})
+}
 
 type SimulateAccountRowProps = {
   account: User.AccountItem

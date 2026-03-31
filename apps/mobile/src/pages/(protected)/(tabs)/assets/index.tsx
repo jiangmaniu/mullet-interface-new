@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { router, useLocalSearchParams } from 'expo-router'
@@ -25,7 +24,7 @@ import { RealAccountList, SimulateAccountList } from './_comps/account-list'
 import { TradeAccountActions } from './_comps/trade-account-actions.tsx'
 import { TradeAccountOverviewCard } from './_comps/trade-account-overview-card.tsx'
 
-export default observer(function AssetsScreen() {
+export default function AssetsScreen() {
   const { textColorContent1 } = useThemeColors()
   const { tab } = useLocalSearchParams<{ tab?: string }>()
   const { data: unreadCount = 0 } = useUnreadCount()
@@ -100,4 +99,4 @@ export default observer(function AssetsScreen() {
       </CollapsibleTab>
     </View>
   )
-})
+};

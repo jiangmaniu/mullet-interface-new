@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import { useRef } from 'react'
 import { View } from 'react-native'
 
@@ -15,7 +14,7 @@ import useSubmitOrder from '../../_hooks/use-submit-order'
 import { useVerifyCreateOrderData } from '../../_hooks/use-verify-order'
 import { OrderConfirmDrawer } from '../open-order-confirm-drawer'
 
-export const OrderSubmit = observer(({ symbol }: { symbol?: string }) => {
+export const OrderSubmit = ({ symbol }: { symbol?: string }) => {
   const orderConfirmDrawerRef = useRef<DrawerRef>(null)
   const direction = useRootStore(tradeFormDataDirectionSelector)
   const { isBuy } = parseTradeDirectionInfo(direction)
@@ -52,4 +51,4 @@ export const OrderSubmit = observer(({ symbol }: { symbol?: string }) => {
       <OrderConfirmDrawer ref={orderConfirmDrawerRef} symbol={symbol} onConfirm={handleSubmitOrder} />
     </View>
   )
-})
+}

@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro'
-import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, View } from 'react-native'
 import { useShallow } from 'zustand/react/shallow'
@@ -15,7 +14,7 @@ import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { BNumber } from '@mullet/utils/number'
 
-export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
+export const OrderPrice = ({ symbol }: { symbol?: string }) => {
   const { limitPrice, type, direction } = useRootStore(
     useShallow((s) => {
       const formatData = tradeFormDataSelector(s)
@@ -82,4 +81,4 @@ export const OrderPrice = observer(({ symbol }: { symbol?: string }) => {
       )}
     </>
   )
-})
+}
