@@ -27,7 +27,6 @@ const CACHE_SIZE_DECIMAlS = 2
 export default function AboutScreen() {
   const router = useRouter()
   const { textColorContent4 } = useThemeColors()
-  // const [cacheSize, setCacheSize] = useState('0')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
   const { renderLinguiMsg } = useI18n()
@@ -40,11 +39,6 @@ export default function AboutScreen() {
     },
     initialData: '0',
   })
-  // 页面加载时读取真实缓存大小
-  useEffect(() => {
-    // getCacheSize().then(setCacheSize)
-  }, [])
-
   const { checkUpdate } = useVersionCheck()
   const hasUpdate = useAppUpdateStore((s) => s.hasUpdate)
   const latestVersion = useAppUpdateStore((s) => s.latestVersion)
@@ -66,7 +60,6 @@ export default function AboutScreen() {
   const handleClearCache = useCallback(async () => {
     try {
       await clearAppCache()
-      // setCacheSize('0')
       await refetchAppCacheSize()
       toast.success('成功清除缓存')
       setClearCacheVisible(false)
