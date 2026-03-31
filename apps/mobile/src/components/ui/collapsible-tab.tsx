@@ -370,8 +370,8 @@ export function CollapsibleStickyHeader({
 
   const headerPanGesture = Gesture.Pan()
     .minDistance(minDistance)
-    .activeOffsetY([-20, 20]) // 垂直方向移动超过 20px 才激活
-    .failOffsetX([-10, 10]) // 横向移动超过 10px 则失败，让内部 ScrollView 处理
+    .activeOffsetY([-5, 5]) // 垂直方向移动超过 5px 才激活
+    .failOffsetX([-5, 5]) // 横向移动超过 5px 则失败，让内部 ScrollView 处理
     .onStart(() => {
       'worklet'
       cancelAnimation(targetScrollY)
