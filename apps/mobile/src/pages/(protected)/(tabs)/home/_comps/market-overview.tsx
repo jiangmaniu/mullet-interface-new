@@ -1,15 +1,15 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
+import { useShallow } from 'zustand/react/shallow'
 import { router } from 'expo-router'
-import { includes } from 'lodash-es'
 
 import { SparkLine } from '@/components/charts/spark-line'
 import { AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
-import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
+import { MARKET_OVERVIEW_SYMBOL_LIST, MarketOverviewSymbol } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
@@ -151,13 +151,14 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
 
 // ============ MarketOverview ============
 export const MarketOverview = () => {
-  const marketOverviewSymbolInfoList = useRootStore((s) =>
-    marketSymbolInfoListSelector(s).filter((symbolInfo) => includes(MARKET_OVERVIEW_SYMBOL_LIST, symbolInfo.symbol)),
+  const marketOverviewSymbolInfoList = useRootStore(
+    useShallow((s) => {
+      const list = marketSymbolInfoListSelector(s) ?? []
+      return list.filter((symbolInfo) =>
+        MARKET_OVERVIEW_SYMBOL_LIST.includes(symbolInfo.symbol as MarketOverviewSymbol),
+      )
+    }),
   )
-
-  if (marketOverviewSymbolInfoList.length === 0) {
-    return null
-  }
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
