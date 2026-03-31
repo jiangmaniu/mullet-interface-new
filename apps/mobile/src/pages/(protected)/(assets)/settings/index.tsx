@@ -1,13 +1,12 @@
-import { Trans, useLingui } from '@lingui/react/macro'
-import { useMemo, useState } from 'react'
+import { Trans } from '@lingui/react/macro'
+import { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import type { Locale } from '@/locales/i18n'
 
 import { IconifyNavArrowRight } from '@/components/ui/icons'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
-import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useAppCurrentVersion } from '@/hooks/common/use-app-version'
 import { useI18n } from '@/hooks/use-i18n'
 import { useLogout } from '@/hooks/use-logout'
 import { useThemeColors } from '@/hooks/use-theme-colors'
@@ -24,12 +23,7 @@ export default function SettingScreen() {
 
   const currentLocaleName = locales[locale] || '简体中文'
 
-  // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
-  const appVersion = useMemo(() => {
-    const { APP_VERSION: version, APP_ENV: env, BUILD_TIME: buildTime } = EXPO_ENV_CONFIG
-    const versionStr = env === 'prod' ? `v${version}` : `v${version}-${env}`
-    return `${versionStr} (${buildTime})`
-  }, [])
+  const { appCurrentVersion } = useAppCurrentVersion()
 
   return (
     <View className="bg-secondary flex-1">
@@ -75,7 +69,7 @@ export default function SettingScreen() {
               <Trans>关于Mullet</Trans>
             </Text>
             <View className="gap-xs flex-row items-center">
-              <Text className="text-paragraph-p2 text-content-4">{appVersion}</Text>
+              <Text className="text-paragraph-p2 text-content-4">{appCurrentVersion}</Text>
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
           </View>

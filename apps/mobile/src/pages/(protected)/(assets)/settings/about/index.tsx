@@ -1,5 +1,6 @@
 import { Trans } from '@lingui/react/macro'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useRouter } from 'expo-router'
 
@@ -10,7 +11,7 @@ import { IconAppLogoCircle } from '@/components/ui/icons/set/app-logo-circle'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { Text } from '@/components/ui/text'
 import { toast } from '@/components/ui/toast'
-import { EXPO_ENV_CONFIG } from '@/constants/expo'
+import { useAppCurrentVersion } from '@/hooks/common/use-app-version'
 import { useI18n } from '@/hooks/use-i18n'
 import { useThemeColors } from '@/hooks/use-theme-colors'
 import { useVersionCheck } from '@/hooks/use-version-check'
@@ -26,13 +27,22 @@ const CACHE_SIZE_DECIMAlS = 2
 export default function AboutScreen() {
   const router = useRouter()
   const { textColorContent4 } = useThemeColors()
-  const [cacheSize, setCacheSize] = useState('0')
+  // const [cacheSize, setCacheSize] = useState('0')
   const [clearCacheVisible, setClearCacheVisible] = useState(false)
   const [updateVisible, setUpdateVisible] = useState(false)
   const { renderLinguiMsg } = useI18n()
+
+  const { data: appCacheSize, refetch: refetchAppCacheSize } = useQuery({
+    queryKey: ['app-cache-size'],
+    queryFn: async (): Promise<string> => {
+      const size = await getCacheSize()
+      return size
+    },
+    initialData: '0',
+  })
   // 页面加载时读取真实缓存大小
   useEffect(() => {
-    getCacheSize().then(setCacheSize)
+    // getCacheSize().then(setCacheSize)
   }, [])
 
   const { checkUpdate } = useVersionCheck()
@@ -42,12 +52,7 @@ export default function AboutScreen() {
   const downloadUrl = useAppUpdateStore((s) => s.downloadUrl)
   const isForceUpdate = useAppUpdateStore((s) => s.isForceUpdate)
 
-  // 根据环境生成完整版本号：v{version}-{env} ({buildTime})
-  const APP_VERSION = useMemo(() => {
-    const { APP_VERSION: version, APP_ENV: env, BUILD_TIME: buildTime } = EXPO_ENV_CONFIG
-    const versionStr = env === 'prod' ? `v${version}` : `v${version}-${env} (${buildTime})`
-    return `${versionStr}`
-  }, [])
+  const { appCurrentVersion } = useAppCurrentVersion()
 
   const handleCheckUpdate = useCallback(async () => {
     const result = await checkUpdate()
@@ -59,15 +64,16 @@ export default function AboutScreen() {
   }, [checkUpdate])
 
   const handleClearCache = useCallback(async () => {
-    setClearCacheVisible(false)
     try {
       await clearAppCache()
-      setCacheSize('0')
+      // setCacheSize('0')
+      await refetchAppCacheSize()
       toast.success('成功清除缓存')
+      setClearCacheVisible(false)
     } catch {
       toast.error('清除缓存失败')
     }
-  }, [])
+  }, [refetchAppCacheSize])
 
   const handleConfirmUpdate = useCallback(() => {
     setUpdateVisible(false)
@@ -85,7 +91,7 @@ export default function AboutScreen() {
         <IconAppLogoCircle width={80} height={80} />
         <View className="items-center">
           <Text className="text-title-h4 text-content-1">Mullet</Text>
-          <Text className="text-paragraph-p1 text-content-4">{APP_VERSION}</Text>
+          <Text className="text-paragraph-p1 text-content-4">{appCurrentVersion}</Text>
         </View>
       </View>
 
@@ -152,10 +158,11 @@ export default function AboutScreen() {
         {/* 清除缓存 */}
         <Pressable
           onPress={() => {
-            if (!BNumber.from(cacheSize).lte(0)) {
+            if (BNumber.from(appCacheSize).lte(0)) {
               toast.info(<Trans>没有需要清理的缓存</Trans>)
               return
             }
+
             setClearCacheVisible(true)
           }}
         >
@@ -165,7 +172,7 @@ export default function AboutScreen() {
             </Text>
             <View className="gap-xs flex-row items-center">
               <Text className="text-paragraph-p2 text-content-4">
-                {formatBytes(cacheSize, { decimals: CACHE_SIZE_DECIMAlS })}
+                {formatBytes(appCacheSize, { decimals: CACHE_SIZE_DECIMAlS })}
               </Text>
               <IconifyNavArrowRight width={18} height={18} color={textColorContent4} />
             </View>
