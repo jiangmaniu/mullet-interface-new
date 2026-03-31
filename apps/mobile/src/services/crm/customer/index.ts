@@ -1,9 +1,6 @@
 import qs from 'qs'
 
-import { onBackendLogout } from '@/hooks/use-logout'
-import { ClientInfo } from '@/stores/user-slice/info-slice-type'
 import { request } from '@/utils/request'
-import { getCurrentRouteName } from '@/v1/utils/navigation'
 
 // 客户用户-新增
 export async function addClient(body: Customer.AddOrUpdateParams) {
@@ -37,9 +34,6 @@ export async function getClientDetail(params: API.IdParam) {
     params,
   }).then((res) => {
     if (res?.code !== 200) {
-      if (getCurrentRouteName() !== 'Welcome') {
-        onBackendLogout()
-      }
       return
     }
 

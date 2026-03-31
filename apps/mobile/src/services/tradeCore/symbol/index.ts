@@ -1,15 +1,15 @@
 import qs from 'qs'
 import type { Symbol } from '@/services/tradeCore/symbol/typings'
 
-import { request } from '@/utils/request'
-import { parseJsonFields } from '@/v1/utils'
+import { parseJsonFields } from '@/utils'
 import {
   formatMultipleValue,
   transformTradeFeeShow,
   transformTradeInventoryShow,
   transformTradePrepaymentConfShow,
   transformTradeTimeShow,
-} from '@/v1/utils/business'
+} from '@/utils/business'
+import { request } from '@/utils/request'
 
 // 交易品种-新增
 export async function addSymbol(body: Symbol.SubmitSymbolParams) {

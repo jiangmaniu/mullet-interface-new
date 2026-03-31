@@ -1,6 +1,6 @@
+import { getEnv } from '@/env'
+import { callSoapService, itype } from '@/utils/soap'
 import { stores } from '@/v1/provider/mobxProvider'
-import { getEnv } from '@/v1/env'
-import { callSoapService, itype } from '@/v1/utils/soap'
 
 // 获取金属列表
 export const getAppMetal = async () => {
@@ -9,7 +9,7 @@ export const getAppMetal = async () => {
     xmlns: 'CBCWEB',
     id: 'o0',
     'c:root': '1',
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -20,8 +20,8 @@ export const getAppMetal = async () => {
         item?.['app_metal'].map((i: any) => ({
           ...i,
           metaltype: item.metaltype,
-          metaltypename: item.metaltypename
-        }))
+          metaltypename: item.metaltypename,
+        })),
       )
       return data
     }
@@ -39,7 +39,7 @@ export const jigouliebiao = async () => {
     xmlns: 'CBCWEB',
     id: 'o0',
     'c:root': '1',
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -62,7 +62,7 @@ export const getMetalAllType = async () => {
     xmlns: 'CBCWEB',
     id: 'o0',
     'c:root': '1',
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -90,7 +90,7 @@ export const shishijiage = async (pid: string) => {
     pageindex: itype(1),
     updatemarktype: itype('3'),
     vipid: itype(ENVS.CBC_VIP_ID),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -114,9 +114,9 @@ export const bangdan = async () => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    }
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
   })
 
   if (!response.ok) {
@@ -133,7 +133,7 @@ export const shichangfenxi = async ({
   minId = 0,
   count = 10,
   typeid = '0',
-  productid
+  productid,
 }: { minId?: number; count?: number; typeid?: string; productid?: string } = {}) => {
   const ENVS = await getEnv()
 
@@ -150,7 +150,7 @@ export const shichangfenxi = async ({
     maxId: itype('0'),
     keyname: itype('newsjson'),
     vipid: itype(ENVS.CBC_VIP_ID),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -175,9 +175,9 @@ export const xinwenxiangqing = async ({ webid }: { webid: number }) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Accept': '*/*',
-      'Content-Type': 'text/xml;charset=utf-8'
-    }
+      Accept: '*/*',
+      'Content-Type': 'text/xml;charset=utf-8',
+    },
   })
 
   if (!response.ok) {
@@ -193,7 +193,7 @@ export const gongyingxinxi = async ({
   count = 20,
   productid,
   gqtype = 1,
-  date
+  date,
 }: {
   count?: number
   productid?: string
@@ -210,7 +210,7 @@ export const gongyingxinxi = async ({
     productid: itype(productid || ''),
     gqtype: itype(gqtype),
     date: itype(date || ''),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -235,9 +235,9 @@ export const gongqiuxiangqing = async ({ id }: { id: number }) => {
   const response = await fetch(url, {
     method: 'GET',
     headers: {
-      'Accept': '*/*',
-      'Content-Type': 'text/xml;charset=utf-8'
-    }
+      Accept: '*/*',
+      'Content-Type': 'text/xml;charset=utf-8',
+    },
   })
 
   if (!response.ok) {
@@ -257,7 +257,7 @@ export const jiagefenlei = async ({ productid }: { productid: string }) => {
     id: 'o0',
     'c:root': '1',
     productid: itype(productid || ''),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -287,7 +287,7 @@ export const xianhuojiage = async ({ productid }: { productid: string }) => {
     productid_big: itype(''),
     isjgf: itype('0'),
     vipid: itype(ENVS.CBC_VIP_ID),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -298,7 +298,7 @@ export const xianhuojiage = async ({ productid }: { productid: string }) => {
 
       return {
         datas,
-        prices
+        prices,
       }
     }
   } catch (error) {
@@ -315,7 +315,7 @@ export const huangjinliebiao = () => xianhuojiage({ productid: '10647' })
 export const jiageliebiao = async ({
   productid_big,
   bjjgid,
-  updatemarktype
+  updatemarktype,
 }: {
   productid_big: string
   bjjgid: string
@@ -332,7 +332,7 @@ export const jiageliebiao = async ({
     bjjgid: itype(bjjgid),
     updatemarktype: itype(updatemarktype),
     vipid: itype(ENVS.CBC_VIP_ID),
-    pass: itype(ENVS.CBC_PASS)
+    pass: itype(ENVS.CBC_PASS),
   })
 
   try {
@@ -352,8 +352,8 @@ export const jiageliebiao = async ({
           ...(Array.isArray(priceshhj) ? priceshhj : []),
           ...(Array.isArray(pricenygjs) ? pricenygjs : []),
           ...(Array.isArray(pricety) ? pricety : []),
-          ...(Array.isArray(priceother) ? priceother : [])
-        ]
+          ...(Array.isArray(priceother) ? priceother : []),
+        ],
       }
     }
   } catch (error) {

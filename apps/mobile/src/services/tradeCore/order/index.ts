@@ -1,8 +1,8 @@
 import qs from 'qs'
 
+import { parseJsonFields } from '@/utils'
+import { formatSymbolConf } from '@/utils/business'
 import { request } from '@/utils/request'
-import { parseJsonFields } from '@/v1/utils'
-import { formatSymbolConf } from '@/v1/utils/business'
 
 import { Order } from './typings'
 

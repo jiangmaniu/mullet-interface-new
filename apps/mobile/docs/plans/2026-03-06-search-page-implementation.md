@@ -13,6 +13,7 @@
 ## Task 1: 添加页面初始化逻辑
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:157-243`
 
 **Step 1: 导入必要的依赖**
@@ -21,10 +22,11 @@
 
 ```typescript
 import { useEffect } from 'react'
-import { useStores } from '@/v1/provider/mobxProvider'
-import { useGetCurrentQuoteCallback } from '@/v1/utils/wsUtil'
-import { BNumber } from '@mullet/utils/number'
+
 import { parseRiseAndFallInfo } from '@/helpers/market'
+import { useGetCurrentQuoteCallback } from '@/utils/wsUtil'
+import { useStores } from '@/v1/provider/mobxProvider'
+import { BNumber } from '@mullet/utils/number'
 ```
 
 **Step 2: 在 SearchPage 组件中添加初始化逻辑**
@@ -43,6 +45,7 @@ useEffect(() => {
 **Step 3: 验证初始化逻辑**
 
 运行应用，打开搜索页面，检查：
+
 - 控制台无错误
 - `trade.symbolListAll` 有数据
 
@@ -63,6 +66,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 2: 实现热门品种筛选逻辑
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:73-73`
 
 **Step 1: 创建热门品种筛选函数**
@@ -72,16 +76,15 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ```typescript
 // 筛选热门品种
 function getHotSymbols(symbolListAll: Account.TradeSymbolListItem[]) {
-  const hotSymbolsLower = HOT_SYMBOL_LIST.map(s => s.toLowerCase())
-  return symbolListAll.filter(item =>
-    hotSymbolsLower.some(hot => item.alias?.toLowerCase().includes(hot))
-  )
+  const hotSymbolsLower = HOT_SYMBOL_LIST.map((s) => s.toLowerCase())
+  return symbolListAll.filter((item) => hotSymbolsLower.some((hot) => item.alias?.toLowerCase().includes(hot)))
 }
 ```
 
 **Step 2: 验证筛选逻辑**
 
 在浏览器控制台测试：
+
 ```javascript
 const result = getHotSymbols(trade.symbolListAll)
 console.log('热门品种:', result)
@@ -106,6 +109,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 3: 实现搜索筛选与权重排序
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:164-168`
 
 **Step 1: 添加防抖状态**
@@ -129,29 +133,24 @@ useEffect(() => {
 
 ```typescript
 // 计算匹配权重
-function calculateMatchScore(
-  item: Account.TradeSymbolListItem,
-  searchChars: string[]
-): number {
+function calculateMatchScore(item: Account.TradeSymbolListItem, searchChars: string[]): number {
   const searchText = `${item.symbol} ${item.alias} ${item.name}`.toLowerCase()
-  return searchChars.filter(char =>
-    searchText.includes(char.toLowerCase())
-  ).length
+  return searchChars.filter((char) => searchText.includes(char.toLowerCase())).length
 }
 
 // 搜索并排序品种
-function searchAndSortSymbols(
-  symbolListAll: Account.TradeSymbolListItem[],
-  searchQuery: string
-) {
-  const searchChars = searchQuery.trim().split('').filter(c => c.trim())
+function searchAndSortSymbols(symbolListAll: Account.TradeSymbolListItem[], searchQuery: string) {
+  const searchChars = searchQuery
+    .trim()
+    .split('')
+    .filter((c) => c.trim())
 
   if (searchChars.length === 0) {
     return getHotSymbols(symbolListAll)
   }
 
   return symbolListAll
-    .map(item => ({ item, score: calculateMatchScore(item, searchChars) }))
+    .map((item) => ({ item, score: calculateMatchScore(item, searchChars) }))
     .filter(({ score }) => score > 0)
     .sort((a, b) => b.score - a.score)
     .map(({ item }) => item)
@@ -164,12 +163,16 @@ function searchAndSortSymbols(
 
 ```typescript
 const filteredSymbols = searchAndSortSymbols(trade.symbolListAll, debouncedQuery)
-const searchChars = debouncedQuery.trim().split('').filter(c => c.trim())
+const searchChars = debouncedQuery
+  .trim()
+  .split('')
+  .filter((c) => c.trim())
 ```
 
 **Step 4: 验证搜索逻辑**
 
 测试场景：
+
 1. 无输入 → 显示热门品种
 2. 输入 "BTC" → BTC-USDC 排在前面
 3. 输入 "BTC E" → BTC-USDC 和 ETH-USDC 都显示，按权重排序
@@ -192,6 +195,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 4: 创建高亮文本组件
 
 **Files:**
+
 - Create: `apps/mobile/src/pages/(protected)/(home)/_comps/highlight-text.tsx`
 
 **Step 1: 创建 HighlightText 组件**
@@ -234,6 +238,7 @@ import { HighlightText } from './_comps/highlight-text'
 **Step 3: 验证组件渲染**
 
 在浏览器中测试：
+
 - 输入 "BTC" → "BTC-USDC" 中的 B, T, C 应该高亮
 - 输入 "sol" → "SOL-USDC" 中的 S, O, L 应该高亮（不区分大小写）
 
@@ -254,6 +259,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 5: 重构 SearchAssetRow 组件
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:88-120`
 
 **Step 1: 更新组件接口**
@@ -336,6 +342,7 @@ function SearchAssetRow({
 **Step 3: 验证布局和数据**
 
 检查：
+
 - Avatar 显示正确
 - Symbol 和 Name 高亮正确
 - 价格显示正确（基于实时行情）
@@ -359,6 +366,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 6: 重构 SearchAssetTradeRow 组件
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:123-154`
 
 **Step 1: 更新组件实现**
@@ -439,6 +447,7 @@ function SearchAssetTradeRow({
 **Step 3: 验证交易视图**
 
 检查：
+
 - 买价/卖价显示正确
 - 最高价/最低价显示正确
 - 高亮显示正确
@@ -461,6 +470,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 7: 更新标题和路由逻辑
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:199-222`
 
 **Step 1: 更新标题动态切换**
@@ -546,6 +556,7 @@ const handleSelect = (symbol: string) => {
 **Step 4: 验证功能**
 
 测试：
+
 1. 无搜索词 → 标题显示"热门品种"
 2. 有搜索词 → 标题显示"搜索结果"
 3. 搜索无结果 → 显示"暂无搜索内容"
@@ -569,11 +580,13 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 ## Task 8: 清理和优化
 
 **Files:**
+
 - Modify: `apps/mobile/src/pages/(protected)/(home)/search.tsx:1-243`
 
 **Step 1: 移除未使用的代码**
 
 删除：
+
 - `generateMockData` 函数
 - `SYMBOLS` mock 数据
 - `AreaChart` 相关导入
@@ -581,6 +594,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 **Step 2: 优化导入顺序**
 
 按照项目规范排序：
+
 1. React/React Native
 2. 第三方库
 3. 项目内部模块（`@/`）
@@ -610,6 +624,7 @@ function searchAndSortSymbols(/* ... */) {
 **Step 4: 验证完整功能**
 
 完整测试流程：
+
 1. 打开搜索页面 → 显示热门品种
 2. 输入 "BTC" → 显示 BTC 相关品种，高亮正确
 3. 输入 "xyz" → 显示"暂无搜索内容"

@@ -225,8 +225,8 @@ import {
   userInfoActiveTradeAccountIdSelector,
   userInfoActiveTradeAccountInfoSelector,
 } from '@/stores/user-slice/infoSlice'
-import { uniqueObjectArray } from '@/v1/utils'
-import mitt from '@/v1/utils/mitt'
+import { uniqueObjectArray } from '@/utils'
+import mitt from '@/utils/mitt'
 
 import { parseDepthBodyData, parseQuoteBodyData } from './quote-parser'
 
@@ -790,8 +790,8 @@ git commit -m "feat(ws): 添加 useSubscribeQuote 声明式订阅 hook"
 
 ```typescript
 // 在 global.ts 顶部添加 import
+import { getEnv } from '@/env'
 import MulletWS from '@/lib/ws/mullet-ws'
-import { getEnv } from '@/v1/env'
 ```
 
 修改 `onStartApp` 方法中的 WS 初始化部分：

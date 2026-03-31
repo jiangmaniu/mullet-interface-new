@@ -2,15 +2,14 @@ import { Base64 } from 'js-base64'
 
 import { toast } from '@/components/ui/toast'
 import { DEFAULT_TENANT_ID } from '@/constants/config/trade'
+import { getEnv } from '@/env'
 import { handle401Error, setCancelAllRequestsCallback } from '@/lib/auth-handler'
+import { STORAGE_KEY_TRADER_SERVER } from '@/lib/storage/keys'
+import { storageGet } from '@/lib/storage/storage'
 import { useRootStore } from '@/stores'
-import { getEnv } from '@/v1/env'
 import { i18n } from '@lingui/core'
 import { t } from '@lingui/core/macro'
 import { getAccessToken } from '@privy-io/expo'
-
-import { storageGet } from '@/lib/storage/storage'
-import { STORAGE_KEY_TRADER_SERVER } from '@/lib/storage/keys'
 
 // 全局请求管理器
 const pendingRequests = new Map<string, AbortController>()

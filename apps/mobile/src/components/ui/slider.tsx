@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react'
 import { Pressable, View } from 'react-native'
 import { Slider as AwesomeSlider } from 'react-native-awesome-slider'
-import Animated, { type SharedValue, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated'
 import { useResolveClassNames } from 'uniwind'
+import type { SharedValue } from 'react-native-reanimated'
 
 import { cn } from '@/lib/utils'
-import { vibrate } from '@/v1/utils/native'
+import { vibrate } from '@/utils/native'
 
 // 颜色常量，与 theme 保持一致
 const MARK_ACTIVE_COLOR = '#EED94C'
@@ -84,12 +85,7 @@ const SliderMark = React.memo(function SliderMark({
           onPress={handlePress}
           style={isFirst ? labelFirstStyle : isLast ? labelLastStyle : labelCenterStyle}
         >
-          <Animated.Text
-            style={[
-              isFirst ? textLeftStyle : isLast ? textRightStyle : textCenterStyle,
-              labelColorStyle,
-            ]}
-          >
+          <Animated.Text style={[isFirst ? textLeftStyle : isLast ? textRightStyle : textCenterStyle, labelColorStyle]}>
             {label}
           </Animated.Text>
         </Pressable>

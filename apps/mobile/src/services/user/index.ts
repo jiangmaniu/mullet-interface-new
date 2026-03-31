@@ -1,8 +1,8 @@
 import { stringify } from 'qs'
 
+import { getEnv } from '@/env'
 import { useRootStore } from '@/stores'
 import { request } from '@/utils/request'
-import { getEnv } from '@/v1/env'
 
 // 获取图形验证码
 export async function getCaptcha() {

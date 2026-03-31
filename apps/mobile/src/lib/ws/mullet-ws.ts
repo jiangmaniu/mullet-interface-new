@@ -13,8 +13,8 @@ import { formaOrderList } from '@/services/tradeCore/order'
 import { useRootStore } from '@/stores'
 import { marketQuoteSliceSelector } from '@/stores/market-slice/quote-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { uniqueObjectArray } from '@/v1/utils'
-import mitt from '@/v1/utils/mitt'
+import { uniqueObjectArray } from '@/utils'
+import mitt from '@/utils/mitt'
 
 import { parseDepthBodyData, parseQuoteBodyData } from './quote-parser'
 

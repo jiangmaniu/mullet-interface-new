@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite'
 import { useCallback, useEffect, useState } from 'react'
 import { Platform, Text, View } from 'react-native'
 
-import { fetchRemoteConfig } from '@/v1/env'
+import { fetchRemoteConfig } from '@/env'
 
 let unsubscribe: (() => void) | undefined
 

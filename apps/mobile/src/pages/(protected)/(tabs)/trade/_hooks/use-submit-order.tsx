@@ -7,7 +7,7 @@ import { useRootStore } from '@/stores'
 import { tradeActiveTradeSymbolInfoSelector } from '@/stores/trade-slice'
 import { tradeFormDataSelector } from '@/stores/trade-slice/formDataSlice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
-import { vibrate } from '@/v1/utils/native'
+import { vibrate } from '@/utils/native'
 
 import { buildOrderParams } from '../_helpers/build-order-params'
 import { useVerifyCreateOrderData } from './use-verify-order'

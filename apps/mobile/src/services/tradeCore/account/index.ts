@@ -1,7 +1,7 @@
 import qs from 'qs'
 
+import { formatSymbolConf } from '@/utils/business'
 import { request } from '@/utils/request'
-import { formatSymbolConf } from '@/v1/utils/business'
 
 import { Account } from './typings'
 
