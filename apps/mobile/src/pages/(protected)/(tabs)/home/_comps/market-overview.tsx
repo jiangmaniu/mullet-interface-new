@@ -1,7 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Pressable, ScrollView, View } from 'react-native'
-import { useShallow } from 'zustand/react/shallow'
 import { router } from 'expo-router'
 
 import { SparkLine } from '@/components/charts/spark-line'
@@ -9,7 +8,7 @@ import { AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Text } from '@/components/ui/text'
-import { MARKET_OVERVIEW_SYMBOL_LIST, MarketOverviewSymbol } from '@/constants/market'
+import { MARKET_OVERVIEW_SYMBOL_LIST } from '@/constants/market'
 import { parseRiseAndFallInfo } from '@/helpers/market'
 import { renderFormatSymbolName } from '@/helpers/symbol'
 import { useMarketQuoteInfoWithSub } from '@/hooks/market/use-market-quote'
@@ -18,6 +17,7 @@ import { cn } from '@/lib/utils'
 import { useTradeSwitchActiveSymbol } from '@/pages/(protected)/(trade)/_hooks/use-trade-switch-symbol'
 import { useRootStore } from '@/stores'
 import { marketSymbolInfoListSelector, useMarketSymbolInfo } from '@/stores/market-slice'
+import { useMarketSymbolInfoListBySymbolList } from '@/stores/market-slice/symbol-slice'
 import { userInfoActiveTradeAccountIdSelector } from '@/stores/user-slice/infoSlice'
 import { getImgSource } from '@/utils/img'
 import { BNumber } from '@mullet/utils/number'
@@ -151,28 +151,27 @@ const MarketCardContent = observer(({ symbol }: MarketCardProps) => {
 
 // ============ MarketOverview ============
 export const MarketOverview = () => {
-  const marketOverviewSymbolInfoList = useRootStore(
-    useShallow((s) => {
-      const list = marketSymbolInfoListSelector(s) ?? []
-      return list.filter((symbolInfo) =>
-        MARKET_OVERVIEW_SYMBOL_LIST.includes(symbolInfo.symbol as MarketOverviewSymbol),
-      )
-    }),
-  )
+  const { symbolInfoList, loading } = useMarketSymbolInfoListBySymbolList(MARKET_OVERVIEW_SYMBOL_LIST)
+
+  if (loading) {
+    return (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
+        {MARKET_OVERVIEW_SYMBOL_LIST.map((symbol) => (
+          <MarketCard key={symbol} symbol={symbol} />
+        ))}
+      </ScrollView>
+    )
+  }
+
+  if (symbolInfoList.length <= 0) {
+    return null
+  }
 
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ padding: 12, gap: 12 }}>
-      {marketOverviewSymbolInfoList.length <= 0 ? (
-        <>
-          {MARKET_OVERVIEW_SYMBOL_LIST.map((symbol) => (
-            <MarketCard key={symbol} symbol={symbol} />
-          ))}
-        </>
-      ) : (
-        marketOverviewSymbolInfoList.map((symbolInfo) => (
-          <MarketCard key={symbolInfo.symbol} symbol={symbolInfo.symbol} />
-        ))
-      )}
+      {symbolInfoList.map((symbolInfo) => (
+        <MarketCard key={symbolInfo.symbol} symbol={symbolInfo.symbol} />
+      ))}
     </ScrollView>
   )
 }

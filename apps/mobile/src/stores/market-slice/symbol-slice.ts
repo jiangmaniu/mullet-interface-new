@@ -107,10 +107,28 @@ export const marketSymbolInfoMapSelector = (state: RootStoreState) => state.mark
 export const marketSymbolSimpleMapSelector = (state: RootStoreState) => state.market.symbol.simpleMap
 export const marketSymbolInfoListSelector = (state: RootStoreState) => state.market.symbol.infoList
 
+export const createMarketSymbolInfoListBySymbolListSelector = (symbolList: readonly string[] = []) => {
+  return (state: RootStoreState) =>
+    state.market.symbol.infoList.filter((symbolInfo) => {
+      return symbolList.includes(symbolInfo.symbol)
+    })
+}
+
 /** 工厂：根据 symbol 查找对应的 symbolInfo */
 export const createSymbolInfoSelector = (symbol?: string) => (state: RootStoreState) =>
   symbol ? state.market.symbol.infoMap[symbol] : undefined
 
 export const useMarketSymbolInfo = (symbol?: string) => {
   return useRootStore(useShallow(useCallback((s: RootStoreState) => createSymbolInfoSelector(symbol)(s), [symbol])))
+}
+
+export const useMarketSymbolInfoListBySymbolList = (symbolList: readonly string[] = []) => {
+  const loading = useRootStore(marketFetchMarketListLoadingSelector)
+  const symbolInfoList = useRootStore(
+    useShallow(
+      useCallback((s: RootStoreState) => createMarketSymbolInfoListBySymbolListSelector(symbolList)(s), [symbolList]),
+    ),
+  )
+
+  return { symbolInfoList, loading }
 }
