@@ -14,10 +14,12 @@ import {
 } from '@/components/ui/drawer'
 import { IconSpecialFail, IconSpecialSuccess } from '@/components/ui/icons'
 import { Spinning } from '@/components/ui/spinning'
+import { useI18n } from '@/hooks/use-i18n'
 import { useWalletRouteCallback, WalletActionType } from '@/hooks/use-wallet-route-callback'
 import { useAccount, useAppKit, useAppKitState } from '@/lib/appkit'
 import { cn } from '@/lib/utils'
 import { LoginType } from '@/stores/user-slice/authSlice'
+import { msg } from '@lingui/core/macro'
 
 import { useBackendLogin } from '../_hooks/use-backend-login'
 import { useWalletAuth, WalletAuthError } from '../_hooks/use-wallet-auth'
@@ -87,6 +89,9 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
     onCloseProp()
   }, [resetSteps, onCloseProp])
 
+  const { renderLinguiMsg } = useI18n()
+  const commonError = renderLinguiMsg(msg`为止错误，请重试`)
+
   // 后端登录 hook
   const { loginToBackend, error: backendError } = useBackendLogin({
     onSuccess: handleClose,
@@ -136,7 +141,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       const isSignatureError = error.message?.includes('签名') || error.message?.includes('signature')
       if (isSignatureError) {
         setFlowState('signature_failed')
-        setStep2({ status: 'error', error: error.message || '签名失败' })
+        // setStep2({ status: 'error', error: error.message || '签名失败' })
+        setStep2({ status: 'error', error: commonError })
       } else {
         setFlowState('login_failed')
         setErrorMessage(error.message || '登录失败，请重试')
@@ -169,7 +175,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
         const authResult = await signAndLoginPrivy()
         if (!authResult) {
           setFlowState('signature_failed')
-          setStep2({ status: 'error', error: walletAuthError })
+          // setStep2({ status: 'error', error: walletAuthError })
+          setStep2({ status: 'error', error: commonError })
           return
         } else {
           setStep2({ status: 'completed' })
@@ -183,18 +190,18 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
         if (error instanceof WalletAuthError) {
           if (error.type === 'WalletNotConnected') {
             resetSteps()
-            setStep1({ status: 'error', error: error.message })
+            setStep1({ status: 'error', error: commonError })
             return
           } else if (error.type === 'WalletDisconnected') {
             // OKX 钱包端断开连接，重置状态并显示错误，让用户点击重试
             disconnectWallet()
             resetSteps()
-            setStep1({ status: 'error', error: error.message })
+            setStep1({ status: 'error', error: commonError })
             return
           } else if (error.type === 'WalletConnectError') {
             disconnectWallet()
             resetSteps()
-            setStep1({ status: 'error', error: error.message })
+            setStep1({ status: 'error', error: commonError })
             return
           } else if (error.type === 'UserRejected') {
             // 使用默认错误处理
@@ -202,7 +209,8 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
         }
 
         setFlowState('signature_failed')
-        setStep2({ status: 'error', error: error.message })
+        // setStep2({ status: 'error', error: error.message })
+        setStep2({ status: 'error', error: commonError })
         return
       }
 
@@ -235,10 +243,11 @@ export function Web3LoginDrawer({ visible, onClose: onCloseProp }: Web3LoginDraw
       // 连接结果会通过 useEffect 监听
     } catch (error) {
       console.error('Failed to open wallet modal:', error)
-      setStep1({ status: 'error', error: '打开钱包失败' })
+      // setStep1({ status: 'error', error: '打开钱包失败' })
+      setStep1({ status: 'error', error: commonError })
       setFlowState('idle')
     }
-  }, [open, step1.status, handleClose, saveContext])
+  }, [open, step1.status, handleClose, saveContext, commonError])
 
   // 用 ref 保存最新的 handleSign，避免 useEffect 因函数重建而无限循环
   const handleSignRef = useRef(handleSign)

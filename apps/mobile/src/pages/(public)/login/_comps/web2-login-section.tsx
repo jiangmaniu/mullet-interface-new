@@ -33,7 +33,7 @@ export function Web2LoginSection() {
   useEffect(() => {
     const handlePrivyLoginSuccess = async () => {
       if (privyReady && privyUser && loginTriggeredRef.current && !isBackendLoading) {
-        // console.log('Web2 login: Privy authenticated, logging into backend...')
+        console.log('Web2 login: Privy authenticated, logging into backend...')
         try {
           await loginToBackend(LoginType.Web2)
         } catch (error) {
@@ -74,8 +74,8 @@ export function Web2LoginSection() {
       await privyLogin({ loginMethods: ['email'] })
     } catch (error: any) {
       console.error('Privy login failed:', error)
-      toast.error(error?.message || '登录失败，请重试')
-      resetLoginState()
+      // toast.error(error?.message || '登录失败，请重试')
+      // resetLoginState()
     }
   }
 
