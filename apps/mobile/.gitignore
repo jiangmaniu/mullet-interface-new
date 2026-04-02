@@ -19,7 +19,7 @@ expo-env.d.ts
 
 # API Keys - 允许团队共享的 App Store Connect API Key
 *.p8
-!fastlane/AuthKey_LK96T3ND89.p8
+!fastlane/AuthKey_7NFT3652NC.p8
 
 # Metro
 .metro-health-check*
